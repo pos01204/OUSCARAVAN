@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { useGuestStore } from '@/lib/store';
@@ -10,7 +10,7 @@ import { SunsetWidget } from '@/components/features/SunsetWidget';
 import { CheckInOut } from '@/components/features/CheckInOut';
 import { WELCOME_MESSAGE } from '@/lib/constants';
 
-export default function HomePage() {
+function HomeContent() {
   const searchParams = useSearchParams();
   const { guestInfo, setGuestInfo, isCheckedIn } = useGuestStore();
 
@@ -62,5 +62,22 @@ export default function HomePage() {
         <CheckInOut />
       </div>
     </div>
+  );
+}
+
+export default function HomePage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="text-center">
+            <div className="mb-4 h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent mx-auto"></div>
+            <p className="text-muted-foreground">로딩 중...</p>
+          </div>
+        </div>
+      }
+    >
+      <HomeContent />
+    </Suspense>
   );
 }
