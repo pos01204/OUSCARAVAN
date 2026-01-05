@@ -171,5 +171,32 @@ useEffect(() => {
 
 ---
 
-**문서 버전**: 1.0  
+### 3. BBQCarousel 컴포넌트 prop 오류
+
+**파일**: `components/guest/GuestGuideContent.tsx`
+
+**오류 내용**:
+```
+Type error: Property 'onClose' is missing in type '{ slides: ... }' but required in type 'BBQCarouselProps'.
+```
+
+**원인**:
+- `BBQCarousel` 컴포넌트가 `onClose` prop을 필수로 요구
+- `GuestGuideContent`에서 `onClose` prop을 전달하지 않음
+
+**수정 방법**:
+- `BBQCarousel`에 `onClose` prop 추가
+
+**수정 코드**:
+```typescript
+// 수정 전
+<BBQCarousel slides={BBQ_GUIDE_SLIDES} />
+
+// 수정 후
+<BBQCarousel slides={BBQ_GUIDE_SLIDES} onClose={() => setShowBBQCarousel(false)} />
+```
+
+---
+
+**문서 버전**: 1.1  
 **최종 업데이트**: 2024-01-15

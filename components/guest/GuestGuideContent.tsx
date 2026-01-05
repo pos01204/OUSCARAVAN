@@ -65,7 +65,7 @@ export function GuestGuideContent() {
       </Button>
 
       {showBBQCarousel ? (
-        <BBQCarousel slides={BBQ_GUIDE_SLIDES} />
+        <BBQCarousel slides={BBQ_GUIDE_SLIDES} onClose={() => setShowBBQCarousel(false)} />
       ) : (
         <Accordion type="single" collapsible className="w-full">
           {filteredGuideData.length === 0 ? (
