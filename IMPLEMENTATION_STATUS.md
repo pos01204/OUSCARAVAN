@@ -15,6 +15,8 @@
 - [x] `types/index.ts` - TypeScript 타입 정의 통합
 - [x] `components/ui/badge.tsx` - Badge 컴포넌트 추가
 - [x] `components/ui/label.tsx` - Label 컴포넌트 추가
+- [x] `components/ui/skeleton.tsx` - Skeleton 컴포넌트 추가
+- [x] `components/ui/select.tsx` - Select 컴포넌트 추가
 
 ### 2. 관리자 페이지
 - [x] `app/(auth)/login/page.tsx` - 관리자 로그인 페이지
@@ -23,7 +25,15 @@
   - [x] 사용자 피드백 개선
 - [x] `app/admin/layout.tsx` - 관리자 레이아웃 (인증 체크)
 - [x] `app/admin/page.tsx` - 관리자 대시보드
+  - [x] 통계 데이터 조회 (Railway API 연동)
+  - [x] 최근 예약 목록 표시
+  - [x] 로딩 상태 표시 (Suspense 및 Skeleton UI)
+  - [x] 에러 처리
 - [x] `app/admin/reservations/page.tsx` - 예약 목록 페이지
+  - [x] 예약 목록 조회 (Railway API 연동)
+  - [x] 필터링 기능 (상태별, 날짜별, 검색)
+  - [x] 로딩 상태 표시 (Suspense 및 Skeleton UI)
+  - [x] 예약 상세 링크
 
 ## 🚧 진행 중인 작업
 

@@ -50,7 +50,7 @@ export interface Room {
 
 export interface AdminStats {
   todayReservations: number;
-  checkins: number;
-  checkouts: number;
-  orders: number;
+  pendingCheckins: number;
+  pendingCheckouts: number;
+  pendingOrders: number;
 }
