@@ -77,6 +77,33 @@ export default function GuidePage() {
             <AccordionContent>
               <div className="space-y-4">
                 <p className="text-sm text-muted-foreground">{item.content}</p>
+                {item.images && item.images.length > 0 && (
+                  <div className="space-y-2">
+                    {item.images.map((image, index) => (
+                      <div
+                        key={index}
+                        className="relative h-48 w-full overflow-hidden rounded-lg bg-muted"
+                      >
+                        <img
+                          src={image}
+                          alt={`${item.title} 이미지 ${index + 1}`}
+                          className="h-full w-full object-cover"
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.style.display = 'none';
+                            if (target.parentElement) {
+                              target.parentElement.innerHTML = `
+                                <div class="flex h-full items-center justify-center">
+                                  <span class="text-muted-foreground text-sm">이미지 준비 중</span>
+                                </div>
+                              `;
+                            }
+                          }}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                )}
                 {item.hasCarousel && (
                   <Button
                     onClick={() => setShowBBQCarousel(true)}

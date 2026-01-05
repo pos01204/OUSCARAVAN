@@ -55,14 +55,14 @@ export function WifiCard() {
             <p className="text-lg font-semibold">{WIFI_INFO.ssid}</p>
           </div>
           <div className="flex gap-2">
-            <Button onClick={copyPassword} className="flex-1">
-              <Copy className="mr-2 h-4 w-4" />
+            <Button onClick={copyPassword} className="flex-1" aria-label="WiFi 비밀번호 복사">
+              <Copy className="mr-2 h-4 w-4" aria-hidden="true" />
               비밀번호 복사
             </Button>
             <Drawer.Root>
               <Drawer.Trigger asChild>
-                <Button variant="outline" className="flex-1">
-                  <QrCode className="mr-2 h-4 w-4" />
+                <Button variant="outline" className="flex-1" aria-label="WiFi QR 코드 보기">
+                  <QrCode className="mr-2 h-4 w-4" aria-hidden="true" />
                   QR 코드
                 </Button>
               </Drawer.Trigger>

@@ -18,8 +18,9 @@ export default function HelpPage() {
       <a
         href={`tel:${EMERGENCY_CONTACTS.manager.number}`}
         className="fixed bottom-24 right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-110 md:hidden"
+        aria-label="관리자에게 전화하기"
       >
-        <Phone className="h-6 w-6" />
+        <Phone className="h-6 w-6" aria-hidden="true" />
       </a>
 
       {/* Emergency Contacts */}

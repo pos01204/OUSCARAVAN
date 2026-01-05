@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Package, Clock, CheckCircle2, Truck, XCircle } from 'lucide-react';
+import { Package, Clock, CheckCircle2, Truck, Filter } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import {
@@ -13,6 +13,8 @@ import {
 } from '@/components/ui/dialog';
 import { useGuestStore, type Order } from '@/lib/store';
 import { formatDateTime } from '@/lib/utils';
+
+type OrderStatus = Order['status'] | 'all';
 
 const statusConfig = {
   pending: {
@@ -44,6 +46,12 @@ const statusConfig = {
 export function OrderHistory() {
   const { orders } = useGuestStore();
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const [statusFilter, setStatusFilter] = useState<OrderStatus>('all');
+
+  const filteredOrders =
+    statusFilter === 'all'
+      ? orders
+      : orders.filter((order) => order.status === statusFilter);
 
   if (orders.length === 0) {
     return (
@@ -64,10 +72,33 @@ export function OrderHistory() {
     <>
       <Card>
         <CardHeader>
-          <CardTitle>주문 내역</CardTitle>
+          <div className="flex items-center justify-between">
+            <CardTitle>주문 내역</CardTitle>
+            <div className="flex items-center gap-2">
+              <Filter className="h-4 w-4 text-muted-foreground" />
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value as OrderStatus)}
+                className="rounded-md border border-border bg-background px-2 py-1 text-sm"
+              >
+                <option value="all">전체</option>
+                <option value="pending">대기 중</option>
+                <option value="preparing">준비 중</option>
+                <option value="delivering">배송 중</option>
+                <option value="completed">완료</option>
+              </select>
+            </div>
+          </div>
         </CardHeader>
         <CardContent className="space-y-3">
-          {orders.map((order) => {
+          {filteredOrders.length === 0 ? (
+            <p className="py-8 text-center text-sm text-muted-foreground">
+              {statusFilter === 'all'
+                ? '주문 내역이 없습니다.'
+                : '해당 상태의 주문이 없습니다.'}
+            </p>
+          ) : (
+            filteredOrders.map((order) => {
             const config = statusConfig[order.status];
             const StatusIcon = config.icon;
 
@@ -100,7 +131,8 @@ export function OrderHistory() {
                 </div>
               </button>
             );
-          })}
+            })
+          )}
         </CardContent>
       </Card>
 

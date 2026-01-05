@@ -9,6 +9,8 @@ import { TimeCard } from '@/components/features/TimeCard';
 import { SunsetWidget } from '@/components/features/SunsetWidget';
 import { CheckInOut } from '@/components/features/CheckInOut';
 import { OrderHistory } from '@/components/features/OrderHistory';
+import { CheckoutReminder } from '@/components/features/CheckoutReminder';
+import { TimeCountdown } from '@/components/features/TimeCountdown';
 import { WELCOME_MESSAGE } from '@/lib/constants';
 
 function HomeContent() {
@@ -54,6 +56,12 @@ function HomeContent() {
           <p className="mt-2 text-muted-foreground">객실: {guestInfo.room}</p>
         )}
       </motion.div>
+
+      {/* Checkout Reminder */}
+      <CheckoutReminder />
+
+      {/* Time Countdown */}
+      <TimeCountdown />
 
       {/* Status Cards Grid */}
       <div className="grid gap-4 md:grid-cols-2">

@@ -32,8 +32,10 @@ export function BottomNav() {
                   ? 'text-primary'
                   : 'text-muted-foreground hover:text-foreground'
               )}
+              aria-label={item.label}
+              aria-current={isActive ? 'page' : undefined}
             >
-              <Icon className="h-5 w-5" />
+              <Icon className="h-5 w-5" aria-hidden="true" />
               <span className="text-xs font-medium">{item.label}</span>
             </Link>
           );

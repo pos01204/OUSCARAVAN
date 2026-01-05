@@ -36,8 +36,17 @@ export function CouponFlip({ roomNumber }: CouponFlipProps) {
           animate={{ rotateY: isFlipped ? 180 : 0 }}
           transition={{ duration: 0.6 }}
           style={{ transformStyle: 'preserve-3d' }}
-          className="relative h-48"
+          className="relative h-48 cursor-pointer"
           onClick={handleFlip}
+          role="button"
+          tabIndex={0}
+          aria-label="쿠폰 카드 뒤집기"
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              handleFlip();
+            }
+          }}
         >
           {/* Front Side */}
           <Card
