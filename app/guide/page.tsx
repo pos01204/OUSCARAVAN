@@ -84,6 +84,7 @@ export default function GuidePage() {
                         key={index}
                         className="relative h-48 w-full overflow-hidden rounded-lg bg-muted"
                       >
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={image}
                           alt={`${item.title} 이미지 ${index + 1}`}

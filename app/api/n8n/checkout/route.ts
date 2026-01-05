@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { sendCheckOutToN8N } from '@/lib/api';
+
+const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL || process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL || '';
 
 export async function POST(request: NextRequest) {
   try {
@@ -13,18 +14,32 @@ export async function POST(request: NextRequest) {
       );
     }
     
-    // n8n 웹훅으로 전송
-    const success = await sendCheckOutToN8N({
-      guest: data.guest,
-      room: data.room,
-      checkoutTime: data.checkoutTime,
-      checklist: data.checklist || {
-        gasLocked: false,
-        trashCleaned: false,
+    // n8n 웹훅으로 직접 전송
+    if (!N8N_WEBHOOK_URL) {
+      console.warn('N8N_WEBHOOK_URL is not set');
+      return NextResponse.json(
+        { error: 'N8N webhook URL is not configured' },
+        { status: 500 }
+      );
+    }
+    
+    const response = await fetch(`${N8N_WEBHOOK_URL}/checkout`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
+      body: JSON.stringify({
+        guest: data.guest,
+        room: data.room,
+        checkoutTime: data.checkoutTime,
+        checklist: data.checklist || {
+          gasLocked: false,
+          trashCleaned: false,
+        },
+      }),
     });
     
-    if (!success) {
+    if (!response.ok) {
       return NextResponse.json(
         { error: 'Failed to send to n8n' },
         { status: 500 }
