@@ -40,15 +40,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="ko">
-      <body className={inter.className}>
+    <html lang="ko" className="h-full">
+      <body className={`${inter.className} flex min-h-screen flex-col`}>
         <Header />
-        <main className="min-h-screen pb-16 pt-16 md:pb-0 md:pt-0">
-          <div className="container mx-auto max-w-md px-4 py-6 md:max-w-2xl">
+        <main className="flex flex-1 flex-col pb-16 pt-16 md:pb-0 md:pt-0">
+          <div className="container mx-auto max-w-md flex-1 px-4 py-6 md:max-w-2xl">
             {children}
           </div>
+          <Footer />
         </main>
-        <Footer />
         <BottomNav />
         <Toaster />
       </body>
