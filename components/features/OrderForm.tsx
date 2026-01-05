@@ -34,8 +34,10 @@ export function OrderForm({ onClose }: OrderFormProps) {
       return;
     }
 
+    const orderType: 'bbq' | 'fire' = selectedSet.startsWith('bbq') ? 'bbq' : 'fire';
+    
     const order = {
-      type: selectedSet.startsWith('bbq') ? 'bbq' : 'fire',
+      type: orderType,
       items: [
         {
           id: selectedSet,
