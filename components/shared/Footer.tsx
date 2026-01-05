@@ -1,6 +1,6 @@
 'use client';
 
-export default function Footer() {
+export function Footer() {
   return (
     <footer className="border-t bg-muted/30 py-6 pb-20 md:border-t-0 md:pb-6">
       <div className="container mx-auto max-w-md px-4 md:max-w-2xl">
