@@ -1,5 +1,6 @@
 'use client';
 
+import Image from 'next/image';
 import { X } from 'lucide-react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation, Pagination } from 'swiper/modules';
@@ -56,10 +57,25 @@ export function BBQCarousel({ slides, onClose }: BBQCarouselProps) {
               {slides.map((slide) => (
                 <SwiperSlide key={slide.id}>
                   <div className="flex h-full flex-col items-center justify-center p-8 text-center">
-                    <div className="mb-4 h-48 w-full rounded-lg bg-muted flex items-center justify-center">
-                      <span className="text-muted-foreground">
-                        {slide.image}
-                      </span>
+                    <div className="relative mb-4 h-64 w-full rounded-lg bg-muted overflow-hidden">
+                      <Image
+                        src={slide.image}
+                        alt={slide.title}
+                        fill
+                        className="object-cover"
+                        sizes="100vw"
+                        onError={(e) => {
+                          const target = e.target as HTMLImageElement;
+                          target.style.display = 'none';
+                          if (target.parentElement) {
+                            target.parentElement.innerHTML = `
+                              <div class="flex h-full items-center justify-center">
+                                <span class="text-muted-foreground">${slide.title}</span>
+                              </div>
+                            `;
+                          }
+                        }}
+                      />
                     </div>
                     <h3 className="mb-2 text-2xl font-heading font-bold">
                       {slide.title}

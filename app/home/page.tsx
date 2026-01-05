@@ -8,6 +8,7 @@ import { WifiCard } from '@/components/features/WifiCard';
 import { TimeCard } from '@/components/features/TimeCard';
 import { SunsetWidget } from '@/components/features/SunsetWidget';
 import { CheckInOut } from '@/components/features/CheckInOut';
+import { OrderHistory } from '@/components/features/OrderHistory';
 import { WELCOME_MESSAGE } from '@/lib/constants';
 
 function HomeContent() {
@@ -61,6 +62,9 @@ function HomeContent() {
         <SunsetWidget />
         <CheckInOut />
       </div>
+
+      {/* Order History */}
+      <OrderHistory />
     </div>
   );
 }

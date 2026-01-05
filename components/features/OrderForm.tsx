@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { BBQ_SETS } from '@/lib/constants';
 import { useGuestStore } from '@/lib/store';
 import { useToast } from '@/components/ui/use-toast';
+import { sendOrderToN8N } from '@/lib/api';
 
 interface OrderFormProps {
   onClose: () => void;
@@ -23,7 +24,7 @@ export function OrderForm({ onClose }: OrderFormProps) {
 
   const selectedSetData = BBQ_SETS.find((set) => set.id === selectedSet);
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!selectedSet || !selectedSetData) {
       toast({
         title: '선택 필요',
@@ -33,7 +34,7 @@ export function OrderForm({ onClose }: OrderFormProps) {
       return;
     }
 
-    addOrder({
+    const order = {
       type: selectedSet.startsWith('bbq') ? 'bbq' : 'fire',
       items: [
         {
@@ -46,6 +47,19 @@ export function OrderForm({ onClose }: OrderFormProps) {
       totalAmount: selectedSetData.price * quantity,
       deliveryTime,
       notes,
+    };
+
+    addOrder(order);
+
+    // n8n 웹훅으로 전송
+    await sendOrderToN8N({
+      guest: guestInfo.name,
+      room: guestInfo.room,
+      orderType: order.type,
+      items: order.items,
+      totalAmount: order.totalAmount,
+      deliveryTime: order.deliveryTime,
+      notes: order.notes,
     });
 
     toast({

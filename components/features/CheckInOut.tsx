@@ -6,6 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useGuestStore } from '@/lib/store';
 import { useToast } from '@/components/ui/use-toast';
+import { sendCheckInToN8N, sendCheckOutToN8N } from '@/lib/api';
 import {
   Dialog,
   DialogContent,
@@ -25,16 +26,24 @@ export function CheckInOut() {
   });
   const { toast } = useToast();
 
-  const handleCheckIn = () => {
+  const handleCheckIn = async () => {
     checkIn();
+    
+    // n8n 웹훅으로 전송
+    await sendCheckInToN8N({
+      guest: guestInfo.name,
+      room: guestInfo.room,
+      checkinTime: new Date().toISOString(),
+      source: 'web_app',
+    });
+    
     toast({
       title: '체크인 완료',
       description: '체크인이 완료되었습니다. 즐거운 시간 보내세요!',
     });
-    // 향후: n8n 웹훅으로 전송
   };
 
-  const handleCheckout = () => {
+  const handleCheckout = async () => {
     if (!checklist.gasLocked || !checklist.trashCleaned) {
       toast({
         title: '확인 필요',
@@ -44,12 +53,20 @@ export function CheckInOut() {
       return;
     }
     checkOut();
+    
+    // n8n 웹훅으로 전송
+    await sendCheckOutToN8N({
+      guest: guestInfo.name,
+      room: guestInfo.room,
+      checkoutTime: new Date().toISOString(),
+      checklist,
+    });
+    
     setShowCheckoutDialog(false);
     toast({
       title: '체크아웃 완료',
       description: '체크아웃이 완료되었습니다. 다음에 또 만나요!',
     });
-    // 향후: n8n 웹훅으로 전송
   };
 
   return (
