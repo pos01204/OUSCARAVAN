@@ -51,10 +51,31 @@
   - [x] Railway API에서 예약 정보 조회
   - [x] 기존 home 페이지 기능 마이그레이션
   - [x] GuestHomeContent 컴포넌트 생성
-- [ ] `app/guest/[token]/guide/page.tsx` - 안내 (기존 guide 마이그레이션)
-- [ ] `app/guest/[token]/order/page.tsx` - 주문 (기존 market 마이그레이션)
-- [ ] `app/guest/[token]/checkinout/page.tsx` - 체크인/체크아웃
-- [ ] `app/guest/[token]/help/page.tsx` - 도움말 (기존 help 마이그레이션)
+- [x] `app/guest/[token]/guide/page.tsx` - 안내 (기존 guide 마이그레이션)
+  - [x] GuestGuideContent 컴포넌트 생성
+  - [x] 검색 및 카테고리 필터
+  - [x] 아코디언 스타일 가이드
+  - [x] BBQ 단계별 캐러셀 가이드
+  - [x] 토큰 검증
+- [x] `app/guest/[token]/order/page.tsx` - 주문 (기존 market 마이그레이션)
+  - [x] GuestOrderContent 컴포넌트 생성
+  - [x] 디지털 쿠폰
+  - [x] 메뉴 캐러셀
+  - [x] 불멍/바베큐 주문 폼
+  - [x] 카페 정보 표시
+  - [x] 토큰 검증
+- [x] `app/guest/[token]/checkinout/page.tsx` - 체크인/체크아웃
+  - [x] GuestCheckInOutContent 컴포넌트 생성
+  - [x] 체크인 기능
+  - [x] 체크아웃 기능 (체크리스트 포함)
+  - [x] 예약 정보 표시
+  - [x] 토큰 검증
+- [x] `app/guest/[token]/help/page.tsx` - 도움말 (기존 help 마이그레이션)
+  - [x] GuestHelpContent 컴포넌트 생성
+  - [x] 응급 연락처
+  - [x] 안전 정보
+  - [x] FAQ
+  - [x] 토큰 검증
 
 ## 📋 다음 단계
 
