@@ -38,7 +38,7 @@ export default function HelpPage() {
             >
               <div>
                 <p className="font-medium">{contact.name}</p>
-                {contact.description && (
+                {'description' in contact && contact.description && (
                   <p className="text-sm text-muted-foreground">
                     {contact.description}
                   </p>
