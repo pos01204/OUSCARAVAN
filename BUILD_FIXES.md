@@ -7,6 +7,56 @@
 
 ## 🔧 수정된 오류
 
+### 0. TypeScript 타입 오류 (추가 수정)
+
+**파일**: `app/guest/[token]/page.tsx`
+
+**오류 내용**:
+```
+Type error: Type 'Reservation | null' is not assignable to type 'Reservation'.
+Type 'null' is not assignable to type 'Reservation'.
+```
+
+**원인**:
+- `reservation` 변수가 `null`로 초기화되어 있어 TypeScript가 `null` 가능성을 인식
+- `GuestHomeContent` 컴포넌트에 `reservation`을 전달할 때 `null` 체크가 없음
+
+**수정 방법**:
+- `notFound()` 호출 후 명시적인 타입 가드 추가
+- `reservation`이 `null`인 경우 다시 `notFound()` 호출하여 타입을 좁힘
+
+**수정 코드**:
+```typescript
+// 수정 전
+try {
+  reservation = await guestApi(params.token);
+} catch (error) {
+  notFound();
+}
+
+return (
+  <GuestHomeContent reservation={reservation} token={params.token} />
+);
+
+// 수정 후
+try {
+  reservation = await guestApi(params.token);
+} catch (error) {
+  notFound();
+}
+
+// TypeScript 타입 가드 추가
+if (!reservation) {
+  notFound();
+}
+
+return (
+  <GuestHomeContent reservation={reservation} token={params.token} />
+);
+```
+
+---
+
 ### 1. TypeScript 타입 오류
 
 **파일**: `app/guest/[token]/layout.tsx`
@@ -101,9 +151,10 @@ useEffect(() => {
 - Vercel 및 Railway 빌드 성공
 
 ### 수정된 파일
-- `app/guest/[token]/layout.tsx`
-- `app/admin/orders/page.tsx`
-- `app/admin/rooms/page.tsx`
+- `app/guest/[token]/layout.tsx` - TypeScript 타입 가드 추가
+- `app/guest/[token]/page.tsx` - TypeScript 타입 가드 추가
+- `app/admin/orders/page.tsx` - React Hook 경고 수정
+- `app/admin/rooms/page.tsx` - React Hook 경고 수정
 
 ---
 
