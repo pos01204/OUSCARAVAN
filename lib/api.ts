@@ -2,10 +2,10 @@
  * Railway 백엔드 API 호출 함수
  */
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://ouscaravan-api.railway.app';
+import { API_CONFIG, N8N_CONFIG } from './constants';
 
-// 타임아웃 설정 (기본 10초)
-const DEFAULT_TIMEOUT = 10000;
+const API_URL = API_CONFIG.baseUrl;
+const DEFAULT_TIMEOUT = API_CONFIG.timeout;
 
 /**
  * 타임아웃이 있는 fetch 래퍼

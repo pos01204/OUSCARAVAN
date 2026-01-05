@@ -1,4 +1,24 @@
-// WiFi 정보
+/**
+ * API 설정
+ */
+export const API_CONFIG = {
+  // Railway 백엔드 API URL
+  baseUrl: process.env.NEXT_PUBLIC_API_URL || 'https://ouscaravan-api.railway.app',
+  // 타임아웃 설정 (기본 10초)
+  timeout: 10000,
+};
+
+/**
+ * n8n Webhook 설정
+ */
+export const N8N_CONFIG = {
+  // n8n Webhook URL (예약 배정 알림톡 발송용)
+  webhookUrl: process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL || '',
+};
+
+/**
+ * WiFi 정보
+ */
 export const WIFI_INFO = {
   ssid: 'OUS_Guest',
   password: 'OUS2024Guest!',

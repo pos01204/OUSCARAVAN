@@ -12,6 +12,7 @@ import {
 import { GUIDE_DATA, BBQ_GUIDE_SLIDES } from '@/lib/constants';
 import { BBQCarousel } from '@/components/features/BBQCarousel';
 import { Button } from '@/components/ui/button';
+import Image from 'next/image';
 
 export function GuestGuideContent() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -89,11 +90,12 @@ export function GuestGuideContent() {
                           key={index}
                           className="relative h-48 w-full overflow-hidden rounded-lg bg-muted"
                         >
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img
+                          <Image
                             src={image}
                             alt={`${item.title} 이미지 ${index + 1}`}
-                            className="h-full w-full object-cover"
+                            fill
+                            className="object-cover"
+                            sizes="(max-width: 768px) 100vw, 672px"
                             onError={(e) => {
                               const target = e.target as HTMLImageElement;
                               target.style.display = 'none';

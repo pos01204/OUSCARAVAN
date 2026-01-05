@@ -117,7 +117,7 @@ export default function ReservationDetailPage() {
       setReservation(updatedReservation);
       
       // 4. n8n Webhook 호출
-      const n8nWebhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL;
+      const n8nWebhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL || '';
       if (n8nWebhookUrl) {
         try {
           await fetch(n8nWebhookUrl, {

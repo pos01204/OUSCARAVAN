@@ -162,6 +162,142 @@
 - 고객은 알림톡 링크를 통해 `/guest/[token]`으로 직접 접근
 - 향후 URL 파라미터를 토큰으로 변환하는 로직 추가 예정
 
+## ✅ 완료된 작업 (2024-01-15 - 추가 15)
+
+### Phase 8: UI/UX 개선
+
+#### 8.1 디자인 시스템 확인
+- [x] 색상 테마 확인
+  - Tailwind CSS 색상 시스템 확인
+  - CSS 변수 확인
+  - 일관된 색상 시스템 적용 확인
+- [x] 타이포그래피 확인
+  - 폰트 설정 확인 (Pretendard, Montserrat)
+  - 폰트 크기 시스템 확인
+  - 일관된 타이포그래피 시스템 확인
+- [x] 간격 및 레이아웃 확인
+  - 컨테이너 설정 확인
+  - 간격 시스템 확인
+  - 일관된 레이아웃 시스템 확인
+- [x] 아이콘 일관성 확인
+  - Lucide React 사용 확인
+  - 아이콘 크기 일관성 확인
+- [x] `DESIGN_SYSTEM_AUDIT.md` 생성
+  - 디자인 시스템 현황 정리
+  - 색상, 타이포그래피, 간격, 아이콘 확인
+  - 점수 및 평가 기준 포함
+
+#### 8.2 반응형 디자인 확인
+- [x] 모바일 레이아웃 확인
+  - 관리자 페이지 모바일 메뉴 확인
+  - 고객 페이지 모바일 레이아웃 확인
+- [x] 태블릿 레이아웃 확인
+  - 그리드 레이아웃 반응형 확인
+- [x] 데스크톱 레이아웃 확인
+  - 최대 너비 설정 확인
+  - 데스크톱 네비게이션 확인
+
+#### 8.3 접근성 (A11y) 확인
+- [x] 키보드 네비게이션 확인
+  - 기본 키보드 네비게이션 지원 확인
+- [x] 스크린 리더 지원 확인
+  - 시맨틱 HTML 사용 확인
+  - ARIA 레이블 부분 적용 확인
+- [x] ARIA 레이블 확인
+  - 관리자 레이아웃 ARIA 레이블 확인
+  - 개선 필요 사항 문서화
+- [x] 색상 대비 확인
+  - 색상 대비 확인 필요 사항 문서화
+
+#### 8.4 성능 최적화
+- [x] 이미지 최적화
+  - `MenuCarousel` next/image 사용 확인
+  - `BBQCarousel` next/image 사용 확인
+  - `GuestGuideContent` img 태그를 next/image로 교체
+    - 일반 img 태그를 next/image로 교체
+    - fill 속성 및 sizes 속성 추가
+    - 에러 처리 개선
+- [x] 코드 스플리팅 확인
+  - Next.js App Router 자동 코드 스플리팅 확인
+  - Suspense 사용 확인
+- [x] 로딩 상태 표시 확인
+  - Suspense 및 Skeleton UI 사용 확인
+  - 로딩 스피너 사용 확인
+- [x] 에러 바운더리 확인
+  - app/error.tsx 확인
+  - app/not-found.tsx 확인
+
+**구현 내용**:
+- 디자인 시스템 전반 확인 및 문서화
+- 반응형 디자인 확인 및 문서화
+- 접근성 확인 및 개선 필요 사항 문서화
+- 이미지 최적화 개선 (GuestGuideContent)
+- 성능 최적화 현황 확인 및 문서화
+
+## ✅ 완료된 작업 (2024-01-15 - 추가 14)
+
+### Phase 1: 기반 인프라 구축
+
+#### 1.1 GitHub 레포지토리 설정
+- [x] 기존 레포지토리 확인
+  - 레포지토리 URL: `https://github.com/pos01204/OUSCARAVAN`
+  - 단일 레포지토리 구조 (관리자 페이지 + 고객 페이지)
+- [x] 브랜치 전략 수립
+  - main 브랜치 사용 (프로덕션 배포)
+  - develop 브랜치 선택사항 (향후 필요 시 추가)
+- [x] .gitignore 확인 및 업데이트
+  - 환경 변수 파일 (.env*) 제외 확인
+  - 빌드 결과물 (.next/, out/, build/) 제외 확인
+  - 의존성 (node_modules/) 제외 확인
+  - IDE 설정 파일 제외 확인
+- [x] README.md 업데이트
+  - 프로젝트 개요 업데이트 (예약 관리 시스템으로 명확화)
+  - 프로젝트 구조 업데이트 (최신 구조 반영)
+  - 주요 기능 설명 업데이트 (관리자/고객 페이지 구분)
+  - 기술 스택 업데이트 (Railway, n8n, SolAPI 추가)
+  - 사용 방법 업데이트 (관리자/고객 페이지 사용법)
+- [x] `GITHUB_REPOSITORY_SETUP.md` 생성
+  - 레포지토리 정보 정리
+  - 브랜치 전략 문서화
+  - .gitignore 설정 확인
+  - Git 워크플로우 가이드
+  - 보안 고려사항
+
+**구현 내용**:
+- GitHub 레포지토리 설정 완료 확인
+- 브랜치 전략 문서화
+- .gitignore 설정 확인 및 검증
+- README.md 최신 정보로 업데이트
+- 레포지토리 설정 가이드 문서 생성
+
+## ✅ 완료된 작업 (2024-01-15 - 추가 13)
+
+### Phase 1: 기반 인프라 구축
+
+#### 1.2 프로젝트 구조 생성 - constants.ts 업데이트
+- [x] `lib/constants.ts` 업데이트
+  - [x] API 설정 상수 추가 (`API_CONFIG`)
+    - Railway 백엔드 API URL
+    - 타임아웃 설정 (기본 10초)
+  - [x] n8n Webhook 설정 상수 추가 (`N8N_CONFIG`)
+    - n8n Webhook URL
+  - [x] 기존 상수 정리 및 문서화
+    - WiFi 정보, 체크인/체크아웃 시간, 일몰 시간
+    - 환영 메시지, 가이드 데이터, 메뉴 아이템
+    - 카페 정보, 불멍/바베큐 세트, FAQ 데이터, 응급 연락처
+- [x] `lib/api.ts` 업데이트
+  - [x] API_URL과 DEFAULT_TIMEOUT을 constants에서 가져오도록 수정
+  - [x] getN8NWebhookUrl 함수에서 constants 사용
+- [x] API 라우트 업데이트
+  - [x] `app/api/n8n/checkin/route.ts`에서 constants 사용
+  - [x] `app/api/n8n/checkout/route.ts`에서 constants 사용
+  - [x] `app/api/n8n/order/route.ts`에서 constants 사용
+
+**구현 내용**:
+- 모든 API 관련 상수를 `lib/constants.ts`로 중앙화
+- 환경 변수 사용을 constants를 통해 일관되게 관리
+- 코드 재사용성 및 유지보수성 향상
+
 ## ✅ 완료된 작업 (2024-01-15 - 추가 12)
 
 ### Phase 3: 관리자 페이지

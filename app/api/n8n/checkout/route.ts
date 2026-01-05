@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { N8N_CONFIG } from '@/lib/constants';
 
-const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL || process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL || '';
+const N8N_WEBHOOK_URL = process.env.N8N_WEBHOOK_URL || N8N_CONFIG.webhookUrl || '';
 
 export async function POST(request: NextRequest) {
   try {
