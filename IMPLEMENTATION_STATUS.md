@@ -43,8 +43,14 @@
   - [x] 로딩 상태 및 에러 처리
 
 ### 4. 고객 페이지
-- [ ] `app/guest/[token]/layout.tsx` - 고객 레이아웃
-- [ ] `app/guest/[token]/page.tsx` - 고객 홈 (기존 home 마이그레이션)
+- [x] `app/guest/[token]/layout.tsx` - 고객 레이아웃
+  - [x] 토큰 검증 및 404 처리
+  - [x] 예약 정보 표시
+  - [x] 하단 네비게이션 (GuestBottomNav)
+- [x] `app/guest/[token]/page.tsx` - 고객 홈 (기존 home 마이그레이션)
+  - [x] Railway API에서 예약 정보 조회
+  - [x] 기존 home 페이지 기능 마이그레이션
+  - [x] GuestHomeContent 컴포넌트 생성
 - [ ] `app/guest/[token]/guide/page.tsx` - 안내 (기존 guide 마이그레이션)
 - [ ] `app/guest/[token]/order/page.tsx` - 주문 (기존 market 마이그레이션)
 - [ ] `app/guest/[token]/checkinout/page.tsx` - 체크인/체크아웃

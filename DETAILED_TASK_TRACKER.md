@@ -115,23 +115,25 @@
 ## 👤 Phase 4: 고객 페이지
 
 ### 4.1 고객 레이아웃
-- [ ] `app/guest/[token]/layout.tsx` 생성
-- [ ] 하단 네비게이션 (BottomNav)
-- [ ] 예약 정보 표시 (Header)
-- [ ] 반응형 디자인
+- [x] `app/guest/[token]/layout.tsx` 생성
+- [x] 하단 네비게이션 (GuestBottomNav 컴포넌트)
+- [x] 예약 정보 표시 (Header 아래)
+- [x] 토큰 검증 및 404 처리
+- [x] 반응형 디자인
 
 ### 4.2 고객 홈 페이지
-- [ ] `app/guest/[token]/page.tsx` 생성
-- [ ] 기존 `app/home/page.tsx` 기능 마이그레이션
-  - [ ] 환영 메시지 (게스트 이름)
-  - [ ] WiFi 카드 (비밀번호 복사, QR 코드)
-  - [ ] 체크인/체크아웃 시간 표시
-  - [ ] 일몰 시간 위젯
-  - [ ] 자동 체크인/체크아웃
-- [ ] Railway API에서 예약 정보 조회
-- [ ] 예약 정보 표시 (방 번호, 체크인/체크아웃 날짜)
-- [ ] 주문 내역 표시
-- [ ] 체크아웃 알림
+- [x] `app/guest/[token]/page.tsx` 생성
+- [x] `components/guest/GuestHomeContent.tsx` 생성
+- [x] 기존 `app/home/page.tsx` 기능 마이그레이션
+  - [x] 환영 메시지 (게스트 이름)
+  - [x] WiFi 카드 (비밀번호 복사, QR 코드)
+  - [x] 체크인/체크아웃 시간 표시
+  - [x] 일몰 시간 위젯
+  - [x] 자동 체크인/체크아웃
+- [x] Railway API에서 예약 정보 조회
+- [x] 예약 정보 표시 (방 번호, 체크인/체크아웃 날짜)
+- [x] 주문 내역 표시 (기존 컴포넌트 재사용)
+- [x] 체크아웃 알림 (기존 컴포넌트 재사용)
 
 ### 4.3 안내 페이지
 - [ ] `app/guest/[token]/guide/page.tsx` 생성
@@ -386,7 +388,7 @@
 - Phase 1: 기반 인프라 구축 - 80% (8/10)
 - Phase 2: 인증 시스템 - 50% (2/4)
 - Phase 3: 관리자 페이지 - 60% (6/10)
-- Phase 4: 고객 페이지 - 0% (0/6)
+- Phase 4: 고객 페이지 - 33% (2/6)
 - Phase 5: 기존 라우트 처리 - 0% (0/2)
 - Phase 6: Railway 백엔드 연동 - 10% (1/10)
 - Phase 7: n8n 워크플로우 연동 - 0% (0/3)
