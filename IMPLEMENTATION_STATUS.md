@@ -84,6 +84,14 @@
 - [x] `app/market/page.tsx` - 기존 주문 페이지 (관리자 로그인 페이지로 리다이렉트)
 - [x] `app/help/page.tsx` - 기존 도움말 페이지 (관리자 로그인 페이지로 리다이렉트)
 
+### 6. Railway 백엔드 API 스펙
+- [x] `RAILWAY_API_SPEC.md` 생성 - Railway 백엔드 API 스펙 문서
+  - [x] 데이터베이스 스키마 정의 (reservations, orders, check_in_out_logs, rooms)
+  - [x] API 엔드포인트 스펙 정의 (인증, 예약, 고객, 주문, 체크인/체크아웃, 방 관리, 통계)
+  - [x] 보안 고려사항 문서화
+  - [x] 에러 응답 형식 정의
+  - [x] 테스트 예시 (cURL)
+
 ## 📋 다음 단계
 
 1. **Railway 백엔드 API 구현**

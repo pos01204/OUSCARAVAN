@@ -205,29 +205,23 @@
 
 ## 🔌 Phase 6: Railway 백엔드 연동
 
-### 6.1 API 엔드포인트 구현 확인
-- [ ] 관리자 인증 API
-  - [ ] `POST /api/auth/login`
-  - [ ] `POST /api/auth/logout`
-- [ ] 예약 관리 API
-  - [ ] `GET /api/admin/reservations`
-  - [ ] `GET /api/admin/reservations/:id`
-  - [ ] `PATCH /api/admin/reservations/:id`
-  - [ ] `POST /api/admin/reservations` (n8n에서 호출)
-- [ ] 고객 정보 API
-  - [ ] `GET /api/guest/:token`
-- [ ] 주문 API
-  - [ ] `GET /api/guest/:token/orders`
-  - [ ] `POST /api/guest/:token/orders`
-  - [ ] `PATCH /api/admin/orders/:id`
-- [ ] 체크인/체크아웃 API
-  - [ ] `POST /api/guest/:token/checkin`
-  - [ ] `POST /api/guest/:token/checkout`
-- [ ] 방 관리 API
-  - [ ] `GET /api/admin/rooms`
-  - [ ] `POST /api/admin/rooms`
-  - [ ] `PATCH /api/admin/rooms/:id`
-  - [ ] `DELETE /api/admin/rooms/:id`
+### 6.1 API 엔드포인트 스펙 문서 작성
+- [x] `RAILWAY_API_SPEC.md` 생성
+- [x] 데이터베이스 스키마 정의
+  - [x] reservations 테이블
+  - [x] orders 테이블
+  - [x] check_in_out_logs 테이블
+  - [x] rooms 테이블
+- [x] API 엔드포인트 스펙 정의
+  - [x] 관리자 인증 API (`POST /api/auth/login`)
+  - [x] 예약 관리 API (`GET`, `POST`, `PATCH`, `DELETE /api/admin/reservations`)
+  - [x] 고객 정보 API (`GET /api/guest/:token`)
+  - [x] 주문 API (`GET`, `POST /api/guest/:token/orders`, `GET`, `PATCH /api/admin/orders`)
+  - [x] 체크인/체크아웃 API (`POST /api/guest/:token/checkin`, `POST /api/guest/:token/checkout`)
+  - [x] 방 관리 API (`GET`, `POST`, `PATCH`, `DELETE /api/admin/rooms`)
+  - [x] 통계 API (`GET /api/admin/stats`)
+- [x] 보안 고려사항 문서화
+- [x] 에러 응답 형식 정의
 
 ### 6.2 API 호출 함수 구현
 - [x] `lib/api.ts` 기본 구조 생성
@@ -238,12 +232,14 @@
 - [ ] 재시도 로직 (선택사항)
 
 ### 6.3 데이터 타입 정의
-- [ ] `types/index.ts` 생성
-  - [ ] Reservation 타입
-  - [ ] Order 타입
-  - [ ] Room 타입
-  - [ ] API 응답 타입
-  - [ ] 에러 타입
+- [x] `types/index.ts` 생성
+  - [x] Reservation 타입
+  - [x] Order 타입
+  - [x] OrderItem 타입
+  - [x] Room 타입
+  - [x] AdminStats 타입
+  - [ ] API 응답 타입 (향후 추가)
+  - [ ] 에러 타입 (향후 추가)
 
 ---
 
@@ -393,7 +389,7 @@
 - Phase 3: 관리자 페이지 - 60% (6/10)
 - Phase 4: 고객 페이지 - 100% (6/6)
 - Phase 5: 기존 라우트 처리 - 75% (1.5/2)
-- Phase 6: Railway 백엔드 연동 - 10% (1/10)
+- Phase 6: Railway 백엔드 연동 - 30% (3/10)
 - Phase 7: n8n 워크플로우 연동 - 0% (0/3)
 - Phase 8: UI/UX 개선 - 0% (0/4)
 - Phase 9: 테스트 - 0% (0/3)
