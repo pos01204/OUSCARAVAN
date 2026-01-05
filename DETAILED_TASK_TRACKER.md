@@ -19,11 +19,12 @@
 - [x] `middleware.ts` 생성 (인증 체크)
 - [x] `lib/api.ts` 생성 (Railway API 호출 함수)
 - [x] `lib/auth.ts` 생성 (인증 유틸리티)
-- [ ] `types/index.ts` 생성 (TypeScript 타입 정의)
+- [x] `types/index.ts` 생성 (TypeScript 타입 정의)
 - [ ] `lib/constants.ts` 업데이트 (필요시)
 
 ### 1.3 UI 컴포넌트 준비
 - [x] `components/ui/badge.tsx` 생성
+- [x] `components/ui/label.tsx` 생성
 - [ ] 필요한 추가 UI 컴포넌트 확인
 - [ ] 컴포넌트 테스트
 
@@ -68,23 +69,23 @@
 
 ### 3.3 예약 관리
 - [x] `app/admin/reservations/page.tsx` 생성 (예약 목록)
-- [ ] `app/admin/reservations/[id]/page.tsx` 생성 (예약 상세)
-  - [ ] 예약 정보 표시
-  - [ ] 방 배정 기능
-    - [ ] 방 목록 조회 (Railway API)
-    - [ ] 방 선택 드롭다운
-    - [ ] 방 배정 저장 (Railway API)
-  - [ ] 전화번호 입력 기능
-    - [ ] 전화번호 입력 필드
-    - [ ] 전화번호 형식 검증
-    - [ ] 전화번호 저장 (Railway API)
-  - [ ] 고유 토큰 생성
-  - [ ] 예약 상태 업데이트
-  - [ ] n8n Webhook 호출
-    - [ ] Webhook URL 환경 변수 설정
-    - [ ] Webhook 호출 함수 구현
-    - [ ] 에러 처리
-  - [ ] 저장 완료 후 피드백
+- [x] `app/admin/reservations/[id]/page.tsx` 생성 (예약 상세)
+  - [x] 예약 정보 표시
+  - [x] 방 배정 기능
+    - [x] 방 목록 조회 (Railway API)
+    - [x] 방 선택 드롭다운
+    - [x] 방 배정 저장 (Railway API)
+  - [x] 전화번호 입력 기능
+    - [x] 전화번호 입력 필드
+    - [x] 전화번호 형식 검증 (한국 전화번호 형식)
+    - [x] 전화번호 저장 (Railway API)
+  - [x] 고유 토큰 생성 (없는 경우 자동 생성)
+  - [x] 예약 상태 업데이트
+  - [x] n8n Webhook 호출
+    - [x] Webhook URL 환경 변수 설정 (`NEXT_PUBLIC_N8N_WEBHOOK_URL`)
+    - [x] Webhook 호출 함수 구현
+    - [x] 에러 처리 (Webhook 실패해도 저장은 성공으로 처리)
+  - [x] 저장 완료 후 피드백 (Toast 알림 및 예약 목록으로 이동)
 - [ ] 예약 목록 필터링
   - [ ] 상태별 필터 (대기, 배정 완료, 체크인, 체크아웃, 취소)
   - [ ] 날짜별 필터
@@ -380,9 +381,9 @@
 **전체 진행률**: 0% (완료된 작업 / 전체 작업)
 
 **Phase별 진행률**:
-- Phase 1: 기반 인프라 구축 - 60% (6/10)
+- Phase 1: 기반 인프라 구축 - 80% (8/10)
 - Phase 2: 인증 시스템 - 50% (2/4)
-- Phase 3: 관리자 페이지 - 30% (3/10)
+- Phase 3: 관리자 페이지 - 40% (4/10)
 - Phase 4: 고객 페이지 - 0% (0/6)
 - Phase 5: 기존 라우트 처리 - 0% (0/2)
 - Phase 6: Railway 백엔드 연동 - 10% (1/10)

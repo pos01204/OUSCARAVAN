@@ -58,43 +58,9 @@ export async function guestApi(token: string, endpoint: string = '') {
 }
 
 /**
- * 타입 정의
+ * 타입 정의는 types/index.ts에서 import
  */
-export interface Reservation {
-  id: string;
-  reservationNumber: string;
-  guestName: string;
-  email: string;
-  phone?: string;
-  checkin: string;
-  checkout: string;
-  roomType: string;
-  assignedRoom?: string;
-  amount: string;
-  status: 'pending' | 'assigned' | 'checked_in' | 'checked_out' | 'cancelled';
-  uniqueToken?: string;
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface Order {
-  id: string;
-  reservationId: string;
-  type: 'bbq' | 'fire';
-  items: OrderItem[];
-  totalAmount: number;
-  status: 'pending' | 'preparing' | 'delivering' | 'completed';
-  createdAt: string;
-  deliveryTime?: string;
-  notes?: string;
-}
-
-export interface OrderItem {
-  id: string;
-  name: string;
-  quantity: number;
-  price: number;
-}
+export type { Reservation, Order, OrderItem, Room, AdminStats } from '@/types';
 
 /**
  * n8n 웹훅 URL (환경 변수에서 가져오기)
