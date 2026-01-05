@@ -116,16 +116,25 @@ http://localhost:3000/home?guest=John&room=A1&checkin=2024-01-15&checkout=2024-0
 
 ## 📚 문서
 
-### 자동화 가이드
+### 🎯 작업 관리
+- **[DETAILED_TASK_TRACKER.md](./DETAILED_TASK_TRACKER.md)**: 상세 작업 트래커 (체크리스트 형식)
+- **[MIGRATION_PLAN.md](./MIGRATION_PLAN.md)**: 프로젝트 마이그레이션 계획
+- **[IMPLEMENTATION_STATUS.md](./IMPLEMENTATION_STATUS.md)**: 구현 현황
+
+### ⚙️ 사전 세팅
+- **[PRE_SETUP_GUIDE.md](./PRE_SETUP_GUIDE.md)**: Vercel, Railway, n8n 사전 세팅 가이드
+- **[REVISED_PROJECT_PLAN.md](./REVISED_PROJECT_PLAN.md)**: 개정된 프로젝트 기획서
+- **[DEPLOYMENT_ARCHITECTURE.md](./DEPLOYMENT_ARCHITECTURE.md)**: 배포 아키텍처 가이드
+- **[VERCEL_DEPLOYMENT_GUIDE.md](./VERCEL_DEPLOYMENT_GUIDE.md)**: Vercel 배포 상세 가이드
+- **[PROJECT_STRUCTURE_DETAILED.md](./PROJECT_STRUCTURE_DETAILED.md)**: 프로젝트 구조 상세 가이드
+
+### 🤖 자동화 가이드
 - **[N8N_AUTOMATION_GUIDE.md](./N8N_AUTOMATION_GUIDE.md)**: n8n 자동화 설정 가이드
 - **[EMAIL_TO_KAKAO_WORKFLOW.md](./EMAIL_TO_KAKAO_WORKFLOW.md)**: 이메일 트래킹 → 카카오톡 발송 워크플로우
-- **[KAKAO_API_SETUP.md](./KAKAO_API_SETUP.md)**: 카카오톡 API 설정 가이드
+- **[N8N_WORKFLOW_TEST_GUIDE.md](./N8N_WORKFLOW_TEST_GUIDE.md)**: n8n 워크플로우 테스트 가이드
 - **[QUICK_START_N8N.md](./QUICK_START_N8N.md)**: n8n 빠른 시작 가이드
 
-### 작업 계획
-- **[NEXT_STEPS.md](./NEXT_STEPS.md)**: 향후 작업 계획
-
-### 배포 가이드
+### 📦 배포 가이드
 - **[DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)**: 배포 가이드
 - **[POST_DEPLOYMENT_TASKS.md](./POST_DEPLOYMENT_TASKS.md)**: 배포 후 작업 가이드
 

@@ -1,125 +1,97 @@
 /**
- * n8n 웹훅 API 유틸리티
- * 향후 n8n 연동 시 사용
+ * Railway 백엔드 API 호출 함수
  */
 
-const N8N_WEBHOOK_URL = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL;
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://ouscaravan-api.railway.app';
 
-export interface CheckInData {
-  guest: string;
-  room: string;
-  checkinTime: string;
-  source: string;
+/**
+ * 관리자 API 호출
+ */
+export async function adminApi(
+  endpoint: string,
+  options: RequestInit = {}
+) {
+  // 클라이언트 사이드에서 쿠키 읽기
+  const token = typeof window !== 'undefined' 
+    ? document.cookie
+        .split('; ')
+        .find(row => row.startsWith('admin-token='))
+        ?.split('=')[1]
+    : null;
+  
+  const response = await fetch(`${API_URL}${endpoint}`, {
+    ...options,
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': token ? `Bearer ${token}` : '',
+      ...options.headers,
+    },
+  });
+  
+  if (!response.ok) {
+    if (response.status === 401) {
+      // 인증 실패 시 로그인 페이지로 리다이렉트
+      if (typeof window !== 'undefined') {
+        window.location.href = '/login';
+      }
+    }
+    throw new Error(`API Error: ${response.statusText}`);
+  }
+  
+  return response.json();
 }
 
-export interface CheckOutData {
-  guest: string;
-  room: string;
-  checkoutTime: string;
-  checklist: {
-    gasLocked: boolean;
-    trashCleaned: boolean;
-  };
+/**
+ * 고객 API 호출 (토큰 기반)
+ */
+export async function guestApi(token: string, endpoint: string = '') {
+  const response = await fetch(`${API_URL}/api/guest/${token}${endpoint}`);
+  
+  if (!response.ok) {
+    if (response.status === 404) {
+      throw new Error('Invalid token');
+    }
+    throw new Error(`API Error: ${response.statusText}`);
+  }
+  
+  return response.json();
 }
 
-export interface OrderData {
-  guest: string;
-  room: string;
-  orderType: 'bbq' | 'fire';
-  items: Array<{
-    id: string;
-    name: string;
-    quantity: number;
-    price: number;
-  }>;
+/**
+ * 타입 정의
+ */
+export interface Reservation {
+  id: string;
+  reservationNumber: string;
+  guestName: string;
+  email: string;
+  phone?: string;
+  checkin: string;
+  checkout: string;
+  roomType: string;
+  assignedRoom?: string;
+  amount: string;
+  status: 'pending' | 'assigned' | 'checked_in' | 'checked_out' | 'cancelled';
+  uniqueToken?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface Order {
+  id: string;
+  reservationId: string;
+  type: 'bbq' | 'fire';
+  items: OrderItem[];
   totalAmount: number;
+  status: 'pending' | 'preparing' | 'delivering' | 'completed';
+  createdAt: string;
   deliveryTime?: string;
   notes?: string;
 }
 
-/**
- * n8n 웹훅으로 체크인 데이터 전송
- */
-export async function sendCheckInToN8N(data: CheckInData): Promise<boolean> {
-  if (!N8N_WEBHOOK_URL) {
-    console.log('[N8N] Check-in data (webhook not configured):', data);
-    return false;
-  }
-
-  try {
-    const response = await fetch(`${N8N_WEBHOOK_URL}/checkin`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    return true;
-  } catch (error) {
-    console.error('[N8N] Failed to send check-in data:', error);
-    return false;
-  }
-}
-
-/**
- * n8n 웹훅으로 체크아웃 데이터 전송
- */
-export async function sendCheckOutToN8N(data: CheckOutData): Promise<boolean> {
-  if (!N8N_WEBHOOK_URL) {
-    console.log('[N8N] Check-out data (webhook not configured):', data);
-    return false;
-  }
-
-  try {
-    const response = await fetch(`${N8N_WEBHOOK_URL}/checkout`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    return true;
-  } catch (error) {
-    console.error('[N8N] Failed to send check-out data:', error);
-    return false;
-  }
-}
-
-/**
- * n8n 웹훅으로 주문 데이터 전송
- */
-export async function sendOrderToN8N(data: OrderData): Promise<boolean> {
-  if (!N8N_WEBHOOK_URL) {
-    console.log('[N8N] Order data (webhook not configured):', data);
-    return false;
-  }
-
-  try {
-    const response = await fetch(`${N8N_WEBHOOK_URL}/order`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
-    return true;
-  } catch (error) {
-    console.error('[N8N] Failed to send order data:', error);
-    return false;
-  }
+export interface OrderItem {
+  id: string;
+  name: string;
+  quantity: number;
+  price: number;
 }
