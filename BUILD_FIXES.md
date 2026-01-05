@@ -198,5 +198,44 @@ Type error: Property 'onClose' is missing in type '{ slides: ... }' but required
 
 ---
 
-**문서 버전**: 1.1  
+### 4. CAFE_INFO.hours 타입 오류
+
+**파일**: `components/guest/GuestOrderContent.tsx`
+
+**오류 내용**:
+```
+Type error: Type '{ weekday: string; weekend: string; closed: string; }' is not assignable to type 'ReactNode'.
+```
+
+**원인**:
+- `CAFE_INFO.hours`가 객체 타입인데, 이를 직접 ReactNode로 렌더링하려고 함
+- `{ weekday: string; weekend: string; closed: string; }` 형태의 객체를 JSX에 직접 넣을 수 없음
+
+**수정 방법**:
+- 객체의 각 속성을 개별적으로 렌더링하도록 수정
+- 기존 `app/market/page.tsx`의 구조를 참고하여 동일하게 구현
+
+**수정 코드**:
+```typescript
+// 수정 전
+<span className="text-sm">{CAFE_INFO.hours}</span>
+
+// 수정 후
+<div>
+  <p className="font-medium">운영 시간</p>
+  <p className="text-sm text-muted-foreground">
+    평일: {CAFE_INFO.hours.weekday}
+  </p>
+  <p className="text-sm text-muted-foreground">
+    주말: {CAFE_INFO.hours.weekend}
+  </p>
+  <p className="mt-1 text-sm font-semibold text-destructive">
+    {CAFE_INFO.hours.closed}
+  </p>
+</div>
+```
+
+---
+
+**문서 버전**: 1.2  
 **최종 업데이트**: 2024-01-15

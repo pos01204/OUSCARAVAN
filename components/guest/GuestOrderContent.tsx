@@ -68,9 +68,20 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
             <MapPin className="h-5 w-5 text-muted-foreground" />
             <span className="text-sm">{CAFE_INFO.address}</span>
           </div>
-          <div className="flex items-center gap-2">
-            <Clock className="h-5 w-5 text-muted-foreground" />
-            <span className="text-sm">{CAFE_INFO.hours}</span>
+          <div className="flex items-start gap-3">
+            <Clock className="h-5 w-5 text-primary" />
+            <div>
+              <p className="font-medium">운영 시간</p>
+              <p className="text-sm text-muted-foreground">
+                평일: {CAFE_INFO.hours.weekday}
+              </p>
+              <p className="text-sm text-muted-foreground">
+                주말: {CAFE_INFO.hours.weekend}
+              </p>
+              <p className="mt-1 text-sm font-semibold text-destructive">
+                {CAFE_INFO.hours.closed}
+              </p>
+            </div>
           </div>
           <div className="flex items-center gap-2">
             <Phone className="h-5 w-5 text-muted-foreground" />
