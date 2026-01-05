@@ -4,6 +4,36 @@
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://ouscaravan-api.railway.app';
 
+// 타임아웃 설정 (기본 10초)
+const DEFAULT_TIMEOUT = 10000;
+
+/**
+ * 타임아웃이 있는 fetch 래퍼
+ */
+async function fetchWithTimeout(
+  url: string,
+  options: RequestInit = {},
+  timeout: number = DEFAULT_TIMEOUT
+): Promise<Response> {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeout);
+
+  try {
+    const response = await fetch(url, {
+      ...options,
+      signal: controller.signal,
+    });
+    clearTimeout(timeoutId);
+    return response;
+  } catch (error) {
+    clearTimeout(timeoutId);
+    if (error instanceof Error && error.name === 'AbortError') {
+      throw new Error('Request timeout');
+    }
+    throw error;
+  }
+}
+
 /**
  * 관리자 API 호출
  */
@@ -19,42 +49,97 @@ export async function adminApi(
         ?.split('=')[1]
     : null;
   
-  const response = await fetch(`${API_URL}${endpoint}`, {
-    ...options,
-    headers: {
-      'Content-Type': 'application/json',
-      'Authorization': token ? `Bearer ${token}` : '',
-      ...options.headers,
-    },
-  });
-  
-  if (!response.ok) {
-    if (response.status === 401) {
-      // 인증 실패 시 로그인 페이지로 리다이렉트
-      if (typeof window !== 'undefined') {
-        window.location.href = '/login';
+  try {
+    const response = await fetchWithTimeout(`${API_URL}${endpoint}`, {
+      ...options,
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': token ? `Bearer ${token}` : '',
+        ...options.headers,
+      },
+    });
+    
+    if (!response.ok) {
+      if (response.status === 401) {
+        // 인증 실패 시 로그인 페이지로 리다이렉트
+        if (typeof window !== 'undefined') {
+          window.location.href = '/login';
+        }
+        throw new Error('Unauthorized');
+      }
+      
+      // 에러 응답 파싱 시도
+      let errorMessage = `API Error: ${response.statusText}`;
+      try {
+        const errorData = await response.json();
+        if (errorData.error) {
+          errorMessage = errorData.error;
+        }
+      } catch {
+        // JSON 파싱 실패 시 기본 메시지 사용
+      }
+      
+      throw new Error(errorMessage);
+    }
+    
+    return response.json();
+  } catch (error) {
+    // 네트워크 오류 또는 타임아웃 처리
+    if (error instanceof Error) {
+      if (error.message === 'Request timeout') {
+        throw new Error('요청 시간이 초과되었습니다. 다시 시도해주세요.');
+      }
+      if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+        throw new Error('네트워크 오류가 발생했습니다. 연결을 확인해주세요.');
       }
     }
-    throw new Error(`API Error: ${response.statusText}`);
+    throw error;
   }
-  
-  return response.json();
 }
 
 /**
  * 고객 API 호출 (토큰 기반)
  */
 export async function guestApi(token: string, endpoint: string = '') {
-  const response = await fetch(`${API_URL}/api/guest/${token}${endpoint}`);
-  
-  if (!response.ok) {
-    if (response.status === 404) {
-      throw new Error('Invalid token');
+  try {
+    const response = await fetchWithTimeout(`${API_URL}/api/guest/${token}${endpoint}`, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      if (response.status === 404) {
+        throw new Error('Invalid token');
+      }
+      
+      // 에러 응답 파싱 시도
+      let errorMessage = `API Error: ${response.statusText}`;
+      try {
+        const errorData = await response.json();
+        if (errorData.error) {
+          errorMessage = errorData.error;
+        }
+      } catch {
+        // JSON 파싱 실패 시 기본 메시지 사용
+      }
+      
+      throw new Error(errorMessage);
     }
-    throw new Error(`API Error: ${response.statusText}`);
+    
+    return response.json();
+  } catch (error) {
+    // 네트워크 오류 또는 타임아웃 처리
+    if (error instanceof Error) {
+      if (error.message === 'Request timeout') {
+        throw new Error('요청 시간이 초과되었습니다. 다시 시도해주세요.');
+      }
+      if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
+        throw new Error('네트워크 오류가 발생했습니다. 연결을 확인해주세요.');
+      }
+    }
+    throw error;
   }
-  
-  return response.json();
 }
 
 /**

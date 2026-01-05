@@ -5,13 +5,22 @@
 ### 1. 기반 구조
 - [x] `middleware.ts` - 관리자 페이지 인증 체크
 - [x] `lib/api.ts` - Railway API 호출 함수
+  - [x] 타임아웃 처리 추가
+  - [x] 에러 처리 개선
+  - [x] 네트워크 오류 처리
 - [x] `lib/auth.ts` - 인증 유틸리티 함수
+  - [x] 임시 관리자 로그인 정보 설정
+  - [x] 임시 토큰 생성 로직
+  - [x] 쿠키 설정 개선
 - [x] `types/index.ts` - TypeScript 타입 정의 통합
 - [x] `components/ui/badge.tsx` - Badge 컴포넌트 추가
 - [x] `components/ui/label.tsx` - Label 컴포넌트 추가
 
 ### 2. 관리자 페이지
 - [x] `app/(auth)/login/page.tsx` - 관리자 로그인 페이지
+  - [x] 임시 로그인 정보 설정 (id: ouscaravan, pw: 123456789a)
+  - [x] 에러 메시지 표시
+  - [x] 사용자 피드백 개선
 - [x] `app/admin/layout.tsx` - 관리자 레이아웃 (인증 체크)
 - [x] `app/admin/page.tsx` - 관리자 대시보드
 - [x] `app/admin/reservations/page.tsx` - 예약 목록 페이지
