@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { adminApi, type Order } from '@/lib/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,9 +15,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { OrderFiltersClient } from './OrderFiltersClient';
 
 export default function OrdersPage() {
   const { toast } = useToast();
+  const searchParams = useSearchParams();
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
@@ -26,7 +29,20 @@ export default function OrdersPage() {
   const fetchOrders = async () => {
     try {
       setIsLoading(true);
-      const data = await adminApi('/api/admin/orders');
+      // 쿼리 파라미터 구성
+      const params = new URLSearchParams();
+      const status = searchParams.get('status');
+      const date = searchParams.get('date');
+      const search = searchParams.get('search');
+      
+      if (status && status !== 'all') params.append('status', status);
+      if (date) params.append('date', date);
+      if (search) params.append('search', search);
+      
+      const queryString = params.toString();
+      const endpoint = `/api/admin/orders${queryString ? `?${queryString}` : ''}`;
+      
+      const data = await adminApi(endpoint);
       setOrders(data);
     } catch (error) {
       console.error('Failed to fetch orders:', error);
@@ -40,11 +56,11 @@ export default function OrdersPage() {
     }
   };
   
-  // 주문 목록 조회
+  // 주문 목록 조회 (쿼리 파라미터 변경 시 재조회)
   useEffect(() => {
     fetchOrders();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [searchParams]);
   
   // 주문 상태 업데이트
   const handleStatusUpdate = async (orderId: string, newStatus: Order['status']) => {
@@ -144,11 +160,15 @@ export default function OrdersPage() {
         </Button>
       </div>
       
+      <OrderFiltersClient />
+      
       {orders.length === 0 ? (
         <Card>
           <CardContent className="py-8 text-center">
             <p className="text-muted-foreground">
-              등록된 주문이 없습니다.
+              {searchParams.get('status') || searchParams.get('date') || searchParams.get('search')
+                ? '검색 결과가 없습니다.'
+                : '등록된 주문이 없습니다.'}
             </p>
           </CardContent>
         </Card>
