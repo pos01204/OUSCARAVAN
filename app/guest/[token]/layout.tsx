@@ -21,6 +21,11 @@ export default async function GuestLayout({
     notFound();
   }
   
+  // TypeScript 타입 가드: reservation이 null이면 notFound()가 호출되므로 여기서는 null이 아님
+  if (!reservation) {
+    notFound();
+  }
+  
   return (
     <div className="flex min-h-screen flex-col">
       <Header />

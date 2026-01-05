@@ -32,11 +32,6 @@ export default function RoomsPage() {
   });
   const [isSaving, setIsSaving] = useState(false);
   
-  // 방 목록 조회
-  useEffect(() => {
-    fetchRooms();
-  }, []);
-  
   const fetchRooms = async () => {
     try {
       setIsLoading(true);
@@ -53,6 +48,12 @@ export default function RoomsPage() {
       setIsLoading(false);
     }
   };
+  
+  // 방 목록 조회
+  useEffect(() => {
+    fetchRooms();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   
   // 폼 초기화
   const resetForm = () => {

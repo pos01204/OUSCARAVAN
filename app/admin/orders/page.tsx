@@ -23,11 +23,6 @@ export default function OrdersPage() {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   
-  // 주문 목록 조회
-  useEffect(() => {
-    fetchOrders();
-  }, []);
-  
   const fetchOrders = async () => {
     try {
       setIsLoading(true);
@@ -44,6 +39,12 @@ export default function OrdersPage() {
       setIsLoading(false);
     }
   };
+  
+  // 주문 목록 조회
+  useEffect(() => {
+    fetchOrders();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   
   // 주문 상태 업데이트
   const handleStatusUpdate = async (orderId: string, newStatus: Order['status']) => {
