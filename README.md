@@ -108,11 +108,26 @@ http://localhost:3000/home?guest=John&room=A1&checkin=2024-01-15&checkout=2024-0
 
 ## 🚧 향후 개발
 
-- [ ] n8n 웹훅 연동
+- [x] n8n 웹훅 연동 (기본 구조 완료)
 - [ ] 실시간 주문 상태 업데이트
-- [ ] PWA 설정 완료
-- [ ] 이미지 최적화
+- [x] PWA 설정 완료
+- [x] 이미지 최적화
 - [ ] 다국어 지원
+
+## 📚 문서
+
+### 자동화 가이드
+- **[N8N_AUTOMATION_GUIDE.md](./N8N_AUTOMATION_GUIDE.md)**: n8n 자동화 설정 가이드
+- **[EMAIL_TO_KAKAO_WORKFLOW.md](./EMAIL_TO_KAKAO_WORKFLOW.md)**: 이메일 트래킹 → 카카오톡 발송 워크플로우
+- **[KAKAO_API_SETUP.md](./KAKAO_API_SETUP.md)**: 카카오톡 API 설정 가이드
+- **[QUICK_START_N8N.md](./QUICK_START_N8N.md)**: n8n 빠른 시작 가이드
+
+### 작업 계획
+- **[NEXT_STEPS.md](./NEXT_STEPS.md)**: 향후 작업 계획
+
+### 배포 가이드
+- **[DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)**: 배포 가이드
+- **[POST_DEPLOYMENT_TASKS.md](./POST_DEPLOYMENT_TASKS.md)**: 배포 후 작업 가이드
 
 ## 📄 라이선스
 
