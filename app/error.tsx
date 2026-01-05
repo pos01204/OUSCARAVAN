@@ -40,9 +40,9 @@ export default function Error({
               다시 시도
             </Button>
             <Button asChild className="flex-1 gap-2">
-              <a href="/home">
+              <a href="/login">
                 <Home className="h-4 w-4" />
-                홈으로
+                로그인으로
               </a>
             </Button>
           </div>

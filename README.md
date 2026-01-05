@@ -170,6 +170,16 @@ ouscaravan/
 - **[DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)**: 배포 가이드
 - **[POST_DEPLOYMENT_TASKS.md](./POST_DEPLOYMENT_TASKS.md)**: 배포 후 작업 가이드
 
+### 📖 사용자 가이드
+- **[ADMIN_USER_GUIDE.md](./ADMIN_USER_GUIDE.md)**: 관리자 사용 가이드
+- **[TROUBLESHOOTING_GUIDE.md](./TROUBLESHOOTING_GUIDE.md)**: 트러블슈팅 가이드
+
+### 🔍 감사 및 인벤토리
+- **[DESIGN_SYSTEM_AUDIT.md](./DESIGN_SYSTEM_AUDIT.md)**: 디자인 시스템 감사 보고서
+- **[RESPONSIVE_ACCESSIBILITY_AUDIT.md](./RESPONSIVE_ACCESSIBILITY_AUDIT.md)**: 반응형 디자인 및 접근성 감사 보고서
+- **[UI_COMPONENTS_INVENTORY.md](./UI_COMPONENTS_INVENTORY.md)**: UI 컴포넌트 인벤토리
+- **[GITHUB_REPOSITORY_SETUP.md](./GITHUB_REPOSITORY_SETUP.md)**: GitHub 레포지토리 설정 가이드
+
 ## 📄 라이선스
 
 이 프로젝트는 OUSCARAVAN 전용입니다.

@@ -11,10 +11,10 @@ export default function NotFound() {
         <p className="mb-8 text-muted-foreground">
           요청하신 페이지가 존재하지 않거나 이동되었습니다.
         </p>
-        <Link href="/home">
+        <Link href="/login">
           <Button size="lg" className="gap-2">
             <Home className="h-4 w-4" />
-            홈으로 돌아가기
+            로그인으로 돌아가기
           </Button>
         </Link>
       </div>
