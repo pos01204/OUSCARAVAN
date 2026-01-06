@@ -38,3 +38,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# railway backend (별도 프로젝트이지만 같은 레포지토리에서 관리)
+# railway-backend/node_modules
+# railway-backend/dist
+# railway-backend/.env

@@ -6,6 +6,18 @@
 
 ---
 
+## [0.1.3] - 2024-01-15
+
+### 수정됨 (Fixed)
+- `tsconfig.json` - `railway-backend` 디렉토리를 빌드에서 제외
+- `next.config.js` - webpack 설정 추가
+- Railway 백엔드 빌드 오류 해결
+
+### 추가됨 (Added)
+- `RAILWAY_ENV_SETUP.md` - Railway 환경 변수 설정 가이드
+
+---
+
 ## [0.1.2] - 2024-01-15
 
 ### 추가됨 (Added)

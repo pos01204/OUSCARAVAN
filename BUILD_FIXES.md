@@ -325,5 +325,48 @@ const sanitizedFormData = {
 
 ---
 
-**문서 버전**: 1.3  
+### 7. railway-backend 디렉토리 빌드 오류
+
+**파일**: `tsconfig.json`, `next.config.js`
+
+**오류 내용**:
+```
+Type error: Cannot find module 'express' or its corresponding type declarations.
+```
+
+**원인**:
+- `railway-backend/` 디렉토리가 Next.js 빌드에 포함되어 TypeScript 컴파일 시도
+- `railway-backend`는 별도 프로젝트이므로 Next.js 빌드에서 제외해야 함
+
+**수정 방법**:
+1. `tsconfig.json`의 `exclude`에 `railway-backend` 추가
+2. `next.config.js`에 webpack 설정 추가 (선택사항)
+
+**수정 코드**:
+```json
+// tsconfig.json
+{
+  "exclude": ["node_modules", "railway-backend"]
+}
+```
+
+```javascript
+// next.config.js
+const nextConfig = {
+  // ... 기존 설정
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+      };
+    }
+    return config;
+  },
+}
+```
+
+---
+
+**문서 버전**: 1.4  
 **최종 업데이트**: 2024-01-15

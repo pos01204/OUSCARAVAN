@@ -6,6 +6,30 @@
 
 ---
 
+## ✅ 완료된 작업 (2024-01-15 - 추가 32)
+
+### 빌드 오류 수정 및 Railway 환경 변수 가이드
+
+#### 빌드 오류 수정
+- [x] `tsconfig.json` - `railway-backend` 디렉토리를 빌드에서 제외
+- [x] `next.config.js` - webpack 설정 추가
+- [x] Railway 백엔드 빌드 오류 해결
+
+#### Railway 환경 변수 가이드
+- [x] `RAILWAY_ENV_SETUP.md` 생성
+  - 필수 환경 변수 설명 (DATABASE_URL, JWT_SECRET, PORT, NODE_ENV)
+  - Railway 대시보드에서 환경 변수 설정 방법
+  - Railway CLI를 사용한 환경 변수 설정 방법
+  - 보안 고려사항
+  - 문제 해결 가이드
+
+**구현 내용**:
+- `railway-backend`는 별도 프로젝트이므로 Next.js 빌드에서 제외
+- Railway 배포를 위한 환경 변수 설정 가이드 작성
+- 보안 모범 사례 문서화
+
+---
+
 ## ✅ 완료된 작업 (2024-01-15 - 추가 31)
 
 ### Railway 백엔드 구현 시작
