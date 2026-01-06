@@ -14,6 +14,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Search } from 'lucide-react';
+import { sanitizeInput } from '@/lib/security';
 
 export function ReservationFiltersClient() {
   const router = useRouter();
