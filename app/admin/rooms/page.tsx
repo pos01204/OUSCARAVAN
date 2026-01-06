@@ -28,9 +28,8 @@ export default function RoomsPage() {
     try {
       setIsLoading(true);
       const data = await getRooms();
-      // 배열로 받거나, rooms 속성에서 가져오기
-      const roomsArray = Array.isArray(data) ? data : (data.rooms || []);
-      setRooms(roomsArray);
+      // getRooms()는 배열을 반환
+      setRooms(data);
     } catch (error) {
       logError('Failed to fetch rooms', error, {
         component: 'RoomsPage',
