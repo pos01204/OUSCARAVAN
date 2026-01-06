@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { getReservation, updateReservation, getRooms, sendReservationAssignedToN8N, type Reservation, type Room } from '@/lib/api';
+import { logError } from '@/lib/logger';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -40,7 +41,10 @@ export default function ReservationDetailPage() {
         const roomsData = await getRooms();
         setRooms(roomsData);
       } catch (error) {
-        console.error('Failed to fetch data:', error);
+        logError('Failed to fetch reservation data', error, {
+          component: 'ReservationDetailPage',
+          reservationId,
+        });
         toast({
           title: '오류',
           description: '데이터를 불러오는데 실패했습니다.',
@@ -126,7 +130,11 @@ export default function ReservationDetailPage() {
             checkout: reservation.checkout,
           });
         } catch (webhookError) {
-          console.error('Failed to call n8n webhook:', webhookError);
+          logError('Failed to call n8n webhook', webhookError, {
+            component: 'ReservationDetailPage',
+            reservationId,
+            action: 'sendReservationAssignedToN8N',
+          });
           // Webhook 실패해도 저장은 성공으로 처리
         }
       }
@@ -139,7 +147,11 @@ export default function ReservationDetailPage() {
       // 예약 목록으로 이동
       router.push('/admin/reservations');
     } catch (error) {
-      console.error('Failed to save reservation:', error);
+      logError('Failed to save reservation', error, {
+        component: 'ReservationDetailPage',
+        reservationId,
+        action: 'updateReservation',
+      });
       toast({
         title: '저장 실패',
         description: '예약 정보 저장에 실패했습니다.',

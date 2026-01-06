@@ -18,7 +18,9 @@ async function StatsCards() {
   try {
     stats = await getAdminStats();
   } catch (error) {
-    console.error('Failed to fetch stats:', error);
+    logError('Failed to fetch admin stats', error, {
+      component: 'StatsCards',
+    });
   }
   
   return (
@@ -90,7 +92,9 @@ async function RecentReservations() {
     const data = await getReservations({ limit: 5 });
     reservations = data.reservations || [];
   } catch (error) {
-    console.error('Failed to fetch recent reservations:', error);
+    logError('Failed to fetch recent reservations', error, {
+      component: 'RecentReservations',
+    });
   }
   
   const getStatusBadge = (status: Reservation['status']) => {

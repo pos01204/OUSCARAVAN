@@ -162,6 +162,55 @@
 - 고객은 알림톡 링크를 통해 `/guest/[token]`으로 직접 접근
 - 향후 URL 파라미터를 토큰으로 변환하는 로직 추가 예정
 
+## ✅ 완료된 작업 (2024-01-15 - 추가 24)
+
+### Phase 8: UI/UX 개선 (계속)
+
+#### 8.4 성능 최적화 - 에러 로깅 개선
+- [x] 로깅 유틸리티 함수 생성
+  - [x] `lib/logger.ts` 생성
+    - `logError` 함수 (에러 로깅)
+    - `logWarn` 함수 (경고 로깅)
+    - `logInfo` 함수 (정보 로깅)
+    - `logDebug` 함수 (디버그 로깅)
+    - 구조화된 로그 데이터 (level, message, error, context, timestamp)
+    - 향후 Sentry 등 외부 로깅 서비스 연동 준비
+- [x] 관리자 페이지에서 로깅 유틸리티 사용
+  - [x] `app/admin/page.tsx` - 통계 및 최근 예약 조회 에러 로깅
+  - [x] `app/admin/reservations/page.tsx` - 예약 목록 조회 에러 로깅
+  - [x] `app/admin/reservations/[id]/page.tsx` - 예약 상세 조회 에러 로깅
+  - [x] `app/admin/rooms/page.tsx` - 방 목록 조회/저장/삭제 에러 로깅
+  - [x] `app/admin/orders/page.tsx` - 주문 목록 조회 에러 로깅
+- [x] 고객 페이지에서 로깅 유틸리티 사용
+  - [x] `components/guest/GuestCheckInOutContent.tsx` - 체크인/체크아웃 에러 로깅
+- [x] 에러 바운더리에서 로깅 유틸리티 사용
+  - [x] `app/error.tsx` - 애플리케이션 에러 로깅
+
+**구현 내용**:
+- 구조화된 로깅 시스템 구축
+- 일관된 에러 로깅 방식 적용
+- 컨텍스트 정보 포함으로 디버깅 용이성 향상
+- 향후 외부 로깅 서비스 연동 가능하도록 구조 준비
+
+## ✅ 완료된 작업 (2024-01-15 - 추가 23)
+
+### Phase 5: 기존 라우트 처리 (계속)
+
+#### 5.2 하위 호환성 개선
+- [x] URL 파라미터로 접근 시 토큰 기반으로 변환
+  - [x] `app/home/page.tsx` 업데이트
+    - `token` 파라미터가 있으면 `/guest/[token]`으로 직접 리다이렉트
+    - 기존 URL 파라미터(guest, room, checkin, checkout) 처리 로직 추가
+    - Railway API 연동 후 토큰 조회 기능 활성화 준비 (TODO 주석 추가)
+  - [x] 하위 호환성 향상
+    - 기존 링크가 token 파라미터를 포함하면 자동으로 새 구조로 변환
+    - 기존 파라미터 기반 접근도 향후 지원 가능하도록 구조 준비
+
+**구현 내용**:
+- 기존 URL 파라미터를 토큰 기반 URL로 변환하는 로직 추가
+- Railway API 구현 후 활성화 가능하도록 구조 준비
+- 하위 호환성 향상
+
 ## ✅ 완료된 작업 (2024-01-15 - 추가 22)
 
 ### Phase 6: Railway 백엔드 연동 (계속)

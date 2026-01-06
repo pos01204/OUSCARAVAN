@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { getRooms, createRoom, updateRoom, deleteRoom, type Room } from '@/lib/api';
+import { logError } from '@/lib/logger';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -38,7 +39,9 @@ export default function RoomsPage() {
       const data = await getRooms();
       setRooms(data);
     } catch (error) {
-      console.error('Failed to fetch rooms:', error);
+      logError('Failed to fetch rooms', error, {
+        component: 'RoomsPage',
+      });
       toast({
         title: '오류',
         description: '방 목록을 불러오는데 실패했습니다.',
@@ -116,7 +119,11 @@ export default function RoomsPage() {
       resetForm();
       fetchRooms();
     } catch (error) {
-      console.error('Failed to save room:', error);
+      logError('Failed to save room', error, {
+        component: 'RoomsPage',
+        action: editingRoom ? 'update' : 'create',
+        roomData: formData,
+      });
       toast({
         title: '저장 실패',
         description: '방 정보 저장에 실패했습니다.',
@@ -141,7 +148,10 @@ export default function RoomsPage() {
       });
       fetchRooms();
     } catch (error) {
-      console.error('Failed to delete room:', error);
+      logError('Failed to delete room', error, {
+        component: 'RoomsPage',
+        roomId,
+      });
       toast({
         title: '삭제 실패',
         description: '방 삭제에 실패했습니다.',

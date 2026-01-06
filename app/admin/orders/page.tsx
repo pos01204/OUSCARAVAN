@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { getAdminOrders, updateOrderStatus, type Order } from '@/lib/api';
+import { logError } from '@/lib/logger';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -40,7 +41,10 @@ export default function OrdersPage() {
       });
       setOrders(data.orders || []);
     } catch (error) {
-      console.error('Failed to fetch orders:', error);
+      logError('Failed to fetch orders', error, {
+        component: 'OrdersPage',
+        filters: { status, date, search },
+      });
       toast({
         title: '오류',
         description: '주문 목록을 불러오는데 실패했습니다.',
@@ -73,7 +77,11 @@ export default function OrdersPage() {
       setIsDialogOpen(false);
       setSelectedOrder(null);
     } catch (error) {
-      console.error('Failed to update order status:', error);
+      logError('Failed to update order status', error, {
+        component: 'OrdersPage',
+        orderId,
+        newStatus,
+      });
       toast({
         title: '업데이트 실패',
         description: '주문 상태 변경에 실패했습니다.',

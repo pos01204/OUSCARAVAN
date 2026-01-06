@@ -9,6 +9,7 @@ import { useGuestStore } from '@/lib/store';
 import { checkIn as apiCheckIn, checkOut as apiCheckOut } from '@/lib/api';
 import { useToast } from '@/components/ui/use-toast';
 import { CHECK_IN_OUT } from '@/lib/constants';
+import { logError } from '@/lib/logger';
 import type { Reservation } from '@/lib/api';
 
 interface GuestCheckInOutContentProps {
@@ -45,7 +46,11 @@ export function GuestCheckInOutContent({ reservation, token }: GuestCheckInOutCo
         description: '체크인이 완료되었습니다. 즐거운 시간 보내세요!',
       });
     } catch (error) {
-      console.error('Failed to check in:', error);
+      logError('Failed to check in', error, {
+        component: 'GuestCheckInOutContent',
+        token,
+        reservationId: reservation.id,
+      });
       toast({
         title: '체크인 실패',
         description: '체크인 처리 중 오류가 발생했습니다.',
@@ -81,7 +86,12 @@ export function GuestCheckInOutContent({ reservation, token }: GuestCheckInOutCo
         description: '체크아웃이 완료되었습니다. 안전한 여행 되세요!',
       });
     } catch (error) {
-      console.error('Failed to check out:', error);
+      logError('Failed to check out', error, {
+        component: 'GuestCheckInOutContent',
+        token,
+        reservationId: reservation.id,
+        checklist,
+      });
       toast({
         title: '체크아웃 실패',
         description: '체크아웃 처리 중 오류가 발생했습니다.',

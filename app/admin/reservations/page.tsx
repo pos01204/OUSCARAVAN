@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
 import { getReservations, type Reservation } from '@/lib/api';
+import { logError } from '@/lib/logger';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -33,7 +34,10 @@ async function ReservationsList({
     reservations = data.reservations || [];
     total = data.total || 0;
   } catch (error) {
-    console.error('Failed to fetch reservations:', error);
+    logError('Failed to fetch reservations', error, {
+      component: 'ReservationsList',
+      filters: { status, checkin, checkout, search },
+    });
   }
   
   const getStatusBadge = (status: Reservation['status']) => {

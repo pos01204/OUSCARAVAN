@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { AlertCircle, Home } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { logError } from '@/lib/logger';
 
 export default function Error({
   error,
@@ -13,8 +14,11 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    // 에러 로깅 (향후 Sentry 등으로 전송)
-    console.error('Error:', error);
+    // 에러 로깅
+    logError('Application error occurred', error, {
+      digest: error.digest,
+      component: 'ErrorBoundary',
+    });
   }, [error]);
 
   return (
