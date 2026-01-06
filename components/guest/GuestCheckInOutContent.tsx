@@ -11,7 +11,6 @@ import { useToast } from '@/components/ui/use-toast';
 import { logError } from '@/lib/logger';
 import { extractUserFriendlyMessage } from '@/lib/error-messages';
 import { CHECK_IN_OUT } from '@/lib/constants';
-import { logError } from '@/lib/logger';
 import type { Reservation } from '@/lib/api';
 
 interface GuestCheckInOutContentProps {
