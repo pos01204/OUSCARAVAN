@@ -5,7 +5,7 @@
 
 import { cookies } from 'next/headers';
 import { API_CONFIG } from './constants';
-import type { ApiErrorCode, ApiErrorResponse } from '@/types';
+import type { ApiErrorCode, ApiErrorResponse, Reservation, ReservationsResponse, AdminStats } from '@/types';
 import { ApiError } from '@/types';
 
 const API_URL = API_CONFIG.baseUrl;
@@ -138,35 +138,12 @@ export async function getReservationsServer(params?: {
   const queryString = queryParams.toString();
   const endpoint = `/api/admin/reservations${queryString ? `?${queryString}` : ''}`;
 
-  return adminApiServer(endpoint) as Promise<{
-    reservations: Array<{
-      id: string;
-      reservationNumber: string;
-      guestName: string;
-      email: string;
-      checkin: string;
-      checkout: string;
-      roomType: string;
-      status: string;
-      assignedRoom?: string;
-      phone?: string;
-      uniqueToken?: string;
-      amount: string;
-      createdAt: string;
-      updatedAt: string;
-    }>;
-    total: number;
-  }>;
+  return adminApiServer(endpoint) as Promise<ReservationsResponse>;
 }
 
 /**
  * 통계 조회 (서버 사이드)
  */
 export async function getAdminStatsServer() {
-  return adminApiServer('/api/admin/stats') as Promise<{
-    todayReservations: number;
-    pendingCheckins: number;
-    pendingCheckouts: number;
-    pendingOrders: number;
-  }>;
+  return adminApiServer('/api/admin/stats') as Promise<AdminStats>;
 }
