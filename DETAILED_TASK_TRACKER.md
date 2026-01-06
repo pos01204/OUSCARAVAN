@@ -310,6 +310,8 @@
   - [x] Railway 프로젝트 생성 가이드
   - [x] 환경 변수 설정 가이드
   - [x] 배포 설정 가이드
+  - [x] `RAILWAY_DEPLOYMENT_CHECKLIST.md` 생성
+  - [x] `POST_DEPLOYMENT_GUIDE.md` 생성 (배포 후 작업 가이드)
 - [x] API 컨트롤러 구현
   - [x] `src/controllers/auth.controller.ts` 구현
   - [x] `src/controllers/reservations.controller.ts` 구현

@@ -45,9 +45,18 @@ export default function RoomsPage() {
       logError('Failed to fetch rooms', error, {
         component: 'RoomsPage',
       });
+      
+      // 401 에러인 경우 로그인 페이지로 리다이렉트
+      if (error instanceof Error && error.message.includes('Unauthorized')) {
+        // 쿠키 삭제
+        document.cookie = 'admin-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        window.location.href = '/login';
+        return;
+      }
+      
       toast({
         title: '오류',
-        description: '방 목록을 불러오는데 실패했습니다.',
+        description: extractUserFriendlyMessage(error),
         variant: 'destructive',
       });
     } finally {

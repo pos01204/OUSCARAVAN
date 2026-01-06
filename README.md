@@ -155,12 +155,16 @@ ouscaravan/
 - **[MIGRATION_PLAN.md](./MIGRATION_PLAN.md)**: 프로젝트 마이그레이션 계획
 - **[IMPLEMENTATION_STATUS.md](./IMPLEMENTATION_STATUS.md)**: 구현 현황
 
-### ⚙️ 사전 세팅
+### ⚙️ 사전 세팅 및 배포
 - **[PRE_SETUP_GUIDE.md](./PRE_SETUP_GUIDE.md)**: Vercel, Railway, n8n 사전 세팅 가이드
 - **[REVISED_PROJECT_PLAN.md](./REVISED_PROJECT_PLAN.md)**: 개정된 프로젝트 기획서
 - **[DEPLOYMENT_ARCHITECTURE.md](./DEPLOYMENT_ARCHITECTURE.md)**: 배포 아키텍처 가이드
 - **[VERCEL_DEPLOYMENT_GUIDE.md](./VERCEL_DEPLOYMENT_GUIDE.md)**: Vercel 배포 상세 가이드
 - **[PROJECT_STRUCTURE_DETAILED.md](./PROJECT_STRUCTURE_DETAILED.md)**: 프로젝트 구조 상세 가이드
+- **[RAILWAY_BACKEND_SETUP.md](./RAILWAY_BACKEND_SETUP.md)**: Railway 백엔드 구현 가이드
+- **[RAILWAY_ENV_SETUP.md](./RAILWAY_ENV_SETUP.md)**: Railway 환경 변수 설정 가이드
+- **[RAILWAY_DEPLOYMENT_CHECKLIST.md](./RAILWAY_DEPLOYMENT_CHECKLIST.md)**: Railway 배포 체크리스트
+- **[POST_DEPLOYMENT_GUIDE.md](./POST_DEPLOYMENT_GUIDE.md)**: 배포 후 작업 가이드
 
 ### 🤖 자동화 가이드
 - **[N8N_AUTOMATION_GUIDE.md](./N8N_AUTOMATION_GUIDE.md)**: n8n 자동화 설정 가이드

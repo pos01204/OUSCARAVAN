@@ -167,11 +167,14 @@ export async function adminApi(
     
     if (!response.ok) {
       if (response.status === 401) {
-        // 인증 실패 시 로그인 페이지로 리다이렉트
+        // 인증 실패 시 쿠키 삭제 후 로그인 페이지로 리다이렉트
         if (typeof window !== 'undefined') {
-          window.location.href = '/login';
+          // 쿠키 삭제
+          document.cookie = 'admin-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+          // 리다이렉트는 에러 처리 후 컴포넌트에서 처리하도록 변경
+          // window.location.href = '/login';
         }
-        throw new Error('Unauthorized');
+        throw new ApiError('Unauthorized', 'UNAUTHORIZED', 401);
       }
       
       // 에러 응답 파싱 시도
