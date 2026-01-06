@@ -5,6 +5,7 @@ import authRoutes from './routes/auth.routes';
 import adminRoutes from './routes/admin.routes';
 import guestRoutes from './routes/guest.routes';
 import { errorHandler } from './middleware/error.middleware';
+import pool from './config/database';
 
 dotenv.config();
 
@@ -69,10 +70,31 @@ app.use((req, res) => {
 // 에러 핸들러
 app.use(errorHandler);
 
-// 서버 시작
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-  console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
-});
+// 데이터베이스 연결 테스트 및 서버 시작
+async function startServer() {
+  try {
+    // 데이터베이스 연결 테스트
+    console.log('Testing database connection...');
+    const client = await pool.connect();
+    console.log('Database connected successfully');
+    client.release();
+    
+    // 서버 시작
+    app.listen(PORT, () => {
+      console.log(`Server is running on port ${PORT}`);
+      console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+    });
+  } catch (error) {
+    console.error('Failed to start server:', error);
+    console.error('DATABASE_URL:', process.env.DATABASE_URL ? 'Set' : 'Not set');
+    if (error instanceof Error) {
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+    }
+    process.exit(1);
+  }
+}
+
+startServer();
 
 export default app;

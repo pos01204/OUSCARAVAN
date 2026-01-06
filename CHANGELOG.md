@@ -6,6 +6,44 @@
 
 ---
 
+## [0.1.12] - 2024-01-15
+
+### 추가됨 (Added)
+- 데이터베이스 마이그레이션 완료
+  - Railway PostgreSQL 데이터베이스에 초기 스키마 생성
+  - 4개 테이블 생성: `reservations`, `orders`, `check_in_out_logs`, `rooms`
+  - 인덱스 및 트리거 생성 완료
+- 마이그레이션 후 단계 가이드
+  - `MIGRATION_SUCCESS.md` - 마이그레이션 성공 후 단계
+  - `check-tables.js` - 테이블 확인 스크립트
+  - `POST_MIGRATION_STEPS.md` - 마이그레이션 후 단계 가이드
+
+### 수정됨 (Changed)
+- Railway 서버 정상 실행 확인
+  - Server is running on port 8080
+  - Environment: production
+
+---
+
+## [0.1.11] - 2024-01-15
+
+### 추가됨 (Added)
+- Railway CLI 마이그레이션 가이드
+  - `RAILWAY_CLI_MIGRATION_GUIDE.md` - Railway CLI를 사용한 마이그레이션 가이드
+  - `SIMPLE_MIGRATION_STEPS.md` - 간단한 마이그레이션 실행 가이드
+  - `MIGRATION_SQL_COMPLETE.sql` - 실행할 SQL 코드 파일
+
+---
+
+## [0.1.10] - 2024-01-15
+
+### 추가됨 (Added)
+- 데이터베이스 마이그레이션 가이드
+  - `RAILWAY_DATABASE_MIGRATION_GUIDE.md` - 상세 마이그레이션 가이드
+  - `QUICK_MIGRATION_STEPS.md` - 빠른 마이그레이션 가이드
+
+---
+
 ## [0.1.9] - 2024-01-15
 
 ### 수정됨 (Fixed)
