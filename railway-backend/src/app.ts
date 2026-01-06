@@ -49,9 +49,23 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Health check
+// Health check - 루트 경로와 /health 모두 지원
+app.get('/', (req, res) => {
+  res.json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    service: 'OUSCARAVAN API',
+    version: '1.0.0'
+  });
+});
+
 app.get('/health', (req, res) => {
-  res.json({ status: 'ok', timestamp: new Date().toISOString() });
+  res.json({ 
+    status: 'ok', 
+    timestamp: new Date().toISOString(),
+    service: 'OUSCARAVAN API',
+    version: '1.0.0'
+  });
 });
 
 // 라우트
@@ -80,10 +94,48 @@ async function startServer() {
     client.release();
     
     // 서버 시작
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, '0.0.0.0', () => {
       console.log(`Server is running on port ${PORT}`);
       console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`Health check: http://0.0.0.0:${PORT}/health`);
     });
+    
+    // Graceful shutdown 처리
+    const gracefulShutdown = async (signal: string) => {
+      console.log(`${signal} signal received: closing HTTP server`);
+      
+      // 타임아웃 설정 (10초 후 강제 종료)
+      const timeout = setTimeout(() => {
+        console.error('Forced shutdown after timeout');
+        process.exit(1);
+      }, 10000);
+      
+      try {
+        // HTTP 서버 종료
+        server.close(() => {
+          console.log('HTTP server closed');
+          
+          // 데이터베이스 풀 종료
+          pool.end((err) => {
+            if (err) {
+              console.error('Error closing database pool:', err);
+            } else {
+              console.log('Database pool closed');
+            }
+            clearTimeout(timeout);
+            process.exit(0);
+          });
+        });
+      } catch (error) {
+        console.error('Error during graceful shutdown:', error);
+        clearTimeout(timeout);
+        process.exit(1);
+      }
+    };
+    
+    process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
+    process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+    
   } catch (error) {
     console.error('Failed to start server:', error);
     console.error('DATABASE_URL:', process.env.DATABASE_URL ? 'Set' : 'Not set');
