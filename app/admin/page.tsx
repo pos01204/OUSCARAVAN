@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
 import { getAdminStats, getReservations, type Reservation, type AdminStats } from '@/lib/api';
+import { logError } from '@/lib/logger';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
