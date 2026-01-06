@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
-import { getReservations, type Reservation } from '@/lib/api';
+import { getReservationsServer } from '@/lib/admin-api-server';
+import { type Reservation } from '@/lib/api';
 import { logError } from '@/lib/logger';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -25,7 +26,7 @@ async function ReservationsList({
   let total = 0;
   
   try {
-    const data = await getReservations({
+    const data = await getReservationsServer({
       status,
       checkin,
       checkout,

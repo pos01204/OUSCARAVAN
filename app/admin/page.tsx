@@ -1,5 +1,6 @@
 import { Suspense } from 'react';
-import { getAdminStats, getReservations, type Reservation, type AdminStats } from '@/lib/api';
+import { getAdminStatsServer, getReservationsServer } from '@/lib/admin-api-server';
+import { type Reservation, type AdminStats } from '@/lib/api';
 import { logError } from '@/lib/logger';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -17,7 +18,7 @@ async function StatsCards() {
   };
   
   try {
-    stats = await getAdminStats();
+    stats = await getAdminStatsServer();
   } catch (error) {
     logError('Failed to fetch admin stats', error, {
       component: 'StatsCards',
@@ -90,7 +91,7 @@ async function RecentReservations() {
   let reservations: Reservation[] = [];
   
   try {
-    const data = await getReservations({ limit: 5 });
+    const data = await getReservationsServer({ limit: 5 });
     reservations = data.reservations || [];
   } catch (error) {
     logError('Failed to fetch recent reservations', error, {
