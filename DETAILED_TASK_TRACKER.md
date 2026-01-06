@@ -310,20 +310,42 @@
   - [x] Railway 프로젝트 생성 가이드
   - [x] 환경 변수 설정 가이드
   - [x] 배포 설정 가이드
-- [ ] API 컨트롤러 구현
-  - [ ] `src/controllers/auth.controller.ts` 구현
-  - [ ] `src/controllers/reservations.controller.ts` 구현
-  - [ ] `src/controllers/orders.controller.ts` 구현
-  - [ ] `src/controllers/rooms.controller.ts` 구현
-  - [ ] `src/controllers/stats.controller.ts` 구현
-  - [ ] `src/controllers/guest.controller.ts` 구현
-- [ ] API 서비스 레이어 구현
-  - [ ] `src/services/reservations.service.ts` 구현
-  - [ ] `src/services/orders.service.ts` 구현
-  - [ ] `src/services/rooms.service.ts` 구현
-- [ ] 입력 검증 미들웨어 구현
-  - [ ] `src/utils/validation.ts` 구현
-- [ ] Railway 배포 및 테스트
+- [x] API 컨트롤러 구현
+  - [x] `src/controllers/auth.controller.ts` 구현
+  - [x] `src/controllers/reservations.controller.ts` 구현
+  - [x] `src/controllers/orders.controller.ts` 구현
+  - [x] `src/controllers/rooms.controller.ts` 구현
+  - [x] `src/controllers/stats.controller.ts` 구현
+  - [x] `src/controllers/guest.controller.ts` 구현
+- [x] API 서비스 레이어 구현
+  - [x] `src/services/reservations.service.ts` 구현
+  - [x] `src/services/orders.service.ts` 구현
+  - [x] `src/services/rooms.service.ts` 구현
+  - [x] `src/services/checkinout.service.ts` 구현
+  - [x] `src/services/stats.service.ts` 구현
+- [x] 라우트 연결
+  - [x] `src/routes/auth.routes.ts` 업데이트
+  - [x] `src/routes/admin.routes.ts` 업데이트
+  - [x] `src/routes/guest.routes.ts` 업데이트
+- [x] 입력 검증 미들웨어 구현
+  - [x] `src/utils/validation.ts` 구현
+    - 이메일, 전화번호, 날짜, UUID 검증
+    - 문자열 길이, 숫자 범위 검증
+    - 예약/주문/방 상태 검증
+    - 주문 아이템 검증
+  - [x] `src/middleware/validation.middleware.ts` 구현
+    - 예약 생성/업데이트 검증
+    - 방 생성/업데이트 검증
+    - 주문 생성/상태 업데이트 검증
+  - [x] 라우트에 검증 미들웨어 적용
+- [x] Railway 배포 가이드 문서 작성
+  - [x] `RAILWAY_DEPLOYMENT_CHECKLIST.md` 생성
+    - 배포 전 준비사항 체크리스트
+    - 환경 변수 설정 가이드
+    - 데이터베이스 마이그레이션 가이드
+    - 배포 후 테스트 가이드
+    - 문제 해결 가이드
+- [ ] Railway 배포 및 테스트 (실제 배포 필요)
 - [x] 재시도 로직
   - [x] 재시도 설정 추가 (lib/constants.ts)
   - [x] 재시도 가능한 에러 판단 로직

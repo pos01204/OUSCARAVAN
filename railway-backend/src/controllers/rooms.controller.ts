@@ -1,0 +1,161 @@
+import { Request, Response } from 'express';
+import {
+  getRooms,
+  getRoomById,
+  createRoom,
+  updateRoom,
+  deleteRoom,
+} from '../services/rooms.service';
+
+export async function listRooms(req: Request, res: Response) {
+  try {
+    const rooms = await getRooms();
+    res.json({ rooms });
+  } catch (error) {
+    console.error('List rooms error:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      code: 'INTERNAL_ERROR',
+    });
+  }
+}
+
+export async function getRoom(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+
+    const room = await getRoomById(id);
+
+    if (!room) {
+      return res.status(404).json({
+        error: 'Room not found',
+        code: 'ROOM_NOT_FOUND',
+      });
+    }
+
+    res.json(room);
+  } catch (error) {
+    console.error('Get room error:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      code: 'INTERNAL_ERROR',
+    });
+  }
+}
+
+export async function createRoomHandler(req: Request, res: Response) {
+  try {
+    const { name, type, capacity, status } = req.body;
+
+    // 입력 검증
+    if (!name || !type || !capacity) {
+      return res.status(400).json({
+        error: 'Missing required fields',
+        code: 'MISSING_FIELDS',
+        details: {
+          required: ['name', 'type', 'capacity'],
+        },
+      });
+    }
+
+    if (typeof capacity !== 'number' || capacity < 1 || capacity > 20) {
+      return res.status(400).json({
+        error: 'Capacity must be a number between 1 and 20',
+        code: 'INVALID_CAPACITY',
+      });
+    }
+
+    const room = await createRoom({
+      name,
+      type,
+      capacity,
+      status,
+    });
+
+    res.status(201).json(room);
+  } catch (error: any) {
+    console.error('Create room error:', error);
+    
+    // 중복 방 이름 에러 처리
+    if (error.code === '23505') {
+      return res.status(409).json({
+        error: 'Room name already exists',
+        code: 'DUPLICATE_ROOM',
+      });
+    }
+
+    res.status(500).json({
+      error: 'Internal server error',
+      code: 'INTERNAL_ERROR',
+    });
+  }
+}
+
+export async function updateRoomHandler(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+    const { name, type, capacity, status } = req.body;
+
+    // capacity 검증
+    if (capacity !== undefined && (typeof capacity !== 'number' || capacity < 1 || capacity > 20)) {
+      return res.status(400).json({
+        error: 'Capacity must be a number between 1 and 20',
+        code: 'INVALID_CAPACITY',
+      });
+    }
+
+    const room = await updateRoom(id, {
+      name,
+      type,
+      capacity,
+      status,
+    });
+
+    res.json(room);
+  } catch (error: any) {
+    console.error('Update room error:', error);
+    
+    if (error.message === 'Room not found') {
+      return res.status(404).json({
+        error: 'Room not found',
+        code: 'ROOM_NOT_FOUND',
+      });
+    }
+
+    if (error.code === '23505') {
+      return res.status(409).json({
+        error: 'Room name already exists',
+        code: 'DUPLICATE_ROOM',
+      });
+    }
+
+    res.status(500).json({
+      error: 'Internal server error',
+      code: 'INTERNAL_ERROR',
+    });
+  }
+}
+
+export async function deleteRoomHandler(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+
+    await deleteRoom(id);
+
+    res.status(204).send();
+  } catch (error: any) {
+    console.error('Delete room error:', error);
+    
+    if (error.message === 'Room not found') {
+      return res.status(404).json({
+        error: 'Room not found',
+        code: 'ROOM_NOT_FOUND',
+      });
+    }
+
+    res.status(500).json({
+      error: 'Internal server error',
+      code: 'INTERNAL_ERROR',
+    });
+  }
+}

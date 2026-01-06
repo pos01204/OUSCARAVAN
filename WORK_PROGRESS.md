@@ -6,6 +6,95 @@
 
 ---
 
+## ✅ 완료된 작업 (2024-01-15 - 추가 34)
+
+### 입력 검증 및 배포 가이드 완료
+
+#### 입력 검증 시스템 구현
+- [x] `src/utils/validation.ts` 생성
+  - 이메일, 전화번호, 날짜, UUID 검증 함수
+  - 문자열 길이, 숫자 범위 검증 함수
+  - 예약/주문/방 상태 검증 함수
+  - 주문 타입 및 아이템 검증 함수
+- [x] `src/middleware/validation.middleware.ts` 생성
+  - 예약 생성/업데이트 검증 미들웨어
+  - 방 생성/업데이트 검증 미들웨어
+  - 주문 생성/상태 업데이트 검증 미들웨어
+- [x] 라우트에 검증 미들웨어 적용
+  - `src/routes/admin.routes.ts` - 관리자 라우트에 검증 적용
+  - `src/routes/guest.routes.ts` - 고객 라우트에 검증 적용
+
+#### Railway 배포 가이드
+- [x] `RAILWAY_DEPLOYMENT_CHECKLIST.md` 생성
+  - 배포 전 준비사항 체크리스트
+  - 환경 변수 설정 가이드
+  - 데이터베이스 마이그레이션 가이드
+  - 빌드 및 시작 명령어 설정
+  - 배포 후 테스트 가이드
+  - 프론트엔드 연동 가이드
+  - 모니터링 및 문제 해결 가이드
+
+**구현 내용**:
+- 모든 API 엔드포인트에 입력 검증 적용
+- 사용자 친화적인 에러 메시지 제공
+- Railway 배포를 위한 상세 체크리스트 작성
+
+**다음 단계**:
+- Railway 실제 배포
+- 데이터베이스 마이그레이션 실행
+- API 엔드포인트 통합 테스트
+- 프론트엔드와 백엔드 연동 테스트
+
+---
+
+## ✅ 완료된 작업 (2024-01-15 - 추가 33)
+
+### Railway 백엔드 API 구현 완료
+
+#### API 컨트롤러 및 서비스 구현
+- [x] 인증 컨트롤러 (`src/controllers/auth.controller.ts`)
+  - 관리자 로그인 구현
+  - JWT 토큰 생성
+- [x] 예약 관리 컨트롤러 및 서비스
+  - `src/controllers/reservations.controller.ts` - 예약 CRUD 컨트롤러
+  - `src/services/reservations.service.ts` - 예약 비즈니스 로직
+  - 필터링, 검색, 페이지네이션 지원
+- [x] 방 관리 컨트롤러 및 서비스
+  - `src/controllers/rooms.controller.ts` - 방 CRUD 컨트롤러
+  - `src/services/rooms.service.ts` - 방 비즈니스 로직
+- [x] 주문 관리 컨트롤러 및 서비스
+  - `src/controllers/orders.controller.ts` - 주문 관리 컨트롤러
+  - `src/services/orders.service.ts` - 주문 비즈니스 로직
+- [x] 고객 API 컨트롤러 및 서비스
+  - `src/controllers/guest.controller.ts` - 고객 API 컨트롤러
+  - 토큰 기반 예약 정보 조회
+  - 주문 생성 및 조회
+  - 체크인/체크아웃 처리
+- [x] 체크인/체크아웃 서비스
+  - `src/services/checkinout.service.ts` - 체크인/체크아웃 로그 관리
+- [x] 통계 API 컨트롤러 및 서비스
+  - `src/controllers/stats.controller.ts` - 통계 컨트롤러
+  - `src/services/stats.service.ts` - 통계 비즈니스 로직
+  - 오늘 예약 수, 체크인/체크아웃 예정 수, 처리 대기 주문 수
+
+#### 라우트 업데이트
+- [x] `src/routes/auth.routes.ts` - 인증 라우트 연결
+- [x] `src/routes/admin.routes.ts` - 관리자 라우트 연결
+- [x] `src/routes/guest.routes.ts` - 고객 라우트 연결
+
+**구현 내용**:
+- 모든 API 엔드포인트 구현 완료
+- 데이터베이스 쿼리 로직 구현
+- 입력 검증 및 에러 처리
+- RAILWAY_API_SPEC.md 스펙 준수
+
+**다음 단계**:
+- Railway 배포 및 테스트
+- API 엔드포인트 통합 테스트
+- 프론트엔드와 백엔드 연동 테스트
+
+---
+
 ## ✅ 완료된 작업 (2024-01-15 - 추가 32)
 
 ### 빌드 오류 수정 및 Railway 환경 변수 가이드

@@ -90,12 +90,25 @@ npm start
 Authorization: Bearer <admin-token>
 ```
 
+## 🔒 입력 검증
+
+모든 API 엔드포인트에 입력 검증이 적용되어 있습니다:
+
+- 이메일, 전화번호, 날짜 형식 검증
+- 문자열 길이, 숫자 범위 검증
+- 예약/주문/방 상태 검증
+- 주문 아이템 검증
+
+자세한 내용은 `src/utils/validation.ts` 및 `src/middleware/validation.middleware.ts`를 참조하세요.
+
 ## 📚 참고 문서
 
 - [RAILWAY_API_SPEC.md](../RAILWAY_API_SPEC.md) - API 스펙 상세 정의
 - [RAILWAY_BACKEND_SETUP.md](../RAILWAY_BACKEND_SETUP.md) - Railway 배포 가이드
+- [RAILWAY_ENV_SETUP.md](../RAILWAY_ENV_SETUP.md) - 환경 변수 설정 가이드
+- [RAILWAY_DEPLOYMENT_CHECKLIST.md](../RAILWAY_DEPLOYMENT_CHECKLIST.md) - 배포 체크리스트
 
 ---
 
-**문서 버전**: 1.0  
+**문서 버전**: 1.1  
 **최종 업데이트**: 2024-01-15
