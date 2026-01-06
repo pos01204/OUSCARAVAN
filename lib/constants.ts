@@ -3,7 +3,8 @@
  */
 export const API_CONFIG = {
   // Railway 백엔드 API URL
-  baseUrl: process.env.NEXT_PUBLIC_API_URL || 'https://ouscaravan-api.railway.app',
+  // 기본값은 실제 Railway URL로 설정 (환경 변수가 없을 경우)
+  baseUrl: process.env.NEXT_PUBLIC_API_URL || 'https://ouscaravan-production.up.railway.app',
   // 타임아웃 설정 (기본 10초)
   timeout: 10000,
   // 재시도 설정
