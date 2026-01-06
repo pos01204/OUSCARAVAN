@@ -10,7 +10,8 @@ import {
 export async function listRooms(req: Request, res: Response) {
   try {
     const rooms = await getRooms();
-    res.json({ rooms });
+    // 배열로 직접 반환 (배정 정보 포함)
+    res.json(rooms);
   } catch (error) {
     console.error('List rooms error:', error);
     res.status(500).json({

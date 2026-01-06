@@ -441,8 +441,9 @@ export async function updateReservation(
 
 /**
  * 방 목록 조회 (클라이언트 사이드 - Next.js API 라우트 사용)
+ * 배정 정보 포함
  */
-export async function getRooms(): Promise<Room[]> {
+export async function getRooms(): Promise<(Room & { reservation?: { id: string; guestName: string; checkin: string; checkout: string; status: string; } | null })[]> {
   // Next.js API 라우트를 통해 호출 (서버에서 쿠키 읽기)
   const response = await fetch('/api/admin/rooms', {
     method: 'GET',
@@ -464,6 +465,7 @@ export async function getRooms(): Promise<Room[]> {
   }
 
   const data = await response.json();
+  // 배열로 직접 반환 (배정 정보 포함)
   return Array.isArray(data) ? data : (data.rooms || []);
 }
 

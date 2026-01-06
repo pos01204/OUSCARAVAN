@@ -13,7 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
-import { ArrowLeft, Save, Loader2 } from 'lucide-react';
+import { ArrowLeft, Save, Loader2, ExternalLink } from 'lucide-react';
 
 export default function ReservationDetailPage() {
   const params = useParams();
@@ -271,10 +271,15 @@ export default function ReservationDetailPage() {
               >
                 <option value="">방을 선택하세요</option>
                 {rooms
-                  .filter(room => room.status === 'available' || room.id === assignedRoom)
+                  .sort((a, b) => {
+                    // 숫자로 정렬 (1호, 2호, ... 10호)
+                    const numA = parseInt(a.name) || 999;
+                    const numB = parseInt(b.name) || 999;
+                    return numA - numB;
+                  })
                   .map((room) => (
                     <option key={room.id} value={room.name}>
-                      {room.name} ({room.type})
+                      {room.name}호 ({room.capacity}인실)
                     </option>
                   ))}
               </select>
@@ -296,13 +301,27 @@ export default function ReservationDetailPage() {
             
             {reservation.uniqueToken && (
               <div className="space-y-2">
-                <Label className="text-muted-foreground">고객 페이지 링크</Label>
-                <div className="p-2 bg-muted rounded-md">
+                <Label className="text-muted-foreground">고객 페이지 링크 (테스트용)</Label>
+                <div className="p-2 bg-muted rounded-md space-y-2">
                   <p className="text-sm font-mono break-all">
                     {typeof window !== 'undefined' 
                       ? `${window.location.origin}/guest/${reservation.uniqueToken}`
                       : `/guest/${reservation.uniqueToken}`}
                   </p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const url = typeof window !== 'undefined' 
+                        ? `${window.location.origin}/guest/${reservation.uniqueToken}`
+                        : `/guest/${reservation.uniqueToken}`;
+                      window.open(url, '_blank');
+                    }}
+                    className="w-full"
+                  >
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    새 창에서 열기
+                  </Button>
                 </div>
               </div>
             )}

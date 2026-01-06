@@ -5,7 +5,7 @@ import { API_CONFIG } from '@/lib/constants';
 const API_URL = API_CONFIG.baseUrl;
 
 /**
- * 방 목록 조회
+ * 방 목록 조회 (배정 정보 포함)
  */
 export async function GET() {
   try {
