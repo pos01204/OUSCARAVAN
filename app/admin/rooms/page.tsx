@@ -132,10 +132,10 @@ export default function RoomsPage() {
     try {
       // 입력값 정리 (보안)
       const sanitizedFormData = {
-        ...formData,
         name: sanitizeInput(formData.name, { maxLength: 50 }),
         type: sanitizeInput(formData.type, { maxLength: 100 }),
-        description: formData.description ? sanitizeInput(formData.description, { maxLength: 500 }) : undefined,
+        capacity: formData.capacity,
+        status: formData.status,
       };
       
       if (editingRoom) {
