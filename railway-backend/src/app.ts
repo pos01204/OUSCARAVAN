@@ -87,18 +87,38 @@ app.use(errorHandler);
 // 데이터베이스 연결 테스트 및 서버 시작
 async function startServer() {
   try {
-    // 데이터베이스 연결 테스트
-    console.log('Testing database connection...');
-    const client = await pool.connect();
-    console.log('Database connected successfully');
-    client.release();
-    
-    // 서버 시작
+    // 서버를 먼저 시작 (Railway 헬스체크를 빠르게 응답하기 위해)
     const server = app.listen(PORT, '0.0.0.0', () => {
       console.log(`Server is running on port ${PORT}`);
       console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
       console.log(`Health check: http://0.0.0.0:${PORT}/health`);
+      console.log(`Server ready to accept connections`);
     });
+    
+    // 서버가 리스닝 상태인지 확인
+    server.on('listening', () => {
+      console.log('HTTP server is listening and ready');
+    });
+    
+    server.on('error', (error: NodeJS.ErrnoException) => {
+      console.error('Server error:', error);
+      if (error.code === 'EADDRINUSE') {
+        console.error(`Port ${PORT} is already in use`);
+      }
+      process.exit(1);
+    });
+    
+    // 데이터베이스 연결 테스트 (비동기로, 서버 시작을 막지 않음)
+    pool.connect()
+      .then((client) => {
+        console.log('Database connected successfully');
+        client.release();
+      })
+      .catch((error) => {
+        console.error('Database connection failed (non-fatal):', error);
+        // 데이터베이스 연결 실패해도 서버는 계속 실행
+        // Railway 헬스체크는 성공할 수 있음
+      });
     
     // Graceful shutdown 처리
     const gracefulShutdown = async (signal: string) => {
@@ -131,6 +151,10 @@ async function startServer() {
     
     process.on('SIGTERM', () => gracefulShutdown('SIGTERM'));
     process.on('SIGINT', () => gracefulShutdown('SIGINT'));
+    
+    // 프로세스가 종료되지 않도록 유지
+    // Railway는 서버가 계속 실행 중이어야 함
+    console.log('Server startup complete, keeping process alive');
     
   } catch (error) {
     console.error('Failed to start server:', error);

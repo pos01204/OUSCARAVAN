@@ -78,25 +78,32 @@ export async function createReservationHandler(req: Request, res: Response) {
       amount,
     } = req.body;
 
-    // 입력 검증
-    if (!reservationNumber || !guestName || !email || !checkin || !checkout || !roomType || !amount) {
+    // 필수 필드 검증
+    if (!reservationNumber || !guestName || !checkin || !checkout || !roomType) {
       return res.status(400).json({
         error: 'Missing required fields',
         code: 'MISSING_FIELDS',
         details: {
-          required: ['reservationNumber', 'guestName', 'email', 'checkin', 'checkout', 'roomType', 'amount'],
+          required: ['reservationNumber', 'guestName', 'checkin', 'checkout', 'roomType'],
+          optional: ['email', 'amount'],
         },
       });
     }
 
+    // email이 없으면 기본값 사용 (n8n에서 이메일이 추출되지 않은 경우)
+    const finalEmail = email || `reservation-${reservationNumber}@ouscaravan.local`;
+    
+    // amount가 없으면 기본값 0 사용 (n8n에서 금액이 추출되지 않은 경우)
+    const finalAmount = amount !== undefined && amount !== null ? amount : 0;
+
     const reservation = await createReservation({
       reservationNumber,
       guestName,
-      email,
+      email: finalEmail,
       checkin,
       checkout,
       roomType,
-      amount,
+      amount: finalAmount.toString(), // amount는 문자열로 저장
     });
 
     res.status(201).json(reservation);

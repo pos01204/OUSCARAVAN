@@ -22,6 +22,7 @@ export function validateCreateReservation(req: Request, res: Response, next: Nex
 
   const errors: string[] = [];
 
+  // 필수 필드 검증
   if (!validateRequired(reservationNumber)) {
     errors.push('reservationNumber is required');
   } else if (!validateLength(reservationNumber, 1, 50)) {
@@ -34,9 +35,8 @@ export function validateCreateReservation(req: Request, res: Response, next: Nex
     errors.push('guestName must be between 1 and 100 characters');
   }
 
-  if (!validateRequired(email)) {
-    errors.push('email is required');
-  } else if (!validateEmail(email)) {
+  // email은 선택적 필드 (없으면 기본값 사용)
+  if (email && !validateEmail(email)) {
     errors.push('email is invalid');
   }
 
@@ -58,9 +58,8 @@ export function validateCreateReservation(req: Request, res: Response, next: Nex
     errors.push('roomType must be between 1 and 100 characters');
   }
 
-  if (!validateRequired(amount)) {
-    errors.push('amount is required');
-  }
+  // amount는 선택적 필드 (없으면 기본값 0 사용)
+  // amount 검증 제거
 
   if (errors.length > 0) {
     return res.status(400).json({
