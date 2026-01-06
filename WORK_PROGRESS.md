@@ -162,6 +162,57 @@
 - 고객은 알림톡 링크를 통해 `/guest/[token]`으로 직접 접근
 - 향후 URL 파라미터를 토큰으로 변환하는 로직 추가 예정
 
+## ✅ 완료된 작업 (2024-01-15 - 추가 18)
+
+### Phase 6: Railway 백엔드 연동 (계속)
+
+#### 6.3 데이터 타입 정의 - API 응답 타입 및 에러 타입 추가
+- [x] API 응답 타입 정의
+  - [x] `AuthResponse` - 인증 응답 타입
+  - [x] `ReservationsResponse` - 예약 목록 응답 타입
+  - [x] `OrdersResponse` - 주문 목록 응답 타입
+  - [x] `RoomsResponse` - 방 목록 응답 타입
+  - [x] `CheckInOutResponse` - 체크인/체크아웃 응답 타입
+- [x] 에러 타입 정의
+  - [x] `ApiErrorCode` - 에러 코드 타입 (INVALID_CREDENTIALS, UNAUTHORIZED, FORBIDDEN, NOT_FOUND, VALIDATION_ERROR, DUPLICATE_ENTRY, INTERNAL_ERROR, NETWORK_ERROR, TIMEOUT_ERROR)
+  - [x] `ApiErrorResponse` - 에러 응답 타입 (error, code, details)
+  - [x] `ApiError` 클래스 - 에러 클래스 (message, code, status, details)
+- [x] `lib/api.ts` 업데이트
+  - [x] ApiError 타입 import
+  - [x] adminApi 함수에서 ApiError 사용
+  - [x] guestApi 함수에서 ApiError 사용
+  - [x] 에러 응답 파싱 개선 (code, details 포함)
+
+**구현 내용**:
+- Railway API 스펙에 맞춘 응답 타입 정의
+- 표준화된 에러 타입 및 클래스 정의
+- API 호출 함수에서 타입 안정성 향상
+- 에러 처리 개선 (에러 코드 및 상세 정보 포함)
+
+## ✅ 완료된 작업 (2024-01-15 - 추가 17)
+
+### Phase 11: 문서화 (계속)
+
+#### 11.3 프로젝트 문서 - CHANGELOG.md 생성
+- [x] `CHANGELOG.md` 생성
+  - [x] Keep a Changelog 형식 적용
+  - [x] 버전 0.1.0 변경 사항 정리
+  - [x] 추가/변경/수정 항목 분류
+    - Phase 1-8의 주요 기능 추가 사항 정리
+    - 보안 개선 사항 정리
+    - 코드 개선 사항 정리
+    - 빌드 오류 수정 사항 정리
+  - [x] 향후 계획 추가 (버전 0.2.0, 0.3.0)
+- [x] README.md 업데이트
+  - [x] 변경 이력 섹션 추가
+  - [x] 현재 버전 표시
+
+**구현 내용**:
+- Keep a Changelog 형식을 따르는 변경 이력 문서 생성
+- 모든 주요 변경 사항을 버전별로 정리
+- 추가/변경/수정 항목을 명확히 분류
+- 향후 계획을 버전별로 정리
+
 ## ✅ 완료된 작업 (2024-01-15 - 추가 16)
 
 ### Phase 8: UI/UX 개선 (계속)

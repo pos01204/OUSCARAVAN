@@ -3,6 +3,8 @@
  */
 
 import { API_CONFIG, N8N_CONFIG } from './constants';
+import type { ApiErrorCode, ApiErrorResponse } from '@/types';
+import { ApiError } from '@/types';
 
 const API_URL = API_CONFIG.baseUrl;
 const DEFAULT_TIMEOUT = API_CONFIG.timeout;
@@ -70,16 +72,26 @@ export async function adminApi(
       
       // 에러 응답 파싱 시도
       let errorMessage = `API Error: ${response.statusText}`;
+      let errorCode: ApiErrorCode | undefined;
+      let errorDetails: Record<string, unknown> | undefined;
+      
       try {
-        const errorData = await response.json();
+        const errorData: ApiErrorResponse = await response.json();
         if (errorData.error) {
           errorMessage = errorData.error;
+        }
+        if (errorData.code) {
+          errorCode = errorData.code;
+        }
+        if (errorData.details) {
+          errorDetails = errorData.details;
         }
       } catch {
         // JSON 파싱 실패 시 기본 메시지 사용
       }
       
-      throw new Error(errorMessage);
+      // ApiError로 변환하여 throw
+      throw new ApiError(errorMessage, errorCode, response.status, errorDetails);
     }
     
     return response.json();
@@ -109,22 +121,28 @@ export async function guestApi(token: string, endpoint: string = '') {
     });
     
     if (!response.ok) {
-      if (response.status === 404) {
-        throw new Error('Invalid token');
-      }
-      
       // 에러 응답 파싱 시도
       let errorMessage = `API Error: ${response.statusText}`;
+      let errorCode: ApiErrorCode | undefined;
+      let errorDetails: Record<string, unknown> | undefined;
+      
       try {
-        const errorData = await response.json();
+        const errorData: ApiErrorResponse = await response.json();
         if (errorData.error) {
           errorMessage = errorData.error;
+        }
+        if (errorData.code) {
+          errorCode = errorData.code;
+        }
+        if (errorData.details) {
+          errorDetails = errorData.details;
         }
       } catch {
         // JSON 파싱 실패 시 기본 메시지 사용
       }
       
-      throw new Error(errorMessage);
+      // ApiError로 변환하여 throw
+      throw new ApiError(errorMessage, errorCode, response.status, errorDetails);
     }
     
     return response.json();
@@ -145,7 +163,21 @@ export async function guestApi(token: string, endpoint: string = '') {
 /**
  * 타입 정의는 types/index.ts에서 import
  */
-export type { Reservation, Order, OrderItem, Room, AdminStats } from '@/types';
+export type {
+  Reservation,
+  Order,
+  OrderItem,
+  Room,
+  AdminStats,
+  AuthResponse,
+  ReservationsResponse,
+  OrdersResponse,
+  RoomsResponse,
+  CheckInOutResponse,
+  ApiErrorResponse,
+  ApiError,
+  ApiErrorCode,
+} from '@/types';
 
 /**
  * n8n 웹훅 URL (환경 변수에서 가져오기)

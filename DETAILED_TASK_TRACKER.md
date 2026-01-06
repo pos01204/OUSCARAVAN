@@ -277,8 +277,17 @@
   - [x] OrderItem 타입
   - [x] Room 타입
   - [x] AdminStats 타입
-  - [ ] API 응답 타입 (향후 추가)
-  - [ ] 에러 타입 (향후 추가)
+  - [x] API 응답 타입
+    - [x] AuthResponse (인증 응답)
+    - [x] ReservationsResponse (예약 목록 응답)
+    - [x] OrdersResponse (주문 목록 응답)
+    - [x] RoomsResponse (방 목록 응답)
+    - [x] CheckInOutResponse (체크인/체크아웃 응답)
+  - [x] 에러 타입
+    - [x] ApiErrorCode (에러 코드 타입)
+    - [x] ApiErrorResponse (에러 응답 타입)
+    - [x] ApiError 클래스 (에러 클래스)
+  - [x] `lib/api.ts`에서 ApiError 사용하도록 업데이트
 
 ---
 
@@ -447,7 +456,11 @@
   - [x] 기술 스택 업데이트
   - [x] 사용 방법 업데이트
   - [x] 문서 링크 추가
-- [ ] CHANGELOG.md 생성 (향후 구현)
+- [x] CHANGELOG.md 생성
+  - [x] 변경 이력 형식 정의 (Keep a Changelog 형식)
+  - [x] 버전 0.1.0 변경 사항 정리
+  - [x] 추가/변경/수정 항목 분류
+  - [x] 향후 계획 추가
 - [ ] 라이선스 정보 (향후 구현)
 
 ---
@@ -480,12 +493,12 @@
 - Phase 3: 관리자 페이지 - 100% (10/10)
 - Phase 4: 고객 페이지 - 100% (6/6)
 - Phase 5: 기존 라우트 처리 - 75% (1.5/2)
-- Phase 6: Railway 백엔드 연동 - 40% (4/10)
+- Phase 6: Railway 백엔드 연동 - 50% (5/10)
 - Phase 7: n8n 워크플로우 연동 - 0% (0/3)
 - Phase 8: UI/UX 개선 - 100% (4/4)
 - Phase 9: 테스트 - 0% (0/3)
 - Phase 10: 배포 - 0% (0/3)
-- Phase 11: 문서화 - 80% (4/5)
+- Phase 11: 문서화 - 100% (5/5)
 - Phase 12: 유지보수 및 개선 - 0% (0/3)
 
 ---

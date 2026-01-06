@@ -180,6 +180,14 @@ ouscaravan/
 - **[UI_COMPONENTS_INVENTORY.md](./UI_COMPONENTS_INVENTORY.md)**: UI 컴포넌트 인벤토리
 - **[GITHUB_REPOSITORY_SETUP.md](./GITHUB_REPOSITORY_SETUP.md)**: GitHub 레포지토리 설정 가이드
 
+## 📝 변경 이력
+
+프로젝트의 변경 이력은 [CHANGELOG.md](./CHANGELOG.md)에서 확인할 수 있습니다.
+
+**현재 버전**: 0.1.0
+
+---
+
 ## 📄 라이선스
 
 이 프로젝트는 OUSCARAVAN 전용입니다.
