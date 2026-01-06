@@ -376,14 +376,33 @@ export async function getReservations(params?: {
 }
 
 /**
- * 예약 상세 조회
+ * 예약 상세 조회 (클라이언트 사이드 - Next.js API 라우트 사용)
  */
 export async function getReservation(id: string): Promise<Reservation> {
-  return adminApi(`/api/admin/reservations/${id}`) as Promise<Reservation>;
+  const response = await fetch(`/api/admin/reservations/${id}`, {
+    method: 'GET',
+    credentials: 'include', // 쿠키 포함
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new ApiError('Unauthorized', 'UNAUTHORIZED', 401);
+    }
+    const errorData = await response.json().catch(() => ({
+      error: 'Failed to fetch reservation',
+    }));
+    throw new ApiError(
+      errorData.error || 'Failed to fetch reservation',
+      errorData.code,
+      response.status
+    );
+  }
+
+  return response.json() as Promise<Reservation>;
 }
 
 /**
- * 예약 업데이트
+ * 예약 업데이트 (클라이언트 사이드 - Next.js API 라우트 사용)
  */
 export async function updateReservation(
   id: string,
@@ -394,10 +413,30 @@ export async function updateReservation(
     status?: Reservation['status'];
   }
 ): Promise<Reservation> {
-  return adminApi(`/api/admin/reservations/${id}`, {
+  const response = await fetch(`/api/admin/reservations/${id}`, {
     method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include', // 쿠키 포함
     body: JSON.stringify(data),
-  }) as Promise<Reservation>;
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new ApiError('Unauthorized', 'UNAUTHORIZED', 401);
+    }
+    const errorData = await response.json().catch(() => ({
+      error: 'Failed to update reservation',
+    }));
+    throw new ApiError(
+      errorData.error || 'Failed to update reservation',
+      errorData.code,
+      response.status
+    );
+  }
+
+  return response.json() as Promise<Reservation>;
 }
 
 /**

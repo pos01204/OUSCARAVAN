@@ -237,24 +237,17 @@ export default function RoomsPage() {
         <div>
           <h1 className="text-3xl font-bold">방 관리</h1>
           <p className="text-muted-foreground">
-            방 목록 및 관리
+            기본 10개 방 목록 (오션뷰 전용)
           </p>
         </div>
-        <Button onClick={() => handleOpenDialog()}>
-          <Plus className="mr-2 h-4 w-4" />
-          방 추가
-        </Button>
       </div>
       
       {rooms.length === 0 ? (
         <Card>
           <CardContent className="py-8 text-center">
             <p className="text-muted-foreground">
-              등록된 방이 없습니다.
+              방 데이터를 불러오는 중...
             </p>
-            <Button onClick={() => handleOpenDialog()} className="mt-4">
-              첫 번째 방 추가하기
-            </Button>
           </CardContent>
         </Card>
       ) : (
@@ -275,31 +268,14 @@ export default function RoomsPage() {
                     <p className="font-medium">{room.capacity}명</p>
                   </div>
                 </div>
-                <div className="mt-4 flex gap-2">
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleOpenDialog(room)}
-                  >
-                    <Edit2 className="mr-2 h-4 w-4" />
-                    수정
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleDelete(room.id)}
-                  >
-                    <Trash2 className="mr-2 h-4 w-4" />
-                    삭제
-                  </Button>
-                </div>
               </CardContent>
             </Card>
           ))}
         </div>
       )}
       
-      {/* 방 추가/수정 다이얼로그 */}
+      {/* 방 추가/수정 다이얼로그 - 비활성화 (기본 10개 방만 사용) */}
+      {false && (
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent>
           <DialogHeader>
@@ -381,6 +357,7 @@ export default function RoomsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+      )}
     </div>
   );
 }
