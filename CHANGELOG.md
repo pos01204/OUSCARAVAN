@@ -6,6 +6,37 @@
 
 ---
 
+## [0.1.2] - 2024-01-15
+
+### 추가됨 (Added)
+- Railway 백엔드 프로젝트 구조 생성
+  - `railway-backend/` 디렉토리 및 기본 파일 구조
+  - Express 앱 기본 구조
+  - 데이터베이스 연결 설정
+  - JWT 인증 시스템 기본 구조
+  - 라우트 구조 (임시 구현)
+- 데이터베이스 마이그레이션 스크립트
+  - `railway-backend/migrations/001_initial_schema.sql`
+- Railway 백엔드 구현 가이드
+  - `RAILWAY_BACKEND_SETUP.md` 문서 생성
+
+### 변경됨 (Changed)
+- `DETAILED_TASK_TRACKER.md` - Railway 백엔드 구현 섹션 추가
+
+---
+
+## [0.1.1] - 2024-01-15
+
+### 수정됨 (Fixed)
+- `app/admin/reservations/ReservationFiltersClient.tsx` - `sanitizeInput` import 누락 수정
+- `app/admin/orders/OrderFiltersClient.tsx` - `sanitizeInput` import 누락 수정
+- `app/admin/rooms/page.tsx` - `formData.description` 필드 제거 (Room 타입에 없는 필드)
+
+### 변경됨 (Changed)
+- 빌드 오류 수정 완료 (`BUILD_FIXES.md` 업데이트)
+
+---
+
 ## [0.1.0] - 2024-01-15
 
 ### 추가됨 (Added)

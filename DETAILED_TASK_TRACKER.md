@@ -285,6 +285,45 @@
   - [x] 네트워크 오류 처리
 - [ ] `adminApi` 함수 테스트 (Railway API 연동 후)
 - [ ] `guestApi` 함수 테스트 (Railway API 연동 후)
+
+### 6.7 Railway 백엔드 서버 구현
+- [x] Railway 백엔드 프로젝트 구조 생성
+  - [x] `railway-backend/` 디렉토리 구조 생성
+  - [x] `package.json` 생성
+  - [x] `tsconfig.json` 생성
+  - [x] 기본 Express 앱 구조 생성
+- [x] 데이터베이스 스키마 SQL 스크립트 작성
+  - [x] `migrations/001_initial_schema.sql` 생성
+  - [x] reservations, orders, check_in_out_logs, rooms 테이블 정의
+  - [x] 인덱스 및 트리거 생성
+- [x] 데이터베이스 연결 설정
+  - [x] `src/config/database.ts` 생성 (PostgreSQL 연결)
+- [x] 인증 시스템 구현
+  - [x] `src/utils/jwt.ts` 생성 (JWT 토큰 생성/검증)
+  - [x] `src/middleware/auth.middleware.ts` 생성 (인증 미들웨어)
+- [x] 기본 Express 앱 구조
+  - [x] `src/app.ts` 생성 (Express 앱 설정)
+  - [x] `src/middleware/error.middleware.ts` 생성 (에러 핸들러)
+  - [x] 라우트 구조 생성 (auth, admin, guest)
+- [x] Railway 배포 가이드 문서 작성
+  - [x] `RAILWAY_BACKEND_SETUP.md` 생성
+  - [x] Railway 프로젝트 생성 가이드
+  - [x] 환경 변수 설정 가이드
+  - [x] 배포 설정 가이드
+- [ ] API 컨트롤러 구현
+  - [ ] `src/controllers/auth.controller.ts` 구현
+  - [ ] `src/controllers/reservations.controller.ts` 구현
+  - [ ] `src/controllers/orders.controller.ts` 구현
+  - [ ] `src/controllers/rooms.controller.ts` 구현
+  - [ ] `src/controllers/stats.controller.ts` 구현
+  - [ ] `src/controllers/guest.controller.ts` 구현
+- [ ] API 서비스 레이어 구현
+  - [ ] `src/services/reservations.service.ts` 구현
+  - [ ] `src/services/orders.service.ts` 구현
+  - [ ] `src/services/rooms.service.ts` 구현
+- [ ] 입력 검증 미들웨어 구현
+  - [ ] `src/utils/validation.ts` 구현
+- [ ] Railway 배포 및 테스트
 - [x] 재시도 로직
   - [x] 재시도 설정 추가 (lib/constants.ts)
   - [x] 재시도 가능한 에러 판단 로직
@@ -617,6 +656,17 @@
 
 ---
 
-**문서 버전**: 1.0  
+## 🔧 최근 수정 사항 (2024-01-15)
+
+### 빌드 오류 수정
+- [x] `app/admin/reservations/ReservationFiltersClient.tsx` - `sanitizeInput` import 추가
+- [x] `app/admin/orders/OrderFiltersClient.tsx` - `sanitizeInput` import 추가  
+- [x] `app/admin/rooms/page.tsx` - `formData.description` 필드 제거
+
+**상세 내용**: `BUILD_FIXES.md` 참조
+
+---
+
+**문서 버전**: 1.1  
 **최종 업데이트**: 2024-01-15  
 **다음 리뷰**: 매주 금요일

@@ -237,5 +237,93 @@ Type error: Type '{ weekday: string; weekend: string; closed: string; }' is not 
 
 ---
 
-**문서 버전**: 1.2  
+### 5. sanitizeInput import 누락 오류
+
+**파일**: 
+- `app/admin/reservations/ReservationFiltersClient.tsx`
+- `app/admin/orders/OrderFiltersClient.tsx`
+
+**오류 내용**:
+```
+Type error: Cannot find name 'sanitizeInput'.
+```
+
+**원인**:
+- `sanitizeInput` 함수를 사용하고 있지만 import 문이 누락됨
+
+**수정 방법**:
+- `lib/security`에서 `sanitizeInput` 함수 import 추가
+
+**수정 코드**:
+```typescript
+// 수정 전
+import { Search } from 'lucide-react';
+
+// 수정 후
+import { Search } from 'lucide-react';
+import { sanitizeInput } from '@/lib/security';
+```
+
+---
+
+### 6. formData.description 필드 오류
+
+**파일**: `app/admin/rooms/page.tsx`
+
+**오류 내용**:
+```
+Type error: Property 'description' does not exist on type '{ name: string; type: string; capacity: number; status: "available" | "occupied" | "maintenance"; }'.
+```
+
+**원인**:
+- `formData`에 `description` 필드가 없는데 코드에서 사용하려고 함
+- `Room` 타입에도 `description` 필드가 없음
+
+**수정 방법**:
+- `formData`에서 `description` 필드 제거
+- `sanitizedFormData`에서 `description` 필드 제거
+
+**수정 코드**:
+```typescript
+// 수정 전
+const [formData, setFormData] = useState<{
+  name: string;
+  type: string;
+  capacity: number;
+  status: Room['status'];
+  description?: string;
+}>({
+  name: '',
+  type: '',
+  capacity: 1,
+  status: 'available',
+  description: '',
+});
+
+const sanitizedFormData = {
+  ...formData,
+  name: sanitizeInput(formData.name, { maxLength: 50 }),
+  type: sanitizeInput(formData.type, { maxLength: 100 }),
+  description: formData.description ? sanitizeInput(formData.description, { maxLength: 500 }) : undefined,
+};
+
+// 수정 후
+const [formData, setFormData] = useState({
+  name: '',
+  type: '',
+  capacity: 1,
+  status: 'available' as Room['status'],
+});
+
+const sanitizedFormData = {
+  name: sanitizeInput(formData.name, { maxLength: 50 }),
+  type: sanitizeInput(formData.type, { maxLength: 100 }),
+  capacity: formData.capacity,
+  status: formData.status,
+};
+```
+
+---
+
+**문서 버전**: 1.3  
 **최종 업데이트**: 2024-01-15
