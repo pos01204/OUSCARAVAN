@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { adminApi, type Reservation, type Room } from '@/lib/api';
+import { getReservation, updateReservation, getRooms, sendReservationAssignedToN8N, type Reservation, type Room } from '@/lib/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -31,13 +31,13 @@ export default function ReservationDetailPage() {
         setIsLoading(true);
         
         // 예약 정보 조회
-        const reservationData = await adminApi(`/api/admin/reservations/${reservationId}`);
+        const reservationData = await getReservation(reservationId);
         setReservation(reservationData);
         setAssignedRoom(reservationData.assignedRoom || '');
         setPhone(reservationData.phone || '');
         
         // 방 목록 조회
-        const roomsData = await adminApi('/api/admin/rooms');
+        const roomsData = await getRooms();
         setRooms(roomsData);
       } catch (error) {
         console.error('Failed to fetch data:', error);
@@ -104,37 +104,26 @@ export default function ReservationDetailPage() {
       const cleanedPhone = phone.replace(/[-\s()]/g, '');
       
       // 3. 예약 정보 업데이트 (Railway 백엔드 API 호출)
-      const updatedReservation = await adminApi(`/api/admin/reservations/${reservationId}`, {
-        method: 'PATCH',
-        body: JSON.stringify({
-          assignedRoom,
-          phone: cleanedPhone,
-          uniqueToken,
-          status: 'assigned',
-        }),
+      const updatedReservation = await updateReservation(reservationId, {
+        assignedRoom,
+        phone: cleanedPhone,
+        uniqueToken,
+        status: 'assigned',
       });
       
       setReservation(updatedReservation);
       
-      // 4. n8n Webhook 호출
-      const n8nWebhookUrl = process.env.NEXT_PUBLIC_N8N_WEBHOOK_URL || '';
-      if (n8nWebhookUrl) {
+      // 4. n8n Webhook 호출 (알림톡 발송 트리거)
+      if (reservation?.guestName && reservation?.checkin && reservation?.checkout) {
         try {
-          await fetch(n8nWebhookUrl, {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              reservationId,
-              reservationNumber: reservation?.reservationNumber,
-              guestName: reservation?.guestName,
-              phone: cleanedPhone,
-              uniqueToken,
-              assignedRoom,
-              checkin: reservation?.checkin,
-              checkout: reservation?.checkout,
-            }),
+          await sendReservationAssignedToN8N({
+            reservationId,
+            guestName: reservation.guestName,
+            phone: cleanedPhone,
+            uniqueToken,
+            assignedRoom,
+            checkin: reservation.checkin,
+            checkout: reservation.checkout,
           });
         } catch (webhookError) {
           console.error('Failed to call n8n webhook:', webhookError);

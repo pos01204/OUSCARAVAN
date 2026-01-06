@@ -6,7 +6,14 @@ export const API_CONFIG = {
   baseUrl: process.env.NEXT_PUBLIC_API_URL || 'https://ouscaravan-api.railway.app',
   // 타임아웃 설정 (기본 10초)
   timeout: 10000,
-};
+  // 재시도 설정
+  retry: {
+    maxAttempts: 3, // 최대 재시도 횟수
+    initialDelay: 1000, // 초기 지연 시간 (ms)
+    maxDelay: 5000, // 최대 지연 시간 (ms)
+    backoffMultiplier: 2, // 지수 백오프 배수
+  },
+} as const;
 
 /**
  * n8n Webhook 설정

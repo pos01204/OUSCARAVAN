@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { adminApi, type Room } from '@/lib/api';
+import { getRooms, createRoom, updateRoom, deleteRoom, type Room } from '@/lib/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -35,7 +35,7 @@ export default function RoomsPage() {
   const fetchRooms = async () => {
     try {
       setIsLoading(true);
-      const data = await adminApi('/api/admin/rooms');
+      const data = await getRooms();
       setRooms(data);
     } catch (error) {
       console.error('Failed to fetch rooms:', error);
@@ -98,20 +98,14 @@ export default function RoomsPage() {
     try {
       if (editingRoom) {
         // 수정
-        await adminApi(`/api/admin/rooms/${editingRoom.id}`, {
-          method: 'PATCH',
-          body: JSON.stringify(formData),
-        });
+        await updateRoom(editingRoom.id, formData);
         toast({
           title: '수정 완료',
           description: '방 정보가 수정되었습니다.',
         });
       } else {
         // 추가
-        await adminApi('/api/admin/rooms', {
-          method: 'POST',
-          body: JSON.stringify(formData),
-        });
+        await createRoom(formData);
         toast({
           title: '추가 완료',
           description: '방이 추가되었습니다.',
@@ -140,9 +134,7 @@ export default function RoomsPage() {
     }
     
     try {
-      await adminApi(`/api/admin/rooms/${roomId}`, {
-        method: 'DELETE',
-      });
+      await deleteRoom(roomId);
       toast({
         title: '삭제 완료',
         description: '방이 삭제되었습니다.',

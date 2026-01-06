@@ -1,6 +1,6 @@
 import Link from 'next/link';
 import { Suspense } from 'react';
-import { adminApi, type Reservation } from '@/lib/api';
+import { getReservations, type Reservation } from '@/lib/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -24,17 +24,12 @@ async function ReservationsList({
   let total = 0;
   
   try {
-    // 쿼리 파라미터 구성
-    const params = new URLSearchParams();
-    if (status && status !== 'all') params.append('status', status);
-    if (checkin) params.append('checkin', checkin);
-    if (checkout) params.append('checkout', checkout);
-    if (search) params.append('search', search);
-    
-    const queryString = params.toString();
-    const endpoint = `/api/admin/reservations${queryString ? `?${queryString}` : ''}`;
-    
-    const data = await adminApi(endpoint);
+    const data = await getReservations({
+      status,
+      checkin,
+      checkout,
+      search,
+    });
     reservations = data.reservations || [];
     total = data.total || 0;
   } catch (error) {

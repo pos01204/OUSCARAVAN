@@ -268,7 +268,59 @@
   - [x] 네트워크 오류 처리
 - [ ] `adminApi` 함수 테스트 (Railway API 연동 후)
 - [ ] `guestApi` 함수 테스트 (Railway API 연동 후)
-- [ ] 재시도 로직 (선택사항)
+- [x] 재시도 로직
+  - [x] 재시도 설정 추가 (lib/constants.ts)
+  - [x] 재시도 가능한 에러 판단 로직
+  - [x] 지수 백오프 지연 시간 계산
+  - [x] fetchWithRetry 함수 구현
+  - [x] adminApi 함수에 재시도 로직 적용
+  - [x] guestApi 함수에 재시도 로직 적용
+
+### 6.4 n8n 웹훅 헬퍼 함수
+- [x] `sendReservationAssignedToN8N` 함수 구현
+  - [x] 예약 배정 시 n8n 웹훅 호출 함수
+  - [x] 클라이언트에서는 내부 API 라우트 사용
+  - [x] 서버에서는 직접 n8n 웹훅 호출
+- [x] `app/api/n8n/reservation/route.ts` 생성
+  - [x] 예약 배정 n8n 웹훅 프록시 API 라우트
+- [x] 예약 상세 페이지에서 `sendReservationAssignedToN8N` 사용
+  - [x] 직접 fetch 호출을 함수 호출로 변경
+  - [x] 코드 재사용성 및 유지보수성 향상
+
+### 6.5 Railway API 헬퍼 함수
+- [x] 체크인/체크아웃 헬퍼 함수
+  - [x] `checkIn` 함수 구현
+  - [x] `checkOut` 함수 구현
+- [x] 주문 헬퍼 함수
+  - [x] `getOrders` 함수 구현
+  - [x] `createOrder` 함수 구현
+- [x] `guestApi` 함수 개선
+  - [x] `options` 파라미터 추가 (POST 요청 지원)
+- [x] 컴포넌트에서 헬퍼 함수 사용
+  - [x] `GuestCheckInOutContent`에서 `checkIn`, `checkOut` 사용
+
+### 6.6 관리자 API 헬퍼 함수
+- [x] 예약 관리 헬퍼 함수
+  - [x] `getReservations` 함수 구현
+  - [x] `getReservation` 함수 구현
+  - [x] `updateReservation` 함수 구현
+- [x] 방 관리 헬퍼 함수
+  - [x] `getRooms` 함수 구현
+  - [x] `createRoom` 함수 구현
+  - [x] `updateRoom` 함수 구현
+  - [x] `deleteRoom` 함수 구현
+- [x] 주문 관리 헬퍼 함수
+  - [x] `getAdminOrders` 함수 구현
+  - [x] `updateOrderStatus` 함수 구현
+- [x] 통계 헬퍼 함수
+  - [x] `getAdminStats` 함수 구현
+- [x] 관리자 페이지에서 헬퍼 함수 사용
+  - [x] `app/admin/reservations/page.tsx`에서 `getReservations` 사용
+  - [x] `app/admin/reservations/[id]/page.tsx`에서 `getReservation`, `updateReservation`, `getRooms` 사용
+  - [x] `app/admin/rooms/page.tsx`에서 `getRooms`, `createRoom`, `updateRoom`, `deleteRoom` 사용
+  - [x] `app/admin/orders/page.tsx`에서 `getAdminOrders`, `updateOrderStatus` 사용
+  - [x] `app/admin/page.tsx`에서 `getAdminStats`, `getReservations` 사용
+  - [x] 관리자 대시보드 개선 (통계 카드, 최근 예약 목록)
 
 ### 6.3 데이터 타입 정의
 - [x] `types/index.ts` 생성
@@ -493,7 +545,7 @@
 - Phase 3: 관리자 페이지 - 100% (10/10)
 - Phase 4: 고객 페이지 - 100% (6/6)
 - Phase 5: 기존 라우트 처리 - 75% (1.5/2)
-- Phase 6: Railway 백엔드 연동 - 50% (5/10)
+- Phase 6: Railway 백엔드 연동 - 90% (9/10)
 - Phase 7: n8n 워크플로우 연동 - 0% (0/3)
 - Phase 8: UI/UX 개선 - 100% (4/4)
 - Phase 9: 테스트 - 0% (0/3)

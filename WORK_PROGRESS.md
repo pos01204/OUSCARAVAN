@@ -162,6 +162,166 @@
 - 고객은 알림톡 링크를 통해 `/guest/[token]`으로 직접 접근
 - 향후 URL 파라미터를 토큰으로 변환하는 로직 추가 예정
 
+## ✅ 완료된 작업 (2024-01-15 - 추가 22)
+
+### Phase 6: Railway 백엔드 연동 (계속)
+
+#### 6.6 관리자 API 헬퍼 함수
+- [x] 예약 관리 헬퍼 함수 구현
+  - [x] `getReservations` 함수 구현
+    - Railway API `/api/admin/reservations` 호출
+    - 쿼리 파라미터 지원 (status, checkin, checkout, search, page, limit)
+    - ReservationsResponse 타입 반환
+  - [x] `getReservation` 함수 구현
+    - Railway API `/api/admin/reservations/:id` 호출
+    - Reservation 타입 반환
+  - [x] `updateReservation` 함수 구현
+    - Railway API `/api/admin/reservations/:id` PATCH 호출
+    - 예약 정보 업데이트 (방 배정, 전화번호, 토큰, 상태)
+    - Reservation 타입 반환
+- [x] 방 관리 헬퍼 함수 구현
+  - [x] `getRooms` 함수 구현
+    - Railway API `/api/admin/rooms` 호출
+    - Room[] 타입 반환
+  - [x] `createRoom` 함수 구현
+    - Railway API `/api/admin/rooms` POST 호출
+    - 방 정보 생성
+    - Room 타입 반환
+  - [x] `updateRoom` 함수 구현
+    - Railway API `/api/admin/rooms/:id` PATCH 호출
+    - 방 정보 업데이트
+    - Room 타입 반환
+  - [x] `deleteRoom` 함수 구현
+    - Railway API `/api/admin/rooms/:id` DELETE 호출
+- [x] 주문 관리 헬퍼 함수 구현
+  - [x] `getAdminOrders` 함수 구현
+    - Railway API `/api/admin/orders` 호출
+    - 쿼리 파라미터 지원 (status, date, search, page, limit)
+    - OrdersResponse 타입 반환
+  - [x] `updateOrderStatus` 함수 구현
+    - Railway API `/api/admin/orders/:id` PATCH 호출
+    - 주문 상태 업데이트
+    - Order 타입 반환
+- [x] 통계 헬퍼 함수 구현
+  - [x] `getAdminStats` 함수 구현
+    - Railway API `/api/admin/stats` 호출
+    - AdminStats 타입 반환
+- [x] 관리자 페이지에서 헬퍼 함수 사용
+  - [x] 예약 목록 페이지 (`app/admin/reservations/page.tsx`)
+    - `getReservations` 사용으로 코드 간소화
+  - [x] 예약 상세 페이지 (`app/admin/reservations/[id]/page.tsx`)
+    - `getReservation`, `updateReservation`, `getRooms` 사용
+  - [x] 방 관리 페이지 (`app/admin/rooms/page.tsx`)
+    - `getRooms`, `createRoom`, `updateRoom`, `deleteRoom` 사용
+  - [x] 주문 관리 페이지 (`app/admin/orders/page.tsx`)
+    - `getAdminOrders`, `updateOrderStatus` 사용
+  - [x] 관리자 대시보드 (`app/admin/page.tsx`)
+    - `getAdminStats`, `getReservations` 사용
+    - 통계 카드 컴포넌트화
+    - 최근 예약 목록 표시
+    - Suspense 및 Skeleton UI 적용
+
+**구현 내용**:
+- 관리자 API 호출을 위한 헬퍼 함수 추가
+- 예약, 방, 주문, 통계 관련 API 호출 간소화
+- 타입 안정성 향상
+- 코드 재사용성 및 가독성 향상
+- 관리자 대시보드 기능 개선
+
+## ✅ 완료된 작업 (2024-01-15 - 추가 21)
+
+### Phase 6: Railway 백엔드 연동 (계속)
+
+#### 6.5 Railway API 헬퍼 함수
+- [x] 체크인/체크아웃 헬퍼 함수 구현
+  - [x] `checkIn` 함수 구현
+    - Railway API `/api/guest/:token/checkin` 호출
+    - 타임스탬프 옵션 지원
+    - CheckInOutResponse 타입 반환
+  - [x] `checkOut` 함수 구현
+    - Railway API `/api/guest/:token/checkout` 호출
+    - 체크리스트 옵션 지원
+    - 타임스탬프 옵션 지원
+    - CheckInOutResponse 타입 반환
+- [x] 주문 헬퍼 함수 구현
+  - [x] `getOrders` 함수 구현
+    - Railway API `/api/guest/:token/orders` 호출
+    - OrdersResponse 타입 반환
+  - [x] `createOrder` 함수 구현
+    - Railway API `/api/guest/:token/orders` POST 호출
+    - 주문 데이터 전송
+    - Order 타입 반환
+- [x] `guestApi` 함수 개선
+  - [x] `options` 파라미터 추가 (POST, PUT, PATCH 등 지원)
+  - [x] 요청 본문(body) 지원
+  - [x] 커스텀 헤더 지원
+- [x] 컴포넌트에서 헬퍼 함수 사용
+  - [x] `GuestCheckInOutContent`에서 `checkIn`, `checkOut` 사용
+    - `guestApi` 직접 호출 대신 헬퍼 함수 사용
+    - 코드 가독성 및 유지보수성 향상
+
+**구현 내용**:
+- Railway API 호출을 위한 헬퍼 함수 추가
+- 체크인/체크아웃, 주문 관련 API 호출 간소화
+- 타입 안정성 향상
+- 코드 재사용성 및 가독성 향상
+
+## ✅ 완료된 작업 (2024-01-15 - 추가 20)
+
+### Phase 6: Railway 백엔드 연동 (계속)
+
+#### 6.4 n8n 웹훅 헬퍼 함수
+- [x] `sendReservationAssignedToN8N` 함수 구현
+  - [x] `lib/api.ts`에 예약 배정 시 n8n 웹훅 호출 함수 추가
+  - [x] 클라이언트에서는 내부 API 라우트 사용 (`/api/n8n/reservation`)
+  - [x] 서버에서는 직접 n8n 웹훅 호출
+  - [x] 에러 처리 및 로깅
+- [x] `app/api/n8n/reservation/route.ts` 생성
+  - [x] 예약 배정 n8n 웹훅 프록시 API 라우트
+  - [x] N8N_CONFIG에서 webhookUrl 가져오기
+  - [x] 에러 처리 및 응답
+- [x] 예약 상세 페이지 개선
+  - [x] `app/admin/reservations/[id]/page.tsx`에서 직접 fetch 호출 제거
+  - [x] `sendReservationAssignedToN8N` 함수 사용
+  - [x] 코드 재사용성 및 유지보수성 향상
+
+**구현 내용**:
+- 예약 배정 시 n8n 웹훅 호출을 헬퍼 함수로 추출
+- 내부 API 라우트를 통한 안전한 웹훅 호출
+- 코드 중복 제거 및 재사용성 향상
+- 일관된 에러 처리 및 로깅
+
+## ✅ 완료된 작업 (2024-01-15 - 추가 19)
+
+### Phase 6: Railway 백엔드 연동 (계속)
+
+#### 6.2 API 호출 함수 구현 - 재시도 로직 추가
+- [x] 재시도 설정 추가
+  - [x] `lib/constants.ts`에 재시도 설정 추가
+    - maxAttempts: 3 (최대 재시도 횟수)
+    - initialDelay: 1000ms (초기 지연 시간)
+    - maxDelay: 5000ms (최대 지연 시간)
+    - backoffMultiplier: 2 (지수 백오프 배수)
+- [x] 재시도 로직 구현
+  - [x] `isRetryableError` 함수 - 재시도 가능한 에러 판단
+    - 5xx 서버 오류는 재시도 가능
+    - 네트워크 오류는 재시도 가능
+    - 4xx 클라이언트 오류는 재시도 불가능
+  - [x] `calculateDelay` 함수 - 지수 백오프 지연 시간 계산
+  - [x] `fetchWithRetry` 함수 - 재시도 로직이 포함된 fetch 래퍼
+    - 최대 3회 재시도
+    - 지수 백오프를 사용한 지연 시간 (1초, 2초, 4초)
+    - 재시도 가능한 에러만 재시도
+- [x] API 호출 함수에 재시도 로직 적용
+  - [x] `adminApi` 함수에서 `fetchWithRetry` 사용
+  - [x] `guestApi` 함수에서 `fetchWithRetry` 사용
+
+**구현 내용**:
+- 네트워크 오류나 일시적인 서버 오류에 대한 자동 재시도
+- 지수 백오프를 사용한 지연 시간으로 서버 부하 감소
+- 재시도 가능한 에러와 불가능한 에러 구분
+- API 호출의 안정성 및 견고성 향상
+
 ## ✅ 완료된 작업 (2024-01-15 - 추가 18)
 
 ### Phase 6: Railway 백엔드 연동 (계속)

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
-import { adminApi, type Order } from '@/lib/api';
+import { getAdminOrders, updateOrderStatus, type Order } from '@/lib/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -29,21 +29,16 @@ export default function OrdersPage() {
   const fetchOrders = async () => {
     try {
       setIsLoading(true);
-      // 쿼리 파라미터 구성
-      const params = new URLSearchParams();
-      const status = searchParams.get('status');
-      const date = searchParams.get('date');
-      const search = searchParams.get('search');
+      const status = searchParams.get('status') || undefined;
+      const date = searchParams.get('date') || undefined;
+      const search = searchParams.get('search') || undefined;
       
-      if (status && status !== 'all') params.append('status', status);
-      if (date) params.append('date', date);
-      if (search) params.append('search', search);
-      
-      const queryString = params.toString();
-      const endpoint = `/api/admin/orders${queryString ? `?${queryString}` : ''}`;
-      
-      const data = await adminApi(endpoint);
-      setOrders(data);
+      const data = await getAdminOrders({
+        status,
+        date,
+        search,
+      });
+      setOrders(data.orders || []);
     } catch (error) {
       console.error('Failed to fetch orders:', error);
       toast({
@@ -67,10 +62,7 @@ export default function OrdersPage() {
     setIsUpdating(true);
     
     try {
-      await adminApi(`/api/admin/orders/${orderId}`, {
-        method: 'PATCH',
-        body: JSON.stringify({ status: newStatus }),
-      });
+      await updateOrderStatus(orderId, newStatus);
       
       toast({
         title: '상태 업데이트 완료',
