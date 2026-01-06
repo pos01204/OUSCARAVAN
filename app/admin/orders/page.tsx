@@ -41,6 +41,10 @@ export default function OrdersPage() {
       });
       setOrders(data.orders || []);
     } catch (error) {
+      const status = searchParams.get('status') || undefined;
+      const date = searchParams.get('date') || undefined;
+      const search = searchParams.get('search') || undefined;
+      
       logError('Failed to fetch orders', error, {
         component: 'OrdersPage',
         filters: { status, date, search },
