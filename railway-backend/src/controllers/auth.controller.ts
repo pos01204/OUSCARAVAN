@@ -58,10 +58,14 @@ export async function login(req: Request, res: Response) {
       expiresIn: 604800,
     });
 
-    res.json({
+    // Content-Type 헤더 명시적으로 설정
+    res.setHeader('Content-Type', 'application/json');
+    res.status(200).json({
       token,
       expiresIn: 604800, // 7일 (초 단위)
     });
+    
+    console.log('[AUTH] Response sent successfully');
   } catch (error) {
     console.error('[AUTH] Login error:', error);
     if (error instanceof Error) {

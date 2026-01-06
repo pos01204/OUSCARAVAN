@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import authRoutes from './routes/auth.routes';
 import adminRoutes from './routes/admin.routes';
 import guestRoutes from './routes/guest.routes';
+import healthRoutes from './routes/health.routes';
 import { errorHandler } from './middleware/error.middleware';
 import pool from './config/database';
 
@@ -74,16 +75,8 @@ app.get('/', (req, res) => {
   });
 });
 
-app.get('/health', (req, res) => {
-  res.json({ 
-    status: 'ok', 
-    timestamp: new Date().toISOString(),
-    service: 'OUSCARAVAN API',
-    version: '1.0.0'
-  });
-});
-
 // 라우트
+app.use('/health', healthRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/guest', guestRoutes);

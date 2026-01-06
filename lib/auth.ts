@@ -64,22 +64,22 @@ export async function adminLogin(formData: FormData) {
       ok: response.ok,
       duration: `${duration}ms`,
       headers: Object.fromEntries(response.headers.entries()),
+      contentType: response.headers.get('content-type'),
+    });
+
+    // 응답 본문을 먼저 텍스트로 읽기 (디버깅용)
+    const responseText = await response.text();
+    console.log('[LOGIN] Response body (text):', {
+      length: responseText.length,
+      preview: responseText.substring(0, 200),
+      isEmpty: responseText.length === 0,
     });
 
     if (!response.ok) {
-      // 응답 본문 읽기 시도
-      let errorBody = '';
-      try {
-        errorBody = await response.text();
-        console.error('[LOGIN] Error response body:', errorBody);
-      } catch (e) {
-        console.error('[LOGIN] Failed to read error response body');
-      }
-      
       console.error('[LOGIN] Authentication failed:', {
         status: response.status,
         statusText: response.statusText,
-        errorBody: errorBody.substring(0, 200), // 처음 200자만
+        errorBody: responseText.substring(0, 200),
       });
       
       // 인증 실패
@@ -89,14 +89,24 @@ export async function adminLogin(formData: FormData) {
     // JWT 토큰 받기
     let data;
     try {
-      data = await response.json();
+      // 텍스트를 JSON으로 파싱
+      if (!responseText || responseText.length === 0) {
+        throw new Error('Response body is empty');
+      }
+      
+      data = JSON.parse(responseText);
       console.log('[LOGIN] Response data received:', {
         hasToken: !!data.token,
         tokenLength: data.token?.length || 0,
         expiresIn: data.expiresIn,
+        dataKeys: Object.keys(data),
       });
     } catch (e) {
-      console.error('[LOGIN] Failed to parse response JSON:', e);
+      console.error('[LOGIN] Failed to parse response JSON:', {
+        error: e instanceof Error ? e.message : String(e),
+        responseText: responseText.substring(0, 500),
+        contentType: response.headers.get('content-type'),
+      });
       redirect('/login?error=network_error');
     }
     
