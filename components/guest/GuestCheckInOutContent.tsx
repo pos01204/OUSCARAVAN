@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { useGuestStore } from '@/lib/store';
-import { checkIn, checkOut } from '@/lib/api';
+import { checkIn as apiCheckIn, checkOut as apiCheckOut } from '@/lib/api';
 import { useToast } from '@/components/ui/use-toast';
 import { CHECK_IN_OUT } from '@/lib/constants';
 import type { Reservation } from '@/lib/api';
@@ -35,7 +35,7 @@ export function GuestCheckInOutContent({ reservation, token }: GuestCheckInOutCo
     
     try {
       // Railway API로 체크인 상태 업데이트
-      await checkIn(token);
+      await apiCheckIn(token);
       
       // 로컬 상태 업데이트
       checkIn();
@@ -71,7 +71,7 @@ export function GuestCheckInOutContent({ reservation, token }: GuestCheckInOutCo
     
     try {
       // Railway API로 체크아웃 상태 업데이트
-      await checkOut(token, checklist);
+      await apiCheckOut(token, checklist);
       
       // 로컬 상태 업데이트
       checkOut();
