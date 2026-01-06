@@ -10,7 +10,7 @@ import pool from './config/database';
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = parseInt(process.env.PORT || '3000', 10);
 
 // 미들웨어
 // CORS 설정 - Vercel 도메인 허용
@@ -116,12 +116,8 @@ async function startServer() {
           console.log('HTTP server closed');
           
           // 데이터베이스 풀 종료
-          pool.end((err) => {
-            if (err) {
-              console.error('Error closing database pool:', err);
-            } else {
-              console.log('Database pool closed');
-            }
+          pool.end(() => {
+            console.log('Database pool closed');
             clearTimeout(timeout);
             process.exit(0);
           });
