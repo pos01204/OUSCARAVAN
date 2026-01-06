@@ -87,10 +87,38 @@ export default function RoomsPage() {
   
   // 방 저장
   const handleSave = async () => {
-    if (!formData.name || !formData.type) {
+    // 입력 검증
+    if (!validateRequired(formData.name) || !validateRequired(formData.type)) {
       toast({
         title: '입력 필요',
         description: '방 이름과 타입을 입력해주세요.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    if (!validateLength(formData.name, 1, 50)) {
+      toast({
+        title: '입력 오류',
+        description: '방 이름은 1자 이상 50자 이하여야 합니다.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    if (!validateLength(formData.type, 1, 100)) {
+      toast({
+        title: '입력 오류',
+        description: '방 타입은 1자 이상 100자 이하여야 합니다.',
+        variant: 'destructive',
+      });
+      return;
+    }
+    
+    if (!validateRange(formData.capacity, 1, 20)) {
+      toast({
+        title: '입력 오류',
+        description: '수용 인원은 1명 이상 20명 이하여야 합니다.',
         variant: 'destructive',
       });
       return;

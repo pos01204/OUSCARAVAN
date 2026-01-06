@@ -162,6 +162,115 @@
 - 고객은 알림톡 링크를 통해 `/guest/[token]`으로 직접 접근
 - 향후 URL 파라미터를 토큰으로 변환하는 로직 추가 예정
 
+## ✅ 완료된 작업 (2024-01-15 - 추가 27)
+
+### Phase 8: UI/UX 개선 (계속)
+
+#### 8.3 접근성 (A11y) - 고객 페이지 접근성 개선
+- [x] 고객 페이지에 시맨틱 HTML 및 ARIA 레이블 추가
+  - [x] `GuestHomeContent` 접근성 개선
+    - `main` 태그 및 `role="main"` 추가
+    - `section` 태그로 섹션 구분
+    - 환영 메시지에 `aria-label` 추가
+    - 서비스 정보 카드 섹션에 `aria-label` 추가
+  - [x] `GuestOrderContent` 접근성 개선
+    - `main` 태그 및 `role="main"` 추가
+    - `section` 태그로 섹션 구분 (쿠폰, 메뉴, 주문, 카페 정보)
+    - 주문하기 버튼에 `aria-label` 추가
+    - 포커스 인디케이터 개선 (`focus:ring` 스타일)
+  - [x] `GuestGuideContent` 접근성 개선
+    - `main` 태그 및 `role="main"` 추가
+    - `section` 태그로 섹션 구분 (검색/필터, 가이드 목록)
+    - 검색 입력 필드에 `aria-label` 추가
+    - 카테고리 필터에 `role="tablist"`, `role="tab"` 추가
+    - `aria-selected`, `aria-controls` 속성 추가
+  - [x] `GuestCheckInOutContent` 접근성 개선
+    - `main` 태그 및 `role="main"` 추가
+    - `section` 태그로 섹션 구분 (체크인, 체크아웃, 예약 정보)
+    - 체크인/체크아웃 버튼에 `aria-label`, `aria-disabled` 추가
+    - 체크박스에 `aria-label` 추가
+    - 포커스 인디케이터 개선 (`focus:ring` 스타일)
+    - 아이콘에 `aria-hidden="true"` 추가
+  - [x] `GuestHelpContent` 접근성 개선
+    - `main` 태그 및 `role="main"` 추가
+    - `section` 태그로 섹션 구분 (응급 연락처, 안전 정보, FAQ)
+    - 각 섹션에 `aria-label` 추가
+- [x] 포커스 인디케이터 개선
+  - [x] 버튼에 `focus:ring` 스타일 추가
+  - [x] 입력 필드에 `focus:ring` 스타일 추가
+  - [x] 체크박스에 `focus:ring` 스타일 추가
+
+**구현 내용**:
+- 고객 페이지 전반에 시맨틱 HTML 및 ARIA 레이블 추가
+- 스크린 리더 지원 향상
+- 키보드 네비게이션 개선
+- 포커스 인디케이터 개선
+
+## ✅ 완료된 작업 (2024-01-15 - 추가 26)
+
+### Phase 1: 기반 인프라 구축 (계속)
+
+#### 1.2 프로젝트 구조 생성 - 입력 검증 유틸리티 추가
+- [x] 입력 검증 유틸리티 함수 생성
+  - [x] `lib/validation.ts` 생성
+    - `validatePhone` 함수 (한국 전화번호 형식 검증)
+    - `cleanPhone` 함수 (전화번호 정리 - 하이픈 제거)
+    - `validateEmail` 함수 (이메일 형식 검증)
+    - `validateDate` 함수 (YYYY-MM-DD 날짜 형식 검증)
+    - `validateLength` 함수 (문자열 길이 검증)
+    - `validateRange` 함수 (숫자 범위 검증)
+    - `validateRequired` 함수 (필수 필드 검증)
+    - `validateReservationNumber` 함수 (예약 번호 형식 검증)
+- [x] 입력 검증 유틸리티 적용
+  - [x] 예약 상세 페이지 (`app/admin/reservations/[id]/page.tsx`)
+    - `validatePhone`, `cleanPhone` 사용
+    - 중복된 검증 로직 제거
+  - [x] 방 관리 페이지 (`app/admin/rooms/page.tsx`)
+    - `validateRequired`, `validateLength`, `validateRange` 사용
+    - 입력 검증 강화 (방 이름, 타입, 수용 인원)
+
+**구현 내용**:
+- 입력 검증 유틸리티 함수 생성
+- 코드 재사용성 및 일관성 향상
+- 입력 검증 로직 중앙화
+- 사용자 입력 안전성 향상
+
+## ✅ 완료된 작업 (2024-01-15 - 추가 25)
+
+### Phase 1: 기반 인프라 구축 (계속)
+
+#### 1.2 프로젝트 구조 생성 - 상수 중앙화 개선
+- [x] 관리자 인증 정보 상수화
+  - [x] `lib/constants.ts`에 `ADMIN_CREDENTIALS` 추가
+    - 임시 관리자 로그인 정보 (id, password)
+    - Railway 백엔드 API 연동 후 제거 예정 (TODO 주석 추가)
+  - [x] `lib/auth.ts`에서 `ADMIN_CREDENTIALS` import하여 사용
+    - 하드코딩된 인증 정보 제거
+    - 상수 파일에서 중앙 관리
+
+**구현 내용**:
+- 관리자 인증 정보를 상수 파일로 이동
+- 코드 중앙화 및 유지보수성 향상
+- 향후 Railway API 연동 시 쉽게 제거 가능
+
+### Phase 12: 유지보수 및 개선 (계속)
+
+#### 12.1 모니터링 - 에러 로깅 설정 완료
+- [x] 에러 로깅 설정
+  - [x] `lib/logger.ts` 생성 (로깅 유틸리티 함수)
+  - [x] 구조화된 로깅 시스템 (error, warn, info, debug)
+  - [x] 컨텍스트 정보 포함
+  - [x] 관리자 페이지에서 로깅 유틸리티 사용
+  - [x] 고객 페이지에서 로깅 유틸리티 사용
+  - [x] 에러 바운더리에서 로깅 유틸리티 사용
+  - [x] 향후 Sentry 등 외부 로깅 서비스 연동 준비
+
+**구현 내용**:
+- 구조화된 로깅 시스템 구축
+- 일관된 에러 로깅 방식 적용
+- 컨텍스트 정보 포함으로 디버깅 용이성 향상
+- 향후 외부 로깅 서비스 연동 가능하도록 구조 준비
+
 ## ✅ 완료된 작업 (2024-01-15 - 추가 24)
 
 ### Phase 8: UI/UX 개선 (계속)

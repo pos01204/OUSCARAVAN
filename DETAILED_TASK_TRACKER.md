@@ -29,12 +29,26 @@
 - [x] `lib/api.ts` 생성 (Railway API 호출 함수)
 - [x] `lib/auth.ts` 생성 (인증 유틸리티)
 - [x] `types/index.ts` 생성 (TypeScript 타입 정의)
+- [x] `lib/validation.ts` 생성 (입력 검증 유틸리티)
+  - [x] 전화번호 검증 함수 (`validatePhone`)
+  - [x] 전화번호 정리 함수 (`cleanPhone`)
+  - [x] 이메일 검증 함수 (`validateEmail`)
+  - [x] 날짜 검증 함수 (`validateDate`)
+  - [x] 문자열 길이 검증 함수 (`validateLength`)
+  - [x] 숫자 범위 검증 함수 (`validateRange`)
+  - [x] 필수 필드 검증 함수 (`validateRequired`)
+  - [x] 예약 번호 검증 함수 (`validateReservationNumber`)
 - [x] `lib/constants.ts` 업데이트
   - [x] API 설정 상수 추가 (API_URL, timeout)
   - [x] n8n Webhook 설정 상수 추가
+  - [x] 관리자 인증 정보 상수 추가 (임시)
   - [x] 기존 상수 정리 및 문서화
   - [x] `lib/api.ts`에서 constants 사용하도록 업데이트
+  - [x] `lib/auth.ts`에서 constants 사용하도록 업데이트
   - [x] API 라우트에서 constants 사용하도록 업데이트
+- [x] 입력 검증 유틸리티 적용
+  - [x] 예약 상세 페이지에서 `validatePhone`, `cleanPhone` 사용
+  - [x] 방 관리 페이지에서 `validateRequired`, `validateLength`, `validateRange` 사용
 
 ### 1.3 UI 컴포넌트 준비
 - [x] `components/ui/badge.tsx` 생성
@@ -400,11 +414,20 @@
 ### 8.3 접근성 (A11y)
 - [x] 키보드 네비게이션
   - [x] 기본 키보드 네비게이션 지원 확인
+  - [x] 포커스 인디케이터 개선 (focus:ring 스타일 추가)
 - [x] 스크린 리더 지원
   - [x] 시맨틱 HTML 사용 확인
   - [x] ARIA 레이블 부분 적용 확인
+  - [x] 고객 페이지에 시맨틱 HTML 및 ARIA 레이블 추가
+    - [x] `main` 태그 및 `role="main"` 추가
+    - [x] `section` 태그로 섹션 구분
+    - [x] 버튼 및 입력 필드에 `aria-label` 추가
+    - [x] 아이콘에 `aria-hidden="true"` 추가
+    - [x] 체크박스에 `aria-label` 추가
+    - [x] 카테고리 필터에 `role="tablist"`, `role="tab"` 추가
 - [x] ARIA 레이블 확인
   - [x] 관리자 레이아웃 ARIA 레이블 확인
+  - [x] 고객 페이지 ARIA 레이블 추가
   - [x] 개선 필요 사항 문서화
 - [x] 색상 대비 확인
   - [x] 색상 대비 확인 필요 사항 문서화
@@ -531,7 +554,14 @@
 ## 🔧 Phase 12: 유지보수 및 개선
 
 ### 12.1 모니터링
-- [ ] 에러 로깅 설정
+- [x] 에러 로깅 설정
+  - [x] `lib/logger.ts` 생성 (로깅 유틸리티 함수)
+  - [x] 구조화된 로깅 시스템 (error, warn, info, debug)
+  - [x] 컨텍스트 정보 포함
+  - [x] 관리자 페이지에서 로깅 유틸리티 사용
+  - [x] 고객 페이지에서 로깅 유틸리티 사용
+  - [x] 에러 바운더리에서 로깅 유틸리티 사용
+  - [x] 향후 Sentry 등 외부 로깅 서비스 연동 준비
 - [ ] 성능 모니터링
 - [ ] 사용자 행동 분석 (선택사항)
 
@@ -562,7 +592,7 @@
 - Phase 9: 테스트 - 0% (0/3)
 - Phase 10: 배포 - 0% (0/3)
 - Phase 11: 문서화 - 100% (5/5)
-- Phase 12: 유지보수 및 개선 - 0% (0/3)
+- Phase 12: 유지보수 및 개선 - 33.3% (1/3)
 
 ---
 

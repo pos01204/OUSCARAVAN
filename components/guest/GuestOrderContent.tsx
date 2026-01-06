@@ -18,18 +18,20 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
   const [showOrderForm, setShowOrderForm] = useState(false);
   
   return (
-    <div className="space-y-6">
+    <main className="space-y-6" role="main" aria-label="주문 페이지">
       {/* Golden Ticket */}
-      <CouponFlip roomNumber={guestInfo.room} />
+      <section aria-label="쿠폰">
+        <CouponFlip roomNumber={guestInfo.room} />
+      </section>
       
       {/* Menu Showcase */}
-      <div>
+      <section aria-label="시그니처 메뉴">
         <h2 className="mb-4 text-xl font-heading font-bold">시그니처 메뉴</h2>
         <MenuCarousel />
-      </div>
+      </section>
       
       {/* BBQ & Fire Sets */}
-      <div>
+      <section aria-label="불멍/바베큐 주문">
         <h2 className="mb-4 text-xl font-heading font-bold">
           불멍/바베큐 주문
         </h2>
@@ -43,13 +45,14 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
             </p>
             <button
               onClick={() => setShowOrderForm(true)}
-              className="w-full rounded-lg bg-primary px-4 py-3 font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+              className="w-full rounded-lg bg-primary px-4 py-3 font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+              aria-label="주문 폼 열기"
             >
               주문하기
             </button>
           </CardContent>
         </Card>
-      </div>
+      </section>
       
       {/* Order Form Modal */}
       {showOrderForm && (
@@ -59,7 +62,8 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
       )}
       
       {/* Cafe Info */}
-      <Card>
+      <section aria-label="카페 정보">
+        <Card>
         <CardHeader>
           <CardTitle>카페 정보</CardTitle>
         </CardHeader>
@@ -93,7 +97,8 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
             </a>
           </div>
         </CardContent>
-      </Card>
-    </div>
+        </Card>
+      </section>
+    </main>
   );
 }

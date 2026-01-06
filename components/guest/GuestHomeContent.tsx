@@ -40,21 +40,24 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
   }, [reservation, setGuestInfo, isCheckedIn]);
   
   return (
-    <div className="space-y-6">
+    <main className="space-y-6" role="main" aria-label="고객 홈 페이지">
       {/* Hero Section */}
-      <motion.div
+      <motion.section
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         className="relative overflow-hidden rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 p-8 text-center"
+        aria-label="환영 메시지"
       >
         <h1 className="font-heading text-3xl font-bold text-foreground">
           {WELCOME_MESSAGE.korean.replace('{name}', reservation.guestName)}
         </h1>
         {reservation.assignedRoom && (
-          <p className="mt-2 text-muted-foreground">객실: {reservation.assignedRoom}</p>
+          <p className="mt-2 text-muted-foreground" aria-label={`배정된 객실: ${reservation.assignedRoom}`}>
+            객실: {reservation.assignedRoom}
+          </p>
         )}
-      </motion.div>
+      </motion.section>
       
       {/* Checkout Reminder */}
       <CheckoutReminder />
@@ -63,12 +66,12 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
       <TimeCountdown />
       
       {/* Status Cards Grid */}
-      <div className="grid gap-4 md:grid-cols-2">
+      <section className="grid gap-4 md:grid-cols-2" aria-label="서비스 정보 카드">
         <WifiCard />
         <TimeCard />
         <SunsetWidget />
         <CheckInOut />
-      </div>
+      </section>
       
       {/* Order History */}
       <OrderHistory />

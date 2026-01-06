@@ -2,12 +2,7 @@
 
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
-
-// 임시 관리자 로그인 정보
-const ADMIN_CREDENTIALS = {
-  id: 'ouscaravan',
-  password: '123456789a',
-};
+import { ADMIN_CREDENTIALS } from './constants';
 
 /**
  * 관리자 로그인 (서버 액션)

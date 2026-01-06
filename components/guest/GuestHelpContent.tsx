@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/button';
 
 export function GuestHelpContent() {
   return (
-    <div className="space-y-6">
+    <main className="space-y-6" role="main" aria-label="도움말 페이지">
       {/* Emergency FAB (Mobile only) */}
       <a
         href={`tel:${EMERGENCY_CONTACTS.manager.number}`}
@@ -24,7 +24,8 @@ export function GuestHelpContent() {
       </a>
       
       {/* Emergency Contacts */}
-      <Card>
+      <section aria-label="응급 연락처">
+        <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <AlertTriangle className="h-5 w-5 text-destructive" />
@@ -54,10 +55,12 @@ export function GuestHelpContent() {
             </div>
           ))}
         </CardContent>
-      </Card>
+        </Card>
+      </section>
       
       {/* FAQ */}
-      <Card>
+      <section aria-label="자주 묻는 질문">
+        <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <HelpCircle className="h-5 w-5" />
@@ -80,10 +83,12 @@ export function GuestHelpContent() {
             ))}
           </Accordion>
         </CardContent>
-      </Card>
+        </Card>
+      </section>
       
       {/* Safety Info */}
-      <Card>
+      <section aria-label="안전 정보">
+        <Card>
         <CardHeader>
           <CardTitle>안전 정보</CardTitle>
         </CardHeader>
@@ -101,7 +106,8 @@ export function GuestHelpContent() {
             </p>
           </div>
         </CardContent>
-      </Card>
-    </div>
+        </Card>
+      </section>
+    </main>
   );
 }

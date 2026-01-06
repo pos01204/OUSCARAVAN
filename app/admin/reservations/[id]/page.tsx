@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { getReservation, updateReservation, getRooms, sendReservationAssignedToN8N, type Reservation, type Room } from '@/lib/api';
 import { logError } from '@/lib/logger';
+import { validatePhone, cleanPhone } from '@/lib/validation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -59,14 +60,6 @@ export default function ReservationDetailPage() {
     fetchData();
   }, [reservationId, router, toast]);
   
-  // 전화번호 형식 검증
-  const validatePhone = (phoneNumber: string): boolean => {
-    // 숫자만 허용, 하이픈/공백 제거 후 검증
-    const cleaned = phoneNumber.replace(/[-\s()]/g, '');
-    // 010으로 시작하는 11자리 또는 02로 시작하는 9-10자리
-    return /^(010|011|016|017|018|019)\d{7,8}$/.test(cleaned) || 
-           /^02\d{7,8}$/.test(cleaned);
-  };
   
   // 저장 처리
   const handleSave = async () => {
@@ -105,7 +98,7 @@ export default function ReservationDetailPage() {
       const uniqueToken = reservation?.uniqueToken || crypto.randomUUID();
       
       // 2. 전화번호 정리 (하이픈/공백 제거)
-      const cleanedPhone = phone.replace(/[-\s()]/g, '');
+      const cleanedPhone = cleanPhone(phone);
       
       // 3. 예약 정보 업데이트 (Railway 백엔드 API 호출)
       const updatedReservation = await updateReservation(reservationId, {

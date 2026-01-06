@@ -31,34 +31,41 @@ export function GuestGuideContent() {
   });
 
   return (
-    <div className="space-y-6">
+    <main className="space-y-6" role="main" aria-label="안내 페이지">
       <h1 className="text-3xl font-bold">이용 안내서</h1>
 
-      {/* 카테고리 필터 */}
-      <div className="flex flex-wrap gap-2">
-        {categories.map((category) => (
-          <Button
-            key={category}
-            variant={selectedCategory === category ? 'default' : 'outline'}
-            onClick={() => setSelectedCategory(category)}
-            size="sm"
-          >
-            {category}
-          </Button>
-        ))}
-      </div>
+      {/* 검색 및 필터 */}
+      <section className="space-y-4" aria-label="검색 및 필터">
+        {/* 카테고리 필터 */}
+        <div className="flex flex-wrap gap-2" role="tablist" aria-label="카테고리 필터">
+          {categories.map((category) => (
+            <Button
+              key={category}
+              variant={selectedCategory === category ? 'default' : 'outline'}
+              onClick={() => setSelectedCategory(category)}
+              size="sm"
+              role="tab"
+              aria-selected={selectedCategory === category}
+              aria-controls={`category-${category}`}
+            >
+              {category}
+            </Button>
+          ))}
+        </div>
 
-      {/* 검색 입력 필드 */}
-      <div className="relative">
-        <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <Input
-          type="text"
-          placeholder="안내 내용을 검색하세요..."
-          className="pl-10"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-        />
-      </div>
+        {/* 검색 입력 필드 */}
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+          <Input
+            type="text"
+            placeholder="안내 내용을 검색하세요..."
+            className="pl-10"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            aria-label="가이드 검색"
+          />
+        </div>
+      </section>
 
       {/* BBQ 가이드 캐러셀 토글 */}
       <Button onClick={() => setShowBBQCarousel(!showBBQCarousel)} variant="secondary" className="w-full">
@@ -66,9 +73,12 @@ export function GuestGuideContent() {
       </Button>
 
       {showBBQCarousel ? (
-        <BBQCarousel slides={BBQ_GUIDE_SLIDES} onClose={() => setShowBBQCarousel(false)} />
+        <section aria-label="BBQ 가이드 캐러셀">
+          <BBQCarousel slides={BBQ_GUIDE_SLIDES} onClose={() => setShowBBQCarousel(false)} />
+        </section>
       ) : (
-        <Accordion type="single" collapsible className="w-full">
+        <section aria-label="가이드 목록">
+          <Accordion type="single" collapsible className="w-full">
           {filteredGuideData.length === 0 ? (
             <p className="text-center text-muted-foreground py-8">
               검색 결과가 없습니다.
@@ -113,7 +123,8 @@ export function GuestGuideContent() {
             ))
           )}
         </Accordion>
+        </section>
       )}
-    </div>
+    </main>
   );
 }

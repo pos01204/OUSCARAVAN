@@ -103,11 +103,12 @@ export function GuestCheckInOutContent({ reservation, token }: GuestCheckInOutCo
   };
   
   return (
-    <div className="space-y-6">
+    <main className="space-y-6" role="main" aria-label="체크인/체크아웃 페이지">
       <h1 className="text-3xl font-bold">체크인/체크아웃</h1>
       
       {/* 체크인 섹션 */}
-      <Card>
+      <section aria-label="체크인">
+        <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <LogIn className="h-5 w-5" />
@@ -128,17 +129,22 @@ export function GuestCheckInOutContent({ reservation, token }: GuestCheckInOutCo
           ) : (
             <Button
               onClick={handleCheckIn}
-              disabled={isProcessing}
-              className="w-full"
+              disabled={isProcessing || isCheckedIn}
+              className="w-full focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+              aria-label={isCheckedIn ? '체크인 완료' : '체크인하기'}
+              aria-disabled={isProcessing || isCheckedIn}
             >
-              {isProcessing ? '처리 중...' : '체크인하기'}
+              <LogIn className="mr-2 h-4 w-4" aria-hidden="true" />
+              {isProcessing ? '처리 중...' : isCheckedIn ? '체크인 완료' : '체크인'}
             </Button>
           )}
         </CardContent>
-      </Card>
+        </Card>
+      </section>
       
       {/* 체크아웃 섹션 */}
-      <Card>
+      <section aria-label="체크아웃">
+        <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <LogOut className="h-5 w-5" />
@@ -168,7 +174,8 @@ export function GuestCheckInOutContent({ reservation, token }: GuestCheckInOutCo
                     onChange={(e) =>
                       setChecklist({ ...checklist, gasLocked: e.target.checked })
                     }
-                    className="h-4 w-4 rounded border-border"
+                    className="h-4 w-4 rounded border-border focus:outline-none focus:ring-2 focus:ring-primary"
+                    aria-label="가스 밸브 잠금 확인"
                   />
                   <Label htmlFor="gasLocked" className="text-sm">
                     가스 밸브 잠금 확인
@@ -182,7 +189,8 @@ export function GuestCheckInOutContent({ reservation, token }: GuestCheckInOutCo
                     onChange={(e) =>
                       setChecklist({ ...checklist, trashCleaned: e.target.checked })
                     }
-                    className="h-4 w-4 rounded border-border"
+                    className="h-4 w-4 rounded border-border focus:outline-none focus:ring-2 focus:ring-primary"
+                    aria-label="쓰레기 정리 확인"
                   />
                   <Label htmlFor="trashCleaned" className="text-sm">
                     쓰레기 정리 완료
@@ -192,19 +200,24 @@ export function GuestCheckInOutContent({ reservation, token }: GuestCheckInOutCo
               
               <Button
                 onClick={handleCheckOut}
-                disabled={isProcessing || !checklist.gasLocked || !checklist.trashCleaned}
-                className="w-full"
-                variant={isCheckedIn ? 'default' : 'outline'}
+                disabled={isProcessing || isCheckedOut || !checklist.gasLocked || !checklist.trashCleaned}
+                className="w-full focus:outline-none focus:ring-2 focus:ring-destructive focus:ring-offset-2"
+                variant="destructive"
+                aria-label={isCheckedOut ? '체크아웃 완료' : '체크아웃하기'}
+                aria-disabled={isProcessing || isCheckedOut || !checklist.gasLocked || !checklist.trashCleaned}
               >
-                {isProcessing ? '처리 중...' : '체크아웃하기'}
+                <LogOut className="mr-2 h-4 w-4" aria-hidden="true" />
+                {isProcessing ? '처리 중...' : isCheckedOut ? '체크아웃 완료' : '체크아웃'}
               </Button>
             </>
           )}
         </CardContent>
-      </Card>
+        </Card>
+      </section>
       
       {/* 예약 정보 */}
-      <Card>
+      <section aria-label="예약 정보">
+        <Card>
         <CardHeader>
           <CardTitle>예약 정보</CardTitle>
         </CardHeader>
@@ -224,7 +237,8 @@ export function GuestCheckInOutContent({ reservation, token }: GuestCheckInOutCo
             </div>
           )}
         </CardContent>
-      </Card>
-    </div>
+        </Card>
+      </section>
+    </main>
   );
 }
