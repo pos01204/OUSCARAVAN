@@ -6,6 +6,20 @@
 
 ---
 
+## [0.1.8] - 2024-01-15
+
+### 수정됨 (Fixed)
+- Railway 연결 문제 해결
+  - CORS 설정 개선 (Vercel 도메인 명시적 허용)
+  - 타임아웃 설정 추가
+  - 에러 처리 개선
+
+### 추가됨 (Added)
+- Railway 연결 문제 해결 가이드
+  - `RAILWAY_CONNECTION_TROUBLESHOOTING.md` - 연결 문제 해결 가이드
+
+---
+
 ## [0.1.7] - 2024-01-15
 
 ### 수정됨 (Fixed)
