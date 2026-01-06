@@ -75,6 +75,6 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
       
       {/* Order History */}
       <OrderHistory />
-    </div>
+    </main>
   );
 }
