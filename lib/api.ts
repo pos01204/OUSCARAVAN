@@ -401,15 +401,35 @@ export async function updateReservation(
 }
 
 /**
- * 방 목록 조회
+ * 방 목록 조회 (클라이언트 사이드 - Next.js API 라우트 사용)
  */
 export async function getRooms(): Promise<Room[]> {
-  const data = await adminApi('/api/admin/rooms');
+  // Next.js API 라우트를 통해 호출 (서버에서 쿠키 읽기)
+  const response = await fetch('/api/admin/rooms', {
+    method: 'GET',
+    credentials: 'include', // 쿠키 포함
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new ApiError('Unauthorized', 'UNAUTHORIZED', 401);
+    }
+    const errorData = await response.json().catch(() => ({
+      error: 'Failed to fetch rooms',
+    }));
+    throw new ApiError(
+      errorData.error || 'Failed to fetch rooms',
+      errorData.code,
+      response.status
+    );
+  }
+
+  const data = await response.json();
   return Array.isArray(data) ? data : (data.rooms || []);
 }
 
 /**
- * 방 추가
+ * 방 추가 (클라이언트 사이드 - Next.js API 라우트 사용)
  */
 export async function createRoom(data: {
   name: string;
@@ -418,14 +438,34 @@ export async function createRoom(data: {
   status: Room['status'];
   description?: string;
 }): Promise<Room> {
-  return adminApi('/api/admin/rooms', {
+  const response = await fetch('/api/admin/rooms', {
     method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include', // 쿠키 포함
     body: JSON.stringify(data),
-  }) as Promise<Room>;
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new ApiError('Unauthorized', 'UNAUTHORIZED', 401);
+    }
+    const errorData = await response.json().catch(() => ({
+      error: 'Failed to create room',
+    }));
+    throw new ApiError(
+      errorData.error || 'Failed to create room',
+      errorData.code,
+      response.status
+    );
+  }
+
+  return response.json() as Promise<Room>;
 }
 
 /**
- * 방 업데이트
+ * 방 업데이트 (클라이언트 사이드 - Next.js API 라우트 사용)
  */
 export async function updateRoom(
   id: string,
@@ -437,19 +477,54 @@ export async function updateRoom(
     description?: string;
   }
 ): Promise<Room> {
-  return adminApi(`/api/admin/rooms/${id}`, {
+  const response = await fetch(`/api/admin/rooms/${id}`, {
     method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include', // 쿠키 포함
     body: JSON.stringify(data),
-  }) as Promise<Room>;
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new ApiError('Unauthorized', 'UNAUTHORIZED', 401);
+    }
+    const errorData = await response.json().catch(() => ({
+      error: 'Failed to update room',
+    }));
+    throw new ApiError(
+      errorData.error || 'Failed to update room',
+      errorData.code,
+      response.status
+    );
+  }
+
+  return response.json() as Promise<Room>;
 }
 
 /**
- * 방 삭제
+ * 방 삭제 (클라이언트 사이드 - Next.js API 라우트 사용)
  */
 export async function deleteRoom(id: string): Promise<void> {
-  await adminApi(`/api/admin/rooms/${id}`, {
+  const response = await fetch(`/api/admin/rooms/${id}`, {
     method: 'DELETE',
+    credentials: 'include', // 쿠키 포함
   });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new ApiError('Unauthorized', 'UNAUTHORIZED', 401);
+    }
+    const errorData = await response.json().catch(() => ({
+      error: 'Failed to delete room',
+    }));
+    throw new ApiError(
+      errorData.error || 'Failed to delete room',
+      errorData.code,
+      response.status
+    );
+  }
 }
 
 /**
