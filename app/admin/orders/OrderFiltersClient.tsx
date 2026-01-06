@@ -29,7 +29,11 @@ export function OrderFiltersClient() {
       const params = new URLSearchParams();
       if (status && status !== 'all') params.set('status', status);
       if (date) params.set('date', date);
-      if (search) params.set('search', search);
+      if (search) {
+        // 검색어 정리 (보안)
+        const sanitizedSearch = sanitizeInput(search, { maxLength: 100 });
+        params.set('search', sanitizedSearch);
+      }
       
       router.push(`/admin/orders?${params.toString()}`);
     });

@@ -5,6 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { getReservation, updateReservation, getRooms, sendReservationAssignedToN8N, type Reservation, type Room } from '@/lib/api';
 import { logError } from '@/lib/logger';
 import { validatePhone, cleanPhone } from '@/lib/validation';
+import { extractUserFriendlyMessage } from '@/lib/error-messages';
+import { sanitizeInput } from '@/lib/security';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -101,8 +103,11 @@ export default function ReservationDetailPage() {
       const cleanedPhone = cleanPhone(phone);
       
       // 3. 예약 정보 업데이트 (Railway 백엔드 API 호출)
+      // 입력값 정리 (보안)
+      const sanitizedRoom = sanitizeInput(assignedRoom, { maxLength: 50 });
+      
       const updatedReservation = await updateReservation(reservationId, {
-        assignedRoom,
+        assignedRoom: sanitizedRoom,
         phone: cleanedPhone,
         uniqueToken,
         status: 'assigned',
@@ -145,9 +150,12 @@ export default function ReservationDetailPage() {
         reservationId,
         action: 'updateReservation',
       });
+      // 사용자 친화적인 에러 메시지 추출
+      const errorMessage = extractUserFriendlyMessage(error);
+      
       toast({
         title: '저장 실패',
-        description: '예약 정보 저장에 실패했습니다.',
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {

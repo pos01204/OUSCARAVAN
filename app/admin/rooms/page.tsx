@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import { getRooms, createRoom, updateRoom, deleteRoom, type Room } from '@/lib/api';
 import { logError } from '@/lib/logger';
 import { validateRequired, validateLength, validateRange } from '@/lib/validation';
+import { extractUserFriendlyMessage } from '@/lib/error-messages';
+import { sanitizeInput } from '@/lib/security';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -128,16 +130,24 @@ export default function RoomsPage() {
     setIsSaving(true);
     
     try {
+      // 입력값 정리 (보안)
+      const sanitizedFormData = {
+        ...formData,
+        name: sanitizeInput(formData.name, { maxLength: 50 }),
+        type: sanitizeInput(formData.type, { maxLength: 100 }),
+        description: formData.description ? sanitizeInput(formData.description, { maxLength: 500 }) : undefined,
+      };
+      
       if (editingRoom) {
         // 수정
-        await updateRoom(editingRoom.id, formData);
+        await updateRoom(editingRoom.id, sanitizedFormData);
         toast({
           title: '수정 완료',
           description: '방 정보가 수정되었습니다.',
         });
       } else {
         // 추가
-        await createRoom(formData);
+        await createRoom(sanitizedFormData);
         toast({
           title: '추가 완료',
           description: '방이 추가되었습니다.',
@@ -181,9 +191,13 @@ export default function RoomsPage() {
         component: 'RoomsPage',
         roomId,
       });
+      
+      // 사용자 친화적인 에러 메시지 추출
+      const errorMessage = extractUserFriendlyMessage(error);
+      
       toast({
         title: '삭제 실패',
-        description: '방 삭제에 실패했습니다.',
+        description: errorMessage,
         variant: 'destructive',
       });
     }

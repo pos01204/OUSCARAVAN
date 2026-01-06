@@ -3,6 +3,7 @@
  */
 
 import { API_CONFIG, N8N_CONFIG } from './constants';
+import { extractUserFriendlyMessage } from './error-messages';
 import type { ApiErrorCode, ApiErrorResponse } from '@/types';
 import { ApiError } from '@/types';
 
@@ -199,16 +200,9 @@ export async function adminApi(
     
     return response.json();
   } catch (error) {
-    // 네트워크 오류 또는 타임아웃 처리
-    if (error instanceof Error) {
-      if (error.message === 'Request timeout') {
-        throw new Error('요청 시간이 초과되었습니다. 다시 시도해주세요.');
-      }
-      if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-        throw new Error('네트워크 오류가 발생했습니다. 연결을 확인해주세요.');
-      }
-    }
-    throw error;
+    // 사용자 친화적인 에러 메시지로 변환
+    const userFriendlyMessage = extractUserFriendlyMessage(error);
+    throw new Error(userFriendlyMessage);
   }
 }
 
@@ -256,16 +250,9 @@ export async function guestApi(
     
     return response.json();
   } catch (error) {
-    // 네트워크 오류 또는 타임아웃 처리
-    if (error instanceof Error) {
-      if (error.message === 'Request timeout') {
-        throw new Error('요청 시간이 초과되었습니다. 다시 시도해주세요.');
-      }
-      if (error.message.includes('Failed to fetch') || error.message.includes('NetworkError')) {
-        throw new Error('네트워크 오류가 발생했습니다. 연결을 확인해주세요.');
-      }
-    }
-    throw error;
+    // 사용자 친화적인 에러 메시지로 변환
+    const userFriendlyMessage = extractUserFriendlyMessage(error);
+    throw new Error(userFriendlyMessage);
   }
 }
 

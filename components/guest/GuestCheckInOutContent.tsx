@@ -8,6 +8,8 @@ import { Label } from '@/components/ui/label';
 import { useGuestStore } from '@/lib/store';
 import { checkIn as apiCheckIn, checkOut as apiCheckOut } from '@/lib/api';
 import { useToast } from '@/components/ui/use-toast';
+import { logError } from '@/lib/logger';
+import { extractUserFriendlyMessage } from '@/lib/error-messages';
 import { CHECK_IN_OUT } from '@/lib/constants';
 import { logError } from '@/lib/logger';
 import type { Reservation } from '@/lib/api';
@@ -51,9 +53,12 @@ export function GuestCheckInOutContent({ reservation, token }: GuestCheckInOutCo
         token,
         reservationId: reservation.id,
       });
+      // 사용자 친화적인 에러 메시지 추출
+      const errorMessage = extractUserFriendlyMessage(error);
+      
       toast({
         title: '체크인 실패',
-        description: '체크인 처리 중 오류가 발생했습니다.',
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {
@@ -92,9 +97,12 @@ export function GuestCheckInOutContent({ reservation, token }: GuestCheckInOutCo
         reservationId: reservation.id,
         checklist,
       });
+      // 사용자 친화적인 에러 메시지 추출
+      const errorMessage = extractUserFriendlyMessage(error);
+      
       toast({
         title: '체크아웃 실패',
-        description: '체크아웃 처리 중 오류가 발생했습니다.',
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {

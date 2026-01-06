@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { getAdminOrders, updateOrderStatus, type Order } from '@/lib/api';
 import { logError } from '@/lib/logger';
+import { extractUserFriendlyMessage } from '@/lib/error-messages';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -86,9 +87,13 @@ export default function OrdersPage() {
         orderId,
         newStatus,
       });
+      
+      // 사용자 친화적인 에러 메시지 추출
+      const errorMessage = extractUserFriendlyMessage(error);
+      
       toast({
         title: '업데이트 실패',
-        description: '주문 상태 변경에 실패했습니다.',
+        description: errorMessage,
         variant: 'destructive',
       });
     } finally {

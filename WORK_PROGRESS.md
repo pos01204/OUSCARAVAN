@@ -162,6 +162,69 @@
 - 고객은 알림톡 링크를 통해 `/guest/[token]`으로 직접 접근
 - 향후 URL 파라미터를 토큰으로 변환하는 로직 추가 예정
 
+## ✅ 완료된 작업 (2024-01-15 - 추가 29)
+
+### Phase 12: 유지보수 및 개선 (계속)
+
+#### 12.3 보안 - 보안 취약점 점검 및 입력값 정리
+- [x] 보안 유틸리티 함수 생성
+  - [x] `lib/security.ts` 생성
+    - `sanitizeHtml` 함수 (HTML 태그 제거 - XSS 방지)
+    - `escapeHtml` 함수 (특수 문자 이스케이프 - XSS 방지)
+    - `sanitizeSql` 함수 (SQL Injection 방지)
+    - `isValidUrl` 함수 (URL 안전성 검증)
+    - `isValidFilename` 함수 (파일명 안전성 검증)
+    - `limitLength` 함수 (입력값 길이 제한 - DoS 방지)
+    - `sanitizeInput` 함수 (종합 입력값 정리)
+- [x] 사용자 입력값 정리 적용
+  - [x] 예약 상세 페이지 (`app/admin/reservations/[id]/page.tsx`)
+    - 방 이름 입력값 정리 (최대 50자)
+  - [x] 방 관리 페이지 (`app/admin/rooms/page.tsx`)
+    - 방 이름, 타입, 설명 입력값 정리
+    - 최대 길이 제한 (이름: 50자, 타입: 100자, 설명: 500자)
+  - [x] 예약 필터 (`app/admin/reservations/ReservationFiltersClient.tsx`)
+    - 검색어 입력값 정리 (최대 100자)
+  - [x] 주문 필터 (`app/admin/orders/OrderFiltersClient.tsx`)
+    - 검색어 입력값 정리 (최대 100자)
+
+**구현 내용**:
+- XSS 공격 방지를 위한 HTML 태그 제거 및 이스케이프
+- SQL Injection 방지를 위한 특수 문자 제거
+- DoS 공격 방지를 위한 입력값 길이 제한
+- 모든 사용자 입력값에 보안 정리 적용
+
+## ✅ 완료된 작업 (2024-01-15 - 추가 28)
+
+### Phase 12: 유지보수 및 개선 (계속)
+
+#### 12.1 모니터링 - 사용자 친화적인 에러 메시지 개선
+- [x] 에러 메시지 유틸리티 함수 생성
+  - [x] `lib/error-messages.ts` 생성
+    - `getErrorMessage` 함수 (API 에러 코드별 메시지)
+    - `getHttpErrorMessage` 함수 (HTTP 상태 코드별 메시지)
+    - `getNetworkErrorMessage` 함수 (네트워크 에러 메시지)
+    - `extractUserFriendlyMessage` 함수 (에러 객체에서 메시지 추출)
+- [x] API 에러 메시지 개선
+  - [x] `lib/api.ts`에서 `extractUserFriendlyMessage` 사용
+    - `adminApi` 함수에서 사용자 친화적인 에러 메시지 반환
+    - `guestApi` 함수에서 사용자 친화적인 에러 메시지 반환
+- [x] 관리자 페이지 에러 메시지 개선
+  - [x] 예약 상세 페이지 (`app/admin/reservations/[id]/page.tsx`)
+    - 저장 실패 시 구체적인 에러 메시지 표시
+  - [x] 방 관리 페이지 (`app/admin/rooms/page.tsx`)
+    - 저장/삭제 실패 시 구체적인 에러 메시지 표시
+  - [x] 주문 관리 페이지 (`app/admin/orders/page.tsx`)
+    - 상태 업데이트 실패 시 구체적인 에러 메시지 표시
+- [x] 고객 페이지 에러 메시지 개선
+  - [x] 체크인/체크아웃 페이지 (`components/guest/GuestCheckInOutContent.tsx`)
+    - 체크인/체크아웃 실패 시 구체적인 에러 메시지 표시
+
+**구현 내용**:
+- API 에러 코드별 사용자 친화적인 메시지 제공
+- HTTP 상태 코드별 사용자 친화적인 메시지 제공
+- 네트워크 에러 메시지 개선
+- 모든 에러 처리에서 일관된 사용자 친화적인 메시지 표시
+
 ## ✅ 완료된 작업 (2024-01-15 - 추가 27)
 
 ### Phase 8: UI/UX 개선 (계속)
