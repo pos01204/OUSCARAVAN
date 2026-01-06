@@ -67,23 +67,37 @@ export async function adminLogin(formData: FormData) {
       contentType: response.headers.get('content-type'),
     });
 
-    // 응답 본문을 먼저 텍스트로 읽기 (디버깅용)
-    const responseText = await response.text();
-    console.log('[LOGIN] Response body (text):', {
-      length: responseText.length,
-      preview: responseText.substring(0, 200),
-      isEmpty: responseText.length === 0,
-    });
-
+    // 응답 상태 확인
     if (!response.ok) {
-      console.error('[LOGIN] Authentication failed:', {
-        status: response.status,
-        statusText: response.statusText,
-        errorBody: responseText.substring(0, 200),
-      });
+      // 에러 응답 본문 읽기
+      let errorBody = '';
+      try {
+        errorBody = await response.text();
+        console.error('[LOGIN] Authentication failed:', {
+          status: response.status,
+          statusText: response.statusText,
+          errorBody: errorBody.substring(0, 200),
+        });
+      } catch (e) {
+        console.error('[LOGIN] Failed to read error response body:', e);
+      }
       
-      // 인증 실패
-      redirect('/login?error=invalid_credentials');
+      // 인증 실패 - redirect는 try-catch 밖에서 호출
+      throw new Error('AUTH_FAILED');
+    }
+
+    // 성공 응답 본문 읽기
+    let responseText = '';
+    try {
+      responseText = await response.text();
+      console.log('[LOGIN] Response body (text):', {
+        length: responseText.length,
+        preview: responseText.substring(0, 200),
+        isEmpty: responseText.length === 0,
+      });
+    } catch (e) {
+      console.error('[LOGIN] Failed to read response body:', e);
+      throw new Error('RESPONSE_READ_FAILED');
     }
 
     // JWT 토큰 받기
@@ -107,14 +121,14 @@ export async function adminLogin(formData: FormData) {
         responseText: responseText.substring(0, 500),
         contentType: response.headers.get('content-type'),
       });
-      redirect('/login?error=network_error');
+      throw new Error('JSON_PARSE_FAILED');
     }
     
     const token = data.token;
 
     if (!token) {
       console.error('[LOGIN] No token in response:', data);
-      redirect('/login?error=invalid_credentials');
+      throw new Error('NO_TOKEN_IN_RESPONSE');
     }
 
     // 쿠키에 토큰 저장
@@ -127,8 +141,21 @@ export async function adminLogin(formData: FormData) {
     });
     
     console.log('[LOGIN] Login successful, redirecting to /admin');
-    redirect('/admin');
+    // redirect는 try-catch 밖에서 호출
+    throw new Error('LOGIN_SUCCESS');
   } catch (error) {
+    // 로그인 성공 - redirect
+    if (error instanceof Error && error.message === 'LOGIN_SUCCESS') {
+      redirect('/admin');
+      return; // redirect는 예외를 던지므로 여기 도달하지 않음
+    }
+
+    // 인증 실패
+    if (error instanceof Error && error.message === 'AUTH_FAILED') {
+      redirect('/login?error=invalid_credentials');
+      return;
+    }
+
     // 네트워크 오류 등
     const errorDetails = {
       name: error instanceof Error ? error.name : 'Unknown',
@@ -149,6 +176,7 @@ export async function adminLogin(formData: FormData) {
     if (error instanceof Error && (error.name === 'AbortError' || error.message.includes('timeout'))) {
       console.error('[LOGIN] Timeout error detected');
       redirect('/login?error=timeout');
+      return;
     }
     
     // 네트워크 에러인지 확인
@@ -161,6 +189,18 @@ export async function adminLogin(formData: FormData) {
     )) {
       console.error('[LOGIN] Network error detected:', error.message);
       redirect('/login?error=network_error');
+      return;
+    }
+
+    // 응답 파싱 실패
+    if (error instanceof Error && (
+      error.message === 'RESPONSE_READ_FAILED' ||
+      error.message === 'JSON_PARSE_FAILED' ||
+      error.message === 'NO_TOKEN_IN_RESPONSE'
+    )) {
+      console.error('[LOGIN] Response processing failed:', error.message);
+      redirect('/login?error=network_error');
+      return;
     }
     
     console.error('[LOGIN] Unknown error, redirecting to network_error');
