@@ -16,10 +16,10 @@ export async function adminLogin(formData: FormData) {
     redirect('/login?error=invalid_credentials');
   }
 
+  // Railway 백엔드 API로 로그인 요청
+  const apiUrl = API_CONFIG.baseUrl;
+  
   try {
-    // Railway 백엔드 API로 로그인 요청
-    const apiUrl = API_CONFIG.baseUrl;
-    
     // 타임아웃 설정 (10초)
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 10000);
