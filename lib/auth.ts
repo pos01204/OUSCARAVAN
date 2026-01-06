@@ -64,6 +64,14 @@ export async function adminLogin(formData: FormData) {
   } catch (error) {
     // 네트워크 오류 등
     console.error('Login error:', error);
+    console.error('API URL:', apiUrl);
+    console.error('Error details:', error instanceof Error ? error.message : String(error));
+    
+    // 타임아웃 에러인지 확인
+    if (error instanceof Error && error.name === 'AbortError') {
+      redirect('/login?error=timeout');
+    }
+    
     redirect('/login?error=network_error');
   }
 }

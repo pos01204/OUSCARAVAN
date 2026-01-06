@@ -9,7 +9,10 @@ export default function LoginPage({
 }: {
   searchParams?: { error?: string; redirect?: string };
 }) {
-  const hasError = searchParams?.error === 'invalid_credentials';
+  const error = searchParams?.error;
+  const hasError = error === 'invalid_credentials';
+  const hasNetworkError = error === 'network_error';
+  const hasTimeoutError = error === 'timeout';
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background">
@@ -25,6 +28,24 @@ export default function LoginPage({
             {hasError && (
               <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
                 아이디 또는 비밀번호가 올바르지 않습니다.
+              </div>
+            )}
+            {hasNetworkError && (
+              <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+                네트워크 오류가 발생했습니다. Railway API 서버에 연결할 수 없습니다.
+                <br />
+                <span className="text-xs mt-1 block">
+                  Vercel 환경 변수에서 NEXT_PUBLIC_API_URL을 확인해주세요.
+                </span>
+              </div>
+            )}
+            {hasTimeoutError && (
+              <div className="rounded-md bg-destructive/10 p-3 text-sm text-destructive">
+                요청 시간이 초과되었습니다. Railway API 서버가 응답하지 않습니다.
+                <br />
+                <span className="text-xs mt-1 block">
+                  Railway 서버 상태를 확인해주세요.
+                </span>
               </div>
             )}
             <div className="grid gap-2">
