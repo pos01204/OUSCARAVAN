@@ -518,6 +518,19 @@ export async function getAdminStats(): Promise<AdminStats> {
 /**
  * 타입 정의는 types/index.ts에서 import
  */
+import type {
+  Reservation,
+  Order,
+  OrderItem,
+  Room,
+  AdminStats,
+  AuthResponse,
+  ReservationsResponse,
+  OrdersResponse,
+  RoomsResponse,
+  CheckInOutResponse,
+} from '@/types';
+
 export type {
   Reservation,
   Order,
