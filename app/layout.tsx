@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { BottomNav } from "@/components/shared/BottomNav";
@@ -25,13 +25,14 @@ export const metadata: Metadata = {
     title: "OUSCARAVAN - 스마트 컨시어지",
     description: "OUSCARAVAN을 위한 프리미엄 컨시어지 서비스",
   },
-  viewport: {
-    width: "device-width",
-    initialScale: 1,
-    maximumScale: 5,
-  },
-  themeColor: "#FF7E5F",
   manifest: "/manifest.json",
+};
+
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: "#FF7E5F",
 };
 
 export default function RootLayout({
