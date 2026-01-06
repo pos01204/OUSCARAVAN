@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { getRooms, createRoom, updateRoom, deleteRoom, type Room } from '@/lib/api';
 import { logError } from '@/lib/logger';
+import { validateRequired, validateLength, validateRange } from '@/lib/validation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
