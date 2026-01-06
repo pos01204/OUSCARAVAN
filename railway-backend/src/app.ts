@@ -19,6 +19,10 @@ const allowedOrigins = [
   'http://localhost:3000',
 ];
 
+// Vercel 도메인 패턴 허용 (모든 Vercel 서브도메인)
+const vercelPattern = /^https:\/\/ouscaravan.*\.vercel\.app$/;
+const vercelProjectsPattern = /^https:\/\/ouscaravan-.*\.vercel\.app$/;
+
 // 환경 변수에서 추가 도메인 허용
 if (process.env.ALLOWED_ORIGINS) {
   allowedOrigins.push(...process.env.ALLOWED_ORIGINS.split(','));
@@ -30,21 +34,32 @@ app.use(cors({
     if (!origin) {
       return callback(null, true);
     }
-    // 허용된 origin인지 확인
+    
+    // 허용된 origin 목록 확인
     if (allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      // 개발 환경에서는 모든 origin 허용
-      if (process.env.NODE_ENV !== 'production') {
-        callback(null, true);
-      } else {
-        callback(new Error('Not allowed by CORS'));
-      }
+      console.log('[CORS] Allowing origin from list:', origin);
+      return callback(null, true);
     }
+    
+    // Vercel 도메인 패턴 확인
+    if (vercelPattern.test(origin) || vercelProjectsPattern.test(origin)) {
+      console.log('[CORS] Allowing Vercel origin:', origin);
+      return callback(null, true);
+    }
+    
+    // 개발 환경에서는 모든 origin 허용
+    if (process.env.NODE_ENV !== 'production') {
+      console.log('[CORS] Allowing origin in development:', origin);
+      return callback(null, true);
+    }
+    
+    // 프로덕션에서 허용되지 않은 origin
+    console.error('[CORS] Blocked origin:', origin);
+    callback(new Error('Not allowed by CORS'));
   },
   credentials: true,
   methods: ['GET', 'POST', 'PATCH', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-API-Key'],
 }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));

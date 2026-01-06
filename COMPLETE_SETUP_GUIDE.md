@@ -75,9 +75,14 @@
 1. **"Gmail"** 노드 추가
 2. **Trigger:** `Message Received`
 3. **Settings:**
-   - **From:** `naver.com` (또는 네이버 예약 이메일 주소)
-   - **Subject Contains:** `[네이버 예약]` 또는 `확정`
-   - **Poll Times:** `Every 5 minutes`
+   - **Credential to connect with:** Gmail account 선택
+   - **Poll Times:** `Every Minute` (1분마다 확인)
+   - **Event:** `Message Received`
+   - **Simplify:** `ON` (활성화)
+   - **Filters:**
+     - **Search:** `subject:[네이버 예약] newer_than:1d` (최근 1일 이내 이메일만)
+     - **Sender:** `naverbooking_noreply@navercorp.com`
+   - **"Fetch Test Event"** 버튼 클릭하여 최신 이메일 확인
 
 #### 3단계: Code 노드 추가 (이메일 파싱)
 
