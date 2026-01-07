@@ -171,118 +171,81 @@ export function ReservationCalendarView({
       invalid: reservations.length - validReservations.length,
     });
     
-    // 하이브리드 방식: 날짜별로 그룹화하여 이벤트 생성
+    // 날짜별로 미배정/체크인/체크아웃 건수만 표시
     const eventMap = new Map<string, ReservationEvent>();
+    const processedDates = new Set<string>();
     
-    validReservations.forEach((reservation) => {
-      try {
-        // 체크인 날짜 (시작일) - 날짜만 사용 (시간 제거)
-        const checkinDate = new Date(reservation.checkin);
-        const startDate = new Date(checkinDate.getFullYear(), checkinDate.getMonth(), checkinDate.getDate());
-        startDate.setHours(0, 0, 0, 0);
-
-        // 체크아웃 날짜 (종료일) - 체크아웃 날짜 포함 (하루 종일 표시)
-        const checkoutDate = new Date(reservation.checkout);
-        const endDate = new Date(checkoutDate.getFullYear(), checkoutDate.getMonth(), checkoutDate.getDate());
-        endDate.setHours(23, 59, 59, 999);
-
-        // 체크아웃이 체크인보다 이전이면 체크인 다음 날로 설정
-        if (endDate < startDate) {
-          console.warn('[Calendar] Checkout before checkin, adjusting:', {
-            reservationId: reservation.id,
-            checkin: reservation.checkin,
-            checkout: reservation.checkout,
-          });
-          endDate.setTime(startDate.getTime());
-          endDate.setDate(endDate.getDate() + 1);
-          endDate.setHours(23, 59, 59, 999);
-        }
-
-        // 체크인부터 체크아웃까지 각 날짜별로 이벤트 생성
-        const currentDate = new Date(startDate);
-        while (currentDate <= endDate) {
-          const dateKey = format(currentDate, 'yyyy-MM-dd');
-          const dateReservations = reservationsByDate[dateKey] || [];
-          
-          // 대기/미배정 예약만 그룹화 대상
-          const isPendingOrUnassigned = reservation.status === 'pending' || !reservation.assignedRoom;
-          const pendingReservations = dateReservations.filter(r => 
-            r.status === 'pending' || !r.assignedRoom
-          );
-          const shouldGroup = isPendingOrUnassigned && pendingReservations.length >= PENDING_GROUP_THRESHOLD;
-          
-          if (shouldGroup) {
-            // 대기/미배정 그룹 이벤트 생성
-            const unassignedCount = pendingReservations.filter(r => !r.assignedRoom).length;
-            const pendingCount = pendingReservations.filter(r => r.status === 'pending' && r.assignedRoom).length;
-            
-            // 미배정이 있으면 미배정 그룹, 없으면 대기 그룹
-            const groupKey = unassignedCount > 0 
-              ? `${dateKey}-unassigned`
-              : `${dateKey}-pending`;
-            
-            if (!eventMap.has(groupKey)) {
-              const firstReservation = pendingReservations[0];
-              if (firstReservation) {
-                const dayStart = new Date(currentDate);
-                dayStart.setHours(0, 0, 0, 0);
-                const dayEnd = new Date(currentDate);
-                dayEnd.setHours(23, 59, 59, 999);
-                
-                const groupLabel = unassignedCount > 0 
-                  ? `미배정: ${unassignedCount}건`
-                  : `대기: ${pendingCount}건`;
-                
-                eventMap.set(groupKey, {
-                  id: `group-${groupKey}`,
-                  title: groupLabel,
-                  start: dayStart,
-                  end: dayEnd,
-                  resource: firstReservation,
-                });
-              }
-            }
-          } else {
-            // 개별 표시: 각 예약을 개별 이벤트로 생성
-            const eventKey = `${dateKey}-${reservation.id}`;
-            if (!eventMap.has(eventKey)) {
-              // 체크인/체크아웃 날짜 확인
-              const checkinDate = new Date(reservation.checkin);
-              const checkoutDate = new Date(reservation.checkout);
-              const isCheckinDay = isSameDay(checkinDate, currentDate);
-              const isCheckoutDay = isSameDay(checkoutDate, currentDate);
-              
-              // 이벤트 제목에 체크인/체크아웃 정보 추가
-              let titlePrefix = '';
-              if (isCheckinDay && isCheckoutDay) {
-                titlePrefix = '✓→ '; // 체크인+체크아웃
-              } else if (isCheckinDay) {
-                titlePrefix = '✓ '; // 체크인
-              } else if (isCheckoutDay) {
-                titlePrefix = '→ '; // 체크아웃
-              }
-              
-              const dayStart = new Date(currentDate);
-              dayStart.setHours(0, 0, 0, 0);
-              const dayEnd = new Date(currentDate);
-              dayEnd.setHours(23, 59, 59, 999);
-              
-              eventMap.set(eventKey, {
-                id: `${reservation.id}-${dateKey}`,
-                title: `${titlePrefix}${reservation.guestName}${reservation.assignedRoom ? ` (${reservation.assignedRoom})` : ' (미)'}`,
-                start: dayStart,
-                end: dayEnd,
-                resource: reservation,
-              });
-            }
-          }
-          
-          currentDate.setDate(currentDate.getDate() + 1);
-        }
-      } catch (error) {
-        console.error('[Calendar] Error creating event:', {
-          reservationId: reservation.id,
-          error,
+    // 모든 날짜를 한 번만 순회하여 이벤트 생성
+    Object.keys(reservationsByDate).forEach((dateKey) => {
+      if (processedDates.has(dateKey)) return;
+      processedDates.add(dateKey);
+      
+      const dateReservations = reservationsByDate[dateKey] || [];
+      if (dateReservations.length === 0) return;
+      
+      const currentDate = new Date(dateKey + 'T00:00:00');
+      if (isNaN(currentDate.getTime())) return;
+      
+      // 1. 미배정 건수
+      const unassignedReservations = dateReservations.filter(r => !r.assignedRoom);
+      const unassignedCount = unassignedReservations.length;
+      if (unassignedCount > 0) {
+        const unassignedKey = `${dateKey}-unassigned`;
+        const dayStart = new Date(currentDate);
+        dayStart.setHours(0, 0, 0, 0);
+        const dayEnd = new Date(currentDate);
+        dayEnd.setHours(23, 59, 59, 999);
+        
+        eventMap.set(unassignedKey, {
+          id: `group-${unassignedKey}`,
+          title: `미배정: ${unassignedCount}건`,
+          start: dayStart,
+          end: dayEnd,
+          resource: unassignedReservations[0],
+        });
+      }
+      
+      // 2. 체크인 건수
+      const checkinReservations = dateReservations.filter(r => {
+        const rCheckin = new Date(r.checkin);
+        return isSameDay(rCheckin, currentDate);
+      });
+      const checkinCount = checkinReservations.length;
+      if (checkinCount > 0) {
+        const checkinKey = `${dateKey}-checkin`;
+        const dayStart = new Date(currentDate);
+        dayStart.setHours(0, 0, 0, 0);
+        const dayEnd = new Date(currentDate);
+        dayEnd.setHours(23, 59, 59, 999);
+        
+        eventMap.set(checkinKey, {
+          id: `group-${checkinKey}`,
+          title: `체크인: ${checkinCount}건`,
+          start: dayStart,
+          end: dayEnd,
+          resource: checkinReservations[0],
+        });
+      }
+      
+      // 3. 체크아웃 건수
+      const checkoutReservations = dateReservations.filter(r => {
+        const rCheckout = new Date(r.checkout);
+        return isSameDay(rCheckout, currentDate);
+      });
+      const checkoutCount = checkoutReservations.length;
+      if (checkoutCount > 0) {
+        const checkoutKey = `${dateKey}-checkout`;
+        const dayStart = new Date(currentDate);
+        dayStart.setHours(0, 0, 0, 0);
+        const dayEnd = new Date(currentDate);
+        dayEnd.setHours(23, 59, 59, 999);
+        
+        eventMap.set(checkoutKey, {
+          id: `group-${checkoutKey}`,
+          title: `체크아웃: ${checkoutCount}건`,
+          start: dayStart,
+          end: dayEnd,
+          resource: checkoutReservations[0],
         });
       }
     });
@@ -306,10 +269,25 @@ export function ReservationCalendarView({
       };
     }
     
+    // 이벤트 타입별 개수 계산
+    const unassignedEvents = events.filter(e => {
+      const title = typeof e.title === 'string' ? e.title : String(e.title || '');
+      return title.includes('미배정');
+    }).length;
+    const checkinEvents = events.filter(e => {
+      const title = typeof e.title === 'string' ? e.title : String(e.title || '');
+      return title.includes('체크인');
+    }).length;
+    const checkoutEvents = events.filter(e => {
+      const title = typeof e.title === 'string' ? e.title : String(e.title || '');
+      return title.includes('체크아웃');
+    }).length;
+    
     console.log('[Calendar] Generated events:', {
       total: events.length,
-      grouped: events.filter(e => e.id.startsWith('group-')).length,
-      individual: events.filter(e => !e.id.startsWith('group-')).length,
+      unassigned: unassignedEvents,
+      checkin: checkinEvents,
+      checkout: checkoutEvents,
       dateRange,
     });
     
@@ -317,7 +295,7 @@ export function ReservationCalendarView({
   }, [reservations, reservationsByDate]);
 
 
-  // 이벤트 스타일 커스터마이징 (체크인/체크아웃 구분 강화)
+  // 이벤트 스타일 커스터마이징 (미배정/체크인/체크아웃 건수 표시)
   const eventStyleGetter = (event: ReservationEvent) => {
     const reservation = event.resource;
     const isGrouped = event.id.startsWith('group-');
@@ -333,9 +311,9 @@ export function ReservationCalendarView({
           color: colorConfig.text,
           border: '0px',
           display: 'block',
-          fontSize: '0.75rem',
-          fontWeight: '600',
-          padding: '4px 8px',
+          fontSize: '0.7rem',
+          fontWeight: '700',
+          padding: '2px 6px',
           cursor: 'pointer',
           marginBottom: '2px',
           overflow: 'hidden',
@@ -345,29 +323,22 @@ export function ReservationCalendarView({
       };
     }
     
-    // 체크인/체크아웃 날짜 확인
-    const checkinDate = new Date(reservation.checkin);
-    const checkoutDate = new Date(reservation.checkout);
-    const isCheckinDay = isSameDay(checkinDate, event.start);
-    const isCheckoutDay = isSameDay(checkoutDate, event.start);
-    
-    // 색상 결정: 체크인/체크아웃 우선
+    // 그룹 이벤트 색상 결정 (미배정/체크인/체크아웃)
     let colorConfig;
-    if (isGrouped) {
-      // 그룹 이벤트는 회색 (대기/미배정)
+    const titleString = typeof event.title === 'string' ? event.title : String(event.title || '');
+    
+    if (titleString.includes('미배정')) {
+      // 미배정: 회색
       colorConfig = { bg: '#6B7280', text: 'white' };
-    } else if (isCheckinDay && isCheckoutDay) {
-      // 체크인+체크아웃: 보라색
-      colorConfig = { bg: '#7C3AED', text: 'white' };
-    } else if (isCheckinDay) {
+    } else if (titleString.includes('체크인')) {
       // 체크인: 초록색
       colorConfig = { bg: '#059669', text: 'white' };
-    } else if (isCheckoutDay) {
+    } else if (titleString.includes('체크아웃')) {
       // 체크아웃: 파란색
       colorConfig = { bg: '#2563EB', text: 'white' };
     } else {
-      // 일반: 상태별 색상
-      colorConfig = STATUS_COLORS[reservation.status] || STATUS_COLORS.pending;
+      // 기본: 회색
+      colorConfig = { bg: '#6B7280', text: 'white' };
     }
     
     return {
@@ -378,69 +349,54 @@ export function ReservationCalendarView({
         color: colorConfig.text,
         border: '0px',
         display: 'block',
-        fontSize: isGrouped ? '0.7rem' : '0.75rem',
-        fontWeight: isGrouped ? '700' : '600',
-        padding: isGrouped ? '2px 6px' : '4px 8px',
+        fontSize: '0.7rem',
+        fontWeight: '700',
+        padding: '2px 6px',
         cursor: 'pointer',
         marginBottom: '2px',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
+        textAlign: 'center',
       },
     };
   };
 
-  // 커스텀 이벤트 컴포넌트 (하이브리드 방식)
+  // 커스텀 이벤트 컴포넌트 (미배정/체크인/체크아웃 건수만 표시)
   const EventComponent = useCallback(({ event }: { event: ReservationEvent }) => {
-    const reservation = event.resource;
-    const colorConfig = STATUS_COLORS[reservation.status] || STATUS_COLORS.pending;
-    const isGrouped = event.id.startsWith('group-');
-    
     // title을 string으로 변환
     const titleString = typeof event.title === 'string' ? event.title : String(event.title || '');
     
-    if (isGrouped) {
-      // 그룹 카운트 표시
-      return (
-        <div
-          style={{
-            backgroundColor: colorConfig.bg,
-            color: colorConfig.text,
-            padding: '2px 6px',
-            borderRadius: '4px',
-            fontSize: '0.7rem',
-            fontWeight: '700',
-            textAlign: 'center',
-            width: '100%',
-          }}
-          title={titleString}
-        >
-          {titleString}
-        </div>
-      );
+    // 색상 결정
+    let colorConfig;
+    if (titleString.includes('미배정')) {
+      colorConfig = { bg: '#6B7280', text: 'white' };
+    } else if (titleString.includes('체크인')) {
+      colorConfig = { bg: '#059669', text: 'white' };
+    } else if (titleString.includes('체크아웃')) {
+      colorConfig = { bg: '#2563EB', text: 'white' };
     } else {
-      // 개별 표시
-      const displayText = `${reservation.guestName} ${reservation.assignedRoom ? `(${reservation.assignedRoom})` : '(미)'}`;
-      return (
-        <div
-          style={{
-            backgroundColor: colorConfig.bg,
-            color: colorConfig.text,
-            padding: '4px 8px',
-            borderRadius: '4px',
-            fontSize: '0.75rem',
-            fontWeight: '600',
-            overflow: 'hidden',
-            textOverflow: 'ellipsis',
-            whiteSpace: 'nowrap',
-            width: '100%',
-          }}
-          title={displayText}
-        >
-          {displayText}
-        </div>
-      );
+      colorConfig = { bg: '#6B7280', text: 'white' };
     }
+    
+    // 모든 이벤트를 건수로 표시
+    return (
+      <div
+        style={{
+          backgroundColor: colorConfig.bg,
+          color: colorConfig.text,
+          padding: '2px 6px',
+          borderRadius: '4px',
+          fontSize: '0.7rem',
+          fontWeight: '700',
+          textAlign: 'center',
+          width: '100%',
+        }}
+        title={titleString}
+      >
+        {titleString}
+      </div>
+    );
   }, []);
 
   // 커스텀 컴포넌트 설정
@@ -550,10 +506,72 @@ export function ReservationCalendarView({
     showMore: (total: number) => `+${total}개 더 보기`,
   };
 
-  // 선택된 날짜의 예약 목록
-  const selectedDateReservations = selectedDate 
-    ? getReservationsForDate(selectedDate)
-    : [];
+  // 선택된 날짜의 예약 목록 (중요도 순서로 정렬: 미배정 → 체크인 → 체크아웃)
+  const selectedDateReservations = useMemo(() => {
+    if (!selectedDate) return [];
+    
+    const dateReservations = getReservationsForDate(selectedDate);
+    
+    // 중요도 순서로 정렬
+    return [...dateReservations].sort((a, b) => {
+      // 1순위: 미배정
+      const aUnassigned = !a.assignedRoom;
+      const bUnassigned = !b.assignedRoom;
+      if (aUnassigned && !bUnassigned) return -1;
+      if (!aUnassigned && bUnassigned) return 1;
+      
+      // 2순위: 체크인 날짜
+      const aCheckin = new Date(a.checkin);
+      const bCheckin = new Date(b.checkin);
+      const aIsCheckinDay = isSameDay(aCheckin, selectedDate);
+      const bIsCheckinDay = isSameDay(bCheckin, selectedDate);
+      if (aIsCheckinDay && !bIsCheckinDay) return -1;
+      if (!aIsCheckinDay && bIsCheckinDay) return 1;
+      
+      // 3순위: 체크아웃 날짜
+      const aCheckout = new Date(a.checkout);
+      const bCheckout = new Date(b.checkout);
+      const aIsCheckoutDay = isSameDay(aCheckout, selectedDate);
+      const bIsCheckoutDay = isSameDay(bCheckout, selectedDate);
+      if (aIsCheckoutDay && !bIsCheckoutDay) return -1;
+      if (!aIsCheckoutDay && bIsCheckoutDay) return 1;
+      
+      // 나머지는 이름순
+      return a.guestName.localeCompare(b.guestName);
+    });
+  }, [selectedDate, reservations]);
+
+  // 예약 정렬 함수 (중요도 순서: 미배정 → 체크인 → 체크아웃)
+  const sortReservationsByPriority = useCallback((reservations: Reservation[]) => {
+    if (!selectedDate) return reservations;
+    
+    return [...reservations].sort((a, b) => {
+      // 1순위: 미배정
+      const aUnassigned = !a.assignedRoom;
+      const bUnassigned = !b.assignedRoom;
+      if (aUnassigned && !bUnassigned) return -1;
+      if (!aUnassigned && bUnassigned) return 1;
+      
+      // 2순위: 체크인 날짜
+      const aCheckin = new Date(a.checkin);
+      const bCheckin = new Date(b.checkin);
+      const aIsCheckinDay = isSameDay(aCheckin, selectedDate);
+      const bIsCheckinDay = isSameDay(bCheckin, selectedDate);
+      if (aIsCheckinDay && !bIsCheckinDay) return -1;
+      if (!aIsCheckinDay && bIsCheckinDay) return 1;
+      
+      // 3순위: 체크아웃 날짜
+      const aCheckout = new Date(a.checkout);
+      const bCheckout = new Date(b.checkout);
+      const aIsCheckoutDay = isSameDay(aCheckout, selectedDate);
+      const bIsCheckoutDay = isSameDay(bCheckout, selectedDate);
+      if (aIsCheckoutDay && !bIsCheckoutDay) return -1;
+      if (!aIsCheckoutDay && bIsCheckoutDay) return 1;
+      
+      // 나머지는 이름순
+      return a.guestName.localeCompare(b.guestName);
+    });
+  }, [selectedDate]);
 
   // 상태별 배지 (개선된 색상 시스템 사용)
   const getStatusBadge = (status: Reservation['status']) => {
@@ -778,9 +796,9 @@ export function ReservationCalendarView({
                 </TabsContent>
                 
                 <TabsContent value="assigned" className="mt-4 space-y-3">
-                  {selectedDateReservations
-                    .filter(r => r.status === 'assigned')
-                    .map((reservation) => {
+                  {sortReservationsByPriority(
+                    selectedDateReservations.filter(r => r.status === 'assigned')
+                  ).map((reservation) => {
                       const checkin = new Date(reservation.checkin);
                       const checkout = new Date(reservation.checkout);
                       const isCheckinDay = selectedDate ? isSameDay(checkin, selectedDate) : false;
@@ -883,9 +901,9 @@ export function ReservationCalendarView({
                 </TabsContent>
                 
                 <TabsContent value="pending" className="mt-4 space-y-3">
-                  {selectedDateReservations
-                    .filter(r => r.status === 'pending')
-                    .map((reservation) => {
+                  {sortReservationsByPriority(
+                    selectedDateReservations.filter(r => r.status === 'pending')
+                  ).map((reservation) => {
                       const checkin = new Date(reservation.checkin);
                       const checkout = new Date(reservation.checkout);
                       const isCheckinDay = selectedDate ? isSameDay(checkin, selectedDate) : false;
@@ -996,9 +1014,9 @@ export function ReservationCalendarView({
                 </TabsContent>
                 
                 <TabsContent value="checked_in" className="mt-4 space-y-3">
-                  {selectedDateReservations
-                    .filter(r => r.status === 'checked_in')
-                    .map((reservation) => {
+                  {sortReservationsByPriority(
+                    selectedDateReservations.filter(r => r.status === 'checked_in')
+                  ).map((reservation) => {
                       const checkin = new Date(reservation.checkin);
                       const checkout = new Date(reservation.checkout);
                       const isCheckinDay = selectedDate ? isSameDay(checkin, selectedDate) : false;
