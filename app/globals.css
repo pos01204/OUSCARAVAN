@@ -55,11 +55,11 @@
 }
 
 .rbc-today {
-  @apply bg-accent opacity-30;
+  background-color: rgba(44, 62, 80, 0.3);
 }
 
 .rbc-off-range-bg {
-  @apply bg-muted opacity-20;
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 .rbc-off-range {
@@ -117,7 +117,7 @@
 }
 
 .rbc-agenda-view table tbody > tr:hover {
-  @apply bg-accent opacity-50;
+  background-color: rgba(44, 62, 80, 0.5);
 }
 
 .rbc-popup {
