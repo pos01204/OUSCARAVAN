@@ -68,10 +68,34 @@
 
 .rbc-event {
   @apply rounded-md px-2 py-1 text-xs font-semibold cursor-pointer transition-opacity hover:opacity-80;
+  margin-bottom: 2px !important;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .rbc-event-content {
   @apply truncate;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* 하이브리드 방식: 예약이 많을 때 스타일 개선 */
+.rbc-day-slot .rbc-events-container {
+  margin-right: 0;
+}
+
+.rbc-day-slot .rbc-event {
+  margin-bottom: 2px;
+  min-height: 20px;
+}
+
+/* 그룹 카운트 스타일 */
+.rbc-event.rbc-event-grouped {
+  font-weight: 700;
+  text-align: center;
+  padding: 2px 6px;
 }
 
 .rbc-toolbar {

@@ -69,6 +69,17 @@ export function ReservationsViewClient({
       );
     }
     
+    // 미배정 필터 (URL 파라미터로 확인)
+    // 빠른 필터 "미배정만"은 리스트 뷰에서만 작동
+    // 실제 구현은 URL 파라미터나 별도 상태로 관리 가능
+    
+    console.log('[ReservationsViewClient] Filtered reservations:', {
+      view,
+      total: reservations.length,
+      filtered: filtered.length,
+      filters: { status, checkin, checkout, search },
+    });
+    
     return filtered;
   }, [reservations, view, status, checkin, checkout, search]);
 
