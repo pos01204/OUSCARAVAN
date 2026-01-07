@@ -190,7 +190,134 @@ Extract from HTML 노드를 건너뛰고 Code 노드에서 직접 HTML을 파싱
 HTML 노드의 출력을 직접 사용하는 코드:
 
 ```javascript
-// Gmail Trigger에서 이메일 데이터 가져오기
+// HTML 노드에서 전달된 데이터 가져오기
+// HTML 노드 출력이 배열인 경우 첫 번째 요소 사용
+let htmlOutput = $input.item.json;
+if (Array.isArray(htmlOutput) && htmlOutput.length > 0) {
+  htmlOutput = htmlOutput[0];
+}
+const allInputs = $input.all();
+
+// HTML 노드 출력에서 데이터 추출
+let reservationNumber = '';
+let guestName = '';
+let checkin = '';
+let checkout = '';
+let roomType = '';
+let amount = 0;
+let options = [];
+
+// 예약번호 추출 (이미지 URL 등 제거)
+if (htmlOutput['예약번호']) {
+  const reservationNumberMatch = htmlOutput['예약번호'].match(/(\d+)/);
+  reservationNumber = reservationNumberMatch ? reservationNumberMatch[1] : '';
+}
+
+// 예약자명 추출 ("님" 제거)
+if (htmlOutput['예약자명']) {
+  guestName = htmlOutput['예약자명'].replace(/님\s*$/, '').trim();
+}
+
+// 이용일시에서 체크인/체크아웃 추출
+if (htmlOutput['이용일시']) {
+  // 체크인 날짜 추출: "2026.01.08.(목)~2026.01.09.(금)"
+  const checkinMatch = htmlOutput['이용일시'].match(/(\d{4})\.(\d{2})\.(\d{2})\./);
+  if (checkinMatch) {
+    checkin = `${checkinMatch[1]}-${checkinMatch[2]}-${checkinMatch[3]}`;
+  }
+  
+  // 체크아웃 날짜 추출: "~2026.01.09.(금)"
+  const checkoutMatch = htmlOutput['이용일시'].match(/~(\d{4})\.(\d{2})\.(\d{2})\./);
+  if (checkoutMatch) {
+    checkout = `${checkoutMatch[1]}-${checkoutMatch[2]}-${checkoutMatch[3]}`;
+  }
+}
+
+// 상품명 추출
+if (htmlOutput['상품명']) {
+  roomType = htmlOutput['상품명'].trim();
+}
+
+// 결제금액에서 총액 추출
+if (htmlOutput['결제금액']) {
+  // "=" 다음의 총액 추출 (가장 정확)
+  const totalMatch = htmlOutput['결제금액'].match(/=\s*(\d{1,3}(?:,\d{3})*)\s*원/i);
+  if (totalMatch) {
+    amount = parseInt(totalMatch[1].replace(/,/g, '')) || 0;
+  }
+  
+  // 옵션 추출 (예: "[알림,저장이벤트] 오로라2개(1) 0원")
+  const optionPattern = /\[([^\]]+)\]\s*([^\n\r]+?)(?:\s*\d+원|$)/g;
+  let optionMatch;
+  while ((optionMatch = optionPattern.exec(htmlOutput['결제금액'])) !== null) {
+    const tags = optionMatch[1].split(',').map(tag => tag.trim());
+    const optionName = optionMatch[2].trim();
+    options.push({
+      optionName: optionName,
+      optionPrice: 0,
+      category: tags.join(',')
+    });
+  }
+}
+
+// 이메일 주소 추출 (HTML 노드 출력에는 없으므로 이전 노드에서 가져오기)
+let email = '';
+if (allInputs && allInputs.length > 0) {
+  const gmailData = allInputs[0].json;
+  
+  // Gmail Trigger의 payload에서 이메일 주소 가져오기
+  if (gmailData.payload) {
+    const headers = gmailData.payload.headers || [];
+    const toHeader = headers.find((h) => h.name === 'To');
+    if (toHeader && toHeader.value) {
+      const toMatch = toHeader.value.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/i);
+      if (toMatch) {
+        email = toMatch[1];
+      }
+    }
+  }
+  
+  // 또는 From 헤더에서 가져오기
+  if (!email && gmailData.From) {
+    const fromMatch = gmailData.From.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/i);
+    if (fromMatch) {
+      email = fromMatch[1];
+    }
+  }
+}
+
+// 디버깅을 위한 로그
+console.log('Parsed reservation data from HTML output:', {
+  reservationNumber,
+  guestName,
+  email: email || '(not found)',
+  checkin,
+  checkout,
+  roomType,
+  amount: amount || 0,
+  optionsCount: options.length,
+  htmlOutput: htmlOutput
+});
+
+// Railway API로 전송할 데이터
+return {
+  reservationNumber,
+  guestName,
+  email: email || '',
+  checkin,
+  checkout,
+  roomType,
+  amount: amount || 0,
+  options: options.length > 0 ? options : undefined
+};
+```
+
+#### HTML 노드를 사용하지 않는 경우 (기존 파싱 로직)
+
+Gmail Trigger/Gmail Get에서 직접 이메일 본문을 파싱하는 코드:
+
+```javascript
+// Gmail Trigger/Gmail Get에서 이메일 데이터 가져오기
 const emailData = $input.item.json;
 
 // 전체 이메일 본문 가져오기 (여러 경로 시도)

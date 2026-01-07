@@ -43,7 +43,12 @@ HTML 노드의 출력을 직접 사용하도록 Code 노드를 수정합니다.
 
 ```javascript
 // HTML 노드에서 전달된 데이터 가져오기
-const htmlOutput = $input.item.json;
+// HTML 노드 출력이 배열인 경우 첫 번째 요소 사용
+let htmlOutput = $input.item.json;
+if (Array.isArray(htmlOutput) && htmlOutput.length > 0) {
+  htmlOutput = htmlOutput[0];
+}
+const allInputs = $input.all();
 
 // HTML 노드의 출력이 있는 경우 직접 사용
 let reservationNumber = '';
@@ -194,31 +199,31 @@ if (hasHtmlOutput) {
   }
   
   // 예약자명 추출
-  if (inputData['예약자명']) {
-    guestName = inputData['예약자명'].replace(/님\s*$/, '').trim();
+  if (htmlData['예약자명']) {
+    guestName = htmlData['예약자명'].replace(/님\s*$/, '').trim();
   }
   
   // 이용일시에서 체크인/체크아웃 추출
-  if (inputData['이용일시']) {
-    const dateMatch = inputData['이용일시'].match(/(\d{4})\.(\d{2})\.(\d{2})\./);
+  if (htmlData['이용일시']) {
+    const dateMatch = htmlData['이용일시'].match(/(\d{4})\.(\d{2})\.(\d{2})\./);
     if (dateMatch) {
       checkin = `${dateMatch[1]}-${dateMatch[2]}-${dateMatch[3]}`;
     }
     
-    const checkoutMatch = inputData['이용일시'].match(/~(\d{4})\.(\d{2})\.(\d{2})\./);
+    const checkoutMatch = htmlData['이용일시'].match(/~(\d{4})\.(\d{2})\.(\d{2})\./);
     if (checkoutMatch) {
       checkout = `${checkoutMatch[1]}-${checkoutMatch[2]}-${checkoutMatch[3]}`;
     }
   }
   
   // 상품명 추출
-  if (inputData['상품명']) {
-    roomType = inputData['상품명'].trim();
+  if (htmlData['상품명']) {
+    roomType = htmlData['상품명'].trim();
   }
   
   // 결제금액에서 총액 추출
-  if (inputData['결제금액']) {
-    const totalMatch = inputData['결제금액'].match(/=\s*(\d{1,3}(?:,\d{3})*)\s*원/i);
+  if (htmlData['결제금액']) {
+    const totalMatch = htmlData['결제금액'].match(/=\s*(\d{1,3}(?:,\d{3})*)\s*원/i);
     if (totalMatch) {
       amount = parseInt(totalMatch[1].replace(/,/g, '')) || 0;
     }
@@ -226,7 +231,7 @@ if (hasHtmlOutput) {
     // 옵션 추출
     const optionPattern = /\[([^\]]+)\]\s*([^\n\r]+?)(?:\s*\d+원|$)/g;
     let optionMatch;
-    while ((optionMatch = optionPattern.exec(inputData['결제금액'])) !== null) {
+    while ((optionMatch = optionPattern.exec(htmlData['결제금액'])) !== null) {
       const tags = optionMatch[1].split(',').map(tag => tag.trim());
       const optionName = optionMatch[2].trim();
       options.push({
