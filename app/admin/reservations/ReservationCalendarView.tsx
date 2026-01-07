@@ -264,11 +264,17 @@ export function ReservationCalendarView({
     const firstEvent = events[0];
     const lastEvent = events[events.length - 1];
     
+    // 타입 가드: start와 end가 Date인지 확인
+    const hasValidDateRange = firstEvent && 
+                               lastEvent && 
+                               firstEvent.start instanceof Date && 
+                               lastEvent.end instanceof Date;
+    
     console.log('[Calendar] Generated events:', {
       total: events.length,
       grouped: events.filter(e => e.id.startsWith('group-')).length,
       individual: events.filter(e => !e.id.startsWith('group-')).length,
-      dateRange: firstEvent && lastEvent ? {
+      dateRange: hasValidDateRange ? {
         earliest: format(firstEvent.start, 'yyyy-MM-dd'),
         latest: format(lastEvent.end, 'yyyy-MM-dd'),
       } : null,
