@@ -63,7 +63,7 @@
 }
 
 .rbc-off-range {
-  @apply text-muted-foreground;
+  color: rgba(34, 30, 29, 0.5);
 }
 
 .rbc-event {
@@ -79,7 +79,13 @@
 }
 
 .rbc-toolbar button {
-  @apply rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors;
+  @apply rounded-md border bg-background px-3 py-1.5 text-sm font-medium transition-colors;
+  border-color: #221E1D;
+}
+
+.rbc-toolbar button:hover {
+  background-color: rgba(44, 62, 80, 0.1);
+  color: #2C3E50;
 }
 
 .rbc-toolbar button.rbc-active {
@@ -129,5 +135,6 @@
 }
 
 .rbc-popup-content {
-  @apply text-sm text-muted-foreground;
+  @apply text-sm;
+  color: rgba(34, 30, 29, 0.6);
 }
