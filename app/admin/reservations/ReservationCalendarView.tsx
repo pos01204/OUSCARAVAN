@@ -261,13 +261,16 @@ export function ReservationCalendarView({
     
     const events = Array.from(eventMap.values());
     
+    const firstEvent = events[0];
+    const lastEvent = events[events.length - 1];
+    
     console.log('[Calendar] Generated events:', {
       total: events.length,
       grouped: events.filter(e => e.id.startsWith('group-')).length,
       individual: events.filter(e => !e.id.startsWith('group-')).length,
-      dateRange: events.length > 0 ? {
-        earliest: format(events[0].start, 'yyyy-MM-dd'),
-        latest: format(events[events.length - 1].end, 'yyyy-MM-dd'),
+      dateRange: firstEvent && lastEvent ? {
+        earliest: format(firstEvent.start, 'yyyy-MM-dd'),
+        latest: format(lastEvent.end, 'yyyy-MM-dd'),
       } : null,
     });
     
