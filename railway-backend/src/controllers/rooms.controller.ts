@@ -12,11 +12,17 @@ export async function listRooms(req: Request, res: Response) {
     const rooms = await getRooms();
     // 배열로 직접 반환 (배정 정보 포함)
     res.json(rooms);
-  } catch (error) {
+  } catch (error: any) {
     console.error('List rooms error:', error);
+    console.error('Error details:', {
+      message: error?.message,
+      code: error?.code,
+      stack: error?.stack,
+    });
     res.status(500).json({
       error: 'Internal server error',
       code: 'INTERNAL_ERROR',
+      details: process.env.NODE_ENV === 'development' ? error?.message : undefined,
     });
   }
 }

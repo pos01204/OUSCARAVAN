@@ -40,66 +40,85 @@ export interface RoomWithReservation extends Room {
  * 방 목록 조회 (배정 정보 포함)
  */
 export async function getRooms(): Promise<RoomWithReservation[]> {
-  const query = `
+  // 먼저 모든 방을 조회
+  const roomsQuery = `
     SELECT 
-      r.id,
-      r.name,
-      r.type,
-      r.capacity,
-      r.status,
-      r.created_at,
-      r.updated_at,
-      res.id as reservation_id,
-      res.guest_name,
-      res.checkin,
-      res.checkout,
-      res.status as reservation_status
-    FROM rooms r
-    LEFT JOIN LATERAL (
-      SELECT 
-        res.id,
-        res.guest_name,
-        res.checkin,
-        res.checkout,
-        res.status as reservation_status
-      FROM reservations res
-      WHERE res.assigned_room = r.name 
-        AND res.status IN ('assigned', 'checked_in', 'checked_out')
-        AND res.checkout::date >= CURRENT_DATE
-      ORDER BY res.checkin DESC
-      LIMIT 1
-    ) res ON true
+      id,
+      name,
+      type,
+      capacity,
+      status,
+      created_at,
+      updated_at
+    FROM rooms
     ORDER BY 
       CASE 
-        WHEN r.name ~ '^[AB]\\d+$' THEN 
-          CASE SUBSTRING(r.name FROM 1 FOR 1)
+        WHEN name ~ '^[AB]\\d+$' THEN 
+          CASE SUBSTRING(name FROM 1 FOR 1)
             WHEN 'A' THEN 0
             WHEN 'B' THEN 1
             ELSE 999
-          END * 1000 + CAST(SUBSTRING(r.name FROM 2) AS INTEGER)
+          END * 1000 + CAST(SUBSTRING(name FROM 2) AS INTEGER)
         ELSE 999
       END ASC,
-      r.name ASC
+      name ASC
   `;
 
-  const result = await pool.query(query);
+  try {
+    const roomsResult = await pool.query(roomsQuery);
+    const rooms = roomsResult.rows;
 
-  return result.rows.map((row) => ({
-    id: row.id,
-    name: row.name,
-    type: row.type,
-    capacity: row.capacity,
-    status: row.status,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-    reservation: row.reservation_id ? {
-      id: row.reservation_id,
-      guestName: row.guest_name,
-      checkin: row.checkin,
-      checkout: row.checkout,
-      status: row.reservation_status,
-    } : null,
-  }));
+    // 각 방에 대한 최신 예약 정보 조회
+    const reservationsQuery = `
+      SELECT 
+        id,
+        assigned_room,
+        guest_name,
+        checkin,
+        checkout,
+        status
+      FROM reservations
+      WHERE assigned_room IS NOT NULL
+        AND status IN ('assigned', 'checked_in', 'checked_out')
+        AND checkout::date >= CURRENT_DATE
+      ORDER BY assigned_room, checkin DESC
+    `;
+
+    const reservationsResult = await pool.query(reservationsQuery);
+    const reservations = reservationsResult.rows;
+
+    // 방별로 최신 예약 정보 매핑
+    const reservationMap = new Map<string, typeof reservations[0]>();
+    for (const res of reservations) {
+      if (!reservationMap.has(res.assigned_room)) {
+        reservationMap.set(res.assigned_room, res);
+      }
+    }
+
+    // 방 목록과 예약 정보 결합
+    return rooms.map((room) => {
+      const reservation = reservationMap.get(room.name);
+      return {
+        id: room.id,
+        name: room.name,
+        type: room.type,
+        capacity: room.capacity,
+        status: room.status,
+        createdAt: room.created_at,
+        updatedAt: room.updated_at,
+        reservation: reservation ? {
+          id: reservation.id,
+          guestName: reservation.guest_name,
+          checkin: reservation.checkin,
+          checkout: reservation.checkout,
+          status: reservation.status,
+        } : null,
+      };
+    });
+  } catch (error) {
+    console.error('[getRooms] SQL query error:', error);
+    throw error;
+  }
 }
 
 export async function getRoomById(id: string): Promise<Room | null> {
