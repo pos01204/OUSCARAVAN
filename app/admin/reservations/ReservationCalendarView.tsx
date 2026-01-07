@@ -347,6 +347,9 @@ export function ReservationCalendarView({
     const colorConfig = STATUS_COLORS[reservation.status] || STATUS_COLORS.pending;
     const isGrouped = event.id.startsWith('group-');
     
+    // title을 string으로 변환
+    const titleString = typeof event.title === 'string' ? event.title : String(event.title || '');
+    
     if (isGrouped) {
       // 그룹 카운트 표시
       return (
@@ -361,13 +364,14 @@ export function ReservationCalendarView({
             textAlign: 'center',
             width: '100%',
           }}
-          title={event.title}
+          title={titleString}
         >
-          {event.title}
+          {titleString}
         </div>
       );
     } else {
       // 개별 표시
+      const displayText = `${reservation.guestName} ${reservation.assignedRoom ? `(${reservation.assignedRoom})` : '(미)'}`;
       return (
         <div
           style={{
@@ -382,9 +386,9 @@ export function ReservationCalendarView({
             whiteSpace: 'nowrap',
             width: '100%',
           }}
-          title={`${reservation.guestName} ${reservation.assignedRoom || '미배정'}`}
+          title={displayText}
         >
-          {reservation.guestName} {reservation.assignedRoom ? `(${reservation.assignedRoom})` : '(미)'}
+          {displayText}
         </div>
       );
     }
