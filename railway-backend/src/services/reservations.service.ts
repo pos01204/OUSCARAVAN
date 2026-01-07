@@ -231,6 +231,7 @@ export async function getReservationByToken(token: string): Promise<Reservation 
 }
 
 export async function createReservation(data: CreateReservationData): Promise<Reservation> {
+  // UPSERT: 예약번호가 이미 있으면 업데이트, 없으면 생성
   const query = `
     INSERT INTO reservations (
       reservation_number,
@@ -242,6 +243,15 @@ export async function createReservation(data: CreateReservationData): Promise<Re
       amount,
       status
     ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+    ON CONFLICT (reservation_number) 
+    DO UPDATE SET
+      guest_name = EXCLUDED.guest_name,
+      email = EXCLUDED.email,
+      checkin = EXCLUDED.checkin,
+      checkout = EXCLUDED.checkout,
+      room_type = EXCLUDED.room_type,
+      amount = EXCLUDED.amount,
+      updated_at = CURRENT_TIMESTAMP
     RETURNING 
       id,
       reservation_number,

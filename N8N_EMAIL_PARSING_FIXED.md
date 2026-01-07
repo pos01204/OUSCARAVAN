@@ -71,12 +71,39 @@ if (checkoutMatch) {
 const roomTypeMatch = emailBody.match(/예약상품[:\s]*([^\n\r]+?)(?:\s*이용일시|$)/i);
 const roomType = roomTypeMatch ? roomTypeMatch[1].trim() : '';
 
-// 금액 추출 (선택적 - 없어도 됨, 기본값 0 사용)
-// "결제" 또는 "금액" 키워드 주변에서 금액 찾기
-const amountMatch = emailBody.match(/(?:금액|결제금액|총액|결제상태)[:\s]*([0-9,]+)/i);
+// 결제 금액 추출 (개선된 방법)
+// 이메일 본문 예시: "결제금액 2인실(2인기준) 오션뷰카라반 예약(1) 150,000원 + [알림, 저장이벤트] 오로라2개(1) 0원 = 150,000원"
 let amount = 0;
-if (amountMatch) {
-  amount = parseInt(amountMatch[1].replace(/,/g, '')) || 0;
+
+// 방법 1: "=" 다음의 총액 추출 (가장 정확)
+const totalMatch = emailBody.match(/=\s*(\d{1,3}(?:,\d{3})*)\s*원/i);
+if (totalMatch) {
+  amount = parseInt(totalMatch[1].replace(/,/g, '')) || 0;
+}
+
+// 방법 2: "결제금액" 섹션에서 마지막 숫자 추출
+if (amount === 0) {
+  const amountSection = emailBody.match(/결제금액[:\s]*([^\n\r]+?)(?:\s*요청사항|$)/i);
+  if (amountSection) {
+    const numbers = amountSection[1].match(/(\d{1,3}(?:,\d{3})*)/g);
+    if (numbers && numbers.length > 0) {
+      // 마지막 숫자 (총액) 사용
+      const lastAmount = numbers[numbers.length - 1];
+      amount = parseInt(lastAmount.replace(/,/g, '')) || 0;
+    }
+  }
+}
+
+// 방법 3: 모든 금액 패턴 찾기 (가장 큰 값 사용 - fallback)
+if (amount === 0) {
+  const allAmounts = emailBody.match(/(\d{1,3}(?:,\d{3})*)\s*원/g);
+  if (allAmounts) {
+    const amounts = allAmounts.map(m => {
+      const num = m.match(/(\d{1,3}(?:,\d{3})*)/);
+      return num ? parseInt(num[1].replace(/,/g, '')) : 0;
+    });
+    amount = Math.max(...amounts);
+  }
 }
 
 // 디버깅을 위한 로그 (n8n 실행 로그에서 확인 가능)

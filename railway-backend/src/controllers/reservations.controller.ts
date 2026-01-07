@@ -106,18 +106,15 @@ export async function createReservationHandler(req: Request, res: Response) {
       amount: finalAmount.toString(), // amount는 문자열로 저장
     });
 
-    res.status(201).json(reservation);
+    // UPSERT이므로 200 또는 201 반환
+    // 새로 생성된 경우 201, 업데이트된 경우 200
+    const isNew = reservation.createdAt === reservation.updatedAt;
+    res.status(isNew ? 201 : 200).json(reservation);
   } catch (error: any) {
     console.error('Create reservation error:', error);
     
-    // 중복 예약번호 에러 처리
-    if (error.code === '23505') {
-      return res.status(409).json({
-        error: 'Reservation number already exists',
-        code: 'DUPLICATE_RESERVATION',
-      });
-    }
-
+    // UPSERT로 변경했으므로 중복 에러는 발생하지 않음
+    // 하지만 다른 에러는 처리
     res.status(500).json({
       error: 'Internal server error',
       code: 'INTERNAL_ERROR',
