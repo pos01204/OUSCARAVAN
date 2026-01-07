@@ -80,13 +80,40 @@ export function ReservationListView({
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">예약 상품</p>
-                <p className="font-medium">{reservation.roomType}</p>
+                <div className="space-y-1">
+                  <p className="font-medium">{reservation.roomType}</p>
+                  {reservation.options && reservation.options.length > 0 && (
+                    <div className="flex flex-wrap gap-1">
+                      {reservation.options.map((option, index) => (
+                        <Badge key={index} variant="secondary" className="text-xs">
+                          {option.optionName}
+                        </Badge>
+                      ))}
+                    </div>
+                  )}
+                </div>
               </div>
               <div>
                 <p className="text-sm text-muted-foreground">배정된 방</p>
                 <p className="font-medium">
                   {reservation.assignedRoom || '미배정'}
                 </p>
+              </div>
+              <div>
+                <p className="text-sm text-muted-foreground">결제금액</p>
+                <p className="font-medium">
+                  {(() => {
+                    const roomAmount = parseInt(reservation.amount || '0');
+                    const optionsAmount = reservation.options?.reduce((sum, opt) => sum + opt.optionPrice, 0) || 0;
+                    return (roomAmount + optionsAmount).toLocaleString();
+                  })()}원
+                </p>
+                {reservation.options && reservation.options.length > 0 && (
+                  <p className="text-xs text-muted-foreground mt-1">
+                    (객실: {parseInt(reservation.amount || '0').toLocaleString()}원
+                    + 옵션: {reservation.options.reduce((sum, opt) => sum + opt.optionPrice, 0).toLocaleString()}원)
+                  </p>
+                )}
               </div>
             </div>
             <div className="mt-4 flex gap-2">

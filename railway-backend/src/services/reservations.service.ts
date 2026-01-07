@@ -323,6 +323,231 @@ export async function createReservation(data: CreateReservationData): Promise<Re
   };
 }
 
+/**
+ * n8n에서 개별 상품(ROOM/OPTION)을 받아서 예약에 추가/업데이트
+ * - category가 "ROOM"이면 예약 기본 정보(roomType, amount) 업데이트
+ * - category가 "OPTION"이면 options 배열에 추가
+ */
+export async function createOrUpdateReservationItem(data: {
+  reservationNumber: string;
+  guestName: string;
+  email: string;
+  checkin: string;
+  checkout: string;
+  roomType: string;
+  amount: string;
+  category: string;
+}): Promise<Reservation> {
+  // 먼저 기존 예약 조회
+  const existingQuery = `
+    SELECT 
+      id,
+      reservation_number,
+      guest_name,
+      email,
+      phone,
+      checkin,
+      checkout,
+      room_type,
+      assigned_room,
+      amount,
+      status,
+      unique_token,
+      options,
+      created_at,
+      updated_at
+    FROM reservations
+    WHERE reservation_number = $1
+  `;
+
+  const existingResult = await pool.query(existingQuery, [data.reservationNumber]);
+  const existing = existingResult.rows[0];
+
+  if (existing) {
+    // 기존 예약이 있는 경우
+    let updatedRoomType = existing.room_type;
+    let updatedAmount = existing.amount;
+    let updatedOptions: Array<{
+      optionName: string;
+      optionPrice: number;
+      category: string;
+    }> = existing.options ? (Array.isArray(existing.options) ? existing.options : []) : [];
+
+    if (data.category === 'ROOM') {
+      // ROOM인 경우: 예약 기본 정보 업데이트
+      updatedRoomType = data.roomType;
+      updatedAmount = data.amount;
+    } else if (data.category === 'OPTION') {
+      // OPTION인 경우: options 배열에 추가 (중복 체크)
+      const newOption = {
+        optionName: data.roomType, // roomType에 옵션명이 들어있음
+        optionPrice: parseInt(data.amount) || 0,
+        category: 'OPTION',
+      };
+
+      // 중복 체크: 같은 optionName이 이미 있으면 업데이트, 없으면 추가
+      const existingOptionIndex = updatedOptions.findIndex(
+        (opt) => opt.optionName === newOption.optionName
+      );
+
+      if (existingOptionIndex >= 0) {
+        // 기존 옵션 업데이트
+        updatedOptions[existingOptionIndex] = newOption;
+      } else {
+        // 새 옵션 추가
+        updatedOptions.push(newOption);
+      }
+    }
+
+    // 예약 업데이트
+    const updateQuery = `
+      UPDATE reservations
+      SET
+        guest_name = $1,
+        email = $2,
+        checkin = $3,
+        checkout = $4,
+        room_type = $5,
+        amount = $6,
+        options = $7,
+        updated_at = CURRENT_TIMESTAMP
+      WHERE reservation_number = $8
+      RETURNING 
+        id,
+        reservation_number,
+        guest_name,
+        email,
+        phone,
+        checkin,
+        checkout,
+        room_type,
+        assigned_room,
+        amount,
+        status,
+        unique_token,
+        options,
+        created_at,
+        updated_at
+    `;
+
+    const updateResult = await pool.query(updateQuery, [
+      data.guestName,
+      data.email,
+      data.checkin,
+      data.checkout,
+      updatedRoomType,
+      updatedAmount,
+      JSON.stringify(updatedOptions),
+      data.reservationNumber,
+    ]);
+
+    const row = updateResult.rows[0];
+    return {
+      id: row.id,
+      reservationNumber: row.reservation_number,
+      guestName: row.guest_name,
+      email: row.email,
+      phone: row.phone || undefined,
+      checkin: row.checkin,
+      checkout: row.checkout,
+      roomType: row.room_type,
+      assignedRoom: row.assigned_room || undefined,
+      amount: row.amount,
+      status: row.status,
+      uniqueToken: row.unique_token || undefined,
+      options: row.options || undefined,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+    };
+  } else {
+    // 기존 예약이 없는 경우: 새로 생성
+    let initialRoomType = data.roomType;
+    let initialAmount = data.amount;
+    let initialOptions: Array<{
+      optionName: string;
+      optionPrice: number;
+      category: string;
+    }> = [];
+
+    if (data.category === 'ROOM') {
+      // ROOM인 경우: 예약 기본 정보로 저장
+      initialRoomType = data.roomType;
+      initialAmount = data.amount;
+    } else if (data.category === 'OPTION') {
+      // OPTION인 경우: options 배열에 추가 (ROOM이 없으므로 임시로 저장)
+      initialOptions.push({
+        optionName: data.roomType,
+        optionPrice: parseInt(data.amount) || 0,
+        category: 'OPTION',
+      });
+      // ROOM 정보가 없으므로 기본값 사용
+      initialRoomType = '객실 정보 없음';
+      initialAmount = '0';
+    }
+
+    const insertQuery = `
+      INSERT INTO reservations (
+        reservation_number,
+        guest_name,
+        email,
+        checkin,
+        checkout,
+        room_type,
+        amount,
+        status,
+        options
+      ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
+      RETURNING 
+        id,
+        reservation_number,
+        guest_name,
+        email,
+        phone,
+        checkin,
+        checkout,
+        room_type,
+        assigned_room,
+        amount,
+        status,
+        unique_token,
+        options,
+        created_at,
+        updated_at
+    `;
+
+    const insertResult = await pool.query(insertQuery, [
+      data.reservationNumber,
+      data.guestName,
+      data.email,
+      data.checkin,
+      data.checkout,
+      initialRoomType,
+      initialAmount,
+      'pending',
+      JSON.stringify(initialOptions),
+    ]);
+
+    const row = insertResult.rows[0];
+    return {
+      id: row.id,
+      reservationNumber: row.reservation_number,
+      guestName: row.guest_name,
+      email: row.email,
+      phone: row.phone || undefined,
+      checkin: row.checkin,
+      checkout: row.checkout,
+      roomType: row.room_type,
+      assignedRoom: row.assigned_room || undefined,
+      amount: row.amount,
+      status: row.status,
+      uniqueToken: row.unique_token || undefined,
+      options: row.options || undefined,
+      createdAt: row.created_at,
+      updatedAt: row.updated_at,
+    };
+  }
+}
+
 export async function updateReservation(
   id: string,
   data: UpdateReservationData

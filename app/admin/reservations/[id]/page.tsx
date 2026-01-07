@@ -235,10 +235,6 @@ export default function ReservationDetailPage() {
               <p className="font-medium">{reservation.email}</p>
             </div>
             <div>
-              <Label className="text-muted-foreground">예약 상품</Label>
-              <p className="font-medium">{reservation.roomType}</p>
-            </div>
-            <div>
               <Label className="text-muted-foreground">체크인</Label>
               <p className="font-medium">{reservation.checkin}</p>
             </div>
@@ -247,17 +243,80 @@ export default function ReservationDetailPage() {
               <p className="font-medium">{reservation.checkout}</p>
             </div>
             <div>
-              <Label className="text-muted-foreground">결제금액</Label>
-              <p className="font-medium">{reservation.amount}</p>
-            </div>
-            <div>
               <Label className="text-muted-foreground">상태</Label>
               <div className="mt-1">{getStatusBadge(reservation.status)}</div>
             </div>
           </CardContent>
         </Card>
         
-        {/* 방 배정 및 전화번호 */}
+        {/* 상품 및 옵션 정보 */}
+        <Card>
+          <CardHeader>
+            <CardTitle>상품 및 옵션</CardTitle>
+            <CardDescription>주문한 상품과 옵션 내역</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* ROOM 상품 */}
+            <div className="space-y-2">
+              <Label className="text-muted-foreground">객실</Label>
+              <div className="p-3 bg-muted rounded-md">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="font-medium">{reservation.roomType}</p>
+                    <Badge variant="outline" className="mt-1">ROOM</Badge>
+                  </div>
+                  <p className="font-semibold text-lg">
+                    {parseInt(reservation.amount || '0').toLocaleString()}원
+                  </p>
+                </div>
+              </div>
+            </div>
+            
+            {/* OPTION 상품들 */}
+            {reservation.options && reservation.options.length > 0 && (
+              <div className="space-y-2">
+                <Label className="text-muted-foreground">추가 옵션</Label>
+                <div className="space-y-2">
+                  {reservation.options.map((option, index) => (
+                    <div key={index} className="p-3 bg-muted rounded-md">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <p className="font-medium">{option.optionName}</p>
+                          <Badge variant="secondary" className="mt-1">OPTION</Badge>
+                        </div>
+                        <p className="font-semibold">
+                          {option.optionPrice.toLocaleString()}원
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* 총 결제금액 */}
+            <div className="pt-4 border-t">
+              <div className="flex items-center justify-between">
+                <Label className="text-lg font-semibold">총 결제금액</Label>
+                <p className="text-2xl font-bold text-primary">
+                  {(() => {
+                    const roomAmount = parseInt(reservation.amount || '0');
+                    const optionsAmount = reservation.options?.reduce((sum, opt) => sum + opt.optionPrice, 0) || 0;
+                    return (roomAmount + optionsAmount).toLocaleString();
+                  })()}원
+                </p>
+              </div>
+              <p className="text-xs text-muted-foreground mt-1">
+                객실: {parseInt(reservation.amount || '0').toLocaleString()}원
+                {reservation.options && reservation.options.length > 0 && (
+                  <> + 옵션: {reservation.options.reduce((sum, opt) => sum + opt.optionPrice, 0).toLocaleString()}원</>
+                )}
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+        
+        {/* 방 배정 및 연락처 */}
         <Card>
           <CardHeader>
             <CardTitle>방 배정 및 연락처</CardTitle>

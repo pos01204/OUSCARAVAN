@@ -15,6 +15,11 @@ export interface Reservation {
   amount: string;
   status: 'pending' | 'assigned' | 'checked_in' | 'checked_out' | 'cancelled';
   uniqueToken?: string;
+  options?: Array<{
+    optionName: string;
+    optionPrice: number;
+    category: string;
+  }>;
   createdAt: string;
   updatedAt: string;
 }
