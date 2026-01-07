@@ -6,6 +6,7 @@ import {
   createOrUpdateReservationItem,
   updateReservation,
   deleteReservation,
+  type Reservation,
 } from '../services/reservations.service';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -76,9 +77,10 @@ export async function createReservationHandler(req: Request, res: Response) {
       checkin,
       checkout,
       roomType,
-      amount,
-      options,
-      category, // n8n에서 전송하는 category 필드 (ROOM 또는 OPTION)
+      amount, // 총 결제금액
+      roomAmount, // 객실 개별 가격 (새로 추가)
+      options, // 옵션 배열 (이미 파싱됨)
+      category, // 레거시 지원용 (더 이상 사용하지 않음)
     } = req.body;
 
     // 필수 필드 검증
@@ -88,19 +90,39 @@ export async function createReservationHandler(req: Request, res: Response) {
         code: 'MISSING_FIELDS',
         details: {
           required: ['reservationNumber', 'guestName', 'checkin', 'checkout', 'roomType'],
-          optional: ['email', 'amount', 'options', 'category'],
+          optional: ['email', 'amount', 'roomAmount', 'options'],
         },
       });
     }
 
-    // email이 없으면 기본값 사용 (n8n에서 이메일이 추출되지 않은 경우)
+    // email이 없으면 기본값 사용
     const finalEmail = email || `reservation-${reservationNumber}@ouscaravan.local`;
     
-    // amount가 없으면 기본값 0 사용 (n8n에서 금액이 추출되지 않은 경우)
-    const finalAmount = amount !== undefined && amount !== null ? amount : 0;
+    // amount 처리: 총 결제금액 (roomAmount + options 합계)
+    // roomAmount가 있으면 우선 사용, 없으면 amount 사용
+    const finalRoomAmount = roomAmount !== undefined && roomAmount !== null 
+      ? roomAmount.toString() 
+      : (amount !== undefined && amount !== null ? amount.toString() : '0');
+    
+    // 총 결제금액: amount가 있으면 사용, 없으면 roomAmount + options 합계
+    let finalTotalAmount = amount !== undefined && amount !== null 
+      ? amount.toString() 
+      : finalRoomAmount;
 
-    // category 확인 (ROOM 또는 OPTION)
-    const itemCategory = category || (roomType.includes('예약') ? 'ROOM' : 'OPTION');
+    // options 배열 정규화
+    let finalOptions: Array<{
+      optionName: string;
+      optionPrice: number;
+      category: string;
+    }> = [];
+    
+    if (options && Array.isArray(options)) {
+      finalOptions = options.map((opt: any) => ({
+        optionName: opt.optionName || opt.name || '',
+        optionPrice: typeof opt.optionPrice === 'number' ? opt.optionPrice : (parseInt(String(opt.optionPrice || 0)) || 0),
+        category: opt.category || 'OPTION',
+      }));
+    }
 
     // 디버깅 로그 추가
     console.log('[CREATE_RESERVATION] Request body:', {
@@ -109,21 +131,61 @@ export async function createReservationHandler(req: Request, res: Response) {
       checkin,
       checkout,
       roomType,
-      amount: finalAmount,
-      category: itemCategory,
+      roomAmount: finalRoomAmount,
+      totalAmount: finalTotalAmount,
+      optionsCount: finalOptions.length,
+      options: finalOptions,
     });
 
-    // category에 따라 다르게 처리
-    const reservation = await createOrUpdateReservationItem({
-      reservationNumber,
-      guestName,
-      email: finalEmail,
-      checkin,
-      checkout,
-      roomType,
-      amount: finalAmount.toString(), // amount는 문자열로 저장
-      category: itemCategory,
-    });
+    // 새로운 구조: roomAmount 필드가 있는 경우 (그룹화된 데이터)
+    // 레거시 지원: category가 있는 경우는 기존 로직 사용
+    let reservation: Reservation;
+    
+    // roomAmount 필드가 요청에 포함되어 있으면 새로운 방식 (그룹화된 데이터)
+    const hasRoomAmount = 'roomAmount' in req.body;
+    const hasOptions = 'options' in req.body;
+    
+    if (hasRoomAmount || (hasOptions && Array.isArray(options))) {
+      // 새로운 방식: 한 번에 모든 정보를 받아서 처리 (그룹화된 데이터)
+      console.log('[CREATE_RESERVATION] Using new grouped data format');
+      reservation = await createReservation({
+        reservationNumber,
+        guestName,
+        email: finalEmail,
+        checkin,
+        checkout,
+        roomType,
+        amount: finalRoomAmount, // 객실 금액 저장 (roomAmount)
+        options: finalOptions.length > 0 ? finalOptions : undefined,
+      });
+    } else if (category) {
+      // 레거시 방식: category로 분리된 경우
+      console.log('[CREATE_RESERVATION] Using legacy category-based format');
+      const itemCategory = category || (roomType.includes('예약') ? 'ROOM' : 'OPTION');
+      reservation = await createOrUpdateReservationItem({
+        reservationNumber,
+        guestName,
+        email: finalEmail,
+        checkin,
+        checkout,
+        roomType,
+        amount: finalRoomAmount,
+        category: itemCategory,
+      });
+    } else {
+      // 기본 방식: createReservation 사용
+      console.log('[CREATE_RESERVATION] Using default format');
+      reservation = await createReservation({
+        reservationNumber,
+        guestName,
+        email: finalEmail,
+        checkin,
+        checkout,
+        roomType,
+        amount: finalRoomAmount,
+        options: finalOptions.length > 0 ? finalOptions : undefined,
+      });
+    }
 
     // 디버깅 로그 추가
     console.log('[CREATE_RESERVATION] Processed reservation:', {
@@ -140,13 +202,24 @@ export async function createReservationHandler(req: Request, res: Response) {
     const isNew = reservation.createdAt === reservation.updatedAt;
     res.status(isNew ? 201 : 200).json(reservation);
   } catch (error: any) {
-    console.error('Create reservation error:', error);
+    console.error('[CREATE_RESERVATION] Error details:', {
+      message: error.message,
+      stack: error.stack,
+      reservationNumber: req.body.reservationNumber,
+      category: req.body.category,
+    });
     
-    // UPSERT로 변경했으므로 중복 에러는 발생하지 않음
-    // 하지만 다른 에러는 처리
-    res.status(500).json({
-      error: 'Internal server error',
-      code: 'INTERNAL_ERROR',
+    // 더 구체적인 에러 메시지 반환
+    const errorMessage = error.message || 'Internal server error';
+    const statusCode = error.statusCode || 500;
+    
+    res.status(statusCode).json({
+      error: errorMessage,
+      code: error.code || 'INTERNAL_ERROR',
+      details: process.env.NODE_ENV !== 'production' ? {
+        message: error.message,
+        reservationNumber: req.body.reservationNumber,
+      } : undefined,
     });
   }
 }

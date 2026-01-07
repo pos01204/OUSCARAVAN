@@ -266,7 +266,13 @@ export default function ReservationDetailPage() {
                     <Badge variant="outline" className="mt-1">ROOM</Badge>
                   </div>
                   <p className="font-semibold text-lg">
-                    {parseInt(reservation.amount || '0').toLocaleString()}원
+                    {(() => {
+                      const roomAmount = parseInt(reservation.amount || '0');
+                      if (roomAmount === 0) {
+                        return <span className="text-muted-foreground italic">금액 정보 없음</span>;
+                      }
+                      return `${roomAmount.toLocaleString()}원`;
+                    })()}
                   </p>
                 </div>
               </div>

@@ -30,7 +30,8 @@ export interface CreateReservationData {
   checkin: string;
   checkout: string;
   roomType: string;
-  amount: string;
+  amount: string; // 객실 금액
+  totalAmount?: string; // 총 결제금액 (참고용)
   options?: Array<{
     optionName: string;
     optionPrice: number;
@@ -410,11 +411,29 @@ export async function createOrUpdateReservationItem(data: {
 
       if (data.category === 'ROOM') {
         // ROOM인 경우: 예약 기본 정보 업데이트
+        // amount가 "0"이 아니거나 기존 amount가 "0"인 경우에만 업데이트
         updatedRoomType = data.roomType;
-        updatedAmount = data.amount;
+        
+        // amount 업데이트 로직: 새 amount가 유효한 값이면 업데이트
+        const newAmount = data.amount;
+        const existingAmount = existing.amount;
+        
+        // 새 amount가 있고 0이 아니면 항상 업데이트
+        if (newAmount && newAmount !== '0' && parseInt(newAmount) > 0) {
+          updatedAmount = newAmount;
+        } else if (!existingAmount || existingAmount === '0' || parseInt(existingAmount) === 0) {
+          // 기존 amount가 없거나 0이면 새 값으로 업데이트 (0이어도)
+          updatedAmount = newAmount || '0';
+        } else {
+          // 기존 amount가 유효한 값이면 유지
+          updatedAmount = existingAmount;
+        }
+        
         console.log('[createOrUpdateReservationItem] Updating ROOM:', {
           roomType: updatedRoomType,
-          amount: updatedAmount,
+          newAmount: data.amount,
+          existingAmount: existing.amount,
+          finalAmount: updatedAmount,
         });
       } else if (data.category === 'OPTION') {
         // OPTION인 경우: options 배열에 추가 (중복 체크)
@@ -525,35 +544,236 @@ export async function createOrUpdateReservationItem(data: {
     } else {
       console.log('[createOrUpdateReservationItem] No existing reservation, creating new');
       
-      // 기존 예약이 없는 경우: 새로 생성
-      let initialRoomType = data.roomType;
-      let initialAmount = data.amount;
-      let initialOptions: Array<{
+      // 기존 예약이 없는 경우
+      if (data.category === 'OPTION') {
+        // OPTION만으로는 예약을 생성할 수 없음 - ROOM이 먼저 와야 함
+        // 이 경우는 나중에 ROOM이 올 때 처리되도록 대기
+        // 또는 에러를 발생시키지 않고 무시 (다음 ROOM 요청에서 처리)
+        console.warn('[createOrUpdateReservationItem] OPTION received before ROOM, skipping:', {
+          reservationNumber: data.reservationNumber,
+          roomType: data.roomType,
+        });
+        
+        // 임시로 예약을 생성하되, ROOM 정보는 나중에 업데이트될 것임
+        // 이렇게 하면 나중에 ROOM이 와도 업데이트 가능
+        const initialOptions: Array<{
+          optionName: string;
+          optionPrice: number;
+          category: string;
+        }> = [{
+          optionName: data.roomType,
+          optionPrice: parseInt(data.amount) || 0,
+          category: 'OPTION',
+        }];
+        
+        const insertQuery = `
+          INSERT INTO reservations (
+            reservation_number,
+            guest_name,
+            email,
+            checkin,
+            checkout,
+            room_type,
+            amount,
+            status,
+            options
+          ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb)
+          ON CONFLICT (reservation_number) DO NOTHING
+          RETURNING 
+            id,
+            reservation_number,
+            guest_name,
+            email,
+            phone,
+            checkin,
+            checkout,
+            room_type,
+            assigned_room,
+            amount,
+            status,
+            unique_token,
+            options,
+            created_at,
+            updated_at
+        `;
+
+        const optionsJson = JSON.stringify(initialOptions);
+        
+        try {
+          const insertResult = await pool.query(insertQuery, [
+            data.reservationNumber,
+            data.guestName,
+            data.email,
+            data.checkin,
+            data.checkout,
+            '객실 정보 대기 중', // 임시 값
+            '0', // 임시 값
+            'pending',
+            optionsJson,
+          ]);
+
+          if (insertResult.rows.length > 0) {
+            const row = insertResult.rows[0];
+            let parsedOptions = undefined;
+            if (row.options) {
+              try {
+                parsedOptions = Array.isArray(row.options) ? row.options : JSON.parse(row.options);
+              } catch (e) {
+                console.error('[createOrUpdateReservationItem] Error parsing returned options:', e);
+              }
+            }
+
+            console.log('[createOrUpdateReservationItem] Created temporary reservation with OPTION');
+            
+            return {
+              id: row.id,
+              reservationNumber: row.reservation_number,
+              guestName: row.guest_name,
+              email: row.email,
+              phone: row.phone || undefined,
+              checkin: row.checkin,
+              checkout: row.checkout,
+              roomType: row.room_type,
+              assignedRoom: row.assigned_room || undefined,
+              amount: row.amount,
+              status: row.status,
+              uniqueToken: row.unique_token || undefined,
+              options: parsedOptions,
+              createdAt: row.created_at,
+              updatedAt: row.updated_at,
+            };
+          } else {
+            // 이미 다른 요청에서 생성되었을 수 있음 - 다시 조회
+            const retryResult = await pool.query(existingQuery, [data.reservationNumber]);
+            const retryExisting = retryResult.rows[0];
+            
+            if (retryExisting) {
+              // 기존 예약에 옵션 추가
+              let updatedOptions: Array<{
+                optionName: string;
+                optionPrice: number;
+                category: string;
+              }> = [];
+
+              if (retryExisting.options) {
+                try {
+                  if (Array.isArray(retryExisting.options)) {
+                    updatedOptions = retryExisting.options;
+                  } else if (typeof retryExisting.options === 'string') {
+                    updatedOptions = JSON.parse(retryExisting.options);
+                  }
+                } catch (parseError) {
+                  console.error('[createOrUpdateReservationItem] Error parsing options:', parseError);
+                }
+              }
+
+              const newOption = {
+                optionName: data.roomType,
+                optionPrice: parseInt(data.amount) || 0,
+                category: 'OPTION',
+              };
+
+              const existingOptionIndex = updatedOptions.findIndex(
+                (opt) => opt.optionName === newOption.optionName
+              );
+
+              if (existingOptionIndex >= 0) {
+                updatedOptions[existingOptionIndex] = newOption;
+              } else {
+                updatedOptions.push(newOption);
+              }
+
+              const updateQuery = `
+                UPDATE reservations
+                SET
+                  options = $1::jsonb,
+                  updated_at = CURRENT_TIMESTAMP
+                WHERE reservation_number = $2
+                RETURNING 
+                  id,
+                  reservation_number,
+                  guest_name,
+                  email,
+                  phone,
+                  checkin,
+                  checkout,
+                  room_type,
+                  assigned_room,
+                  amount,
+                  status,
+                  unique_token,
+                  options,
+                  created_at,
+                  updated_at
+              `;
+
+              const updateResult = await pool.query(updateQuery, [
+                JSON.stringify(updatedOptions),
+                data.reservationNumber,
+              ]);
+
+              if (updateResult.rows.length > 0) {
+                const row = updateResult.rows[0];
+                let parsedOptions = undefined;
+                if (row.options) {
+                  try {
+                    parsedOptions = Array.isArray(row.options) ? row.options : JSON.parse(row.options);
+                  } catch (e) {
+                    console.error('[createOrUpdateReservationItem] Error parsing returned options:', e);
+                  }
+                }
+
+                return {
+                  id: row.id,
+                  reservationNumber: row.reservation_number,
+                  guestName: row.guest_name,
+                  email: row.email,
+                  phone: row.phone || undefined,
+                  checkin: row.checkin,
+                  checkout: row.checkout,
+                  roomType: row.room_type,
+                  assignedRoom: row.assigned_room || undefined,
+                  amount: row.amount,
+                  status: row.status,
+                  uniqueToken: row.unique_token || undefined,
+                  options: parsedOptions,
+                  createdAt: row.created_at,
+                  updatedAt: row.updated_at,
+                };
+              }
+            }
+          }
+        } catch (insertError: any) {
+          // 중복 키 에러는 무시 (다른 요청에서 이미 생성됨)
+          if (insertError.code === '23505') {
+            console.log('[createOrUpdateReservationItem] Duplicate key, retrying...');
+            // 다시 조회하여 기존 예약에 옵션 추가
+            const retryResult = await pool.query(existingQuery, [data.reservationNumber]);
+            const retryExisting = retryResult.rows[0];
+            
+            if (retryExisting) {
+              // 위의 로직과 동일하게 옵션 추가
+              // (코드 중복을 피하기 위해 재귀 호출 대신 직접 처리)
+              return await createOrUpdateReservationItem(data);
+            }
+          }
+          throw insertError;
+        }
+      }
+      
+      // ROOM인 경우: 예약 기본 정보로 저장
+      const initialRoomType = data.roomType;
+      const initialAmount = data.amount;
+      const initialOptions: Array<{
         optionName: string;
         optionPrice: number;
         category: string;
       }> = [];
 
-      if (data.category === 'ROOM') {
-        // ROOM인 경우: 예약 기본 정보로 저장
-        initialRoomType = data.roomType;
-        initialAmount = data.amount;
-        console.log('[createOrUpdateReservationItem] Creating with ROOM:', {
-          roomType: initialRoomType,
-          amount: initialAmount,
-        });
-      } else if (data.category === 'OPTION') {
-        // OPTION인 경우: options 배열에 추가 (ROOM이 없으므로 임시로 저장)
-        initialOptions.push({
-          optionName: data.roomType,
-          optionPrice: parseInt(data.amount) || 0,
-          category: 'OPTION',
-        });
-        // ROOM 정보가 없으므로 기본값 사용
-        initialRoomType = '객실 정보 없음';
-        initialAmount = '0';
-        console.log('[createOrUpdateReservationItem] Creating with OPTION only:', initialOptions);
-      }
+      console.log('[createOrUpdateReservationItem] Creating with ROOM:', {
+        roomType: initialRoomType,
+        amount: initialAmount,
+      });
 
       const insertQuery = `
         INSERT INTO reservations (
@@ -567,6 +787,14 @@ export async function createOrUpdateReservationItem(data: {
           status,
           options
         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9::jsonb)
+        ON CONFLICT (reservation_number) DO UPDATE SET
+          guest_name = EXCLUDED.guest_name,
+          email = EXCLUDED.email,
+          checkin = EXCLUDED.checkin,
+          checkout = EXCLUDED.checkout,
+          room_type = EXCLUDED.room_type,
+          amount = EXCLUDED.amount,
+          updated_at = CURRENT_TIMESTAMP
         RETURNING 
           id,
           reservation_number,
@@ -588,21 +816,104 @@ export async function createOrUpdateReservationItem(data: {
       const optionsJson = JSON.stringify(initialOptions);
       console.log('[createOrUpdateReservationItem] Inserting with options JSON:', optionsJson);
 
-      const insertResult = await pool.query(insertQuery, [
-        data.reservationNumber,
-        data.guestName,
-        data.email,
-        data.checkin,
-        data.checkout,
-        initialRoomType,
-        initialAmount,
-        'pending',
-        optionsJson,
-      ]);
+      try {
+        const insertResult = await pool.query(insertQuery, [
+          data.reservationNumber,
+          data.guestName,
+          data.email,
+          data.checkin,
+          data.checkout,
+          initialRoomType,
+          initialAmount,
+          'pending',
+          optionsJson,
+        ]);
 
-      if (insertResult.rows.length === 0) {
-        throw new Error('Failed to create reservation');
-      }
+        if (insertResult.rows.length === 0) {
+          // INSERT가 실패했을 수 있음 - 다시 조회 시도
+          const retryResult = await pool.query(existingQuery, [data.reservationNumber]);
+          const retryExisting = retryResult.rows[0];
+          
+          if (!retryExisting) {
+            throw new Error('Failed to create reservation');
+          }
+          
+          // 기존 예약이 있으면 업데이트
+          const updateQuery = `
+            UPDATE reservations
+            SET
+              guest_name = $1,
+              email = $2,
+              checkin = $3,
+              checkout = $4,
+              room_type = $5,
+              amount = $6,
+              updated_at = CURRENT_TIMESTAMP
+            WHERE reservation_number = $7
+            RETURNING 
+              id,
+              reservation_number,
+              guest_name,
+              email,
+              phone,
+              checkin,
+              checkout,
+              room_type,
+              assigned_room,
+              amount,
+              status,
+              unique_token,
+              options,
+              created_at,
+              updated_at
+          `;
+
+          const updateResult = await pool.query(updateQuery, [
+            data.guestName,
+            data.email,
+            data.checkin,
+            data.checkout,
+            initialRoomType,
+            initialAmount,
+            data.reservationNumber,
+          ]);
+
+          if (updateResult.rows.length === 0) {
+            throw new Error('Failed to update reservation');
+          }
+
+          const row = updateResult.rows[0];
+          let parsedOptions = undefined;
+          if (row.options) {
+            try {
+              parsedOptions = Array.isArray(row.options) ? row.options : JSON.parse(row.options);
+            } catch (e) {
+              console.error('[createOrUpdateReservationItem] Error parsing returned options:', e);
+            }
+          }
+
+          console.log('[createOrUpdateReservationItem] Insert successful (via update)');
+          
+          return {
+            id: row.id,
+            reservationNumber: row.reservation_number,
+            guestName: row.guest_name,
+            email: row.email,
+            phone: row.phone || undefined,
+            checkin: row.checkin,
+            checkout: row.checkout,
+            roomType: row.room_type,
+            assignedRoom: row.assigned_room || undefined,
+            amount: row.amount,
+            status: row.status,
+            uniqueToken: row.unique_token || undefined,
+            options: parsedOptions,
+            createdAt: row.created_at,
+            updatedAt: row.updated_at,
+          };
+        }
+
+        const row = insertResult.rows[0];
 
       const row = insertResult.rows[0];
       
