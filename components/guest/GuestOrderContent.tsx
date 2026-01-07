@@ -58,6 +58,7 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
       {showOrderForm && (
         <OrderForm
           onClose={() => setShowOrderForm(false)}
+          token={token}
         />
       )}
       

@@ -8,13 +8,14 @@ import { Input } from '@/components/ui/input';
 import { BBQ_SETS } from '@/lib/constants';
 import { useGuestStore } from '@/lib/store';
 import { useToast } from '@/components/ui/use-toast';
-import { sendOrderToN8N } from '@/lib/api';
+import { sendOrderToN8N, createOrder } from '@/lib/api';
 
 interface OrderFormProps {
   onClose: () => void;
+  token: string;
 }
 
-export function OrderForm({ onClose }: OrderFormProps) {
+export function OrderForm({ onClose, token }: OrderFormProps) {
   const [selectedSet, setSelectedSet] = useState<string | null>(null);
   const [quantity, setQuantity] = useState(1);
   const [deliveryTime, setDeliveryTime] = useState('18:00');
@@ -51,25 +52,47 @@ export function OrderForm({ onClose }: OrderFormProps) {
       notes,
     };
 
-    addOrder(order);
+    try {
+      // 1. Railway 백엔드에 주문 저장
+      const savedOrder = await createOrder(token, {
+        type: order.type,
+        items: order.items,
+        totalAmount: order.totalAmount,
+        deliveryTime: order.deliveryTime,
+        notes: order.notes,
+      });
 
-    // n8n 웹훅으로 전송
-    await sendOrderToN8N({
-      guest: guestInfo.name,
-      room: guestInfo.room,
-      orderType: order.type,
-      items: order.items,
-      totalAmount: order.totalAmount,
-      deliveryTime: order.deliveryTime,
-      notes: order.notes,
-    });
+      // 2. 로컬 스토어에 추가
+      addOrder(order);
 
-    toast({
-      title: '주문 완료',
-      description: '주문이 접수되었습니다. 곧 준비해드리겠습니다!',
-    });
+      // 3. n8n 웹훅으로 알림 전송 (비동기, 실패해도 주문은 저장됨)
+      sendOrderToN8N({
+        guest: guestInfo.name,
+        room: guestInfo.room,
+        orderType: order.type,
+        items: order.items,
+        totalAmount: order.totalAmount,
+        deliveryTime: order.deliveryTime,
+        notes: order.notes,
+      }).catch((error) => {
+        console.error('Failed to send order notification to n8n:', error);
+        // n8n 전송 실패는 로그만 남기고 사용자에게는 알리지 않음
+      });
 
-    onClose();
+      toast({
+        title: '주문 완료',
+        description: '주문이 접수되었습니다. 곧 준비해드리겠습니다!',
+      });
+
+      onClose();
+    } catch (error) {
+      console.error('Failed to create order:', error);
+      toast({
+        title: '주문 실패',
+        description: '주문 접수에 실패했습니다. 다시 시도해주세요.',
+        variant: 'destructive',
+      });
+    }
   };
 
   return (
