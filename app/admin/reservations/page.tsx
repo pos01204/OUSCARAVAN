@@ -20,18 +20,28 @@ async function ReservationsData({
   search?: string;
 }) {
   // Railway 백엔드 API에서 예약 목록 조회
+  // 캘린더 뷰에서는 필터 없이 모든 예약을 가져와야 함
+  // (필터는 리스트 뷰에서만 적용)
   let reservations: Reservation[] = [];
   let total = 0;
   
   try {
+    // 캘린더를 위해 필터 없이 모든 예약 조회 (limit을 크게 설정)
     const data = await getReservationsServer({
-      status,
-      checkin,
-      checkout,
+      status: status && status !== 'all' ? status : undefined,
+      // checkin, checkout 필터는 리스트 뷰에서만 사용
+      // 캘린더는 모든 예약을 표시해야 하므로 필터 제거
       search,
+      limit: 1000, // 충분히 큰 값으로 설정하여 모든 예약 가져오기
     });
     reservations = data.reservations || [];
     total = data.total || 0;
+    
+    console.log('[ReservationsData] Fetched reservations:', {
+      count: reservations.length,
+      total,
+      filters: { status, checkin, checkout, search },
+    });
   } catch (error) {
     logError('Failed to fetch reservations', error, {
       component: 'ReservationsData',

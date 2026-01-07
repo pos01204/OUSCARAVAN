@@ -45,36 +45,57 @@ export function ReservationCalendarView({
 
   // 예약 데이터를 캘린더 이벤트로 변환
   const events: ReservationEvent[] = useMemo(() => {
-    return reservations
-      .filter((reservation) => {
-        // 체크인/체크아웃 날짜가 유효한지 확인
-        const checkin = new Date(reservation.checkin);
-        const checkout = new Date(reservation.checkout);
-        return !isNaN(checkin.getTime()) && !isNaN(checkout.getTime());
-      })
-      .map((reservation) => {
-        // 체크인 날짜 (시작일)
-        const startDate = new Date(reservation.checkin);
-        startDate.setHours(14, 0, 0, 0); // 체크인 시간: 오후 2시
-
-        // 체크아웃 날짜 (종료일) - 체크아웃 날짜의 다음 날로 설정 (하루 종일 표시)
-        const endDate = new Date(reservation.checkout);
-        endDate.setHours(11, 0, 0, 0); // 체크아웃 시간: 오전 11시
-
-        // 체크아웃이 체크인보다 이전이면 체크인 다음 날로 설정
-        if (endDate <= startDate) {
-          endDate.setTime(startDate.getTime());
-          endDate.setDate(endDate.getDate() + 1);
-        }
-
-        return {
+    console.log('[Calendar] Processing reservations:', reservations.length);
+    
+    const validReservations = reservations.filter((reservation) => {
+      // 체크인/체크아웃 날짜가 유효한지 확인
+      const checkin = new Date(reservation.checkin);
+      const checkout = new Date(reservation.checkout);
+      const isValid = !isNaN(checkin.getTime()) && !isNaN(checkout.getTime());
+      
+      if (!isValid) {
+        console.warn('[Calendar] Invalid date reservation:', {
           id: reservation.id,
-          title: `${reservation.guestName}${reservation.assignedRoom ? ` (${reservation.assignedRoom})` : ' (미배정)'}`,
-          start: startDate,
-          end: endDate,
-          resource: reservation,
-        };
-      });
+          reservationNumber: reservation.reservationNumber,
+          checkin: reservation.checkin,
+          checkout: reservation.checkout,
+        });
+      }
+      
+      return isValid;
+    });
+    
+    console.log('[Calendar] Valid reservations:', validReservations.length);
+    
+    const events = validReservations.map((reservation) => {
+      // 체크인 날짜 (시작일) - 날짜만 사용 (시간 제거)
+      const checkinDate = new Date(reservation.checkin);
+      const startDate = new Date(checkinDate.getFullYear(), checkinDate.getMonth(), checkinDate.getDate());
+      startDate.setHours(0, 0, 0, 0); // 자정으로 설정
+
+      // 체크아웃 날짜 (종료일) - 체크아웃 날짜 포함 (하루 종일 표시)
+      const checkoutDate = new Date(reservation.checkout);
+      const endDate = new Date(checkoutDate.getFullYear(), checkoutDate.getMonth(), checkoutDate.getDate());
+      endDate.setHours(23, 59, 59, 999); // 해당 날짜의 마지막 시간으로 설정
+
+      // 체크아웃이 체크인보다 이전이면 체크인 다음 날로 설정
+      if (endDate < startDate) {
+        endDate.setTime(startDate.getTime());
+        endDate.setDate(endDate.getDate() + 1);
+        endDate.setHours(23, 59, 59, 999);
+      }
+
+      return {
+        id: reservation.id,
+        title: `${reservation.guestName}${reservation.assignedRoom ? ` (${reservation.assignedRoom})` : ' (미배정)'}`,
+        start: startDate,
+        end: endDate,
+        resource: reservation,
+      };
+    });
+    
+    console.log('[Calendar] Generated events:', events.length);
+    return events;
   }, [reservations]);
 
   // 이벤트 스타일 커스터마이징
@@ -106,17 +127,49 @@ export function ReservationCalendarView({
 
   // 선택된 날짜의 예약 목록 가져오기
   const getReservationsForDate = useCallback((date: Date) => {
-    return reservations.filter((reservation) => {
-      const checkin = new Date(reservation.checkin);
-      const checkout = new Date(reservation.checkout);
-      
-      // 체크인 날짜와 체크아웃 날짜 사이에 포함되는지 확인
-      return (
-        isSameDay(checkin, date) ||
-        isSameDay(checkout, date) ||
-        (checkin <= date && date <= checkout)
-      );
+    // 날짜만 비교하기 위해 시간 부분 제거
+    const targetDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+    targetDate.setHours(0, 0, 0, 0);
+    
+    const filtered = reservations.filter((reservation) => {
+      try {
+        // 체크인 날짜 (시간 제거)
+        const checkin = new Date(reservation.checkin);
+        const checkinDate = new Date(checkin.getFullYear(), checkin.getMonth(), checkin.getDate());
+        checkinDate.setHours(0, 0, 0, 0);
+        
+        // 체크아웃 날짜 (시간 제거)
+        const checkout = new Date(reservation.checkout);
+        const checkoutDate = new Date(checkout.getFullYear(), checkout.getMonth(), checkout.getDate());
+        checkoutDate.setHours(0, 0, 0, 0);
+        
+        // 날짜 범위 확인: 체크인 <= 선택일 <= 체크아웃
+        const isInRange = checkinDate <= targetDate && targetDate <= checkoutDate;
+        
+        return isInRange;
+      } catch (error) {
+        console.error('[Calendar] Error filtering reservation for date:', {
+          reservationId: reservation.id,
+          checkin: reservation.checkin,
+          checkout: reservation.checkout,
+          error,
+        });
+        return false;
+      }
     });
+    
+    console.log('[Calendar] Reservations for date:', {
+      date: format(targetDate, 'yyyy-MM-dd'),
+      count: filtered.length,
+      reservations: filtered.map(r => ({
+        id: r.id,
+        guestName: r.guestName,
+        checkin: r.checkin,
+        checkout: r.checkout,
+      })),
+    });
+    
+    return filtered;
   }, [reservations]);
 
   // 날짜 클릭 핸들러 (모달로 해당 날짜의 예약 표시)
