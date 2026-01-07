@@ -1,13 +1,15 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { getRooms, type Room } from '@/lib/api';
 import { logError } from '@/lib/logger';
 import { extractUserFriendlyMessage } from '@/lib/error-messages';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Edit } from 'lucide-react';
 
 interface RoomWithReservation extends Room {
   reservation?: {
@@ -21,6 +23,7 @@ interface RoomWithReservation extends Room {
 
 export default function RoomsPage() {
   const { toast } = useToast();
+  const router = useRouter();
   const [rooms, setRooms] = useState<RoomWithReservation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   
@@ -29,7 +32,9 @@ export default function RoomsPage() {
       setIsLoading(true);
       const data = await getRooms();
       // getRooms()는 배열을 반환
-      setRooms(data);
+      const roomsArray = Array.isArray(data) ? data : [];
+      console.log('[RoomsPage] Fetched rooms:', roomsArray.length);
+      setRooms(roomsArray);
     } catch (error) {
       logError('Failed to fetch rooms', error, {
         component: 'RoomsPage',
@@ -130,23 +135,37 @@ export default function RoomsPage() {
                   <div>
                     <p className="text-sm text-muted-foreground">배정 정보</p>
                     {room.reservation ? (
-                      <div className="mt-1">
-                        <p className="font-medium">{room.reservation.guestName}</p>
-                        <p className="text-xs text-muted-foreground mt-1">
-                          {new Date(room.reservation.checkin).toLocaleDateString('ko-KR')} ~ {new Date(room.reservation.checkout).toLocaleDateString('ko-KR')}
-                        </p>
-                        <Badge 
-                          variant={
-                            room.reservation.status === 'checked_in' ? 'default' :
-                            room.reservation.status === 'checked_out' ? 'secondary' :
-                            'outline'
-                          }
-                          className="mt-1"
+                      <div className="mt-1 space-y-2">
+                        <div>
+                          <p className="font-medium">{room.reservation.guestName}</p>
+                          <p className="text-xs text-muted-foreground mt-1">
+                            {new Date(room.reservation.checkin).toLocaleDateString('ko-KR')} ~ {new Date(room.reservation.checkout).toLocaleDateString('ko-KR')}
+                          </p>
+                          <Badge 
+                            variant={
+                              room.reservation.status === 'checked_in' ? 'default' :
+                              room.reservation.status === 'checked_out' ? 'secondary' :
+                              'outline'
+                            }
+                            className="mt-1"
+                          >
+                            {room.reservation.status === 'checked_in' ? '체크인' :
+                             room.reservation.status === 'checked_out' ? '체크아웃' :
+                             '배정 완료'}
+                          </Badge>
+                        </div>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="w-full"
+                          onClick={() => {
+                            // 예약 상세 페이지로 이동 (예약 ID 사용)
+                            router.push(`/admin/reservations/${room.reservation?.id}`);
+                          }}
                         >
-                          {room.reservation.status === 'checked_in' ? '체크인' :
-                           room.reservation.status === 'checked_out' ? '체크아웃' :
-                           '배정 완료'}
-                        </Badge>
+                          <Edit className="mr-2 h-4 w-4" />
+                          방 배정 수정
+                        </Button>
                       </div>
                     ) : (
                       <p className="font-medium text-muted-foreground">미배정</p>

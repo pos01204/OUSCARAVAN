@@ -35,7 +35,14 @@ export async function GET() {
     }
 
     const data = await response.json();
-    return NextResponse.json(data);
+    // Railway 백엔드가 배열을 직접 반환하므로 그대로 전달
+    // 배열이 아닌 경우 (에러 등) 처리
+    if (Array.isArray(data)) {
+      return NextResponse.json(data);
+    }
+    // 배열이 아닌 경우 빈 배열 반환 (에러 방지)
+    console.warn('[API] Rooms response is not an array:', data);
+    return NextResponse.json([]);
   } catch (error) {
     console.error('[API] Failed to fetch rooms:', error);
     return NextResponse.json(

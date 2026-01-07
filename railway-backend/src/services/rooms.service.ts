@@ -55,9 +55,20 @@ export async function getRooms(): Promise<RoomWithReservation[]> {
       res.checkout,
       res.status as reservation_status
     FROM rooms r
-    LEFT JOIN reservations res ON res.assigned_room = r.name 
-      AND res.status IN ('assigned', 'checked_in', 'checked_out')
-      AND res.checkout::date >= CURRENT_DATE
+    LEFT JOIN LATERAL (
+      SELECT 
+        res.id,
+        res.guest_name,
+        res.checkin,
+        res.checkout,
+        res.status as reservation_status
+      FROM reservations res
+      WHERE res.assigned_room = r.name 
+        AND res.status IN ('assigned', 'checked_in', 'checked_out')
+        AND res.checkout::date >= CURRENT_DATE
+      ORDER BY res.checkin DESC
+      LIMIT 1
+    ) res ON true
     ORDER BY 
       CASE 
         WHEN r.name ~ '^[AB]\\d+$' THEN 
