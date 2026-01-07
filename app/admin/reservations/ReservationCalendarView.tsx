@@ -358,7 +358,7 @@ export function ReservationCalendarView({
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
-        textAlign: 'center',
+        textAlign: 'center' as const,
       },
     };
   };
@@ -540,7 +540,7 @@ export function ReservationCalendarView({
       // 나머지는 이름순
       return a.guestName.localeCompare(b.guestName);
     });
-  }, [selectedDate, reservations]);
+  }, [selectedDate, getReservationsForDate]);
 
   // 예약 정렬 함수 (중요도 순서: 미배정 → 체크인 → 체크아웃)
   const sortReservationsByPriority = useCallback((reservations: Reservation[]) => {
