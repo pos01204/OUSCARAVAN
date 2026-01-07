@@ -1,11 +1,15 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import { Calendar, dateFnsLocalizer, View, Event, SlotInfo } from 'react-big-calendar';
-import { format, parse, startOfWeek, getDay } from 'date-fns';
+import { format, parse, startOfWeek, getDay, isSameDay } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { useRouter } from 'next/navigation';
 import { type Reservation } from '@/lib/api';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 // 한국어 로케일 설정
@@ -36,6 +40,8 @@ export function ReservationCalendarView({
   const router = useRouter();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<View>('month');
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
   // 예약 데이터를 캘린더 이벤트로 변환
   const events: ReservationEvent[] = useMemo(() => {
@@ -98,16 +104,44 @@ export function ReservationCalendarView({
     };
   };
 
-  // 날짜 클릭 핸들러 (해당 날짜의 예약 필터링)
-  const handleSelectSlot = (slotInfo: SlotInfo) => {
-    const selectedDate = format(slotInfo.start, 'yyyy-MM-dd');
-    router.push(`/admin/reservations?checkin=${selectedDate}`);
-  };
+  // 선택된 날짜의 예약 목록 가져오기
+  const getReservationsForDate = useCallback((date: Date) => {
+    return reservations.filter((reservation) => {
+      const checkin = new Date(reservation.checkin);
+      const checkout = new Date(reservation.checkout);
+      
+      // 체크인 날짜와 체크아웃 날짜 사이에 포함되는지 확인
+      return (
+        isSameDay(checkin, date) ||
+        isSameDay(checkout, date) ||
+        (checkin <= date && date <= checkout)
+      );
+    });
+  }, [reservations]);
+
+  // 날짜 클릭 핸들러 (모달로 해당 날짜의 예약 표시)
+  const handleSelectSlot = useCallback((slotInfo: SlotInfo) => {
+    const clickedDate = slotInfo.start;
+    setSelectedDate(clickedDate);
+    setIsModalOpen(true);
+  }, []);
 
   // 이벤트 클릭 핸들러 (예약 상세 페이지로 이동)
-  const handleSelectEvent = (event: ReservationEvent) => {
+  const handleSelectEvent = useCallback((event: ReservationEvent) => {
     router.push(`/admin/reservations/${event.resource.id}`);
-  };
+  }, [router]);
+
+  // 모달 닫기
+  const handleCloseModal = useCallback(() => {
+    setIsModalOpen(false);
+    setSelectedDate(null);
+  }, []);
+
+  // 예약 상세 페이지로 이동
+  const handleViewDetail = useCallback((reservationId: string) => {
+    router.push(`/admin/reservations/${reservationId}`);
+    handleCloseModal();
+  }, [router, handleCloseModal]);
 
   // 한국어 메시지
   const messages = {
@@ -125,42 +159,199 @@ export function ReservationCalendarView({
     showMore: (total: number) => `+${total}개 더 보기`,
   };
 
+  // 선택된 날짜의 예약 목록
+  const selectedDateReservations = selectedDate 
+    ? getReservationsForDate(selectedDate)
+    : [];
+
+  // 상태별 색상
+  const getStatusBadge = (status: Reservation['status']) => {
+    const variants: Record<Reservation['status'], { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
+      pending: { label: '대기', variant: 'outline' },
+      assigned: { label: '배정 완료', variant: 'secondary' },
+      checked_in: { label: '체크인', variant: 'default' },
+      checked_out: { label: '체크아웃', variant: 'secondary' },
+      cancelled: { label: '취소', variant: 'destructive' },
+    };
+    const { label, variant } = variants[status];
+    return <Badge variant={variant}>{label}</Badge>;
+  };
+
   return (
-    <div className="h-[500px] md:h-[600px] mt-4 rounded-lg border border-border bg-card overflow-hidden">
-      <Calendar
-        localizer={localizer}
-        events={events}
-        startAccessor="start"
-        endAccessor="end"
-        style={{ height: '100%', padding: '12px' }}
-        view={view}
-        onView={setView}
-        date={currentDate}
-        onNavigate={setCurrentDate}
-        onSelectSlot={handleSelectSlot}
-        onSelectEvent={handleSelectEvent}
-        eventPropGetter={eventStyleGetter}
-        messages={messages}
-        culture="ko"
-        selectable
-        popup
-        popupOffset={{ x: 10, y: 10 }}
-        formats={{
-          dayFormat: 'd',
-          dayHeaderFormat: (date, culture, localizer) => {
-            return localizer?.format(date, 'EEE', culture) || '';
-          },
-          dayRangeHeaderFormat: ({ start, end }) =>
-            `${format(start, 'M월 d일', { locale: ko })} - ${format(end, 'M월 d일', { locale: ko })}`,
-          monthHeaderFormat: 'yyyy년 M월',
-          weekdayFormat: (date, culture, localizer) => {
-            return localizer?.format(date, 'EEE', culture) || '';
-          },
-        }}
-        // 모바일에서는 월간 뷰만 허용
-        views={['month', 'week', 'day', 'agenda']}
-        defaultView="month"
-      />
-    </div>
+    <>
+      <div className="h-[500px] md:h-[600px] mt-4 rounded-lg border border-border bg-card overflow-hidden">
+        <Calendar
+          localizer={localizer}
+          events={events}
+          startAccessor="start"
+          endAccessor="end"
+          style={{ height: '100%', padding: '12px' }}
+          view={view}
+          onView={setView}
+          date={currentDate}
+          onNavigate={setCurrentDate}
+          onSelectSlot={handleSelectSlot}
+          onSelectEvent={handleSelectEvent}
+          eventPropGetter={eventStyleGetter}
+          messages={messages}
+          culture="ko"
+          selectable
+          popup={false}
+          formats={{
+            dayFormat: 'd',
+            dayHeaderFormat: (date, culture, localizer) => {
+              return localizer?.format(date, 'EEE', culture) || '';
+            },
+            dayRangeHeaderFormat: ({ start, end }) =>
+              `${format(start, 'M월 d일', { locale: ko })} - ${format(end, 'M월 d일', { locale: ko })}`,
+            monthHeaderFormat: 'yyyy년 M월',
+            weekdayFormat: (date, culture, localizer) => {
+              return localizer?.format(date, 'EEE', culture) || '';
+            },
+          }}
+          // 모바일에서는 월간 뷰만 허용
+          views={['month', 'week', 'day', 'agenda']}
+          defaultView="month"
+        />
+      </div>
+
+      {/* 날짜별 예약 목록 모달 */}
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>
+              {selectedDate && format(selectedDate, 'yyyy년 M월 d일 (EEE)', { locale: ko })} 예약 목록
+            </DialogTitle>
+            <DialogDescription>
+              {selectedDateReservations.length > 0 
+                ? `총 ${selectedDateReservations.length}건의 예약이 있습니다.`
+                : '이 날짜에는 예약이 없습니다.'}
+            </DialogDescription>
+          </DialogHeader>
+          
+          {selectedDateReservations.length > 0 ? (
+            <div className="space-y-3 mt-4">
+              {selectedDateReservations.map((reservation) => {
+                const checkin = new Date(reservation.checkin);
+                const checkout = new Date(reservation.checkout);
+                const isCheckinDay = isSameDay(checkin, selectedDate!);
+                const isCheckoutDay = isSameDay(checkout, selectedDate!);
+                
+                return (
+                  <Card 
+                    key={reservation.id} 
+                    className="cursor-pointer hover:bg-muted/50 transition-colors"
+                    onClick={() => handleViewDetail(reservation.id)}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-2">
+                            <h4 className="font-semibold text-base">
+                              {reservation.guestName}
+                            </h4>
+                            {getStatusBadge(reservation.status)}
+                          </div>
+                          
+                          <div className="space-y-1 text-sm text-muted-foreground">
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">예약번호:</span>
+                              <span>{reservation.reservationNumber}</span>
+                            </div>
+                            
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">체크인:</span>
+                              <span>{format(checkin, 'yyyy-MM-dd')}</span>
+                              {isCheckinDay && (
+                                <Badge variant="outline" className="text-xs">체크인일</Badge>
+                              )}
+                            </div>
+                            
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">체크아웃:</span>
+                              <span>{format(checkout, 'yyyy-MM-dd')}</span>
+                              {isCheckoutDay && (
+                                <Badge variant="outline" className="text-xs">체크아웃일</Badge>
+                              )}
+                            </div>
+                            
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">방 배정:</span>
+                              <span className={reservation.assignedRoom ? 'text-foreground font-medium' : 'text-muted-foreground'}>
+                                {reservation.assignedRoom || '미배정'}
+                              </span>
+                            </div>
+                            
+                            <div className="flex items-center gap-2">
+                              <span className="font-medium">객실:</span>
+                              <span className="text-foreground">{reservation.roomType}</span>
+                            </div>
+                            
+                            {reservation.options && reservation.options.length > 0 && (
+                              <div className="flex items-start gap-2">
+                                <span className="font-medium">옵션:</span>
+                                <div className="flex flex-wrap gap-1">
+                                  {reservation.options.map((opt, idx) => (
+                                    <Badge key={idx} variant="outline" className="text-xs">
+                                      {opt.optionName}
+                                    </Badge>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                        
+                        <div className="flex-shrink-0 text-right">
+                          <div className="text-lg font-bold text-primary">
+                            {(() => {
+                              const roomAmount = parseInt(reservation.amount || '0');
+                              const optionsAmount = reservation.options?.reduce((sum, opt) => sum + opt.optionPrice, 0) || 0;
+                              return (roomAmount + optionsAmount).toLocaleString();
+                            })()}원
+                          </div>
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="mt-2"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleViewDetail(reservation.id);
+                            }}
+                          >
+                            상세 보기
+                          </Button>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
+            </div>
+          ) : (
+            <div className="text-center py-8 text-muted-foreground">
+              이 날짜에는 예약이 없습니다.
+            </div>
+          )}
+          
+          <div className="flex justify-end gap-2 mt-4 pt-4 border-t">
+            <Button variant="outline" onClick={handleCloseModal}>
+              닫기
+            </Button>
+            {selectedDate && (
+              <Button 
+                onClick={() => {
+                  const dateStr = format(selectedDate, 'yyyy-MM-dd');
+                  router.push(`/admin/reservations?checkin=${dateStr}`);
+                  handleCloseModal();
+                }}
+              >
+                필터 적용
+              </Button>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }
