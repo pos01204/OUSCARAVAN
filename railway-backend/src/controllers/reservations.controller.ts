@@ -83,14 +83,21 @@ export async function createReservationHandler(req: Request, res: Response) {
       category, // 레거시 지원용 (더 이상 사용하지 않음)
     } = req.body;
 
-    // 필수 필드 검증
-    if (!reservationNumber || !guestName || !checkin || !checkout || !roomType) {
+    // 필수 필드 검증 (roomType은 빈 문자열도 허용하지 않음)
+    if (!reservationNumber || !guestName || !checkin || !checkout || !roomType || roomType.trim() === '') {
       return res.status(400).json({
         error: 'Missing required fields',
         code: 'MISSING_FIELDS',
         details: {
           required: ['reservationNumber', 'guestName', 'checkin', 'checkout', 'roomType'],
           optional: ['email', 'amount', 'roomAmount', 'options'],
+          received: {
+            reservationNumber: reservationNumber || 'missing',
+            guestName: guestName || 'missing',
+            checkin: checkin || 'missing',
+            checkout: checkout || 'missing',
+            roomType: roomType || 'missing',
+          },
         },
       });
     }

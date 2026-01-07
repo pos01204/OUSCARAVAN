@@ -259,21 +259,25 @@ export default function ReservationDetailPage() {
             {/* ROOM 상품 */}
             <div className="space-y-2">
               <Label className="text-muted-foreground">객실</Label>
-              <div className="p-3 bg-muted rounded-md">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="font-medium">{reservation.roomType}</p>
-                    <Badge variant="outline" className="mt-1">ROOM</Badge>
+              <div className="p-3 bg-muted rounded-md border border-border/50">
+                <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    <p className="font-medium text-sm leading-relaxed break-words">
+                      {reservation.roomType}
+                    </p>
+                    <Badge variant="outline" className="mt-1.5 text-xs">ROOM</Badge>
                   </div>
-                  <p className="font-semibold text-lg">
-                    {(() => {
-                      const roomAmount = parseInt(reservation.amount || '0');
-                      if (roomAmount === 0) {
-                        return <span className="text-muted-foreground italic">금액 정보 없음</span>;
-                      }
-                      return `${roomAmount.toLocaleString()}원`;
-                    })()}
-                  </p>
+                  <div className="flex-shrink-0 sm:text-right">
+                    <p className="font-semibold text-lg whitespace-nowrap">
+                      {(() => {
+                        const roomAmount = parseInt(reservation.amount || '0');
+                        if (roomAmount === 0) {
+                          return <span className="text-muted-foreground italic text-sm">금액 정보 없음</span>;
+                        }
+                        return `${roomAmount.toLocaleString()}원`;
+                      })()}
+                    </p>
+                  </div>
                 </div>
               </div>
             </div>
@@ -283,19 +287,66 @@ export default function ReservationDetailPage() {
               <div className="space-y-2">
                 <Label className="text-muted-foreground">추가 옵션</Label>
                 <div className="space-y-2">
-                  {reservation.options.map((option, index) => (
-                    <div key={index} className="p-3 bg-muted rounded-md">
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <p className="font-medium">{option.optionName}</p>
-                          <Badge variant="secondary" className="mt-1">OPTION</Badge>
+                  {reservation.options.map((option, index) => {
+                    // 옵션명 포맷팅: 대괄호와 쉼표 처리
+                    const formatOptionName = (name: string) => {
+                      // 대괄호 내용 추출 및 정리
+                      const bracketMatch = name.match(/\[([^\]]+)\]/);
+                      const bracketContent = bracketMatch ? bracketMatch[1] : null;
+                      const nameWithoutBracket = name.replace(/\[[^\]]+\]\s*/, '').trim();
+                      
+                      return {
+                        tags: bracketContent ? bracketContent.split(',').map(t => t.trim()) : [],
+                        mainName: nameWithoutBracket,
+                        fullName: name,
+                      };
+                    };
+                    
+                    const formatted = formatOptionName(option.optionName);
+                    const hasPrice = option.optionPrice > 0;
+                    
+                    return (
+                      <div key={index} className="p-3 bg-muted rounded-md border border-border/50">
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+                          <div className="flex-1 min-w-0">
+                            {/* 태그들 (대괄호 내용) */}
+                            {formatted.tags.length > 0 && (
+                              <div className="flex flex-wrap gap-1 mb-1.5">
+                                {formatted.tags.map((tag, tagIndex) => (
+                                  <Badge 
+                                    key={tagIndex} 
+                                    variant="outline" 
+                                    className="text-xs px-1.5 py-0.5 h-auto font-normal"
+                                  >
+                                    {tag}
+                                  </Badge>
+                                ))}
+                              </div>
+                            )}
+                            
+                            {/* 메인 옵션명 */}
+                            <p className="font-medium text-sm leading-relaxed break-words">
+                              {formatted.mainName || formatted.fullName}
+                            </p>
+                            
+                            {/* OPTION 배지 */}
+                            <Badge variant="secondary" className="mt-1.5 text-xs">OPTION</Badge>
+                          </div>
+                          
+                          {/* 가격 */}
+                          <div className="flex-shrink-0 sm:text-right">
+                            <p className={`font-semibold text-base whitespace-nowrap ${hasPrice ? 'text-foreground' : 'text-muted-foreground'}`}>
+                              {hasPrice ? (
+                                `${option.optionPrice.toLocaleString()}원`
+                              ) : (
+                                <span className="italic text-sm">무료</span>
+                              )}
+                            </p>
+                          </div>
                         </div>
-                        <p className="font-semibold">
-                          {option.optionPrice.toLocaleString()}원
-                        </p>
                       </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               </div>
             )}

@@ -52,8 +52,8 @@ export function validateCreateReservation(req: Request, res: Response, next: Nex
     errors.push('checkout must be a valid date (YYYY-MM-DD)');
   }
 
-  if (!validateRequired(roomType)) {
-    errors.push('roomType is required');
+  if (!validateRequired(roomType) || (typeof roomType === 'string' && roomType.trim() === '')) {
+    errors.push('roomType is required and cannot be empty');
   } else if (!validateLength(roomType, 1, 100)) {
     errors.push('roomType must be between 1 and 100 characters');
   }

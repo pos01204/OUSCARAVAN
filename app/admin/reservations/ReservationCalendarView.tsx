@@ -146,12 +146,12 @@ export function ReservationCalendarView({
         popup
         popupOffset={{ x: 10, y: 10 }}
         formats={{
-          dayFormat: 'D',
+          dayFormat: 'd',
           dayHeaderFormat: (date, culture, localizer) => {
             return localizer?.format(date, 'EEE', culture) || '';
           },
           dayRangeHeaderFormat: ({ start, end }) =>
-            `${format(start, 'M월 D일', { locale: ko })} - ${format(end, 'M월 D일', { locale: ko })}`,
+            `${format(start, 'M월 d일', { locale: ko })} - ${format(end, 'M월 d일', { locale: ko })}`,
           monthHeaderFormat: 'yyyy년 M월',
           weekdayFormat: (date, culture, localizer) => {
             return localizer?.format(date, 'EEE', culture) || '';

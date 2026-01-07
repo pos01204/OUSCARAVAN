@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { API_CONFIG } from '@/lib/constants';
 
+// 동적 렌더링 강제 (cookies 사용)
+export const dynamic = 'force-dynamic';
+
 const API_URL = API_CONFIG.baseUrl;
 
 /**
