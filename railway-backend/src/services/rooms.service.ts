@@ -67,6 +67,7 @@ export async function getRooms(): Promise<RoomWithReservation[]> {
   try {
     const roomsResult = await pool.query(roomsQuery);
     const rooms = roomsResult.rows;
+    console.log('[getRooms] Found rooms:', rooms.length);
 
     // 각 방에 대한 최신 예약 정보 조회
     const reservationsQuery = `

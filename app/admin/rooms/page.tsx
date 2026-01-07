@@ -33,7 +33,17 @@ export default function RoomsPage() {
       const data = await getRooms();
       // getRooms()는 배열을 반환
       const roomsArray = Array.isArray(data) ? data : [];
-      console.log('[RoomsPage] Fetched rooms:', roomsArray.length);
+      console.log('[RoomsPage] Fetched rooms:', roomsArray.length, roomsArray);
+      
+      if (roomsArray.length === 0) {
+        console.warn('[RoomsPage] No rooms found. Check database migration.');
+        toast({
+          title: '방 데이터 없음',
+          description: '데이터베이스에 방이 없습니다. 마이그레이션을 실행해주세요.',
+          variant: 'destructive',
+        });
+      }
+      
       setRooms(roomsArray);
     } catch (error) {
       logError('Failed to fetch rooms', error, {
@@ -64,14 +74,20 @@ export default function RoomsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   
-  const getStatusBadge = (status: Room['status']) => {
+  const getStatusBadge = (room: RoomWithReservation) => {
+    // 배정 정보가 있으면 "사용 중"으로 표시
+    if (room.reservation) {
+      return <Badge variant="secondary">사용 중</Badge>;
+    }
+    
+    // 배정 정보가 없으면 방의 실제 상태 표시
     const variants: Record<Room['status'], { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
       available: { label: '사용 가능', variant: 'default' },
       occupied: { label: '사용 중', variant: 'secondary' },
       maintenance: { label: '점검 중', variant: 'destructive' },
     };
     
-    const { label, variant } = variants[status];
+    const { label, variant } = variants[room.status];
     return <Badge variant={variant}>{label}</Badge>;
   };
   
@@ -126,7 +142,7 @@ export default function RoomsPage() {
               <CardHeader>
                 <div className="flex items-center justify-between">
                   <CardTitle>{room.name}</CardTitle>
-                  {getStatusBadge(room.status)}
+                  {getStatusBadge(room)}
                 </div>
                 <CardDescription>{room.capacity}인실</CardDescription>
               </CardHeader>
