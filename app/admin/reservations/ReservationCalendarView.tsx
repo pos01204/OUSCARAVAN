@@ -11,6 +11,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { calculateTotalAmount } from '@/lib/utils/reservation';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 // 상태별 색상 시스템 (강화)
@@ -756,11 +757,7 @@ export function ReservationCalendarView({
                             
                             <div className="flex-shrink-0 text-right">
                               <div className="text-lg font-bold text-primary">
-                                {(() => {
-                                  const roomAmount = parseInt(reservation.amount || '0');
-                                  const optionsAmount = reservation.options?.reduce((sum, opt) => sum + opt.optionPrice, 0) || 0;
-                                  return (roomAmount + optionsAmount).toLocaleString();
-                                })()}원
+                                {calculateTotalAmount(reservation).totalAmount.toLocaleString()}원
                               </div>
                               <div className="flex gap-2 mt-2">
                                 <Button 
@@ -875,11 +872,7 @@ export function ReservationCalendarView({
                               
                               <div className="flex-shrink-0 text-right">
                                 <div className="text-lg font-bold text-primary">
-                                  {(() => {
-                                    const roomAmount = parseInt(reservation.amount || '0');
-                                    const optionsAmount = reservation.options?.reduce((sum, opt) => sum + opt.optionPrice, 0) || 0;
-                                    return (roomAmount + optionsAmount).toLocaleString();
-                                  })()}원
+                                  {calculateTotalAmount(reservation).totalAmount.toLocaleString()}원
                                 </div>
                                 <Button 
                                   variant="outline" 
@@ -1087,11 +1080,7 @@ export function ReservationCalendarView({
                               
                               <div className="flex-shrink-0 text-right">
                                 <div className="text-lg font-bold text-primary">
-                                  {(() => {
-                                    const roomAmount = parseInt(reservation.amount || '0');
-                                    const optionsAmount = reservation.options?.reduce((sum, opt) => sum + opt.optionPrice, 0) || 0;
-                                    return (roomAmount + optionsAmount).toLocaleString();
-                                  })()}원
+                                  {calculateTotalAmount(reservation).totalAmount.toLocaleString()}원
                                 </div>
                                 <Button 
                                   variant="outline" 

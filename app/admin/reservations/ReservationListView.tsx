@@ -3,6 +3,7 @@ import { type Reservation } from '@/lib/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { calculateTotalAmount } from '@/lib/utils/reservation';
 
 interface ReservationListViewProps {
   reservations: Reservation[];
@@ -102,16 +103,12 @@ export function ReservationListView({
               <div>
                 <p className="text-sm text-muted-foreground">결제금액</p>
                 <p className="font-medium">
-                  {(() => {
-                    const roomAmount = parseInt(reservation.amount || '0');
-                    const optionsAmount = reservation.options?.reduce((sum, opt) => sum + opt.optionPrice, 0) || 0;
-                    return (roomAmount + optionsAmount).toLocaleString();
-                  })()}원
+                  {calculateTotalAmount(reservation).totalAmount.toLocaleString()}원
                 </p>
                 {reservation.options && reservation.options.length > 0 && (
                   <p className="text-xs text-muted-foreground mt-1">
-                    (객실: {parseInt(reservation.amount || '0').toLocaleString()}원
-                    + 옵션: {reservation.options.reduce((sum, opt) => sum + opt.optionPrice, 0).toLocaleString()}원)
+                    (객실: {calculateTotalAmount(reservation).roomAmount.toLocaleString()}원
+                    + 옵션: {calculateTotalAmount(reservation).optionsAmount.toLocaleString()}원)
                   </p>
                 )}
               </div>

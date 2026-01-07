@@ -14,6 +14,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
 import { ArrowLeft, Save, Loader2, ExternalLink } from 'lucide-react';
+import { formatOptionName, calculateTotalAmount } from '@/lib/utils/reservation';
 
 export default function ReservationDetailPage() {
   const params = useParams();
@@ -288,20 +289,6 @@ export default function ReservationDetailPage() {
                 <Label className="text-muted-foreground">추가 옵션</Label>
                 <div className="space-y-2">
                   {reservation.options.map((option, index) => {
-                    // 옵션명 포맷팅: 대괄호와 쉼표 처리
-                    const formatOptionName = (name: string) => {
-                      // 대괄호 내용 추출 및 정리
-                      const bracketMatch = name.match(/\[([^\]]+)\]/);
-                      const bracketContent = bracketMatch ? bracketMatch[1] : null;
-                      const nameWithoutBracket = name.replace(/\[[^\]]+\]\s*/, '').trim();
-                      
-                      return {
-                        tags: bracketContent ? bracketContent.split(',').map(t => t.trim()) : [],
-                        mainName: nameWithoutBracket,
-                        fullName: name,
-                      };
-                    };
-                    
                     const formatted = formatOptionName(option.optionName);
                     const hasPrice = option.optionPrice > 0;
                     
@@ -356,17 +343,13 @@ export default function ReservationDetailPage() {
               <div className="flex items-center justify-between">
                 <Label className="text-lg font-semibold">총 결제금액</Label>
                 <p className="text-2xl font-bold text-primary">
-                  {(() => {
-                    const roomAmount = parseInt(reservation.amount || '0');
-                    const optionsAmount = reservation.options?.reduce((sum, opt) => sum + opt.optionPrice, 0) || 0;
-                    return (roomAmount + optionsAmount).toLocaleString();
-                  })()}원
+                  {calculateTotalAmount(reservation).totalAmount.toLocaleString()}원
                 </p>
               </div>
               <p className="text-xs text-muted-foreground mt-1">
-                객실: {parseInt(reservation.amount || '0').toLocaleString()}원
+                객실: {calculateTotalAmount(reservation).roomAmount.toLocaleString()}원
                 {reservation.options && reservation.options.length > 0 && (
-                  <> + 옵션: {reservation.options.reduce((sum, opt) => sum + opt.optionPrice, 0).toLocaleString()}원</>
+                  <> + 옵션: {calculateTotalAmount(reservation).optionsAmount.toLocaleString()}원</>
                 )}
               </p>
             </div>
