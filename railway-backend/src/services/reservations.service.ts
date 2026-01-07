@@ -914,38 +914,41 @@ export async function createOrUpdateReservationItem(data: {
         }
 
         const row = insertResult.rows[0];
-
-      const row = insertResult.rows[0];
-      
-      // options 파싱
-      let parsedOptions = undefined;
-      if (row.options) {
-        try {
-          parsedOptions = Array.isArray(row.options) ? row.options : JSON.parse(row.options);
-        } catch (e) {
-          console.error('[createOrUpdateReservationItem] Error parsing returned options:', e);
+        
+        // options 파싱
+        let parsedOptions = undefined;
+        if (row.options) {
+          try {
+            parsedOptions = Array.isArray(row.options) ? row.options : JSON.parse(row.options);
+          } catch (e) {
+            console.error('[createOrUpdateReservationItem] Error parsing returned options:', e);
+          }
         }
-      }
 
-      console.log('[createOrUpdateReservationItem] Insert successful');
-      
-      return {
-        id: row.id,
-        reservationNumber: row.reservation_number,
-        guestName: row.guest_name,
-        email: row.email,
-        phone: row.phone || undefined,
-        checkin: row.checkin,
-        checkout: row.checkout,
-        roomType: row.room_type,
-        assignedRoom: row.assigned_room || undefined,
-        amount: row.amount,
-        status: row.status,
-        uniqueToken: row.unique_token || undefined,
-        options: parsedOptions,
-        createdAt: row.created_at,
-        updatedAt: row.updated_at,
-      };
+        console.log('[createOrUpdateReservationItem] Insert successful');
+        
+        return {
+          id: row.id,
+          reservationNumber: row.reservation_number,
+          guestName: row.guest_name,
+          email: row.email,
+          phone: row.phone || undefined,
+          checkin: row.checkin,
+          checkout: row.checkout,
+          roomType: row.room_type,
+          assignedRoom: row.assigned_room || undefined,
+          amount: row.amount,
+          status: row.status,
+          uniqueToken: row.unique_token || undefined,
+          options: parsedOptions,
+          createdAt: row.created_at,
+          updatedAt: row.updated_at,
+        };
+      } catch (insertError: any) {
+        // INSERT 실패 시 에러 처리
+        console.error('[createOrUpdateReservationItem] Insert error:', insertError);
+        throw insertError;
+      }
     }
   } catch (error: any) {
     console.error('[createOrUpdateReservationItem] Error:', error);
