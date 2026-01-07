@@ -14,6 +14,11 @@ export interface Reservation {
   amount: string;
   status: string;
   uniqueToken?: string;
+  options?: Array<{
+    optionName: string;
+    optionPrice: number;
+    category: string;
+  }>;
   createdAt: string;
   updatedAt: string;
 }
@@ -26,6 +31,11 @@ export interface CreateReservationData {
   checkout: string;
   roomType: string;
   amount: string;
+  options?: Array<{
+    optionName: string;
+    optionPrice: number;
+    category: string;
+  }>;
 }
 
 export interface UpdateReservationData {
@@ -107,6 +117,7 @@ export async function getReservations(filters: {
       amount,
       status,
       unique_token,
+      options,
       created_at,
       updated_at
     FROM reservations
@@ -131,6 +142,7 @@ export async function getReservations(filters: {
     amount: row.amount,
     status: row.status,
     uniqueToken: row.unique_token || undefined,
+    options: row.options || undefined,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   }));
@@ -153,6 +165,7 @@ export async function getReservationById(id: string): Promise<Reservation | null
       amount,
       status,
       unique_token,
+      options,
       created_at,
       updated_at
     FROM reservations
@@ -179,6 +192,7 @@ export async function getReservationById(id: string): Promise<Reservation | null
     amount: row.amount,
     status: row.status,
     uniqueToken: row.unique_token || undefined,
+    options: row.options || undefined,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
@@ -199,6 +213,7 @@ export async function getReservationByToken(token: string): Promise<Reservation 
       amount,
       status,
       unique_token,
+      options,
       created_at,
       updated_at
     FROM reservations
@@ -225,6 +240,7 @@ export async function getReservationByToken(token: string): Promise<Reservation 
     amount: row.amount,
     status: row.status,
     uniqueToken: row.unique_token || undefined,
+    options: row.options || undefined,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };

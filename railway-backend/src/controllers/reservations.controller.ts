@@ -76,6 +76,7 @@ export async function createReservationHandler(req: Request, res: Response) {
       checkout,
       roomType,
       amount,
+      options,
     } = req.body;
 
     // 필수 필드 검증
@@ -85,7 +86,7 @@ export async function createReservationHandler(req: Request, res: Response) {
         code: 'MISSING_FIELDS',
         details: {
           required: ['reservationNumber', 'guestName', 'checkin', 'checkout', 'roomType'],
-          optional: ['email', 'amount'],
+          optional: ['email', 'amount', 'options'],
         },
       });
     }
@@ -96,6 +97,21 @@ export async function createReservationHandler(req: Request, res: Response) {
     // amount가 없으면 기본값 0 사용 (n8n에서 금액이 추출되지 않은 경우)
     const finalAmount = amount !== undefined && amount !== null ? amount : 0;
 
+    // options 배열 검증 및 정규화
+    let finalOptions: Array<{
+      optionName: string;
+      optionPrice: number;
+      category: string;
+    }> = [];
+    
+    if (options && Array.isArray(options)) {
+      finalOptions = options.map((opt: any) => ({
+        optionName: opt.optionName || opt.name || '',
+        optionPrice: typeof opt.optionPrice === 'number' ? opt.optionPrice : (parseInt(String(opt.optionPrice || 0)) || 0),
+        category: opt.category || 'OPTION',
+      }));
+    }
+
     const reservation = await createReservation({
       reservationNumber,
       guestName,
@@ -104,6 +120,7 @@ export async function createReservationHandler(req: Request, res: Response) {
       checkout,
       roomType,
       amount: finalAmount.toString(), // amount는 문자열로 저장
+      options: finalOptions.length > 0 ? finalOptions : undefined,
     });
 
     // UPSERT이므로 200 또는 201 반환

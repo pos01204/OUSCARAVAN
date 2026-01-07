@@ -1,6 +1,18 @@
 import pool from '../config/database';
 
 /**
+ * reservations 테이블에 options 필드 추가 마이그레이션
+ */
+const migration004AddReservationOptions = `
+-- reservations 테이블에 options 필드 추가 (JSONB)
+ALTER TABLE reservations 
+ADD COLUMN IF NOT EXISTS options JSONB DEFAULT '[]'::jsonb;
+
+-- options 필드에 인덱스 추가 (선택사항)
+CREATE INDEX IF NOT EXISTS idx_reservations_options ON reservations USING GIN (options);
+`;
+
+/**
  * 기본 10개 방 데이터 삽입 마이그레이션
  */
 const migration002DefaultRooms = `
@@ -70,6 +82,9 @@ export async function runMigrations(): Promise<void> {
     
     // 기본 방 데이터 마이그레이션 실행
     await runMigration('002_default_rooms', migration002DefaultRooms);
+    
+    // reservations options 필드 추가 마이그레이션 실행
+    await runMigration('004_add_reservation_options', migration004AddReservationOptions);
     
     // 방 개수 확인
     const result = await pool.query('SELECT COUNT(*) as count FROM rooms');
