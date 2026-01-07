@@ -1,16 +1,14 @@
-import Link from 'next/link';
 import { Suspense } from 'react';
 import { getReservationsServer } from '@/lib/admin-api-server';
 import { type Reservation } from '@/lib/api';
 import { logError } from '@/lib/logger';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ReservationFiltersClient } from './ReservationFiltersClient';
+import { ReservationsViewClient } from './ReservationsViewClient';
 
-// 예약 목록 컴포넌트
-async function ReservationsList({
+// 예약 데이터 조회 컴포넌트 (서버 컴포넌트)
+async function ReservationsData({
   status,
   checkin,
   checkout,
@@ -36,90 +34,20 @@ async function ReservationsList({
     total = data.total || 0;
   } catch (error) {
     logError('Failed to fetch reservations', error, {
-      component: 'ReservationsList',
+      component: 'ReservationsData',
       filters: { status, checkin, checkout, search },
     });
   }
   
-  const getStatusBadge = (status: Reservation['status']) => {
-    const variants: Record<Reservation['status'], { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
-      pending: { label: '대기', variant: 'outline' },
-      assigned: { label: '배정 완료', variant: 'secondary' },
-      checked_in: { label: '체크인', variant: 'default' },
-      checked_out: { label: '체크아웃', variant: 'secondary' },
-      cancelled: { label: '취소', variant: 'destructive' },
-    };
-    
-    const { label, variant } = variants[status];
-    return <Badge variant={variant}>{label}</Badge>;
-  };
-  
-  if (reservations.length === 0) {
-    return (
-      <Card>
-        <CardContent className="py-8 text-center">
-          <p className="text-muted-foreground">
-            {search || status || checkin || checkout
-              ? '검색 결과가 없습니다.'
-              : '등록된 예약이 없습니다.'}
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
-  
   return (
-    <div className="space-y-4">
-      {total > 0 && (
-        <p className="text-sm text-muted-foreground">
-          총 {total}건의 예약이 있습니다.
-        </p>
-      )}
-      {reservations.map((reservation) => (
-        <Card key={reservation.id}>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>{reservation.guestName}</CardTitle>
-                <CardDescription>
-                  예약번호: {reservation.reservationNumber}
-                </CardDescription>
-              </div>
-              {getStatusBadge(reservation.status)}
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-4 md:grid-cols-2">
-              <div>
-                <p className="text-sm text-muted-foreground">체크인</p>
-                <p className="font-medium">{reservation.checkin}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">체크아웃</p>
-                <p className="font-medium">{reservation.checkout}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">예약 상품</p>
-                <p className="font-medium">{reservation.roomType}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">배정된 방</p>
-                <p className="font-medium">
-                  {reservation.assignedRoom || '미배정'}
-                </p>
-              </div>
-            </div>
-            <div className="mt-4 flex gap-2">
-              <Link href={`/admin/reservations/${reservation.id}`}>
-                <Button variant="outline" size="sm">
-                  상세 보기
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
-    </div>
+    <ReservationsViewClient
+      reservations={reservations}
+      total={total}
+      search={search}
+      status={status}
+      checkin={checkin}
+      checkout={checkout}
+    />
   );
 }
 
@@ -127,32 +55,21 @@ async function ReservationsList({
 function ReservationsSkeleton() {
   return (
     <div className="space-y-4">
-      {[1, 2, 3].map((i) => (
-        <Card key={i}>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div className="space-y-2">
-                <Skeleton className="h-5 w-32" />
-                <Skeleton className="h-4 w-48" />
-              </div>
-              <Skeleton className="h-6 w-20" />
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-4 md:grid-cols-2">
-              {[1, 2, 3, 4].map((j) => (
-                <div key={j} className="space-y-2">
-                  <Skeleton className="h-3 w-16" />
-                  <Skeleton className="h-4 w-24" />
-                </div>
+      <div className="flex items-center justify-between mb-4">
+        <Skeleton className="h-10 w-48" />
+      </div>
+      <Card className="h-[600px]">
+        <CardContent className="p-6">
+          <div className="space-y-4">
+            <Skeleton className="h-10 w-full" />
+            <div className="grid grid-cols-7 gap-2">
+              {Array.from({ length: 35 }).map((_, i) => (
+                <Skeleton key={i} className="h-20 w-full" />
               ))}
             </div>
-            <div className="mt-4">
-              <Skeleton className="h-8 w-24" />
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
@@ -187,7 +104,7 @@ export default async function ReservationsPage({
       <ReservationFiltersClient />
       
       <Suspense fallback={<ReservationsSkeleton />}>
-        <ReservationsList
+        <ReservationsData
           status={status}
           checkin={checkin}
           checkout={checkout}

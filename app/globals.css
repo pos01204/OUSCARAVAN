@@ -40,3 +40,92 @@
 
 /* Montserrat 폰트 임포트 */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
+/* react-big-calendar 커스터마이징 */
+.rbc-calendar {
+  @apply bg-background text-foreground;
+}
+
+.rbc-header {
+  @apply border-b border-border py-2 text-sm font-semibold text-foreground;
+}
+
+.rbc-day-bg {
+  @apply border-r border-b border-border;
+}
+
+.rbc-today {
+  @apply bg-accent/30;
+}
+
+.rbc-off-range-bg {
+  @apply bg-muted/20;
+}
+
+.rbc-off-range {
+  @apply text-muted-foreground;
+}
+
+.rbc-event {
+  @apply rounded-md px-2 py-1 text-xs font-semibold cursor-pointer transition-opacity hover:opacity-80;
+}
+
+.rbc-event-content {
+  @apply truncate;
+}
+
+.rbc-toolbar {
+  @apply mb-4 flex items-center justify-between flex-wrap gap-2;
+}
+
+.rbc-toolbar button {
+  @apply rounded-md border border-input bg-background px-3 py-1.5 text-sm font-medium hover:bg-accent hover:text-accent-foreground transition-colors;
+}
+
+.rbc-toolbar button.rbc-active {
+  @apply bg-primary text-primary-foreground border-primary;
+}
+
+.rbc-toolbar-label {
+  @apply text-lg font-semibold text-foreground;
+}
+
+.rbc-time-slot {
+  @apply border-t border-border;
+}
+
+.rbc-time-header-content {
+  @apply border-l border-border;
+}
+
+.rbc-day-slot .rbc-time-slot {
+  @apply border-t border-border/50;
+}
+
+.rbc-agenda-view table {
+  @apply w-full border-collapse;
+}
+
+.rbc-agenda-view table thead > tr > th {
+  @apply border-b border-border p-2 text-left text-sm font-semibold;
+}
+
+.rbc-agenda-view table tbody > tr > td {
+  @apply border-b border-border/50 p-2;
+}
+
+.rbc-agenda-view table tbody > tr:hover {
+  @apply bg-accent/50;
+}
+
+.rbc-popup {
+  @apply bg-card border border-border rounded-lg shadow-lg p-4 z-50;
+}
+
+.rbc-popup-header {
+  @apply mb-2 text-sm font-semibold text-foreground;
+}
+
+.rbc-popup-content {
+  @apply text-sm text-muted-foreground;
+}
