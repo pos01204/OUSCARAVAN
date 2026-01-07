@@ -101,16 +101,26 @@ export default function RoomsPage() {
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {rooms
             .sort((a, b) => {
-              // 숫자로 정렬 (1호, 2호, ... 10호)
-              const numA = parseInt(a.name) || 999;
-              const numB = parseInt(b.name) || 999;
-              return numA - numB;
+              // A1~A8, B1~B2 순서로 정렬
+              const aMatch = a.name.match(/^([AB])(\d+)$/);
+              const bMatch = b.name.match(/^([AB])(\d+)$/);
+              if (aMatch && bMatch) {
+                const aLetter = aMatch[1];
+                const bLetter = bMatch[1];
+                const aNum = parseInt(aMatch[2]);
+                const bNum = parseInt(bMatch[2]);
+                if (aLetter !== bLetter) {
+                  return aLetter < bLetter ? -1 : 1;
+                }
+                return aNum - bNum;
+              }
+              return a.name.localeCompare(b.name);
             })
             .map((room) => (
             <Card key={room.id}>
               <CardHeader>
                 <div className="flex items-center justify-between">
-                  <CardTitle>{room.name}호</CardTitle>
+                  <CardTitle>{room.name}</CardTitle>
                   {getStatusBadge(room.status)}
                 </div>
                 <CardDescription>{room.capacity}인실</CardDescription>

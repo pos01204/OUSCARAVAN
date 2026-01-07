@@ -137,9 +137,12 @@ export default function ReservationDetailPage() {
         }
       }
       
+      const isUpdate = reservation?.assignedRoom && reservation.assignedRoom !== sanitizedRoom;
       toast({
         title: '저장 완료',
-        description: '예약 정보가 저장되었고 알림톡이 발송되었습니다.',
+        description: isUpdate 
+          ? '방 배정이 수정되었고 알림톡이 발송되었습니다.'
+          : '예약 정보가 저장되었고 알림톡이 발송되었습니다.',
       });
       
       // 예약 목록으로 이동
@@ -272,14 +275,24 @@ export default function ReservationDetailPage() {
                 <option value="">방을 선택하세요</option>
                 {rooms
                   .sort((a, b) => {
-                    // 숫자로 정렬 (1호, 2호, ... 10호)
-                    const numA = parseInt(a.name) || 999;
-                    const numB = parseInt(b.name) || 999;
-                    return numA - numB;
+                    // A1~A8, B1~B2 순서로 정렬
+                    const aMatch = a.name.match(/^([AB])(\d+)$/);
+                    const bMatch = b.name.match(/^([AB])(\d+)$/);
+                    if (aMatch && bMatch) {
+                      const aLetter = aMatch[1];
+                      const bLetter = bMatch[1];
+                      const aNum = parseInt(aMatch[2]);
+                      const bNum = parseInt(bMatch[2]);
+                      if (aLetter !== bLetter) {
+                        return aLetter < bLetter ? -1 : 1;
+                      }
+                      return aNum - bNum;
+                    }
+                    return a.name.localeCompare(b.name);
                   })
                   .map((room) => (
                     <option key={room.id} value={room.name}>
-                      {room.name}호 ({room.capacity}인실)
+                      {room.name} ({room.capacity}인실)
                     </option>
                   ))}
               </select>

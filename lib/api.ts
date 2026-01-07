@@ -598,7 +598,29 @@ export async function getAdminOrders(params?: {
   const queryString = queryParams.toString();
   const endpoint = `/api/admin/orders${queryString ? `?${queryString}` : ''}`;
   
-  return adminApi(endpoint) as Promise<OrdersResponse>;
+  const response = await fetch(endpoint, { // Next.js API 라우트 사용
+    method: 'GET',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include', // 쿠키 포함
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new ApiError('Unauthorized', 'UNAUTHORIZED', 401);
+    }
+    const errorData = await response.json().catch(() => ({
+      error: 'Failed to fetch orders',
+    }));
+    throw new ApiError(
+      errorData.error || 'Failed to fetch orders',
+      errorData.code,
+      response.status
+    );
+  }
+
+  return response.json() as Promise<OrdersResponse>;
 }
 
 /**
@@ -608,10 +630,30 @@ export async function updateOrderStatus(
   id: string,
   status: Order['status']
 ): Promise<Order> {
-  return adminApi(`/api/admin/orders/${id}`, {
+  const response = await fetch(`/api/admin/orders/${id}`, {
     method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include', // 쿠키 포함
     body: JSON.stringify({ status }),
-  }) as Promise<Order>;
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new ApiError('Unauthorized', 'UNAUTHORIZED', 401);
+    }
+    const errorData = await response.json().catch(() => ({
+      error: 'Failed to update order',
+    }));
+    throw new ApiError(
+      errorData.error || 'Failed to update order',
+      errorData.code,
+      response.status
+    );
+  }
+
+  return response.json();
 }
 
 /**

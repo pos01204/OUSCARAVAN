@@ -57,11 +57,15 @@ export async function getRooms(): Promise<RoomWithReservation[]> {
     FROM rooms r
     LEFT JOIN reservations res ON res.assigned_room = r.name 
       AND res.status IN ('assigned', 'checked_in', 'checked_out')
-      AND res.checkin <= CURRENT_DATE 
-      AND res.checkout >= CURRENT_DATE
+      AND res.checkout::date >= CURRENT_DATE
     ORDER BY 
       CASE 
-        WHEN r.name ~ '^[0-9]+$' THEN CAST(r.name AS INTEGER)
+        WHEN r.name ~ '^[AB]\\d+$' THEN 
+          CASE SUBSTRING(r.name FROM 1 FOR 1)
+            WHEN 'A' THEN 0
+            WHEN 'B' THEN 1
+            ELSE 999
+          END * 1000 + CAST(SUBSTRING(r.name FROM 2) AS INTEGER)
         ELSE 999
       END ASC,
       r.name ASC
