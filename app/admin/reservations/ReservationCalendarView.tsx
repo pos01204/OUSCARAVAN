@@ -261,23 +261,28 @@ export function ReservationCalendarView({
     
     const events = Array.from(eventMap.values());
     
+    // 타입 가드 함수: 이벤트가 유효한 날짜를 가지고 있는지 확인
+    const isValidEvent = (event: ReservationEvent | undefined): event is ReservationEvent & { start: Date; end: Date } => {
+      return !!event && event.start instanceof Date && event.end instanceof Date;
+    };
+    
     const firstEvent = events[0];
     const lastEvent = events[events.length - 1];
     
-    // 타입 가드: start와 end가 Date인지 확인
-    const hasValidDateRange = firstEvent && 
-                               lastEvent && 
-                               firstEvent.start instanceof Date && 
-                               lastEvent.end instanceof Date;
+    // 타입 가드를 통과한 이벤트만 사용
+    let dateRange: { earliest: string; latest: string } | null = null;
+    if (isValidEvent(firstEvent) && isValidEvent(lastEvent)) {
+      dateRange = {
+        earliest: format(firstEvent.start, 'yyyy-MM-dd'),
+        latest: format(lastEvent.end, 'yyyy-MM-dd'),
+      };
+    }
     
     console.log('[Calendar] Generated events:', {
       total: events.length,
       grouped: events.filter(e => e.id.startsWith('group-')).length,
       individual: events.filter(e => !e.id.startsWith('group-')).length,
-      dateRange: hasValidDateRange ? {
-        earliest: format(firstEvent.start, 'yyyy-MM-dd'),
-        latest: format(lastEvent.end, 'yyyy-MM-dd'),
-      } : null,
+      dateRange,
     });
     
     return events;
@@ -289,7 +294,29 @@ export function ReservationCalendarView({
     const status = event.resource.status;
     const colorConfig = STATUS_COLORS[status] || STATUS_COLORS.pending;
     
-    // 날짜별 예약 개수 확인
+    // 날짜별 예약 개수 확인 (타입 안전성 보장)
+    if (!event.start || !(event.start instanceof Date)) {
+      // 기본 스타일 반환
+      return {
+        style: {
+          backgroundColor: colorConfig.bg,
+          borderRadius: '4px',
+          opacity: 0.95,
+          color: colorConfig.text,
+          border: '0px',
+          display: 'block',
+          fontSize: '0.75rem',
+          fontWeight: '600',
+          padding: '4px 8px',
+          cursor: 'pointer',
+          marginBottom: '2px',
+          overflow: 'hidden',
+          textOverflow: 'ellipsis',
+          whiteSpace: 'nowrap',
+        },
+      };
+    }
+    
     const eventDate = format(event.start, 'yyyy-MM-dd');
     const dateReservations = reservationsByDate[eventDate] || [];
     const isGrouped = dateReservations.length > MAX_INDIVIDUAL_DISPLAY;
@@ -424,6 +451,12 @@ export function ReservationCalendarView({
 
   // 이벤트 클릭 핸들러 (하이브리드 방식)
   const handleSelectEvent = useCallback((event: ReservationEvent) => {
+    // 타입 안전성 체크
+    if (!event.start || !(event.start instanceof Date)) {
+      console.warn('[Calendar] Event has invalid start date:', event);
+      return;
+    }
+    
     // 그룹화된 이벤트인 경우 해당 날짜의 모달 열기
     if (event.id.startsWith('group-')) {
       const eventDate = format(event.start, 'yyyy-MM-dd');
