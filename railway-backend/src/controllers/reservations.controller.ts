@@ -112,6 +112,18 @@ export async function createReservationHandler(req: Request, res: Response) {
       }));
     }
 
+    // 디버깅 로그 추가
+    console.log('[CREATE_RESERVATION] Request body:', {
+      reservationNumber,
+      guestName,
+      checkin,
+      checkout,
+      roomType,
+      amount: finalAmount,
+      optionsCount: finalOptions.length,
+      options: finalOptions,
+    });
+
     const reservation = await createReservation({
       reservationNumber,
       guestName,
@@ -121,6 +133,13 @@ export async function createReservationHandler(req: Request, res: Response) {
       roomType,
       amount: finalAmount.toString(), // amount는 문자열로 저장
       options: finalOptions.length > 0 ? finalOptions : undefined,
+    });
+
+    // 디버깅 로그 추가
+    console.log('[CREATE_RESERVATION] Created reservation:', {
+      id: reservation.id,
+      reservationNumber: reservation.reservationNumber,
+      options: reservation.options,
     });
 
     // UPSERT이므로 200 또는 201 반환

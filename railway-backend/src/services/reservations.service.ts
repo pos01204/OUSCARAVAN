@@ -257,8 +257,9 @@ export async function createReservation(data: CreateReservationData): Promise<Re
       checkout,
       room_type,
       amount,
-      status
-    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      status,
+      options
+    ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
     ON CONFLICT (reservation_number) 
     DO UPDATE SET
       guest_name = EXCLUDED.guest_name,
@@ -267,6 +268,7 @@ export async function createReservation(data: CreateReservationData): Promise<Re
       checkout = EXCLUDED.checkout,
       room_type = EXCLUDED.room_type,
       amount = EXCLUDED.amount,
+      options = EXCLUDED.options,
       updated_at = CURRENT_TIMESTAMP
     RETURNING 
       id,
@@ -281,9 +283,13 @@ export async function createReservation(data: CreateReservationData): Promise<Re
       amount,
       status,
       unique_token,
+      options,
       created_at,
       updated_at
   `;
+
+  // options를 JSONB로 변환
+  const optionsJson = data.options ? JSON.stringify(data.options) : '[]';
 
   const result = await pool.query(query, [
     data.reservationNumber,
@@ -294,6 +300,7 @@ export async function createReservation(data: CreateReservationData): Promise<Re
     data.roomType,
     data.amount,
     'pending',
+    optionsJson,
   ]);
 
   const row = result.rows[0];
@@ -310,6 +317,7 @@ export async function createReservation(data: CreateReservationData): Promise<Re
     amount: row.amount,
     status: row.status,
     uniqueToken: row.unique_token || undefined,
+    options: row.options || undefined,
     createdAt: row.created_at,
     updatedAt: row.updated_at,
   };
