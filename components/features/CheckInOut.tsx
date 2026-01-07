@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useGuestStore } from '@/lib/store';
 import { useToast } from '@/components/ui/use-toast';
-import { sendCheckInToN8N, sendCheckOutToN8N } from '@/lib/api';
+import { checkIn as apiCheckIn, checkOut as apiCheckOut, sendCheckInToN8N, sendCheckOutToN8N } from '@/lib/api';
 import {
   Dialog,
   DialogContent,
@@ -16,10 +16,15 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 
-export function CheckInOut() {
+interface CheckInOutProps {
+  token?: string;
+}
+
+export function CheckInOut({ token }: CheckInOutProps = {}) {
   const { isCheckedIn, isCheckedOut, checkIn, checkOut, guestInfo } =
     useGuestStore();
   const [showCheckoutDialog, setShowCheckoutDialog] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const [checklist, setChecklist] = useState({
     gasLocked: false,
     trashCleaned: false,
@@ -27,23 +32,61 @@ export function CheckInOut() {
   const { toast } = useToast();
 
   const handleCheckIn = async () => {
-    checkIn();
+    if (!token) {
+      toast({
+        title: '오류',
+        description: '토큰이 필요합니다.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
+    setIsProcessing(true);
     
-    // n8n 웹훅으로 전송
-    await sendCheckInToN8N({
-      guest: guestInfo.name,
-      room: guestInfo.room,
-      checkinTime: new Date().toISOString(),
-      source: 'web_app',
-    });
-    
-    toast({
-      title: '체크인 완료',
-      description: '체크인이 완료되었습니다. 즐거운 시간 보내세요!',
-    });
+    try {
+      // 1. Railway 백엔드에 체크인 상태 저장
+      await apiCheckIn(token);
+      
+      // 2. 로컬 상태 업데이트
+      checkIn();
+      
+      // 3. n8n 웹훅으로 알림 전송 (비동기, 실패해도 체크인은 저장됨)
+      sendCheckInToN8N({
+        guest: guestInfo.name,
+        room: guestInfo.room,
+        checkinTime: new Date().toISOString(),
+        source: 'web_app',
+      }).catch((error) => {
+        console.error('Failed to send check-in notification to n8n:', error);
+        // n8n 전송 실패는 로그만 남기고 사용자에게는 알리지 않음
+      });
+      
+      toast({
+        title: '체크인 완료',
+        description: '체크인이 완료되었습니다. 즐거운 시간 보내세요!',
+      });
+    } catch (error) {
+      console.error('Failed to check in:', error);
+      toast({
+        title: '체크인 실패',
+        description: '체크인 처리에 실패했습니다. 다시 시도해주세요.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   const handleCheckout = async () => {
+    if (!token) {
+      toast({
+        title: '오류',
+        description: '토큰이 필요합니다.',
+        variant: 'destructive',
+      });
+      return;
+    }
+
     if (!checklist.gasLocked || !checklist.trashCleaned) {
       toast({
         title: '확인 필요',
@@ -52,21 +95,42 @@ export function CheckInOut() {
       });
       return;
     }
-    checkOut();
+
+    setIsProcessing(true);
     
-    // n8n 웹훅으로 전송
-    await sendCheckOutToN8N({
-      guest: guestInfo.name,
-      room: guestInfo.room,
-      checkoutTime: new Date().toISOString(),
-      checklist,
-    });
-    
-    setShowCheckoutDialog(false);
-    toast({
-      title: '체크아웃 완료',
-      description: '체크아웃이 완료되었습니다. 다음에 또 만나요!',
-    });
+    try {
+      // 1. Railway 백엔드에 체크아웃 상태 저장
+      await apiCheckOut(token, checklist);
+      
+      // 2. 로컬 상태 업데이트
+      checkOut();
+      
+      // 3. n8n 웹훅으로 알림 전송 (비동기, 실패해도 체크아웃은 저장됨)
+      sendCheckOutToN8N({
+        guest: guestInfo.name,
+        room: guestInfo.room,
+        checkoutTime: new Date().toISOString(),
+        checklist,
+      }).catch((error) => {
+        console.error('Failed to send check-out notification to n8n:', error);
+        // n8n 전송 실패는 로그만 남기고 사용자에게는 알리지 않음
+      });
+      
+      setShowCheckoutDialog(false);
+      toast({
+        title: '체크아웃 완료',
+        description: '체크아웃이 완료되었습니다. 다음에 또 만나요!',
+      });
+    } catch (error) {
+      console.error('Failed to check out:', error);
+      toast({
+        title: '체크아웃 실패',
+        description: '체크아웃 처리에 실패했습니다. 다시 시도해주세요.',
+        variant: 'destructive',
+      });
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
@@ -77,9 +141,13 @@ export function CheckInOut() {
         </CardHeader>
         <CardContent className="space-y-4">
           {!isCheckedIn ? (
-            <Button onClick={handleCheckIn} className="w-full">
+            <Button 
+              onClick={handleCheckIn} 
+              disabled={isProcessing || !token}
+              className="w-full"
+            >
               <CheckCircle2 className="mr-2 h-4 w-4" />
-              체크인하기
+              {isProcessing ? '처리 중...' : '체크인하기'}
             </Button>
           ) : (
             <div className="space-y-2">
@@ -91,6 +159,7 @@ export function CheckInOut() {
                 <Button
                   onClick={() => setShowCheckoutDialog(true)}
                   variant="outline"
+                  disabled={isProcessing || !token}
                   className="w-full"
                 >
                   <XCircle className="mr-2 h-4 w-4" />
@@ -141,7 +210,12 @@ export function CheckInOut() {
             >
               취소
             </Button>
-            <Button onClick={handleCheckout}>체크아웃 완료</Button>
+            <Button 
+              onClick={handleCheckout}
+              disabled={isProcessing}
+            >
+              {isProcessing ? '처리 중...' : '체크아웃 완료'}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

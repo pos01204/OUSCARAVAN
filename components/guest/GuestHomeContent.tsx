@@ -74,7 +74,7 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
         <WifiCard />
         <TimeCard />
         <SunsetWidget />
-        <CheckInOut />
+        <CheckInOut token={token} />
       </section>
       
       {/* 예약 상품 및 옵션 정보 */}

@@ -3,6 +3,7 @@ import { guestApi, type Reservation } from '@/lib/api';
 import { GuestHeader } from '@/components/guest/GuestHeader';
 import { Footer } from '@/components/shared/Footer';
 import { GuestBottomNav } from '@/components/guest/GuestBottomNav';
+import { GuestReservationInfo } from '@/components/guest/GuestReservationInfo';
 
 export default async function GuestLayout({
   children,
@@ -31,35 +32,8 @@ export default async function GuestLayout({
       <GuestHeader token={params.token} />
       <main className="flex-1 pb-16 pt-16 md:pb-0 md:pt-0">
         <div className="container mx-auto max-w-md px-4 py-6 md:max-w-2xl">
-          {/* 예약 정보 표시 (Header 아래) */}
-          <div className="mb-4 rounded-lg bg-muted/50 p-4">
-            <div className="flex items-start justify-between gap-2">
-              <div className="flex-1">
-                <p className="text-sm font-medium">
-                  {reservation.guestName}님 · {reservation.assignedRoom || '방 미배정'}
-                </p>
-                <p className="text-xs text-muted-foreground mt-1">
-                  체크인: {reservation.checkin} · 체크아웃: {reservation.checkout}
-                </p>
-              </div>
-              {(() => {
-                const roomAmount = parseInt(reservation.amount || '0');
-                const optionsAmount = reservation.options?.reduce((sum, opt) => sum + opt.optionPrice, 0) || 0;
-                const totalAmount = roomAmount + optionsAmount;
-                if (totalAmount > 0) {
-                  return (
-                    <div className="text-right">
-                      <p className="text-xs text-muted-foreground">총 결제금액</p>
-                      <p className="text-sm font-bold text-primary">
-                        {totalAmount.toLocaleString()}원
-                      </p>
-                    </div>
-                  );
-                }
-                return null;
-              })()}
-            </div>
-          </div>
+          {/* 예약 정보 표시 (Header 아래) - 실시간 갱신 */}
+          <GuestReservationInfo token={params.token} initialReservation={reservation} />
           {children}
         </div>
       </main>
