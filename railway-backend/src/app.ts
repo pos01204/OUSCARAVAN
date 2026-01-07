@@ -7,6 +7,7 @@ import guestRoutes from './routes/guest.routes';
 import healthRoutes from './routes/health.routes';
 import { errorHandler } from './middleware/error.middleware';
 import pool from './config/database';
+import { runMigrations } from './migrations/run-migrations';
 
 dotenv.config();
 
@@ -116,11 +117,19 @@ async function startServer() {
       process.exit(1);
     });
     
-    // 데이터베이스 연결 테스트 (비동기로, 서버 시작을 막지 않음)
+    // 데이터베이스 연결 테스트 및 마이그레이션 실행 (비동기로, 서버 시작을 막지 않음)
     pool.connect()
-      .then((client) => {
+      .then(async (client) => {
         console.log('Database connected successfully');
         client.release();
+        
+        // 마이그레이션 실행 (자동)
+        try {
+          await runMigrations();
+        } catch (error) {
+          console.error('Migration error (non-fatal):', error);
+          // 마이그레이션 실패해도 서버는 계속 실행
+        }
       })
       .catch((error) => {
         console.error('Database connection failed (non-fatal):', error);
