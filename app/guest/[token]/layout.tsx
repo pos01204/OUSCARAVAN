@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { guestApi, type Reservation } from '@/lib/api';
-import { Header } from '@/components/shared/Header';
+import { GuestHeader } from '@/components/guest/GuestHeader';
 import { Footer } from '@/components/shared/Footer';
 import { GuestBottomNav } from '@/components/guest/GuestBottomNav';
 
@@ -28,7 +28,7 @@ export default async function GuestLayout({
   
   return (
     <div className="flex min-h-screen flex-col">
-      <Header />
+      <GuestHeader token={params.token} />
       <main className="flex-1 pb-16 pt-16 md:pb-0 md:pt-0">
         <div className="container mx-auto max-w-md px-4 py-6 md:max-w-2xl">
           {/* 예약 정보 표시 (Header 아래) */}
