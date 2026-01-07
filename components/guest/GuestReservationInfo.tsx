@@ -1,6 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
+import { RefreshCw } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { guestApi, type Reservation } from '@/lib/api';
 import { calculateTotalAmount } from '@/lib/utils/reservation';
 
@@ -13,23 +15,36 @@ export function GuestReservationInfo({ token, initialReservation }: GuestReserva
   const [reservation, setReservation] = useState<Reservation>(initialReservation);
   const [isRefreshing, setIsRefreshing] = useState(false);
 
-  // 주기적으로 예약 정보 갱신 (30초마다)
+  // 예약 정보 갱신 함수
+  const refreshReservation = useCallback(async () => {
+    try {
+      setIsRefreshing(true);
+      const updatedReservation = await guestApi(token);
+      setReservation(updatedReservation);
+    } catch (error) {
+      console.error('Failed to refresh reservation info:', error);
+      // 에러 발생 시 조용히 실패 (사용자에게 알리지 않음)
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [token]);
+
+  // 주기적으로 예약 정보 갱신 (10초마다)
   useEffect(() => {
-    const interval = setInterval(async () => {
-      try {
-        setIsRefreshing(true);
-        const updatedReservation = await guestApi(token);
-        setReservation(updatedReservation);
-      } catch (error) {
-        console.error('Failed to refresh reservation info:', error);
-        // 에러 발생 시 조용히 실패 (사용자에게 알리지 않음)
-      } finally {
-        setIsRefreshing(false);
-      }
-    }, 30000); // 30초마다 갱신
+    const interval = setInterval(refreshReservation, 10000); // 10초마다 갱신
 
     return () => clearInterval(interval);
-  }, [token]);
+  }, [refreshReservation]);
+
+  // 페이지 포커스 시 갱신
+  useEffect(() => {
+    const handleFocus = () => {
+      refreshReservation();
+    };
+
+    window.addEventListener('focus', handleFocus);
+    return () => window.removeEventListener('focus', handleFocus);
+  }, [refreshReservation]);
 
   const { totalAmount } = calculateTotalAmount(reservation);
 
@@ -44,19 +59,26 @@ export function GuestReservationInfo({ token, initialReservation }: GuestReserva
             체크인: {reservation.checkin} · 체크아웃: {reservation.checkout}
           </p>
         </div>
-        {totalAmount > 0 && (
-          <div className="text-right">
-            <p className="text-xs text-muted-foreground">총 결제금액</p>
-            <p className="text-sm font-bold text-primary">
-              {totalAmount.toLocaleString()}원
-            </p>
-          </div>
-        )}
-        {isRefreshing && (
-          <div className="text-xs text-muted-foreground">
-            <span className="animate-pulse">갱신 중...</span>
-          </div>
-        )}
+        <div className="flex items-center gap-2">
+          {totalAmount > 0 && (
+            <div className="text-right">
+              <p className="text-xs text-muted-foreground">총 결제금액</p>
+              <p className="text-sm font-bold text-primary">
+                {totalAmount.toLocaleString()}원
+              </p>
+            </div>
+          )}
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={refreshReservation}
+            disabled={isRefreshing}
+            className="h-8 w-8 p-0"
+            title="새로고침"
+          >
+            <RefreshCw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} />
+          </Button>
+        </div>
       </div>
     </div>
   );

@@ -10,6 +10,7 @@ import { CheckInOut } from '@/components/features/CheckInOut';
 import { OrderHistory } from '@/components/features/OrderHistory';
 import { CheckoutReminder } from '@/components/features/CheckoutReminder';
 import { TimeCountdown } from '@/components/features/TimeCountdown';
+import { GuestOrderSync } from '@/components/guest/GuestOrderSync';
 import { WELCOME_MESSAGE } from '@/lib/constants';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -68,6 +69,9 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
       
       {/* Time Countdown */}
       <TimeCountdown />
+      
+      {/* 주문 동기화 컴포넌트 (백그라운드에서 주기적으로 주문 목록 동기화) */}
+      <GuestOrderSync token={token} />
       
       {/* Status Cards Grid */}
       <section className="grid gap-4 md:grid-cols-2" aria-label="서비스 정보 카드">
