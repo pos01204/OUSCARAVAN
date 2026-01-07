@@ -22,8 +22,8 @@ const STATUS_COLORS: Record<Reservation['status'], { bg: string; text: string; l
   cancelled: { bg: '#DC2626', text: 'white', label: '취소' },
 };
 
-// 하이브리드 방식 임계값
-const MAX_INDIVIDUAL_DISPLAY = 5;
+// 대기/미배정 그룹화 임계값 (3개 이상이면 그룹화)
+const PENDING_GROUP_THRESHOLD = 3;
 
 // 한국어 로케일 설정
 const locales = {
@@ -203,29 +203,42 @@ export function ReservationCalendarView({
         while (currentDate <= endDate) {
           const dateKey = format(currentDate, 'yyyy-MM-dd');
           const dateReservations = reservationsByDate[dateKey] || [];
-          const isGrouped = dateReservations.length > MAX_INDIVIDUAL_DISPLAY;
           
-          if (isGrouped) {
-            // 그룹화된 날짜: 상태별로 하나의 이벤트만 생성 (해당 날짜에만)
-            const statusKey = `${dateKey}-${reservation.status}`;
-            if (!eventMap.has(statusKey)) {
-              // 해당 날짜의 해당 상태 예약 개수 계산
-              const statusCount = dateReservations.filter(r => r.status === reservation.status).length;
-              // 해당 날짜의 해당 상태 예약 중 첫 번째를 대표로 사용
-              const firstReservation = dateReservations.find(r => r.status === reservation.status);
-              if (firstReservation && statusCount > 0) {
-                // 해당 날짜에만 이벤트 생성 (하루 종일)
+          // 대기/미배정 예약만 그룹화 대상
+          const isPendingOrUnassigned = reservation.status === 'pending' || !reservation.assignedRoom;
+          const pendingReservations = dateReservations.filter(r => 
+            r.status === 'pending' || !r.assignedRoom
+          );
+          const shouldGroup = isPendingOrUnassigned && pendingReservations.length >= PENDING_GROUP_THRESHOLD;
+          
+          if (shouldGroup) {
+            // 대기/미배정 그룹 이벤트 생성
+            const unassignedCount = pendingReservations.filter(r => !r.assignedRoom).length;
+            const pendingCount = pendingReservations.filter(r => r.status === 'pending' && r.assignedRoom).length;
+            
+            // 미배정이 있으면 미배정 그룹, 없으면 대기 그룹
+            const groupKey = unassignedCount > 0 
+              ? `${dateKey}-unassigned`
+              : `${dateKey}-pending`;
+            
+            if (!eventMap.has(groupKey)) {
+              const firstReservation = pendingReservations[0];
+              if (firstReservation) {
                 const dayStart = new Date(currentDate);
                 dayStart.setHours(0, 0, 0, 0);
                 const dayEnd = new Date(currentDate);
                 dayEnd.setHours(23, 59, 59, 999);
                 
-                eventMap.set(statusKey, {
-                  id: `group-${statusKey}`,
-                  title: `${STATUS_COLORS[reservation.status].label}: ${statusCount}건`,
+                const groupLabel = unassignedCount > 0 
+                  ? `미배정: ${unassignedCount}건`
+                  : `대기: ${pendingCount}건`;
+                
+                eventMap.set(groupKey, {
+                  id: `group-${groupKey}`,
+                  title: groupLabel,
                   start: dayStart,
                   end: dayEnd,
-                  resource: firstReservation, // 대표 예약
+                  resource: firstReservation,
                 });
               }
             }
@@ -233,15 +246,30 @@ export function ReservationCalendarView({
             // 개별 표시: 각 예약을 개별 이벤트로 생성
             const eventKey = `${dateKey}-${reservation.id}`;
             if (!eventMap.has(eventKey)) {
-              // 해당 날짜에만 이벤트 생성 (하루 종일)
+              // 체크인/체크아웃 날짜 확인
+              const checkinDate = new Date(reservation.checkin);
+              const checkoutDate = new Date(reservation.checkout);
+              const isCheckinDay = isSameDay(checkinDate, currentDate);
+              const isCheckoutDay = isSameDay(checkoutDate, currentDate);
+              
+              // 이벤트 제목에 체크인/체크아웃 정보 추가
+              let titlePrefix = '';
+              if (isCheckinDay && isCheckoutDay) {
+                titlePrefix = '✓→ '; // 체크인+체크아웃
+              } else if (isCheckinDay) {
+                titlePrefix = '✓ '; // 체크인
+              } else if (isCheckoutDay) {
+                titlePrefix = '→ '; // 체크아웃
+              }
+              
               const dayStart = new Date(currentDate);
               dayStart.setHours(0, 0, 0, 0);
               const dayEnd = new Date(currentDate);
               dayEnd.setHours(23, 59, 59, 999);
               
               eventMap.set(eventKey, {
-                id: `${reservation.id}-${dateKey}`, // 날짜별로 고유 ID
-                title: `${reservation.guestName}${reservation.assignedRoom ? ` (${reservation.assignedRoom})` : ' (미배정)'}`,
+                id: `${reservation.id}-${dateKey}`,
+                title: `${titlePrefix}${reservation.guestName}${reservation.assignedRoom ? ` (${reservation.assignedRoom})` : ' (미)'}`,
                 start: dayStart,
                 end: dayEnd,
                 resource: reservation,
@@ -289,14 +317,14 @@ export function ReservationCalendarView({
   }, [reservations, reservationsByDate]);
 
 
-  // 이벤트 스타일 커스터마이징 (개선된 색상 시스템)
+  // 이벤트 스타일 커스터마이징 (체크인/체크아웃 구분 강화)
   const eventStyleGetter = (event: ReservationEvent) => {
-    const status = event.resource.status;
-    const colorConfig = STATUS_COLORS[status] || STATUS_COLORS.pending;
+    const reservation = event.resource;
+    const isGrouped = event.id.startsWith('group-');
     
-    // 날짜별 예약 개수 확인 (타입 안전성 보장)
+    // 타입 안전성 보장
     if (!event.start || !(event.start instanceof Date)) {
-      // 기본 스타일 반환
+      const colorConfig = STATUS_COLORS[reservation.status] || STATUS_COLORS.pending;
       return {
         style: {
           backgroundColor: colorConfig.bg,
@@ -317,9 +345,30 @@ export function ReservationCalendarView({
       };
     }
     
-    const eventDate = format(event.start, 'yyyy-MM-dd');
-    const dateReservations = reservationsByDate[eventDate] || [];
-    const isGrouped = dateReservations.length > MAX_INDIVIDUAL_DISPLAY;
+    // 체크인/체크아웃 날짜 확인
+    const checkinDate = new Date(reservation.checkin);
+    const checkoutDate = new Date(reservation.checkout);
+    const isCheckinDay = isSameDay(checkinDate, event.start);
+    const isCheckoutDay = isSameDay(checkoutDate, event.start);
+    
+    // 색상 결정: 체크인/체크아웃 우선
+    let colorConfig;
+    if (isGrouped) {
+      // 그룹 이벤트는 회색 (대기/미배정)
+      colorConfig = { bg: '#6B7280', text: 'white' };
+    } else if (isCheckinDay && isCheckoutDay) {
+      // 체크인+체크아웃: 보라색
+      colorConfig = { bg: '#7C3AED', text: 'white' };
+    } else if (isCheckinDay) {
+      // 체크인: 초록색
+      colorConfig = { bg: '#059669', text: 'white' };
+    } else if (isCheckoutDay) {
+      // 체크아웃: 파란색
+      colorConfig = { bg: '#2563EB', text: 'white' };
+    } else {
+      // 일반: 상태별 색상
+      colorConfig = STATUS_COLORS[reservation.status] || STATUS_COLORS.pending;
+    }
     
     return {
       style: {
@@ -599,6 +648,28 @@ export function ReservationCalendarView({
                     const isCheckinDay = selectedDate ? isSameDay(checkin, selectedDate) : false;
                     const isCheckoutDay = selectedDate ? isSameDay(checkout, selectedDate) : false;
                     
+                    // 체크인/체크아웃 배지
+                    const checkinCheckoutBadges = [];
+                    if (isCheckinDay && isCheckoutDay) {
+                      checkinCheckoutBadges.push(
+                        <Badge key="both" variant="default" className="bg-purple-600 text-white text-xs">
+                          ✓→ 체크인+체크아웃
+                        </Badge>
+                      );
+                    } else if (isCheckinDay) {
+                      checkinCheckoutBadges.push(
+                        <Badge key="checkin" variant="default" className="bg-green-600 text-white text-xs">
+                          ✓ 체크인
+                        </Badge>
+                      );
+                    } else if (isCheckoutDay) {
+                      checkinCheckoutBadges.push(
+                        <Badge key="checkout" variant="default" className="bg-blue-600 text-white text-xs">
+                          → 체크아웃
+                        </Badge>
+                      );
+                    }
+                    
                     return (
                       <Card 
                         key={reservation.id} 
@@ -608,11 +679,12 @@ export function ReservationCalendarView({
                         <CardContent className="p-4">
                           <div className="flex items-start justify-between gap-4">
                             <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-2">
+                              <div className="flex items-center gap-2 mb-2 flex-wrap">
                                 <h4 className="font-semibold text-base">
                                   {reservation.guestName}
                                 </h4>
                                 {getStatusBadge(reservation.status)}
+                                {checkinCheckoutBadges}
                               </div>
                               
                               <div className="space-y-1 text-sm text-muted-foreground">
@@ -714,6 +786,27 @@ export function ReservationCalendarView({
                       const isCheckinDay = selectedDate ? isSameDay(checkin, selectedDate) : false;
                       const isCheckoutDay = selectedDate ? isSameDay(checkout, selectedDate) : false;
                       
+                      const checkinCheckoutBadges = [];
+                      if (isCheckinDay && isCheckoutDay) {
+                        checkinCheckoutBadges.push(
+                          <Badge key="both" variant="default" className="bg-purple-600 text-white text-xs">
+                            ✓→ 체크인+체크아웃
+                          </Badge>
+                        );
+                      } else if (isCheckinDay) {
+                        checkinCheckoutBadges.push(
+                          <Badge key="checkin" variant="default" className="bg-green-600 text-white text-xs">
+                            ✓ 체크인
+                          </Badge>
+                        );
+                      } else if (isCheckoutDay) {
+                        checkinCheckoutBadges.push(
+                          <Badge key="checkout" variant="default" className="bg-blue-600 text-white text-xs">
+                            → 체크아웃
+                          </Badge>
+                        );
+                      }
+                      
                       return (
                         <Card 
                           key={reservation.id} 
@@ -723,11 +816,12 @@ export function ReservationCalendarView({
                           <CardContent className="p-4">
                             <div className="flex items-start justify-between gap-4">
                               <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 mb-2">
+                                <div className="flex items-center gap-2 mb-2 flex-wrap">
                                   <h4 className="font-semibold text-base">
                                     {reservation.guestName}
                                   </h4>
                                   {getStatusBadge(reservation.status)}
+                                  {checkinCheckoutBadges}
                                 </div>
                                 
                                 <div className="space-y-1 text-sm text-muted-foreground">
@@ -794,6 +888,29 @@ export function ReservationCalendarView({
                     .map((reservation) => {
                       const checkin = new Date(reservation.checkin);
                       const checkout = new Date(reservation.checkout);
+                      const isCheckinDay = selectedDate ? isSameDay(checkin, selectedDate) : false;
+                      const isCheckoutDay = selectedDate ? isSameDay(checkout, selectedDate) : false;
+                      
+                      const checkinCheckoutBadges = [];
+                      if (isCheckinDay && isCheckoutDay) {
+                        checkinCheckoutBadges.push(
+                          <Badge key="both" variant="default" className="bg-purple-600 text-white text-xs">
+                            ✓→ 체크인+체크아웃
+                          </Badge>
+                        );
+                      } else if (isCheckinDay) {
+                        checkinCheckoutBadges.push(
+                          <Badge key="checkin" variant="default" className="bg-green-600 text-white text-xs">
+                            ✓ 체크인
+                          </Badge>
+                        );
+                      } else if (isCheckoutDay) {
+                        checkinCheckoutBadges.push(
+                          <Badge key="checkout" variant="default" className="bg-blue-600 text-white text-xs">
+                            → 체크아웃
+                          </Badge>
+                        );
+                      }
                       
                       return (
                         <Card 
@@ -804,11 +921,12 @@ export function ReservationCalendarView({
                           <CardContent className="p-4">
                             <div className="flex items-start justify-between gap-4">
                               <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 mb-2">
+                                <div className="flex items-center gap-2 mb-2 flex-wrap">
                                   <h4 className="font-semibold text-base">
                                     {reservation.guestName}
                                   </h4>
                                   {getStatusBadge(reservation.status)}
+                                  {checkinCheckoutBadges}
                                 </div>
                                 
                                 <div className="space-y-1 text-sm text-muted-foreground">
@@ -883,6 +1001,29 @@ export function ReservationCalendarView({
                     .map((reservation) => {
                       const checkin = new Date(reservation.checkin);
                       const checkout = new Date(reservation.checkout);
+                      const isCheckinDay = selectedDate ? isSameDay(checkin, selectedDate) : false;
+                      const isCheckoutDay = selectedDate ? isSameDay(checkout, selectedDate) : false;
+                      
+                      const checkinCheckoutBadges = [];
+                      if (isCheckinDay && isCheckoutDay) {
+                        checkinCheckoutBadges.push(
+                          <Badge key="both" variant="default" className="bg-purple-600 text-white text-xs">
+                            ✓→ 체크인+체크아웃
+                          </Badge>
+                        );
+                      } else if (isCheckinDay) {
+                        checkinCheckoutBadges.push(
+                          <Badge key="checkin" variant="default" className="bg-green-600 text-white text-xs">
+                            ✓ 체크인
+                          </Badge>
+                        );
+                      } else if (isCheckoutDay) {
+                        checkinCheckoutBadges.push(
+                          <Badge key="checkout" variant="default" className="bg-blue-600 text-white text-xs">
+                            → 체크아웃
+                          </Badge>
+                        );
+                      }
                       
                       return (
                         <Card 
@@ -893,11 +1034,12 @@ export function ReservationCalendarView({
                           <CardContent className="p-4">
                             <div className="flex items-start justify-between gap-4">
                               <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 mb-2">
+                                <div className="flex items-center gap-2 mb-2 flex-wrap">
                                   <h4 className="font-semibold text-base">
                                     {reservation.guestName}
                                   </h4>
                                   {getStatusBadge(reservation.status)}
+                                  {checkinCheckoutBadges}
                                 </div>
                                 
                                 <div className="space-y-1 text-sm text-muted-foreground">
