@@ -16,6 +16,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { formatOptionName, calculateTotalAmount } from '@/lib/utils/reservation';
+import { parseAmount, formatAmount } from '@/lib/utils/amount';
 import type { Reservation } from '@/lib/api';
 
 interface GuestHomeContentProps {
@@ -103,11 +104,11 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
                   <div className="flex-shrink-0 sm:text-right">
                     <p className="font-semibold text-lg whitespace-nowrap">
                       {(() => {
-                        const roomAmount = parseInt(reservation.amount || '0');
+                        const roomAmount = parseAmount(reservation.amount);
                         if (roomAmount === 0) {
                           return <span className="text-muted-foreground italic text-sm">금액 정보 없음</span>;
                         }
-                        return `${roomAmount.toLocaleString()}원`;
+                        return formatAmount(roomAmount, true);
                       })()}
                     </p>
                   </div>

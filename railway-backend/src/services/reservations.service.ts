@@ -1,5 +1,6 @@
 import pool from '../config/database';
 import { v4 as uuidv4 } from 'uuid';
+import { parseJSONBArray } from '../utils/jsonb';
 
 export interface Reservation {
   id: string;
@@ -393,20 +394,7 @@ export async function createOrUpdateReservationItem(data: {
       }> = [];
 
       if (existing.options) {
-        try {
-          // JSONB는 이미 파싱된 객체일 수 있음
-          if (Array.isArray(existing.options)) {
-            updatedOptions = existing.options;
-          } else if (typeof existing.options === 'string') {
-            updatedOptions = JSON.parse(existing.options);
-          } else if (typeof existing.options === 'object') {
-            // 이미 객체인 경우 배열로 변환 시도
-            updatedOptions = Array.isArray(existing.options) ? existing.options : [];
-          }
-        } catch (parseError) {
-          console.error('[createOrUpdateReservationItem] Error parsing options:', parseError);
-          updatedOptions = [];
-        }
+        updatedOptions = parseJSONBArray(existing.options);
       }
 
       if (data.category === 'ROOM') {
@@ -515,11 +503,7 @@ export async function createOrUpdateReservationItem(data: {
       // options 파싱
       let parsedOptions = undefined;
       if (row.options) {
-        try {
-          parsedOptions = Array.isArray(row.options) ? row.options : JSON.parse(row.options);
-        } catch (e) {
-          console.error('[createOrUpdateReservationItem] Error parsing returned options:', e);
-        }
+        parsedOptions = parseJSONBArray(row.options);
       }
 
       console.log('[createOrUpdateReservationItem] Update successful');

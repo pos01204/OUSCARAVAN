@@ -4,6 +4,7 @@
  */
 
 import type { Reservation } from '@/types';
+import { parseAmount } from './amount';
 
 /**
  * 옵션명 포맷팅 (대괄호 태그 추출)
@@ -33,7 +34,7 @@ export function calculateTotalAmount(reservation: Reservation): {
   optionsAmount: number;
   totalAmount: number;
 } {
-  const roomAmount = parseInt(reservation.amount || '0');
+  const roomAmount = parseAmount(reservation.amount);
   const optionsAmount = reservation.options?.reduce((sum, opt) => sum + opt.optionPrice, 0) || 0;
   const totalAmount = roomAmount + optionsAmount;
   

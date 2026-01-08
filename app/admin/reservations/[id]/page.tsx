@@ -15,6 +15,7 @@ import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
 import { ArrowLeft, Save, Loader2, ExternalLink } from 'lucide-react';
 import { formatOptionName, calculateTotalAmount } from '@/lib/utils/reservation';
+import { parseAmount, formatAmount } from '@/lib/utils/amount';
 
 export default function ReservationDetailPage() {
   const params = useParams();
@@ -271,11 +272,11 @@ export default function ReservationDetailPage() {
                   <div className="flex-shrink-0 sm:text-right">
                     <p className="font-semibold text-lg whitespace-nowrap">
                       {(() => {
-                        const roomAmount = parseInt(reservation.amount || '0');
+                        const roomAmount = parseAmount(reservation.amount);
                         if (roomAmount === 0) {
                           return <span className="text-muted-foreground italic text-sm">금액 정보 없음</span>;
                         }
-                        return `${roomAmount.toLocaleString()}원`;
+                        return formatAmount(roomAmount, true);
                       })()}
                     </p>
                   </div>
