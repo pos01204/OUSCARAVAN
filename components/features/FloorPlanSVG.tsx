@@ -44,10 +44,10 @@ function FloorPlanSVGComponent({
         </pattern>
       </defs>
       {/* 도로 표시 (중앙 세로선) */}
-      <rect x="450" y="0" width="20" height="700" fill="#d1d5db" opacity="0.3" />
-      <text x="460" y="350" textAnchor="middle" dominantBaseline="middle" 
-            style={{ fontSize: '12px', fill: '#6b7280', fontFamily: 'system-ui' }}
-            transform="rotate(-90 460 350)">
+      <rect x="320" y="0" width="15" height="600" fill="#d1d5db" opacity="0.3" />
+      <text x="327" y="300" textAnchor="middle" dominantBaseline="middle" 
+            style={{ fontSize: '10px', fill: '#6b7280', fontFamily: 'system-ui' }}
+            transform="rotate(-90 327 300)">
         도로
       </text>
       
