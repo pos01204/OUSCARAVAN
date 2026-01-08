@@ -444,6 +444,47 @@ CREATE TABLE check_in_out_logs (
 );
 ```
 
+#### Notifications 테이블
+
+```sql
+CREATE TABLE notifications (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  admin_id VARCHAR(50) NOT NULL DEFAULT 'admin',
+  type VARCHAR(50) NOT NULL,        -- 알림 타입
+  title VARCHAR(255) NOT NULL,
+  message TEXT NOT NULL,
+  priority VARCHAR(20) DEFAULT 'medium',  -- 'low' | 'medium' | 'high'
+  is_read BOOLEAN DEFAULT FALSE,
+  read_at TIMESTAMP,
+  metadata JSONB,                   -- 관련 데이터
+  link_type VARCHAR(50),            -- 'reservation' | 'order' | 'dashboard'
+  link_id VARCHAR(255),
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+#### NotificationSettings 테이블
+
+```sql
+CREATE TABLE notification_settings (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  admin_id VARCHAR(50) UNIQUE NOT NULL DEFAULT 'admin',
+  checkin_enabled BOOLEAN DEFAULT TRUE,
+  checkout_enabled BOOLEAN DEFAULT TRUE,
+  order_created_enabled BOOLEAN DEFAULT TRUE,
+  order_status_changed_enabled BOOLEAN DEFAULT TRUE,
+  order_cancelled_enabled BOOLEAN DEFAULT TRUE,
+  reservation_assigned_enabled BOOLEAN DEFAULT FALSE,
+  reservation_cancelled_enabled BOOLEAN DEFAULT TRUE,
+  sound_enabled BOOLEAN DEFAULT TRUE,
+  vibration_enabled BOOLEAN DEFAULT TRUE,
+  auto_delete_days INTEGER DEFAULT 30,
+  created_at TIMESTAMP DEFAULT NOW(),
+  updated_at TIMESTAMP DEFAULT NOW()
+);
+```
+
 ### 7.2 주요 API 엔드포인트
 
 #### 관리자 API (Railway)
@@ -461,6 +502,14 @@ CREATE TABLE check_in_out_logs (
 - `GET /api/admin/orders`: 주문 목록 조회
 - `PATCH /api/admin/orders/:id`: 주문 상태 업데이트
 - `GET /api/admin/stats`: 통계 데이터 조회
+- `GET /api/admin/notifications`: 알림 목록 조회
+- `GET /api/admin/notifications/stream`: SSE 스트림 연결
+- `PATCH /api/admin/notifications/:id/read`: 알림 읽음 처리
+- `PATCH /api/admin/notifications/read-all`: 모든 알림 읽음 처리
+- `DELETE /api/admin/notifications/:id`: 알림 삭제
+- `GET /api/admin/notifications/settings`: 알림 설정 조회
+- `PATCH /api/admin/notifications/settings`: 알림 설정 업데이트
+- `GET /api/admin/notifications/stats`: 알림 통계 조회
 
 #### 고객 API (Railway)
 
@@ -527,6 +576,24 @@ CREATE TABLE check_in_out_logs (
 - 주문 목록 조회
 - 주문 상세 정보
 - 주문 상태 업데이트 (대기 → 준비 중 → 배송 중 → 완료)
+
+**구현 상태**: ✅ 완료
+
+#### 8.1.5 알림 시스템 (`/admin/notifications`)
+
+**기능**:
+- 실시간 알림 수신 (SSE)
+- 알림 히스토리 조회
+- 알림 필터링 (타입별, 읽음/안 읽음)
+- 알림 읽음 처리
+- 알림 삭제
+
+**알림 타입**:
+- 체크인 알림 (높은 우선순위)
+- 체크아웃 알림 (높은 우선순위)
+- 주문 생성 알림 (중간 우선순위)
+- 주문 상태 변경 알림 (낮은 우선순위)
+- 주문 취소 알림 (중간 우선순위)
 
 **구현 상태**: ✅ 완료
 
@@ -627,6 +694,7 @@ CREATE TABLE check_in_out_logs (
 - [x] 예약 상세 (방 배정, 전화번호 입력)
 - [x] 방 관리
 - [x] 주문 관리
+- [x] 알림 시스템 (실시간 알림, 알림 히스토리)
 
 #### 고객 페이지
 - [x] 토큰 기반 인증
@@ -651,9 +719,17 @@ CREATE TABLE check_in_out_logs (
 - [x] Railway API 연동
 - [x] 예약 정보 자동 등록
 
+#### 알림 시스템
+- [x] 알림 데이터베이스 테이블 생성
+- [x] 실시간 알림 수신 (SSE)
+- [x] 알림 히스토리 관리
+- [x] 체크인/체크아웃 알림 자동 생성
+- [x] 주문 관련 알림 자동 생성
+
 ### 9.2 진행 중인 작업
 
 - [ ] 알림톡 발송 워크플로우 완전 연동 (n8n 설정 대기)
+- [ ] 알림 설정 페이지 구현 (선택사항)
 
 ### 9.3 향후 작업
 
@@ -775,11 +851,15 @@ CREATE TABLE check_in_out_logs (
 - `N8N_WORKFLOW_COMPLETE_SETUP.md`: n8n 워크플로우 완전 설정 가이드
 - `N8N_CODE_NODE_HTML_OUTPUT.md`: n8n Code Node HTML 출력 처리 가이드
 
-### 12.5 사용자 가이드
+### 12.5 알림 시스템 문서
+- `ADMIN_NOTIFICATION_SYSTEM_DESIGN.md`: 관리자 알림 시스템 설계 문서
+- `ADMIN_NOTIFICATION_IMPLEMENTATION_SUMMARY.md`: 관리자 알림 시스템 구현 완료 요약
+
+### 12.6 사용자 가이드
 - `ADMIN_USER_GUIDE.md`: 관리자 사용 가이드
 - `TROUBLESHOOTING_GUIDE.md`: 트러블슈팅 가이드
 
-### 12.6 감사 문서
+### 12.7 감사 문서
 - `DESIGN_SYSTEM_AUDIT.md`: 디자인 시스템 감사 보고서
 - `RESPONSIVE_ACCESSIBILITY_AUDIT.md`: 반응형 디자인 및 접근성 감사 보고서
 - `UI_COMPONENTS_INVENTORY.md`: UI 컴포넌트 인벤토리
@@ -1258,7 +1338,7 @@ export const RESERVATION_LIMITS = {
 
 ---
 
-**문서 버전**: 1.1  
+**문서 버전**: 1.2  
 **최종 업데이트**: 2025-01-15  
 **작성자**: AI Assistant  
 **검토자**: (검토 필요)
@@ -1269,5 +1349,6 @@ export const RESERVATION_LIMITS = {
 
 | 버전 | 날짜 | 변경 내용 | 작성자 |
 |------|------|----------|--------|
+| 1.2 | 2025-01-15 | 관리자 알림 시스템 구현 내용 추가 | AI Assistant |
 | 1.1 | 2025-01-15 | 문제점 및 개선 의견 섹션 추가, 종합 평가 추가 | AI Assistant |
 | 1.0 | 2025-01-15 | 초기 인수인계 문서 작성 | AI Assistant |

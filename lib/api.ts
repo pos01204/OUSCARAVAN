@@ -4,7 +4,7 @@
 
 import { API_CONFIG, N8N_CONFIG } from './constants';
 import { extractUserFriendlyMessage } from './error-messages';
-import type { ApiErrorCode, ApiErrorResponse } from '@/types';
+import type { ApiErrorCode, ApiErrorResponse, Notification, NotificationsResponse, NotificationSettings, NotificationStats } from '@/types';
 import { ApiError } from '@/types';
 
 const API_URL = API_CONFIG.baseUrl;
@@ -664,6 +664,104 @@ export async function getAdminStats(): Promise<AdminStats> {
 }
 
 /**
+ * 알림 API 함수들
+ */
+
+/**
+ * 알림 목록 조회
+ */
+export async function getNotifications(params?: {
+  type?: NotificationType;
+  isRead?: boolean;
+  priority?: NotificationPriority;
+  startDate?: string;
+  endDate?: string;
+  page?: number;
+  limit?: number;
+}): Promise<NotificationsResponse> {
+  const queryParams = new URLSearchParams();
+  if (params?.type) {
+    queryParams.append('type', params.type);
+  }
+  if (params?.isRead !== undefined) {
+    queryParams.append('isRead', params.isRead.toString());
+  }
+  if (params?.priority) {
+    queryParams.append('priority', params.priority);
+  }
+  if (params?.startDate) {
+    queryParams.append('startDate', params.startDate);
+  }
+  if (params?.endDate) {
+    queryParams.append('endDate', params.endDate);
+  }
+  if (params?.page) {
+    queryParams.append('page', params.page.toString());
+  }
+  if (params?.limit) {
+    queryParams.append('limit', params.limit.toString());
+  }
+
+  const queryString = queryParams.toString();
+  const endpoint = `/api/admin/notifications${queryString ? `?${queryString}` : ''}`;
+
+  return adminApi(endpoint) as Promise<NotificationsResponse>;
+}
+
+/**
+ * 알림 읽음 처리
+ */
+export async function markNotificationAsRead(id: string): Promise<Notification> {
+  return adminApi(`/api/admin/notifications/${id}/read`, {
+    method: 'PATCH',
+  }) as Promise<Notification>;
+}
+
+/**
+ * 모든 알림 읽음 처리
+ */
+export async function markAllNotificationsAsRead(): Promise<{ updatedCount: number }> {
+  return adminApi('/api/admin/notifications/read-all', {
+    method: 'PATCH',
+  }) as Promise<{ updatedCount: number }>;
+}
+
+/**
+ * 알림 삭제
+ */
+export async function deleteNotification(id: string): Promise<{ success: boolean }> {
+  return adminApi(`/api/admin/notifications/${id}`, {
+    method: 'DELETE',
+  }) as Promise<{ success: boolean }>;
+}
+
+/**
+ * 알림 설정 조회
+ */
+export async function getNotificationSettings(): Promise<NotificationSettings> {
+  return adminApi('/api/admin/notifications/settings') as Promise<NotificationSettings>;
+}
+
+/**
+ * 알림 설정 업데이트
+ */
+export async function updateNotificationSettings(
+  data: Partial<NotificationSettings>
+): Promise<NotificationSettings> {
+  return adminApi('/api/admin/notifications/settings', {
+    method: 'PATCH',
+    body: JSON.stringify(data),
+  }) as Promise<NotificationSettings>;
+}
+
+/**
+ * 알림 통계 조회
+ */
+export async function getNotificationStats(): Promise<NotificationStats> {
+  return adminApi('/api/admin/notifications/stats') as Promise<NotificationStats>;
+}
+
+/**
  * 타입 정의는 types/index.ts에서 import
  */
 import type {
@@ -690,6 +788,13 @@ export type {
   OrdersResponse,
   RoomsResponse,
   CheckInOutResponse,
+  Notification,
+  NotificationType,
+  NotificationPriority,
+  NotificationLinkType,
+  NotificationsResponse,
+  NotificationSettings,
+  NotificationStats,
   ApiErrorResponse,
   ApiError,
   ApiErrorCode,

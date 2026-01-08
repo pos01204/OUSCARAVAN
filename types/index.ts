@@ -144,3 +144,66 @@ export class ApiError extends Error {
     this.details = details;
   }
 }
+
+/**
+ * 알림 타입 정의
+ */
+export type NotificationType =
+  | 'checkin'
+  | 'checkout'
+  | 'order_created'
+  | 'order_status_changed'
+  | 'order_cancelled'
+  | 'reservation_assigned'
+  | 'reservation_cancelled';
+
+export type NotificationPriority = 'low' | 'medium' | 'high';
+
+export type NotificationLinkType = 'reservation' | 'order' | 'dashboard';
+
+export interface Notification {
+  id: string;
+  adminId: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  priority: NotificationPriority;
+  isRead: boolean;
+  readAt?: string;
+  metadata?: Record<string, unknown>;
+  linkType?: NotificationLinkType;
+  linkId?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface NotificationsResponse {
+  notifications: Notification[];
+  total: number;
+  unreadCount: number;
+}
+
+export interface NotificationSettings {
+  id: string;
+  adminId: string;
+  checkinEnabled: boolean;
+  checkoutEnabled: boolean;
+  orderCreatedEnabled: boolean;
+  orderStatusChangedEnabled: boolean;
+  orderCancelledEnabled: boolean;
+  reservationAssignedEnabled: boolean;
+  reservationCancelledEnabled: boolean;
+  soundEnabled: boolean;
+  vibrationEnabled: boolean;
+  autoDeleteDays: number;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface NotificationStats {
+  total: number;
+  unread: number;
+  today: number;
+  thisWeek: number;
+  byType: Record<string, number>;
+}

@@ -102,6 +102,13 @@ export async function createGuestOrder(req: Request, res: Response) {
       notes,
     });
 
+    // 알림 생성 (비동기, 실패해도 주문은 완료)
+    import('../services/notifications-helper.service').then(({ createOrderCreatedNotification }) => {
+      createOrderCreatedNotification(order.id).catch((error) => {
+        console.error('Failed to create order created notification:', error);
+      });
+    });
+
     res.status(201).json(order);
   } catch (error) {
     console.error('Create guest order error:', error);
@@ -136,6 +143,13 @@ export async function checkIn(req: Request, res: Response) {
 
     // 예약 상태 업데이트
     await updateReservationStatus(reservation.id, 'checked_in');
+
+    // 알림 생성 (비동기, 실패해도 체크인은 완료)
+    import('../services/notifications-helper.service').then(({ createCheckInNotification }) => {
+      createCheckInNotification(reservation.id).catch((error) => {
+        console.error('Failed to create check-in notification:', error);
+      });
+    });
 
     res.json(log);
   } catch (error) {
@@ -173,6 +187,13 @@ export async function checkOut(req: Request, res: Response) {
 
     // 예약 상태 업데이트
     await updateReservationStatus(reservation.id, 'checked_out');
+
+    // 알림 생성 (비동기, 실패해도 체크아웃은 완료)
+    import('../services/notifications-helper.service').then(({ createCheckOutNotification }) => {
+      createCheckOutNotification(reservation.id).catch((error) => {
+        console.error('Failed to create check-out notification:', error);
+      });
+    });
 
     res.json(log);
   } catch (error) {

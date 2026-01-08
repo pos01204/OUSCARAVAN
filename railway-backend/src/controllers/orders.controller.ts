@@ -77,7 +77,28 @@ export async function updateOrderStatus(req: Request, res: Response) {
       });
     }
 
+    // 기존 주문 조회 (상태 변경 전)
+    const oldOrder = await getOrderById(id);
+    const oldStatus = oldOrder?.status || 'pending';
+
     const order = await updateOrder(id, { status });
+
+    // 주문 상태 변경 알림 생성 (비동기, 실패해도 상태 변경은 완료)
+    if (oldStatus !== status) {
+      if (status === 'cancelled') {
+        import('../services/notifications-helper.service').then(({ createOrderCancelledNotification }) => {
+          createOrderCancelledNotification(order.id).catch((error) => {
+            console.error('Failed to create order cancelled notification:', error);
+          });
+        });
+      } else {
+        import('../services/notifications-helper.service').then(({ createOrderStatusChangedNotification }) => {
+          createOrderStatusChangedNotification(order.id, oldStatus, status).catch((error) => {
+            console.error('Failed to create order status changed notification:', error);
+          });
+        });
+      }
+    }
 
     res.json(order);
   } catch (error: any) {

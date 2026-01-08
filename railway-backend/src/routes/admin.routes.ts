@@ -27,6 +27,16 @@ import {
   updateOrderStatus,
 } from '../controllers/orders.controller';
 import { getStats } from '../controllers/stats.controller';
+import {
+  listNotifications,
+  markAsRead,
+  markAllAsRead,
+  deleteNotificationHandler,
+  getSettings,
+  updateSettings,
+  getStats as getNotificationStats,
+} from '../controllers/notifications.controller';
+import { setupNotificationSSE } from '../services/notifications-sse.service';
 
 const router = express.Router();
 
@@ -90,5 +100,15 @@ router.patch('/orders/:id', validateUpdateOrderStatus, updateOrderStatus);
 
 // 통계
 router.get('/stats', getStats);
+
+// 알림 관리
+router.get('/notifications', listNotifications);
+router.get('/notifications/stats', getNotificationStats);
+router.get('/notifications/stream', setupNotificationSSE);
+router.patch('/notifications/:id/read', markAsRead);
+router.patch('/notifications/read-all', markAllAsRead);
+router.delete('/notifications/:id', deleteNotificationHandler);
+router.get('/notifications/settings', getSettings);
+router.patch('/notifications/settings', updateSettings);
 
 export default router;

@@ -5,6 +5,7 @@ import { adminLogout } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import { AdminMobileNav } from '@/components/admin/AdminMobileNav';
 import { AdminBottomNav } from '@/components/admin/AdminBottomNav';
+import { NotificationBell } from '@/components/admin/notifications/NotificationBell';
 
 export default async function AdminLayout({
   children,
@@ -63,7 +64,9 @@ export default async function AdminLayout({
             {/* 모바일 네비게이션 (햄버거 메뉴 제거, 바텀 네비게이션으로 대체) */}
             <div className="md:hidden"></div>
           </div>
-          <form action={async () => {
+          <div className="flex items-center gap-2">
+            <NotificationBell />
+            <form action={async () => {
             'use server';
             cookies().delete('admin-token');
             redirect('/login');
@@ -79,6 +82,7 @@ export default async function AdminLayout({
               <span className="md:hidden">나가기</span>
             </Button>
           </form>
+          </div>
         </div>
       </nav>
       <main className="container mx-auto px-4 py-4 md:py-8" role="main">
