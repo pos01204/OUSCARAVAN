@@ -4,18 +4,15 @@ import { memo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FloorPlanViewer } from '@/components/features/FloorPlanViewer';
 import { MapPin } from 'lucide-react';
-import { useGuestStore } from '@/lib/store';
 
 interface FloorPlanCardProps {
   assignedRoom?: string;
 }
 
 function FloorPlanCardComponent({ assignedRoom }: FloorPlanCardProps) {
-  const { isCheckedIn } = useGuestStore();
-  
-  // 체크인 완료 후에만 표시 (assignedRoom이 있는 경우)
-  // 설계 문서에 따르면 체크인 완료 후에만 약도 표시
-  if (!assignedRoom || !isCheckedIn) {
+  // 관리자가 방 배정을 하는 시점부터 약도 표시 (체크인 전에도 표시)
+  // assignedRoom이 있으면 표시 (체크인 여부와 무관)
+  if (!assignedRoom) {
     return null;
   }
 
