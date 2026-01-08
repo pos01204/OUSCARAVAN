@@ -720,7 +720,7 @@ export function ReservationCalendarView({
                             {format(date, 'yyyy년 M월 d일 (EEE)', { locale: ko })}
                           </div>
                           <div className="text-sm text-muted-foreground">
-                            {reservations.length}건의 예약
+
                           </div>
                         </div>
                       </div>
@@ -782,7 +782,7 @@ export function ReservationCalendarView({
 
                             {/* 3. 예약 정보 & 가격 */}
                             <div className="text-sm text-muted-foreground truncate flex items-center gap-1">
-                              <span>{reservation.roomType}</span>
+                              <span className="font-semibold">{reservation.roomType.split('(')[0]}</span>
                               <span className="text-xs opacity-70">
                                 • {calculateTotalAmount(reservation).totalAmount.toLocaleString()}원
                               </span>

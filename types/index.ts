@@ -34,6 +34,8 @@ export interface Order {
   createdAt: string;
   deliveryTime?: string;
   notes?: string;
+  guestName?: string;
+  roomName?: string; // or roomNumber
 }
 
 export interface OrderItem {

@@ -40,7 +40,34 @@ export default function OrdersPage() {
         date,
         search,
       });
-      setOrders(data.orders || []);
+
+      let fetchedOrders = data.orders || [];
+
+      // 예약 정보가 없는 경우 추가 조회
+      if (fetchedOrders.length > 0) {
+        const enrichedOrders = await Promise.all(
+          fetchedOrders.map(async (order) => {
+            if ((!order.guestName || !order.roomName) && order.reservationId) {
+              try {
+                const { getReservation } = await import('@/lib/api');
+                const reservation = await getReservation(order.reservationId);
+                return {
+                  ...order,
+                  guestName: reservation.guestName,
+                  roomName: reservation.assignedRoom || reservation.roomType.split('(')[0],
+                };
+              } catch (e) {
+                console.error(`Failed to fetch reservation for order ${order.id}`, e);
+                return order;
+              }
+            }
+            return order;
+          })
+        );
+        fetchedOrders = enrichedOrders;
+      }
+
+      setOrders(fetchedOrders);
     } catch (error) {
       const status = searchParams.get('status') || undefined;
       const date = searchParams.get('date') || undefined;
@@ -196,15 +223,14 @@ export default function OrdersPage() {
                 <CardHeader className="p-4 pb-2">
                   <div className="flex items-start justify-between">
                     <div>
-                      <div className="flex items-center gap-2 mb-1">
+                      <div className="flex flex-wrap items-center gap-2 mb-1.5">
                         <Badge variant={order.type === 'bbq' ? 'secondary' : 'default'} className="rounded-sm">
                           {order.type === 'bbq' ? '바베큐' : '불멍'}
                         </Badge>
-                        <span className="text-xs text-muted-foreground font-mono">
-                          #{order.id.substring(0, 6)}
-                        </span>
+                        <span className="font-bold text-lg">{order.roomName || '방 미배정'}</span>
+                        <span className="text-muted-foreground">{order.guestName}</span>
                       </div>
-                      <h3 className="font-bold text-lg">
+                      <h3 className="font-medium text-base text-muted-foreground leading-tight">
                         {order.items[0]?.name}
                         {order.items.length > 1 && ` 외 ${order.items.length - 1}건`}
                       </h3>
@@ -263,13 +289,24 @@ export default function OrdersPage() {
             <div className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <div>
-                  <p className="text-sm text-muted-foreground">주문 ID</p>
-                  <p className="font-medium font-mono text-sm">{selectedOrder.id}</p>
+                  <p className="text-sm text-muted-foreground">객실 / 고객</p>
+                  <p className="font-bold text-lg">
+                    {selectedOrder.roomName || '미배정'}
+                    <span className="text-base font-normal ml-2 text-muted-foreground">
+                      {selectedOrder.guestName}
+                    </span>
+                  </p>
                 </div>
                 <div>
                   <p className="text-sm text-muted-foreground">주문 타입</p>
                   <p className="font-medium">
                     {selectedOrder.type === 'bbq' ? '바베큐' : '불멍'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-sm text-muted-foreground">주문 ID</p>
+                  <p className="font-medium font-mono text-sm text-muted-foreground">
+                    {selectedOrder.id.substring(0, 8)}...
                   </p>
                 </div>
                 <div>
