@@ -851,7 +851,7 @@ export function ReservationCalendarView({
       {/* 날짜별 예약 목록 모달 - Phase 1: 모바일 최적화, Phase 3: 스와이프 닫기 */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent 
-          className="md:max-w-2xl h-[90vh] md:h-auto md:max-h-[80vh] p-0 md:p-6 flex flex-col fixed md:left-[50%] md:top-[50%] md:translate-x-[-50%] md:translate-y-[-50%] top-0 left-0 right-0 bottom-0 md:bottom-auto md:right-auto md:rounded-lg rounded-none"
+          className="md:max-w-2xl h-[90vh] md:h-auto md:max-h-[80vh] p-0 md:p-6 flex flex-col !left-0 !top-0 !right-0 !bottom-0 md:!left-[50%] md:!top-[50%] md:!translate-x-[-50%] md:!translate-y-[-50%] md:!right-auto md:!bottom-auto !translate-x-0 !translate-y-0 md:rounded-lg rounded-none w-full md:w-auto max-w-full md:max-w-2xl"
           aria-labelledby="reservation-modal-title"
           aria-describedby="reservation-modal-description"
           {...swipeHandlers}
