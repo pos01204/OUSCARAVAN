@@ -4,7 +4,7 @@
 
 import { API_CONFIG, N8N_CONFIG } from './constants';
 import { extractUserFriendlyMessage } from './error-messages';
-import type { ApiErrorCode, ApiErrorResponse, Notification, NotificationsResponse, NotificationSettings, NotificationStats } from '@/types';
+import type { ApiErrorCode, ApiErrorResponse, Notification, NotificationType, NotificationPriority, NotificationsResponse, NotificationSettings, NotificationStats } from '@/types';
 import { ApiError } from '@/types';
 
 const API_URL = API_CONFIG.baseUrl;

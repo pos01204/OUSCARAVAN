@@ -20,10 +20,6 @@ export default function NotificationsPage() {
     isRead?: boolean;
   }>({});
 
-  useEffect(() => {
-    loadNotifications();
-  }, [filters]);
-
   const loadNotifications = async () => {
     setIsLoading(true);
     try {
@@ -39,6 +35,10 @@ export default function NotificationsPage() {
       setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    loadNotifications();
+  }, [filters]);
 
   const handleNotificationClick = async (notification: Notification) => {
     if (!notification.isRead) {

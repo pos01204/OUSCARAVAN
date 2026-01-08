@@ -501,9 +501,17 @@ export async function createOrUpdateReservationItem(data: {
       const row = updateResult.rows[0];
       
       // options 파싱
-      let parsedOptions = undefined;
+      let parsedOptions: Array<{
+        optionName: string;
+        optionPrice: number;
+        category: string;
+      }> | undefined = undefined;
       if (row.options) {
-        parsedOptions = parseJSONBArray(row.options);
+        parsedOptions = parseJSONBArray<{
+          optionName: string;
+          optionPrice: number;
+          category: string;
+        }>(row.options);
       }
 
       console.log('[createOrUpdateReservationItem] Update successful');
@@ -598,13 +606,17 @@ export async function createOrUpdateReservationItem(data: {
 
           if (insertResult.rows.length > 0) {
             const row = insertResult.rows[0];
-            let parsedOptions = undefined;
+            let parsedOptions: Array<{
+              optionName: string;
+              optionPrice: number;
+              category: string;
+            }> | undefined = undefined;
             if (row.options) {
-              try {
-                parsedOptions = Array.isArray(row.options) ? row.options : JSON.parse(row.options);
-              } catch (e) {
-                console.error('[createOrUpdateReservationItem] Error parsing returned options:', e);
-              }
+              parsedOptions = parseJSONBArray<{
+                optionName: string;
+                optionPrice: number;
+                category: string;
+              }>(row.options);
             }
 
             console.log('[createOrUpdateReservationItem] Created temporary reservation with OPTION');
@@ -698,13 +710,17 @@ export async function createOrUpdateReservationItem(data: {
 
               if (updateResult.rows.length > 0) {
                 const row = updateResult.rows[0];
-                let parsedOptions = undefined;
+                let parsedOptions: Array<{
+                  optionName: string;
+                  optionPrice: number;
+                  category: string;
+                }> | undefined = undefined;
                 if (row.options) {
-                  try {
-                    parsedOptions = Array.isArray(row.options) ? row.options : JSON.parse(row.options);
-                  } catch (e) {
-                    console.error('[createOrUpdateReservationItem] Error parsing returned options:', e);
-                  }
+                  parsedOptions = parseJSONBArray<{
+                    optionName: string;
+                    optionPrice: number;
+                    category: string;
+                  }>(row.options);
                 }
 
                 return {
@@ -867,13 +883,17 @@ export async function createOrUpdateReservationItem(data: {
           }
 
           const row = updateResult.rows[0];
-          let parsedOptions = undefined;
+          let parsedOptions: Array<{
+            optionName: string;
+            optionPrice: number;
+            category: string;
+          }> | undefined = undefined;
           if (row.options) {
-            try {
-              parsedOptions = Array.isArray(row.options) ? row.options : JSON.parse(row.options);
-            } catch (e) {
-              console.error('[createOrUpdateReservationItem] Error parsing returned options:', e);
-            }
+            parsedOptions = parseJSONBArray<{
+              optionName: string;
+              optionPrice: number;
+              category: string;
+            }>(row.options);
           }
 
           console.log('[createOrUpdateReservationItem] Insert successful (via update)');
@@ -900,13 +920,17 @@ export async function createOrUpdateReservationItem(data: {
         const row = insertResult.rows[0];
         
         // options 파싱
-        let parsedOptions = undefined;
+        let parsedOptions: Array<{
+          optionName: string;
+          optionPrice: number;
+          category: string;
+        }> | undefined = undefined;
         if (row.options) {
-          try {
-            parsedOptions = Array.isArray(row.options) ? row.options : JSON.parse(row.options);
-          } catch (e) {
-            console.error('[createOrUpdateReservationItem] Error parsing returned options:', e);
-          }
+          parsedOptions = parseJSONBArray<{
+            optionName: string;
+            optionPrice: number;
+            category: string;
+          }>(row.options);
         }
 
         console.log('[createOrUpdateReservationItem] Insert successful');
