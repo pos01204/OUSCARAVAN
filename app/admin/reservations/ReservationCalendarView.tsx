@@ -13,6 +13,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { calculateTotalAmount } from '@/lib/utils/reservation';
 import { useSwipe } from '@/lib/hooks/useSwipe';
+import { ReservationModalCard } from '@/components/admin/ReservationModalCard';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 // 상태별 색상 시스템 (강화)
@@ -662,185 +663,65 @@ export function ReservationCalendarView({
       {/* 날짜별 예약 목록 모달 - Phase 1: 모바일 최적화, Phase 3: 스와이프 닫기 */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent 
-          className="md:max-w-2xl max-h-[90vh] md:max-h-[80vh] p-0 md:p-6"
+          className="md:max-w-2xl h-[90vh] md:h-auto md:max-h-[80vh] p-0 md:p-6 flex flex-col md:translate-y-[-50%] md:translate-x-[-50%] md:top-[50%] md:left-[50%] top-0 left-0 right-0 bottom-0 md:bottom-auto md:right-auto md:rounded-lg rounded-none"
           aria-labelledby="reservation-modal-title"
           aria-describedby="reservation-modal-description"
           {...swipeHandlers}
         >
           {/* 모바일: 전체 화면, 데스크톱: 중앙 모달 */}
-          <div className="flex flex-col h-full md:h-auto">
+          <div className="flex flex-col h-full md:h-auto min-h-0">
             {/* 고정 헤더 */}
-            <DialogHeader className="px-4 py-3 md:px-0 md:py-0 border-b md:border-0 sticky top-0 bg-background z-10 md:static">
+            <DialogHeader className="px-4 py-3 md:px-0 md:py-0 border-b md:border-0 flex-shrink-0 bg-background">
               <DialogTitle id="reservation-modal-title" className="text-lg md:text-xl font-semibold">
                 {selectedDate && format(selectedDate, 'yyyy년 M월 d일 (EEE)', { locale: ko })} 예약 목록
               </DialogTitle>
-              <DialogDescription id="reservation-modal-description" className="mt-1 md:mt-2">
+              <DialogDescription id="reservation-modal-description" className="mt-1 md:mt-2 text-sm">
                 {selectedDateReservations.length > 0 
                   ? `총 ${selectedDateReservations.length}건의 예약이 있습니다.`
                   : '이 날짜에는 예약이 없습니다.'}
               </DialogDescription>
             </DialogHeader>
           
-          {/* 스크롤 가능한 콘텐츠 */}
-          <div className="flex-1 overflow-y-auto px-4 py-2 md:px-0 md:py-0">
+          {/* 스크롤 가능한 콘텐츠 - 모바일 스크롤 개선 */}
+          <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-4 md:px-0 md:py-4 min-h-0 -webkit-overflow-scrolling-touch">
           {selectedDateReservations.length > 0 ? (
-            <div className="space-y-3 mt-4">
+            <div className="space-y-3">
               {/* 상태별 탭 분리 */}
               <Tabs defaultValue="all" className="w-full">
-                <TabsList className="grid w-full grid-cols-5">
-                  <TabsTrigger value="all">
+                <TabsList className="grid w-full grid-cols-5 h-auto p-1 gap-1">
+                  <TabsTrigger value="all" className="text-xs md:text-sm min-h-[36px] px-1 md:px-3">
                     전체 ({selectedDateReservations.length})
                   </TabsTrigger>
-                  <TabsTrigger value="assigned">
+                  <TabsTrigger value="assigned" className="text-xs md:text-sm min-h-[36px] px-1 md:px-3">
                     배정 ({selectedDateReservations.filter(r => r.status === 'assigned').length})
                   </TabsTrigger>
-                  <TabsTrigger value="pending">
+                  <TabsTrigger value="pending" className="text-xs md:text-sm min-h-[36px] px-1 md:px-3">
                     대기 ({selectedDateReservations.filter(r => r.status === 'pending').length})
                   </TabsTrigger>
-                  <TabsTrigger value="checked_in">
+                  <TabsTrigger value="checked_in" className="text-xs md:text-sm min-h-[36px] px-1 md:px-3">
                     체크인 ({selectedDateReservations.filter(r => r.status === 'checked_in').length})
                   </TabsTrigger>
-                  <TabsTrigger value="checked_out">
+                  <TabsTrigger value="checked_out" className="text-xs md:text-sm min-h-[36px] px-1 md:px-3">
                     체크아웃 ({selectedDateReservations.filter(r => r.status === 'checked_out').length})
                   </TabsTrigger>
                 </TabsList>
                 
                 <TabsContent value="all" className="mt-4 space-y-3">
-                  {selectedDateReservations.map((reservation) => {
-                    const checkin = new Date(reservation.checkin);
-                    const checkout = new Date(reservation.checkout);
-                    const isCheckinDay = selectedDate ? isSameDay(checkin, selectedDate) : false;
-                    const isCheckoutDay = selectedDate ? isSameDay(checkout, selectedDate) : false;
-                    
-                    // 체크인/체크아웃 배지
-                    const checkinCheckoutBadges = [];
-                    if (isCheckinDay && isCheckoutDay) {
-                      checkinCheckoutBadges.push(
-                        <Badge key="both" variant="default" className="bg-purple-600 text-white text-xs">
-                          ✓→ 체크인+체크아웃
-                        </Badge>
-                      );
-                    } else if (isCheckinDay) {
-                      checkinCheckoutBadges.push(
-                        <Badge key="checkin" variant="default" className="bg-green-600 text-white text-xs">
-                          ✓ 체크인
-                        </Badge>
-                      );
-                    } else if (isCheckoutDay) {
-                      checkinCheckoutBadges.push(
-                        <Badge key="checkout" variant="default" className="bg-blue-600 text-white text-xs">
-                          → 체크아웃
-                        </Badge>
-                      );
-                    }
-                    
-                    return (
-                      <Card 
-                        key={reservation.id} 
-                        className="cursor-pointer hover:bg-muted/50 transition-colors"
-                        onClick={() => handleViewDetail(reservation.id)}
-                      >
-                        <CardContent className="p-4">
-                          <div className="flex items-start justify-between gap-4">
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-2 flex-wrap">
-                                <h4 className="font-semibold text-base">
-                                  {reservation.guestName}
-                                </h4>
-                                {getStatusBadge(reservation.status)}
-                                {checkinCheckoutBadges}
-                              </div>
-                              
-                              <div className="space-y-1 text-sm text-muted-foreground">
-                                <div className="flex items-center gap-2">
-                                  <span className="font-medium">예약번호:</span>
-                                  <span>{reservation.reservationNumber}</span>
-                                </div>
-                                
-                                <div className="flex items-center gap-2">
-                                  <span className="font-medium">체크인:</span>
-                                  <span>{format(checkin, 'yyyy-MM-dd')}</span>
-                                  {isCheckinDay && (
-                                    <Badge variant="outline" className="text-xs">체크인일</Badge>
-                                  )}
-                                </div>
-                                
-                                <div className="flex items-center gap-2">
-                                  <span className="font-medium">체크아웃:</span>
-                                  <span>{format(checkout, 'yyyy-MM-dd')}</span>
-                                  {isCheckoutDay && (
-                                    <Badge variant="outline" className="text-xs">체크아웃일</Badge>
-                                  )}
-                                </div>
-                                
-                                <div className="flex items-center gap-2">
-                                  <span className="font-medium">방 배정:</span>
-                                  <span className={reservation.assignedRoom ? 'text-foreground font-medium' : 'text-muted-foreground'}>
-                                    {reservation.assignedRoom || '미배정'}
-                                  </span>
-                                </div>
-                                
-                                <div className="flex items-center gap-2">
-                                  <span className="font-medium">객실:</span>
-                                  <span className="text-foreground">{reservation.roomType}</span>
-                                </div>
-                                
-                                {reservation.options && reservation.options.length > 0 && (
-                                  <div className="flex items-start gap-2">
-                                    <span className="font-medium">옵션:</span>
-                                    <div className="flex flex-wrap gap-1">
-                                      {reservation.options.map((opt, idx) => (
-                                        <Badge key={idx} variant="outline" className="text-xs">
-                                          {opt.optionName}
-                                        </Badge>
-                                      ))}
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                            
-                            <div className="flex-shrink-0 text-right">
-                              <div className="text-lg font-bold text-primary">
-                                {calculateTotalAmount(reservation).totalAmount.toLocaleString()}원
-                              </div>
-                              <div className="flex gap-2 mt-2">
-                                <Button 
-                                  variant="outline" 
-                                  size="sm"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleViewDetail(reservation.id);
-                                  }}
-                                >
-                                  상세 보기
-                                </Button>
-                                {!reservation.assignedRoom && (
-                                  <Button 
-                                    variant="default" 
-                                    size="sm"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      router.push(`/admin/reservations/${reservation.id}`);
-                                      handleCloseModal();
-                                    }}
-                                  >
-                                    방 배정
-                                  </Button>
-                                )}
-                              </div>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
+                  {selectedDateReservations.map((reservation) => (
+                    <ReservationModalCard
+                      key={reservation.id}
+                      reservation={reservation}
+                      selectedDate={selectedDate}
+                      onViewDetail={handleViewDetail}
+                      onCloseModal={handleCloseModal}
+                    />
+                  ))}
                 </TabsContent>
                 
                 <TabsContent value="assigned" className="mt-4 space-y-3">
                   {sortReservationsByPriority(
                     selectedDateReservations.filter(r => r.status === 'assigned')
-                  ).map((reservation) => {
+                  ).map((reservation) => (
                       const checkin = new Date(reservation.checkin);
                       const checkout = new Date(reservation.checkout);
                       const isCheckinDay = selectedDate ? isSameDay(checkin, selectedDate) : false;
@@ -942,328 +823,42 @@ export function ReservationCalendarView({
                   {sortReservationsByPriority(
                     selectedDateReservations.filter(r => r.status === 'pending')
                   ).map((reservation) => {
-                      const checkin = new Date(reservation.checkin);
-                      const checkout = new Date(reservation.checkout);
-                      const isCheckinDay = selectedDate ? isSameDay(checkin, selectedDate) : false;
-                      const isCheckoutDay = selectedDate ? isSameDay(checkout, selectedDate) : false;
-                      
-                      const checkinCheckoutBadges = [];
-                      if (isCheckinDay && isCheckoutDay) {
-                        checkinCheckoutBadges.push(
-                          <Badge key="both" variant="default" className="bg-purple-600 text-white text-xs">
-                            ✓→ 체크인+체크아웃
-                          </Badge>
-                        );
-                      } else if (isCheckinDay) {
-                        checkinCheckoutBadges.push(
-                          <Badge key="checkin" variant="default" className="bg-green-600 text-white text-xs">
-                            ✓ 체크인
-                          </Badge>
-                        );
-                      } else if (isCheckoutDay) {
-                        checkinCheckoutBadges.push(
-                          <Badge key="checkout" variant="default" className="bg-blue-600 text-white text-xs">
-                            → 체크아웃
-                          </Badge>
-                        );
-                      }
-                      
-                      return (
-                        <Card 
-                          key={reservation.id} 
-                          className="cursor-pointer hover:bg-muted/50 transition-colors"
-                          onClick={() => handleViewDetail(reservation.id)}
-                        >
-                          <CardContent className="p-4">
-                            <div className="flex items-start justify-between gap-4">
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 mb-2 flex-wrap">
-                                  <h4 className="font-semibold text-base">
-                                    {reservation.guestName}
-                                  </h4>
-                                  {getStatusBadge(reservation.status)}
-                                  {checkinCheckoutBadges}
-                                </div>
-                                
-                                <div className="space-y-1 text-sm text-muted-foreground">
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">예약번호:</span>
-                                    <span>{reservation.reservationNumber}</span>
-                                  </div>
-                                  
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">체크인:</span>
-                                    <span>{format(checkin, 'yyyy-MM-dd')}</span>
-                                  </div>
-                                  
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">체크아웃:</span>
-                                    <span>{format(checkout, 'yyyy-MM-dd')}</span>
-                                  </div>
-                                  
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">방 배정:</span>
-                                    <span className="text-muted-foreground">
-                                      {reservation.assignedRoom || '미배정'}
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                              
-                              <div className="flex-shrink-0 text-right">
-                                <div className="text-lg font-bold text-primary">
-                                  {(() => {
-                                    const roomAmount = parseInt(reservation.amount || '0');
-                                    const optionsAmount = reservation.options?.reduce((sum, opt) => sum + opt.optionPrice, 0) || 0;
-                                    return (roomAmount + optionsAmount).toLocaleString();
-                                  })()}원
-                                </div>
-                                <div className="flex gap-2 mt-2">
-                                  <Button 
-                                    variant="outline" 
-                                    size="sm"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      handleViewDetail(reservation.id);
-                                    }}
-                                  >
-                                    상세 보기
-                                  </Button>
-                                  {!reservation.assignedRoom && (
-                                    <Button 
-                                      variant="default" 
-                                      size="sm"
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        router.push(`/admin/reservations/${reservation.id}`);
-                                        handleCloseModal();
-                                      }}
-                                    >
-                                      방 배정
-                                    </Button>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      );
-                    })}
+                    <ReservationModalCard
+                      key={reservation.id}
+                      reservation={reservation}
+                      selectedDate={selectedDate}
+                      onViewDetail={handleViewDetail}
+                      onCloseModal={handleCloseModal}
+                    />
+                  ))}
                 </TabsContent>
                 
                 <TabsContent value="checked_in" className="mt-4 space-y-3">
                   {sortReservationsByPriority(
                     selectedDateReservations.filter(r => r.status === 'checked_in')
-                  ).map((reservation) => {
-                      const checkin = new Date(reservation.checkin);
-                      const checkout = new Date(reservation.checkout);
-                      const isCheckinDay = selectedDate ? isSameDay(checkin, selectedDate) : false;
-                      const isCheckoutDay = selectedDate ? isSameDay(checkout, selectedDate) : false;
-                      
-                      const checkinCheckoutBadges = [];
-                      if (isCheckinDay && isCheckoutDay) {
-                        checkinCheckoutBadges.push(
-                          <Badge key="both" variant="default" className="bg-purple-600 text-white text-xs">
-                            ✓→ 체크인+체크아웃
-                          </Badge>
-                        );
-                      } else if (isCheckinDay) {
-                        checkinCheckoutBadges.push(
-                          <Badge key="checkin" variant="default" className="bg-green-600 text-white text-xs">
-                            ✓ 체크인
-                          </Badge>
-                        );
-                      } else if (isCheckoutDay) {
-                        checkinCheckoutBadges.push(
-                          <Badge key="checkout" variant="default" className="bg-blue-600 text-white text-xs">
-                            → 체크아웃
-                          </Badge>
-                        );
-                      }
-                      
-                      return (
-                        <Card 
-                          key={reservation.id} 
-                          className="cursor-pointer hover:bg-muted/50 transition-colors"
-                          onClick={() => handleViewDetail(reservation.id)}
-                        >
-                          <CardContent className="p-4">
-                            <div className="flex items-start justify-between gap-4">
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 mb-2 flex-wrap">
-                                  <h4 className="font-semibold text-base">
-                                    {reservation.guestName}
-                                  </h4>
-                                  {getStatusBadge(reservation.status)}
-                                  {checkinCheckoutBadges}
-                                </div>
-                                
-                                <div className="space-y-1 text-sm text-muted-foreground">
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">예약번호:</span>
-                                    <span>{reservation.reservationNumber}</span>
-                                  </div>
-                                  
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">체크인:</span>
-                                    <span>{format(checkin, 'yyyy-MM-dd')}</span>
-                                  </div>
-                                  
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">체크아웃:</span>
-                                    <span>{format(checkout, 'yyyy-MM-dd')}</span>
-                                  </div>
-                                  
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">방 배정:</span>
-                                    <span className="text-foreground font-medium">
-                                      {reservation.assignedRoom || '미배정'}
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                              
-                              <div className="flex-shrink-0 text-right">
-                                <div className="text-lg font-bold text-primary">
-                                  {calculateTotalAmount(reservation).totalAmount.toLocaleString()}원
-                                </div>
-                                <Button 
-                                  variant="outline" 
-                                  size="sm" 
-                                  className="mt-2"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleViewDetail(reservation.id);
-                                  }}
-                                >
-                                  상세 보기
-                                </Button>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      );
-                    })}
+                  ).map((reservation) => (
+                    <ReservationModalCard
+                      key={reservation.id}
+                      reservation={reservation}
+                      selectedDate={selectedDate}
+                      onViewDetail={handleViewDetail}
+                      onCloseModal={handleCloseModal}
+                    />
+                  ))}
                 </TabsContent>
                 
                 <TabsContent value="checked_out" className="mt-4 space-y-3">
                   {sortReservationsByPriority(
                     selectedDateReservations.filter(r => r.status === 'checked_out')
-                  ).map((reservation) => {
-                    const checkin = new Date(reservation.checkin);
-                    const checkout = new Date(reservation.checkout);
-                    const isCheckinDay = selectedDate ? isSameDay(checkin, selectedDate) : false;
-                    const isCheckoutDay = selectedDate ? isSameDay(checkout, selectedDate) : false;
-                    
-                    const checkinCheckoutBadges = [];
-                    if (isCheckinDay && isCheckoutDay) {
-                      checkinCheckoutBadges.push(
-                        <Badge key="both" variant="default" className="bg-purple-600 text-white text-xs">
-                          ✓→ 체크인+체크아웃
-                        </Badge>
-                      );
-                    } else if (isCheckinDay) {
-                      checkinCheckoutBadges.push(
-                        <Badge key="checkin" variant="default" className="bg-green-600 text-white text-xs">
-                          ✓ 체크인
-                        </Badge>
-                      );
-                    } else if (isCheckoutDay) {
-                      checkinCheckoutBadges.push(
-                        <Badge key="checkout" variant="default" className="bg-blue-600 text-white text-xs">
-                          → 체크아웃
-                        </Badge>
-                      );
-                    }
-                    
-                    return (
-                      <Card 
-                        key={reservation.id} 
-                        className="cursor-pointer hover:bg-muted/50 transition-colors"
-                        onClick={() => handleViewDetail(reservation.id)}
-                      >
-                        <CardContent className="p-4">
-                          <div className="flex items-start justify-between gap-4">
-                            <div className="flex-1 min-w-0">
-                              <div className="flex items-center gap-2 mb-2 flex-wrap">
-                                <h4 className="font-semibold text-base">
-                                  {reservation.guestName}
-                                </h4>
-                                {getStatusBadge(reservation.status)}
-                                {checkinCheckoutBadges}
-                              </div>
-                              
-                              <div className="space-y-1 text-sm text-muted-foreground">
-                                <div className="flex items-center gap-2">
-                                  <span className="font-medium">예약번호:</span>
-                                  <span>{reservation.reservationNumber}</span>
-                                </div>
-                                
-                                <div className="flex items-center gap-2">
-                                  <span className="font-medium">체크인:</span>
-                                  <span>{format(checkin, 'yyyy-MM-dd')}</span>
-                                  {isCheckinDay && (
-                                    <Badge variant="outline" className="text-xs">체크인일</Badge>
-                                  )}
-                                </div>
-                                
-                                <div className="flex items-center gap-2">
-                                  <span className="font-medium">체크아웃:</span>
-                                  <span>{format(checkout, 'yyyy-MM-dd')}</span>
-                                  {isCheckoutDay && (
-                                    <Badge variant="outline" className="text-xs">체크아웃일</Badge>
-                                  )}
-                                </div>
-                                
-                                <div className="flex items-center gap-2">
-                                  <span className="font-medium">방 배정:</span>
-                                  <span className={reservation.assignedRoom ? 'text-foreground font-medium' : 'text-muted-foreground'}>
-                                    {reservation.assignedRoom || '미배정'}
-                                  </span>
-                                </div>
-                                
-                                <div className="flex items-center gap-2">
-                                  <span className="font-medium">객실:</span>
-                                  <span className="text-foreground">{reservation.roomType}</span>
-                                </div>
-                                
-                                {reservation.options && reservation.options.length > 0 && (
-                                  <div className="flex items-start gap-2">
-                                    <span className="font-medium">옵션:</span>
-                                    <div className="flex flex-wrap gap-1">
-                                      {reservation.options.map((opt, idx) => (
-                                        <Badge key={idx} variant="outline" className="text-xs">
-                                          {opt.optionName}
-                                        </Badge>
-                                      ))}
-                                    </div>
-                                  </div>
-                                )}
-                              </div>
-                            </div>
-                            
-                            <div className="flex-shrink-0 text-right">
-                              <div className="text-lg font-bold text-primary">
-                                {calculateTotalAmount(reservation).totalAmount.toLocaleString()}원
-                              </div>
-                              <div className="flex gap-2 mt-2">
-                                <Button 
-                                  variant="outline" 
-                                  size="sm"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleViewDetail(reservation.id);
-                                  }}
-                                >
-                                  상세 보기
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
-                        </CardContent>
-                      </Card>
-                    );
-                  })}
+                  ).map((reservation) => (
+                    <ReservationModalCard
+                      key={reservation.id}
+                      reservation={reservation}
+                      selectedDate={selectedDate}
+                      onViewDetail={handleViewDetail}
+                      onCloseModal={handleCloseModal}
+                    />
+                  ))}
                 </TabsContent>
               </Tabs>
             </div>
@@ -1273,10 +868,14 @@ export function ReservationCalendarView({
             </div>
           )}
           
-          <div className="flex justify-end gap-2 mt-4 pt-4 border-t">
+          </div>
+          
+          {/* 모달 하단 버튼 - 고정 */}
+          <div className="flex justify-end gap-2 px-4 py-3 md:px-0 md:py-0 border-t md:border-0 flex-shrink-0 bg-background">
             <Button 
               variant="outline" 
               onClick={handleCloseModal}
+              className="min-h-[44px]"
               aria-label="예약 목록 모달 닫기"
             >
               닫기
@@ -1288,12 +887,12 @@ export function ReservationCalendarView({
                   router.push(`/admin/reservations?checkin=${dateStr}`);
                   handleCloseModal();
                 }}
+                className="min-h-[44px]"
                 aria-label={`${format(selectedDate, 'yyyy년 M월 d일', { locale: ko })} 체크인 예약 필터 적용`}
               >
                 필터 적용
               </Button>
             )}
-          </div>
           </div>
           </div>
         </DialogContent>
