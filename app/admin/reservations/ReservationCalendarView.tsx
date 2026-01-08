@@ -14,7 +14,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { calculateTotalAmount } from '@/lib/utils/reservation';
 import { useSwipe } from '@/lib/hooks/useSwipe';
 import { ReservationModalCard } from '@/components/admin/ReservationModalCard';
-import { Calendar as CalendarIcon, List } from 'lucide-react';
+import { RoomAssignmentDrawer } from '@/components/admin/RoomAssignmentDrawer';
+import { Calendar as CalendarIcon, List, BedDouble } from 'lucide-react';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 // 상태별 색상 시스템 (강화)
@@ -62,12 +63,26 @@ export function ReservationCalendarView({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
 
+  // Quick Assignment State
+  const [assigningReservation, setAssigningReservation] = useState<Reservation | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
   // 모바일 여부 확인
   useEffect(() => {
     if (typeof window !== 'undefined') {
-      setIsMobile(window.innerWidth <= 768);
+      const mobile = window.innerWidth <= 768;
+      setIsMobile(mobile);
+      // 모바일에서는 기본적으로 타임라인(리스트) 뷰 사용
+      if (mobile) {
+        setCalendarViewType('timeline');
+      }
+
       const handleResize = () => {
-        setIsMobile(window.innerWidth <= 768);
+        const mobile = window.innerWidth <= 768;
+        setIsMobile(mobile);
+        if (mobile && calendarViewType === 'grid') {
+          setCalendarViewType('timeline');
+        }
       };
       window.addEventListener('resize', handleResize);
       return () => window.removeEventListener('resize', handleResize);
@@ -462,6 +477,11 @@ export function ReservationCalendarView({
     handleCloseModal();
   }, [router, handleCloseModal]);
 
+  const handleQuickAssign = useCallback((reservation: Reservation) => {
+    setAssigningReservation(reservation);
+    setIsDrawerOpen(true);
+  }, []);
+
   // 한국어 메시지
   const messages = {
     next: '다음',
@@ -751,7 +771,17 @@ export function ReservationCalendarView({
                             {getStatusBadge(reservation.status)}
                             <span className="font-medium truncate">{reservation.guestName}</span>
                             {!reservation.assignedRoom && (
-                              <Badge variant="outline" className="text-xs">미배정</Badge>
+                              <Button
+                                size="sm"
+                                variant="default"
+                                className="h-6 text-[10px] px-2 ml-2 bg-orange-500 hover:bg-orange-600 border-none"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleQuickAssign(reservation);
+                                }}
+                              >
+                                방 배정
+                              </Button>
                             )}
                           </div>
                           <div className="text-sm text-muted-foreground ml-2">
@@ -935,6 +965,16 @@ export function ReservationCalendarView({
           </div>
         </DialogContent>
       </Dialog>
+      {/* Quick Assignment Drawer */}
+      <RoomAssignmentDrawer
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        reservation={assigningReservation}
+        onAssignSuccess={() => {
+          setIsDrawerOpen(false);
+          router.refresh();
+        }}
+      />
     </>
   );
 }

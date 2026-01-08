@@ -174,6 +174,38 @@ export function RoomAssignmentDrawer({
                     </DrawerHeader>
 
                     <div className="p-4 space-y-6 overflow-y-auto max-h-[calc(85vh-150px)]">
+                        {/* Reservation Details Summary */}
+                        <div className="bg-muted/30 p-4 rounded-lg space-y-3 text-sm">
+                            <div className="grid grid-cols-2 gap-2">
+                                <div>
+                                    <p className="text-xs text-muted-foreground">체크인</p>
+                                    <p className="font-medium">{reservation?.checkin}</p>
+                                </div>
+                                <div>
+                                    <p className="text-xs text-muted-foreground">체크아웃</p>
+                                    <p className="font-medium">{reservation?.checkout}</p>
+                                </div>
+                            </div>
+
+                            <div>
+                                <p className="text-xs text-muted-foreground">예약 상품</p>
+                                <p className="font-medium">{reservation?.roomType}</p>
+                            </div>
+
+                            {reservation?.options && reservation.options.length > 0 && (
+                                <div>
+                                    <p className="text-xs text-muted-foreground mb-1">추가 옵션</p>
+                                    <div className="flex flex-wrap gap-1">
+                                        {reservation.options.map((option, idx) => (
+                                            <Badge key={idx} variant="outline" className="text-xs bg-background">
+                                                {option.optionName}
+                                            </Badge>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+
                         {/* Room Selection */}
                         <div className="space-y-3">
                             <Label className="flex items-center gap-2">
@@ -195,8 +227,8 @@ export function RoomAssignmentDrawer({
                                                 key={room.id}
                                                 onClick={() => setAssignedRoom(room.name)}
                                                 className={`p-3 rounded-lg border text-left transition-all ${isSelected
-                                                        ? 'border-primary bg-primary/10 ring-1 ring-primary'
-                                                        : 'border-border hover:bg-accent'
+                                                    ? 'border-primary bg-primary/10 ring-1 ring-primary'
+                                                    : 'border-border hover:bg-accent'
                                                     }`}
                                             >
                                                 <div className="font-medium">{room.name}</div>

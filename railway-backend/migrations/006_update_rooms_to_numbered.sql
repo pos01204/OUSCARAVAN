@@ -28,6 +28,7 @@ END
 WHERE assigned_room IN ('A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'B1', 'B2');
 
 -- 2. 방 테이블의 name 업데이트 및 capacity 수정
+-- 주의: capacity는 원래 name 기준으로 계산해야 하므로 서브쿼리 사용
 UPDATE rooms
 SET 
   name = CASE
@@ -44,8 +45,10 @@ SET
     ELSE name
   END,
   capacity = CASE
-    WHEN name IN ('A6', 'B2') THEN 2  -- 6호, 10호는 2인실
-    ELSE 4  -- 나머지는 4인실
+    -- 원래 name 기준으로 capacity 계산 (변경 전 값 사용)
+    WHEN rooms.name IN ('A6', 'B2') THEN 2  -- 6호(A6), 10호(B2)는 2인실
+    WHEN rooms.name IN ('A1', 'A2', 'A3', 'A4', 'A5', 'A7', 'A8', 'B1') THEN 4  -- 나머지는 4인실
+    ELSE capacity  -- 기타 경우는 기존 값 유지
   END,
   updated_at = NOW()
 WHERE name IN ('A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'B1', 'B2');
