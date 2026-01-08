@@ -21,126 +21,130 @@ interface ReservationListViewProps {
   checkin?: string;
   checkout?: string;
 }
-const router = useRouter();
-const [isMobile, setIsMobile] = useState(false);
 
-// Quick Assignment State
-const [assigningReservation, setAssigningReservation] = useState<Reservation | null>(null);
-const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+export function ReservationListView({
+  reservations,
+  total,
+  search,
+  status,
+  checkin,
+  checkout,
+}: ReservationListViewProps) {
+  const router = useRouter();
+  const [isMobile, setIsMobile] = useState(false);
 
-useEffect(() => {
-  // ... (same mobile check logic)
-  const checkMobile = () => {
-    setIsMobile(window.innerWidth <= 768);
+  // Quick Assignment State
+  const [assigningReservation, setAssigningReservation] = useState<Reservation | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const { ref, isPulling, pullDistance, isRefreshing, pullProgress, handlers } = usePullToRefresh({
+    onRefresh: async () => {
+      router.refresh();
+    },
+    enabled: isMobile,
+  });
+
+  const getStatusBadge = (status: Reservation['status']) => {
+    const variants: Record<Reservation['status'], { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
+      pending: { label: '대기', variant: 'outline' },
+      assigned: { label: '배정 완료', variant: 'secondary' },
+      checked_in: { label: '체크인', variant: 'default' },
+      checked_out: { label: '체크아웃', variant: 'secondary' },
+      cancelled: { label: '취소', variant: 'destructive' },
+    };
+
+    const { label, variant } = variants[status];
+    return <Badge variant={variant}>{label}</Badge>;
   };
-  checkMobile();
-  window.addEventListener('resize', checkMobile);
-  return () => window.removeEventListener('resize', checkMobile);
-}, []);
 
-const { ref, isPulling, pullDistance, isRefreshing, pullProgress, handlers } = usePullToRefresh({
-  onRefresh: async () => {
-    router.refresh();
-  },
-  enabled: isMobile,
-});
-
-const getStatusBadge = (status: Reservation['status']) => {
-  // ... (same badge logic)
-  const variants: Record<Reservation['status'], { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
-    pending: { label: '대기', variant: 'outline' },
-    assigned: { label: '배정 완료', variant: 'secondary' },
-    checked_in: { label: '체크인', variant: 'default' },
-    checked_out: { label: '체크아웃', variant: 'secondary' },
-    cancelled: { label: '취소', variant: 'destructive' },
+  const handleQuickAssign = (reservation: Reservation) => {
+    setAssigningReservation(reservation);
+    setIsDrawerOpen(true);
   };
 
-  const { label, variant } = variants[status];
-  return <Badge variant={variant}>{label}</Badge>;
-};
+  if (reservations.length === 0) {
+    return (
+      <Card>
+        <CardContent className="py-8 text-center">
+          <p className="text-muted-foreground">
+            {search || status || checkin || checkout
+              ? '검색 결과가 없습니다.'
+              : '등록된 예약이 없습니다.'}
+          </p>
+        </CardContent>
+      </Card>
+    );
+  }
 
-const handleQuickAssign = (reservation: Reservation) => {
-  setAssigningReservation(reservation);
-  setIsDrawerOpen(true);
-};
-
-if (reservations.length === 0) {
-  // ... (same empty state)
   return (
-    <Card>
-      <CardContent className="py-8 text-center">
-        <p className="text-muted-foreground">
-          {search || status || checkin || checkout
-            ? '검색 결과가 없습니다.'
-            : '등록된 예약이 없습니다.'}
-        </p>
-      </CardContent>
-    </Card>
+    <>
+      <div
+        ref={ref}
+        className="space-y-4 relative"
+        {...handlers}
+      >
+        {isPulling && (
+          <div
+            className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm transition-opacity"
+            style={{
+              height: `${Math.min(pullDistance, 80)}px`,
+              opacity: pullProgress,
+            }}
+          >
+            <div className="flex flex-col items-center gap-2">
+              <RefreshCw
+                className={cn(
+                  "h-6 w-6 text-primary transition-transform",
+                  isRefreshing && "animate-spin"
+                )}
+                style={{
+                  transform: `rotate(${pullProgress * 180}deg)`,
+                }}
+              />
+              <p className="text-sm text-muted-foreground">
+                {pullDistance >= 80 ? '놓으면 새로고침' : '아래로 당겨서 새로고침'}
+              </p>
+            </div>
+          </div>
+        )}
+
+        {total !== undefined && total > 0 && (
+          <p className="text-sm text-muted-foreground">
+            총 {total}건의 예약이 있습니다.
+          </p>
+        )}
+        {reservations.map((reservation) => (
+          <ReservationCard
+            key={reservation.id}
+            reservation={reservation}
+            getStatusBadge={getStatusBadge}
+            onQuickAssign={handleQuickAssign}
+          />
+        ))}
+      </div>
+
+      <RoomAssignmentDrawer
+        isOpen={isDrawerOpen}
+        onClose={() => setIsDrawerOpen(false)}
+        reservation={assigningReservation}
+        onAssignSuccess={() => {
+          setIsDrawerOpen(false);
+          router.refresh();
+        }}
+      />
+    </>
   );
 }
 
-return (
-  <>
-    <div
-      ref={ref}
-      className="space-y-4 relative"
-      {...handlers}
-    >
-      {/* ... (same pull to refresh indicator) */}
-      {isPulling && (
-        <div
-          className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm transition-opacity"
-          style={{
-            height: `${Math.min(pullDistance, 80)}px`,
-            opacity: pullProgress,
-          }}
-        >
-          <div className="flex flex-col items-center gap-2">
-            <RefreshCw
-              className={cn(
-                "h-6 w-6 text-primary transition-transform",
-                isRefreshing && "animate-spin"
-              )}
-              style={{
-                transform: `rotate(${pullProgress * 180}deg)`,
-              }}
-            />
-            <p className="text-sm text-muted-foreground">
-              {pullDistance >= 80 ? '놓으면 새로고침' : '아래로 당겨서 새로고침'}
-            </p>
-          </div>
-        </div>
-      )}
-
-      {total !== undefined && total > 0 && (
-        <p className="text-sm text-muted-foreground">
-          총 {total}건의 예약이 있습니다.
-        </p>
-      )}
-      {reservations.map((reservation) => (
-        <ReservationCard
-          key={reservation.id}
-          reservation={reservation}
-          getStatusBadge={getStatusBadge}
-          onQuickAssign={handleQuickAssign}
-        />
-      ))}
-    </div>
-
-    <RoomAssignmentDrawer
-      isOpen={isDrawerOpen}
-      onClose={() => setIsDrawerOpen(false)}
-      reservation={assigningReservation}
-      onAssignSuccess={() => {
-        setIsDrawerOpen(false);
-        router.refresh();
-      }}
-    />
-  </>
-);
-}
-
-// Phase 2: 접이식 카드 컴포넌트
 function ReservationCard({
   reservation,
   getStatusBadge,
@@ -203,7 +207,6 @@ function ReservationCard({
 
       {isExpanded && (
         <CardContent className="pt-0 space-y-3">
-          {/* 상세 정보 */}
           <div className="grid grid-cols-2 gap-3 text-sm">
             <div>
               <p className="text-muted-foreground text-xs mb-1">예약번호</p>
@@ -245,7 +248,7 @@ function ReservationCard({
           <div className="flex gap-2">
             {!reservation.assignedRoom && (
               <Button
-                variant="default" // Primary color for action
+                variant="default"
                 className="flex-1 min-h-[44px]"
                 onClick={(e) => {
                   e.stopPropagation();
