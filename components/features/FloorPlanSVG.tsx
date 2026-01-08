@@ -46,7 +46,12 @@ function FloorPlanSVGComponent({
       {/* 도로 표시 (열3 위치, x=210) - CSV 그리드 구조에 맞춰 조정 */}
       <rect x="210" y="0" width="4" height="280" fill="#d1d5db" opacity="0.3" />
       <text x="212" y="140" textAnchor="middle" dominantBaseline="middle" 
-            style={{ fontSize: '7px', fill: '#6b7280', fontFamily: 'system-ui' }}
+            style={{ 
+              fontSize: '7px', 
+              fill: '#6b7280', 
+              fontFamily: "'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+              fontWeight: '400'
+            }}
             transform="rotate(-90 212 140)">
         도로
       </text>
@@ -93,9 +98,9 @@ function FloorPlanSVGComponent({
                 dominantBaseline="middle"
                 style={{
                   fontSize: '12px',
-                  fontWeight: '600',
+                  fontWeight: '500',
                   fill: '#374151',
-                  fontFamily: 'system-ui, -apple-system, sans-serif',
+                  fontFamily: "'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
                 }}
               >
                 {facility.name}
@@ -146,9 +151,9 @@ function FloorPlanSVGComponent({
                 dominantBaseline="middle"
                 style={{
                   fontSize: '14px',
-                  fontWeight: 'bold',
+                  fontWeight: '600',
                   fill: '#ef4444',
-                  fontFamily: 'system-ui, -apple-system, sans-serif',
+                  fontFamily: "'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
                 }}
               >
                 당신의 공간
