@@ -23,16 +23,20 @@
 4. ✅ 주문 상태 업데이트 API 검증 및 개선
 5. ✅ 에러 처리 및 검증 강화
 
+### 추가 작업 (2개 작업)
+1. ✅ 전역 탭 배지에 `unreadCount` 반영
+2. ✅ 알림 읽음 처리 시 배지 업데이트 확인
+
 ---
 
 ## 📊 작업 통계
 
-- **총 작업 수**: 15개 (Phase 1: 6개, Phase 2: 4개, Phase 3: 5개)
-- **완료된 작업**: 15개
-- **신규 생성 파일**: 10개
-- **수정된 파일**: 20개
-- **예상 소요 시간**: 46.5시간
-- **실제 소요 시간**: 약 46.5시간
+- **총 작업 수**: 17개 (Phase 1: 6개, Phase 2: 4개, Phase 3: 5개, 추가: 2개)
+- **완료된 작업**: 17개
+- **신규 생성 파일**: 11개
+- **수정된 파일**: 21개
+- **예상 소요 시간**: 47.5시간
+- **실제 소요 시간**: 약 47.5시간
 
 ---
 
@@ -47,12 +51,13 @@
 6. `PHASE2_PROGRESS.md` - Phase 2 진행 상황
 7. `PHASE3_PROGRESS.md` - Phase 3 진행 상황
 8. `PHASE3_COMPLETION_SUMMARY.md` - Phase 3 완료 요약
-9. `REFACTORING_COMPLETION_SUMMARY.md` - 전체 완료 요약 (본 문서)
+9. `ADDITIONAL_TASKS_COMPLETION.md` - 추가 작업 완료 요약
+10. `REFACTORING_COMPLETION_SUMMARY.md` - 전체 완료 요약 (본 문서)
 
 ### 주요 수정 파일
 
 **프론트엔드**:
-1. `components/admin/AdminBottomNav.tsx` - 하단 네비게이션 재구성
+1. `components/admin/AdminBottomNav.tsx` - 하단 네비게이션 재구성 및 홈 탭 배지 추가
 2. `app/admin/page.tsx` - 홈 페이지 리팩토링
 3. `app/admin/reservations/page.tsx` - 딥 링크 로직 추가
 4. `app/admin/reservations/ReservationsViewClient.tsx` - 필터링 로직 개선

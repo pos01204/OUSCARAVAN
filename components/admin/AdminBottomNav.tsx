@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Calendar, Home, ShoppingCart, LayoutDashboard } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useNotificationStore } from '@/lib/store/notifications';
+import { Badge } from '@/components/ui/badge';
 
 const navItems = [
   { href: '/admin', label: '홈', icon: Home }, // Alert Feed
@@ -14,6 +16,7 @@ const navItems = [
 
 export function AdminBottomNav() {
   const pathname = usePathname();
+  const { unreadCount } = useNotificationStore();
 
   return (
     <nav 
@@ -26,13 +29,16 @@ export function AdminBottomNav() {
           const Icon = item.icon;
           const isActive = pathname === item.href || 
             (item.href === '/admin' && pathname === '/admin');
+          
+          // 홈 탭에 읽지 않은 알림 개수 배지 표시
+          const showBadge = item.href === '/admin' && unreadCount > 0;
 
           return (
             <Link
               key={item.href}
               href={item.href}
               className={cn(
-                'flex flex-col items-center justify-center gap-1 px-4 py-2 transition-colors min-h-[44px] min-w-[44px]',
+                'relative flex flex-col items-center justify-center gap-1 px-4 py-2 transition-colors min-h-[44px] min-w-[44px]',
                 isActive
                   ? 'text-primary'
                   : 'text-muted-foreground hover:text-foreground'
@@ -40,7 +46,18 @@ export function AdminBottomNav() {
               aria-label={item.label}
               aria-current={isActive ? 'page' : undefined}
             >
-              <Icon className="h-5 w-5" aria-hidden="true" />
+              <div className="relative">
+                <Icon className="h-5 w-5" aria-hidden="true" />
+                {showBadge && (
+                  <Badge 
+                    variant="destructive" 
+                    className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 text-xs font-bold"
+                    aria-label={`읽지 않은 알림 ${unreadCount}개`}
+                  >
+                    {unreadCount > 99 ? '99+' : unreadCount}
+                  </Badge>
+                )}
+              </div>
               <span className="text-xs font-medium">{item.label}</span>
             </Link>
           );

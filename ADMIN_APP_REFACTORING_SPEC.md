@@ -815,10 +815,11 @@ ORDER BY checkin ASC;
 **이미 구현됨**: `lib/store/notifications.ts`
 
 **추가 작업**:
-- [ ] 전역 탭 배지에 `unreadCount` 반영
-- [ ] 알림 읽음 처리 시 배지 업데이트
+- [x] 전역 탭 배지에 `unreadCount` 반영 ✅
+- [x] 알림 읽음 처리 시 배지 업데이트 ✅ (이미 구현됨)
 
-**예상 소요 시간**: 1시간
+**완료 일시**: 2026-01-XX
+**상세 진행 상황**: `ADDITIONAL_TASKS_COMPLETION.md` 참조
 
 ### 7.3 SSE 자동 재연결 로직 강화
 
@@ -1114,7 +1115,16 @@ export function useNotificationStream() {
 
 ---
 
+### 추가 작업 ✅ 완료
+- [x] 전역 탭 배지에 `unreadCount` 반영 ✅
+- [x] 알림 읽음 처리 시 배지 업데이트 확인 ✅
+
+**완료 일시**: 2026-01-XX
+**상세 진행 상황**: `ADDITIONAL_TASKS_COMPLETION.md` 참조
+
+---
+
 **작성일**: 2026-01-XX
 **작성자**: AI Assistant
-**버전**: 1.0
-**최종 업데이트**: Phase 1 완료
+**버전**: 2.0
+**최종 업데이트**: Phase 3 및 추가 작업 완료
