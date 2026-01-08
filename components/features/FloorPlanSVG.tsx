@@ -43,7 +43,7 @@ function FloorPlanSVGComponent({
           <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e5e7eb" strokeWidth="0.5" opacity="0.2" />
         </pattern>
       </defs>
-      {/* 도로 표시 (열3 위치) - CSV 그리드 구조에 맞춰 조정 */}
+      {/* 도로 표시 (열3 위치, x=210) - CSV 그리드 구조에 맞춰 조정 */}
       <rect x="210" y="0" width="4" height="280" fill="#d1d5db" opacity="0.3" />
       <text x="212" y="140" textAnchor="middle" dominantBaseline="middle" 
             style={{ fontSize: '7px', fill: '#6b7280', fontFamily: 'system-ui' }}

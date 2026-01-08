@@ -43,23 +43,29 @@ export interface FloorPlanConfig {
  * 약도 설정
  * CSV 그리드 형식에 맞춰 정확한 좌표 조정 완료
  * 
- * CSV 그리드 구조 (8열):
- * 행 1: 주차공간1, (빈), (빈), 주차공간2, (빈), (빈), (빈), (빈)
- * 행 2: 관리동, (빈), (빈), 카페(오우스마켓), (빈), (빈), (빈), (빈)
- * 행 3: 2호, 1호, (빈), (빈), (빈), (빈), (빈), (빈)
- * 행 4: 4호, 3호, (빈), 건물/창고, (빈), 7호, 8호, 9호
- * 행 5: 6호, 5호, (빈), 주차공간3, (빈), (빈), 10호, (빈)
+ * CSV 그리드 구조 (8열 5행):
+ * 행 1: 주차공간1(열1-2), 주차공간2(열4-8)
+ * 행 2: 관리동(열1-2), 카페(열4-8)
+ * 행 3: 2호(열1), 1호(열2)
+ * 행 4: 4호(열1), 3호(열2), 건물/창고(열4-5), 7호(열6), 8호(열7), 9호(열8)
+ * 행 5: 6호(열1), 5호(열2), 주차공간3(열4-5), 10호(열7)
  * 
  * 레이아웃 구조:
  * - 왼쪽 섹션 (열 1-2): 주차공간 1, 관리동, 1-6호 (2열 3행)
  * - 중앙: 도로 (열 3)
- * - 오른쪽 섹션 (열 4-8): 주차공간 2, 카페, 건물/창고, 주차공간 3, 7-10호
+ * - 오른쪽 섹션 (열 4-8): 주차공간 2, 카페, 건물/창고(열4-5), 주차공간 3(열4-5), 7-10호
  * 
  * 방 배치:
  * - 왼쪽 열 (위→아래): 2호, 4호, 6호
  * - 왼쪽 오른쪽 열 (위→아래): 1호, 3호, 5호
- * - 오른쪽 행 4 (왼→오): 7호, 8호, 9호
+ * - 오른쪽 행 4 (왼→오): 7호(열6), 8호(열7), 9호(열8)
  * - 오른쪽 행 5 열 7: 10호
+ * 
+ * 좌표 계산:
+ * - viewBox: "0 0 800 280"
+ * - 각 열 너비: (800 - 7*4 간격) / 8 = 96.5 → 96
+ * - 열 위치: 열1=10, 열2=110, 열3=210(도로), 열4=218, 열5=318, 열6=418, 열7=518, 열8=618
+ * - 행 위치: 행1=10, 행2=64, 행3=120, 행4=174, 행5=228
  */
 export const FLOOR_PLAN_CONFIG: FloorPlanConfig = {
   viewBox: "0 0 800 280",  // SVG 뷰포트 크기 (CSV 그리드 8열 구조에 맞춤)
@@ -107,21 +113,21 @@ export const FLOOR_PLAN_CONFIG: FloorPlanConfig = {
       id: '7',
       name: '7호',
       displayName: '7호',
-      coordinates: { x: 418, y: 174, width: 96, height: 50 },
+      coordinates: { x: 418, y: 174, width: 96, height: 50 }, // 열6
       capacity: 4,
     },
     {
       id: '8',
       name: '8호',
       displayName: '8호',
-      coordinates: { x: 518, y: 174, width: 96, height: 50 },
+      coordinates: { x: 518, y: 174, width: 96, height: 50 }, // 열7
       capacity: 4,
     },
     {
       id: '9',
       name: '9호',
       displayName: '9호',
-      coordinates: { x: 618, y: 174, width: 96, height: 50 },
+      coordinates: { x: 618, y: 174, width: 96, height: 50 }, // 열8
       capacity: 4,
     },
     // 행 5: 6호(열1), 5호(열2), 주차공간3(열4), 10호(열7)
@@ -143,7 +149,7 @@ export const FLOOR_PLAN_CONFIG: FloorPlanConfig = {
       id: '10',
       name: '10호',
       displayName: '10호',
-      coordinates: { x: 518, y: 228, width: 96, height: 50 },
+      coordinates: { x: 518, y: 228, width: 96, height: 50 }, // 열7
       capacity: 2,
     },
   ],
@@ -178,18 +184,18 @@ export const FLOOR_PLAN_CONFIG: FloorPlanConfig = {
       coordinates: { x: 218, y: 64, width: 492, height: 50 }, // 열4-8
       type: 'cafe',
     },
-    // 행 4: 건물/창고(열4)
+    // 행 4: 건물/창고(열4-5) - CSV에서 2개 열 차지
     {
       id: 'warehouse',
       name: '', // 텍스트 노출하지 않음
-      coordinates: { x: 218, y: 174, width: 96, height: 50 }, // 열4
+      coordinates: { x: 218, y: 174, width: 196, height: 50 }, // 열4-5 (96*2 + 4 간격)
       type: 'warehouse',
     },
-    // 행 5: 주차공간3(열4)
+    // 행 5: 주차공간3(열4-5) - CSV에서 2개 열 차지
     {
       id: 'parking-3',
       name: '주차공간 3',
-      coordinates: { x: 218, y: 228, width: 96, height: 50 }, // 열4
+      coordinates: { x: 218, y: 228, width: 196, height: 50 }, // 열4-5 (96*2 + 4 간격)
       type: 'parking',
     },
   ],
