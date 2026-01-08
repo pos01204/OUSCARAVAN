@@ -2,7 +2,7 @@
 
 import { useMemo, useState, useCallback, useEffect } from 'react';
 import { Calendar, dateFnsLocalizer, View, Event, SlotInfo, Components } from 'react-big-calendar';
-import { format, parse, startOfWeek, getDay, isSameDay } from 'date-fns';
+import { format, parse, startOfWeek, getDay, isSameDay, startOfDay, endOfDay, eachDayOfInterval } from 'date-fns';
 import { ko } from 'date-fns/locale';
 import { useRouter } from 'next/navigation';
 import { type Reservation } from '@/lib/api';
@@ -14,6 +14,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { calculateTotalAmount } from '@/lib/utils/reservation';
 import { useSwipe } from '@/lib/hooks/useSwipe';
 import { ReservationModalCard } from '@/components/admin/ReservationModalCard';
+import { Calendar as CalendarIcon, List } from 'lucide-react';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 // 상태별 색상 시스템 (강화)
@@ -56,6 +57,7 @@ export function ReservationCalendarView({
   const router = useRouter();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<View>('month');
+  const [calendarViewType, setCalendarViewType] = useState<'grid' | 'timeline'>('grid');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -619,11 +621,52 @@ export function ReservationCalendarView({
     return <Badge variant={variant}>{label}</Badge>;
   }, []);
 
+  // 타임라인 뷰용 날짜별 예약 그룹화
+  const timelineReservations = useMemo(() => {
+    if (calendarViewType !== 'timeline') return [];
+    
+    // 현재 월의 모든 날짜 가져오기
+    const start = startOfDay(new Date(currentDate.getFullYear(), currentDate.getMonth(), 1));
+    const end = endOfDay(new Date(currentDate.getFullYear(), currentDate.getMonth() + 1, 0));
+    const days = eachDayOfInterval({ start, end });
+    
+    return days.map(day => {
+      const dayReservations = getReservationsForDate(day);
+      return {
+        date: day,
+        reservations: dayReservations,
+      };
+    }).filter(day => day.reservations.length > 0);
+  }, [calendarViewType, currentDate, getReservationsForDate]);
+
   return (
     <>
-      {/* 모바일 최적화: 더 큰 높이와 간소화된 레이아웃 */}
-      <div className="h-[calc(100vh-280px)] md:h-[600px] mt-4 rounded-lg border border-border bg-card overflow-hidden">
-        <Calendar
+      {/* 뷰 타입 선택 버튼 */}
+      <div className="flex items-center justify-end gap-2 mb-3">
+        <Button
+          variant={calendarViewType === 'grid' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setCalendarViewType('grid')}
+          className="min-h-[36px]"
+        >
+          <CalendarIcon className="h-4 w-4 mr-2" />
+          그리드
+        </Button>
+        <Button
+          variant={calendarViewType === 'timeline' ? 'default' : 'outline'}
+          size="sm"
+          onClick={() => setCalendarViewType('timeline')}
+          className="min-h-[36px]"
+        >
+          <List className="h-4 w-4 mr-2" />
+          타임라인
+        </Button>
+      </div>
+
+      {/* 그리드 뷰 */}
+      {calendarViewType === 'grid' && (
+        <div className="h-[calc(100vh-280px)] md:h-[600px] mt-4 rounded-lg border border-border bg-card overflow-hidden">
+          <Calendar
           localizer={localizer}
           events={events}
           startAccessor="start"
@@ -657,12 +700,158 @@ export function ReservationCalendarView({
           views={isMobile ? ['month'] : ['month', 'week', 'day', 'agenda']}
           defaultView="month"
         />
-      </div>
+        </div>
+      )}
+
+      {/* 타임라인 뷰 - 일자별 세로 리스트 */}
+      {calendarViewType === 'timeline' && (
+        <div className="mt-4 space-y-4">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold">
+              {format(currentDate, 'yyyy년 M월', { locale: ko })}
+            </h3>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const prevMonth = new Date(currentDate);
+                  prevMonth.setMonth(prevMonth.getMonth() - 1);
+                  setCurrentDate(prevMonth);
+                }}
+                className="min-h-[36px]"
+              >
+                이전
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setCurrentDate(new Date())}
+                className="min-h-[36px]"
+              >
+                오늘
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const nextMonth = new Date(currentDate);
+                  nextMonth.setMonth(nextMonth.getMonth() + 1);
+                  setCurrentDate(nextMonth);
+                }}
+                className="min-h-[36px]"
+              >
+                다음
+              </Button>
+            </div>
+          </div>
+
+          <div className="space-y-4 max-h-[calc(100vh-400px)] overflow-y-auto">
+            {timelineReservations.length > 0 ? (
+              timelineReservations.map(({ date, reservations }) => (
+                <Card key={format(date, 'yyyy-MM-dd')} className="border-l-4 border-l-primary">
+                  <CardContent className="p-4">
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-3">
+                        <div className="text-lg font-bold text-primary">
+                          {format(date, 'd', { locale: ko })}
+                        </div>
+                        <div>
+                          <div className="font-semibold">
+                            {format(date, 'yyyy년 M월 d일 (EEE)', { locale: ko })}
+                          </div>
+                          <div className="text-sm text-muted-foreground">
+                            {reservations.length}건의 예약
+                          </div>
+                        </div>
+                      </div>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setSelectedDate(date);
+                          setIsModalOpen(true);
+                        }}
+                        className="min-h-[36px]"
+                      >
+                        상세 보기
+                      </Button>
+                    </div>
+
+                    <div className="space-y-2 mt-3">
+                      {[...reservations].sort((a, b) => {
+                        // 1순위: 미배정
+                        const aUnassigned = !a.assignedRoom;
+                        const bUnassigned = !b.assignedRoom;
+                        if (aUnassigned && !bUnassigned) return -1;
+                        if (!aUnassigned && bUnassigned) return 1;
+                        
+                        // 2순위: 체크인 날짜
+                        const aCheckin = new Date(a.checkin);
+                        const bCheckin = new Date(b.checkin);
+                        const aIsCheckinDay = isSameDay(aCheckin, date);
+                        const bIsCheckinDay = isSameDay(bCheckin, date);
+                        if (aIsCheckinDay && !bIsCheckinDay) return -1;
+                        if (!aIsCheckinDay && bIsCheckinDay) return 1;
+                        
+                        // 3순위: 체크아웃 날짜
+                        const aCheckout = new Date(a.checkout);
+                        const bCheckout = new Date(b.checkout);
+                        const aIsCheckoutDay = isSameDay(aCheckout, date);
+                        const bIsCheckoutDay = isSameDay(bCheckout, date);
+                        if (aIsCheckoutDay && !bIsCheckoutDay) return -1;
+                        if (!aIsCheckoutDay && bIsCheckoutDay) return 1;
+                        
+                        // 나머지는 이름순
+                        return a.guestName.localeCompare(b.guestName);
+                      }).slice(0, 3).map((reservation) => (
+                        <div
+                          key={reservation.id}
+                          className="flex items-center justify-between p-2 rounded-md bg-muted/50 hover:bg-muted cursor-pointer"
+                          onClick={() => handleViewDetail(reservation.id)}
+                        >
+                          <div className="flex items-center gap-2 flex-1 min-w-0">
+                            {getStatusBadge(reservation.status)}
+                            <span className="font-medium truncate">{reservation.guestName}</span>
+                            {!reservation.assignedRoom && (
+                              <Badge variant="outline" className="text-xs">미배정</Badge>
+                            )}
+                          </div>
+                          <div className="text-sm text-muted-foreground ml-2">
+                            {calculateTotalAmount(reservation).totalAmount.toLocaleString()}원
+                          </div>
+                        </div>
+                      ))}
+                      {reservations.length > 3 && (
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setSelectedDate(date);
+                            setIsModalOpen(true);
+                          }}
+                          className="w-full text-xs"
+                        >
+                          +{reservations.length - 3}건 더 보기
+                        </Button>
+                      )}
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            ) : (
+              <div className="text-center py-12 text-muted-foreground">
+                이 기간에는 예약이 없습니다.
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       {/* 날짜별 예약 목록 모달 - Phase 1: 모바일 최적화, Phase 3: 스와이프 닫기 */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent 
-          className="md:max-w-2xl h-[90vh] md:h-auto md:max-h-[80vh] p-0 md:p-6 flex flex-col md:translate-y-[-50%] md:translate-x-[-50%] md:top-[50%] md:left-[50%] top-0 left-0 right-0 bottom-0 md:bottom-auto md:right-auto md:rounded-lg rounded-none"
+          className="md:max-w-2xl h-[90vh] md:h-auto md:max-h-[80vh] p-0 md:p-6 flex flex-col fixed md:left-[50%] md:top-[50%] md:translate-x-[-50%] md:translate-y-[-50%] top-0 left-0 right-0 bottom-0 md:bottom-auto md:right-auto md:rounded-lg rounded-none"
           aria-labelledby="reservation-modal-title"
           aria-describedby="reservation-modal-description"
           {...swipeHandlers}
