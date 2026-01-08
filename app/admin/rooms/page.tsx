@@ -34,19 +34,19 @@ export default function RoomsPage() {
   const [blinkingRoomIds, setBlinkingRoomIds] = useState<Set<string>>(new Set());
   const { notifications } = useNotificationStore();
   const previousNotificationsRef = useRef<Set<string>>(new Set());
-  
+
   // SSE 연결 (실시간 알림 수신)
   useNotificationStream();
-  
+
   // 주문 완료 처리
   const handleCompleteOrder = useCallback(async (orderId: string, roomId: string) => {
     try {
       setCompletingOrderId(orderId);
       await updateOrderStatus(orderId, 'completed');
-      
+
       // 주문 목록 새로고침
       await fetchOrdersForRooms();
-      
+
       toast({
         title: '주문 완료',
         description: '주문이 완료 처리되었습니다.',
@@ -65,14 +65,14 @@ export default function RoomsPage() {
       setCompletingOrderId(null);
     }
   }, [toast]);
-  
+
   // 각 방의 주문 목록 조회
   const fetchOrdersForRooms = useCallback(async () => {
     try {
       // 모든 주문 조회 (오늘 날짜 기준)
       const today = new Date().toISOString().split('T')[0];
       const ordersData = await getAdminOrders({ date: today, limit: 1000 });
-      
+
       // 예약 ID별로 주문 그룹화
       const ordersByReservationId = new Map<string, Order[]>();
       ordersData.orders.forEach(order => {
@@ -81,7 +81,7 @@ export default function RoomsPage() {
         }
         ordersByReservationId.get(order.reservationId)!.push(order);
       });
-      
+
       // 방 목록에 주문 정보 추가
       setRooms(prevRooms => prevRooms.map(room => {
         if (room.reservation?.id) {
@@ -104,7 +104,7 @@ export default function RoomsPage() {
       });
     }
   }, []);
-  
+
   const fetchRooms = async () => {
     try {
       setIsLoading(true);
@@ -112,7 +112,7 @@ export default function RoomsPage() {
       // getRooms()는 배열을 반환
       const roomsArray = Array.isArray(data) ? data : [];
       console.log('[RoomsPage] Fetched rooms:', roomsArray.length, roomsArray);
-      
+
       if (roomsArray.length === 0) {
         console.warn('[RoomsPage] No rooms found. Check database migration.');
         toast({
@@ -121,16 +121,16 @@ export default function RoomsPage() {
           variant: 'destructive',
         });
       }
-      
+
       setRooms(roomsArray);
-      
+
       // 주문 목록 조회
       await fetchOrdersForRooms();
     } catch (error) {
       logError('Failed to fetch rooms', error, {
         component: 'RoomsPage',
       });
-      
+
       // 401 에러인 경우 로그인 페이지로 리다이렉트
       if (error instanceof Error && error.message.includes('Unauthorized')) {
         // 쿠키 삭제
@@ -138,7 +138,7 @@ export default function RoomsPage() {
         window.location.href = '/login';
         return;
       }
-      
+
       toast({
         title: '오류',
         description: extractUserFriendlyMessage(error),
@@ -148,13 +148,13 @@ export default function RoomsPage() {
       setIsLoading(false);
     }
   };
-  
+
   // 방 목록 조회
   useEffect(() => {
     fetchRooms();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  
+
   // 주문 목록 주기적 새로고침 (30초마다)
   useEffect(() => {
     const interval = setInterval(() => {
@@ -162,10 +162,10 @@ export default function RoomsPage() {
         fetchOrdersForRooms();
       }
     }, 30000);
-    
+
     return () => clearInterval(interval);
   }, [rooms.length, fetchOrdersForRooms]);
-  
+
   // SSE 알림 감지하여 실시간 하이라이트
   useEffect(() => {
     // 새로운 order_created 알림 감지
@@ -173,7 +173,7 @@ export default function RoomsPage() {
     const newNotifications = notifications.filter(
       n => !previousNotificationsRef.current.has(n.id) && n.type === 'order_created'
     );
-    
+
     if (newNotifications.length > 0) {
       newNotifications.forEach(notification => {
         const metadata = notification.metadata as Record<string, unknown> | undefined;
@@ -184,7 +184,7 @@ export default function RoomsPage() {
           if (room) {
             // 점멸 시작
             setBlinkingRoomIds(prev => new Set(prev).add(room.id));
-            
+
             // 5초 후 점멸 제거
             setTimeout(() => {
               setBlinkingRoomIds(prev => {
@@ -197,27 +197,27 @@ export default function RoomsPage() {
         }
       });
     }
-    
+
     previousNotificationsRef.current = currentNotificationIds;
   }, [notifications, rooms]);
-  
+
   const getStatusBadge = (room: RoomWithReservation) => {
     // 배정 정보가 있으면 "사용 중"으로 표시
     if (room.reservation) {
       return <Badge variant="secondary">사용 중</Badge>;
     }
-    
+
     // 배정 정보가 없으면 방의 실제 상태 표시
     const variants: Record<Room['status'], { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
       available: { label: '사용 가능', variant: 'default' },
       occupied: { label: '사용 중', variant: 'secondary' },
       maintenance: { label: '점검 중', variant: 'destructive' },
     };
-    
+
     const { label, variant } = variants[room.status];
     return <Badge variant={variant}>{label}</Badge>;
   };
-  
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -225,7 +225,7 @@ export default function RoomsPage() {
       </div>
     );
   }
-  
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -236,7 +236,7 @@ export default function RoomsPage() {
           </p>
         </div>
       </div>
-      
+
       {rooms.length === 0 ? (
         <Card>
           <CardContent className="py-8 text-center">
@@ -246,7 +246,7 @@ export default function RoomsPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid gap-3 grid-cols-1 md:grid-cols-2 lg:grid-cols-3">
           {rooms
             .sort((a, b) => {
               // 1호~10호 순서로 정렬
@@ -264,126 +264,114 @@ export default function RoomsPage() {
               const getAvailabilityBadge = () => {
                 if (room.reservation) {
                   if (room.reservation.status === 'checked_in') {
-                    return <Badge className="bg-red-500 text-white">사용 중</Badge>;
+                    return <Badge className="bg-red-500 text-white hover:bg-red-600 h-6">사용 중</Badge>;
                   }
-                  return <Badge variant="secondary">배정됨</Badge>;
+                  return <Badge variant="secondary" className="h-6">배정됨</Badge>;
                 }
                 const variants: Record<Room['status'], { label: string; className: string }> = {
-                  available: { label: '사용 가능', className: 'bg-green-500 text-white' },
-                  occupied: { label: '사용 중', className: 'bg-red-500 text-white' },
-                  maintenance: { label: '점검 중', className: 'bg-gray-500 text-white' },
+                  available: { label: '사용 가능', className: 'bg-green-500 text-white hover:bg-green-600' },
+                  occupied: { label: '사용 중', className: 'bg-red-500 text-white hover:bg-red-600' },
+                  maintenance: { label: '점검 중', className: 'bg-gray-500 text-white hover:bg-gray-600' },
                 };
                 const { label, className } = variants[room.status];
-                return <Badge className={className}>{label}</Badge>;
+                return <Badge className={`${className} h-6`}>{label}</Badge>;
               };
-              
-              // 미완료 주문만 필터링 (completed 제외)
+
               const pendingOrders = (room.orders || []).filter(order => order.status !== 'completed');
-              
               const isBlinking = blinkingRoomIds.has(room.id);
-              
+
               return (
-                <Card 
+                <Card
                   key={room.id}
-                  className={`relative min-h-[350px] flex flex-col transition-all ${
-                    isBlinking ? 'border-2 border-red-500' : ''
-                  }`}
+                  className={`relative flex flex-col transition-all active:scale-[0.99] touch-manipulation ${isBlinking ? 'border-2 border-red-500 shadow-[0_0_15px_rgba(239,68,68,0.5)]' : ''
+                    }`}
                   style={
                     isBlinking
-                      ? {
-                          animation: 'blink 1s infinite',
-                        }
+                      ? { animation: 'blink 1s infinite' }
                       : undefined
                   }
                 >
                   {/* Header: 객실 번호 및 사용 가능 여부 배지 */}
-                  <CardHeader className="pb-3">
+                  <CardHeader className="p-4 pb-2">
                     <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg">{room.name}</CardTitle>
+                      <div className="flex items-baseline gap-2">
+                        <CardTitle className="text-lg font-bold">{room.name}</CardTitle>
+                        <CardDescription className="text-xs">{room.capacity}인실</CardDescription>
+                      </div>
                       {getAvailabilityBadge()}
                     </div>
-                    <CardDescription>{room.capacity}인실</CardDescription>
                   </CardHeader>
-                  
+
                   {/* Body: 투숙객 정보 */}
-                  <CardContent className="flex-1 space-y-3">
+                  <CardContent className="p-4 pt-1 flex-1">
                     {room.reservation ? (
-                      <div className="space-y-2">
-                        <div>
-                          <p className="text-sm text-muted-foreground">투숙객</p>
-                          <p className="font-medium text-base">{room.reservation.guestName}</p>
+                      <div className="space-y-2 text-sm">
+                        <div className="flex justify-between items-center py-1 border-b border-dashed">
+                          <span className="text-muted-foreground">투숙객</span>
+                          <span className="font-semibold text-base text-foreground">{room.reservation.guestName}</span>
                         </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground">체크인 상태</p>
-                          <Badge 
-                            variant={
-                              room.reservation.status === 'checked_in' ? 'default' :
-                              room.reservation.status === 'checked_out' ? 'secondary' :
-                              'outline'
-                            }
-                            className="mt-1"
-                          >
+                        <div className="flex justify-between items-center py-1">
+                          <span className="text-muted-foreground">상태</span>
+                          <span className={
+                            room.reservation.status === 'checked_in' ? 'text-green-600 font-medium' :
+                              room.reservation.status === 'checked_out' ? 'text-gray-500' :
+                                'text-blue-600'
+                          }>
                             {room.reservation.status === 'checked_in' ? '체크인 완료' :
-                             room.reservation.status === 'checked_out' ? '체크아웃 완료' :
-                             '배정 완료'}
-                          </Badge>
-                        </div>
-                        <div>
-                          <p className="text-sm text-muted-foreground">인원수</p>
-                          <p className="text-base">{room.capacity}인</p>
+                              room.reservation.status === 'checked_out' ? '체크아웃 완료' :
+                                '배정 완료'}
+                          </span>
                         </div>
                       </div>
                     ) : (
-                      <div className="text-center py-4">
-                        <p className="text-muted-foreground">미배정</p>
+                      <div className="text-center py-3 bg-muted/30 rounded-md">
+                        <p className="text-xs text-muted-foreground">현재 비어있음</p>
                       </div>
                     )}
                   </CardContent>
-                  
-                  {/* Footer: 실시간 주문 내역 */}
+
+                  {/* Footer: 실시간 주문 내역 - Compact Mode */}
                   {room.reservation && (
-                    <div className="border-t pt-3 px-6 pb-4">
-                      <p className="text-sm font-medium mb-2">실시간 주문</p>
+                    <div className="border-t bg-muted/10 p-3">
                       {pendingOrders.length > 0 ? (
                         <div className="space-y-2">
                           {pendingOrders.map((order) => (
                             <div
                               key={order.id}
-                              className="flex items-center justify-between p-2 bg-muted rounded-md min-h-[44px]"
+                              className="flex items-center justify-between p-2 bg-white border border-border/50 rounded-md shadow-sm"
                             >
                               <div className="flex items-center gap-2 flex-1 min-w-0">
-                                <ShoppingCart className="h-4 w-4 flex-shrink-0 text-primary" />
+                                <div className="h-6 w-6 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
+                                  <ShoppingCart className="h-3.5 w-3.5 text-orange-600" />
+                                </div>
                                 <div className="flex-1 min-w-0">
                                   <p className="text-sm font-medium truncate">
                                     {order.type === 'bbq' ? '바베큐' : '불멍'} 주문
                                   </p>
-                                  <p className="text-xs text-muted-foreground">
+                                  <p className="text-[10px] text-muted-foreground">
                                     {formatDateTimeToKorean(order.createdAt)}
                                   </p>
                                 </div>
                               </div>
                               <Button
                                 size="sm"
-                                variant="outline"
+                                variant="ghost"
                                 onClick={() => handleCompleteOrder(order.id, room.id)}
                                 disabled={completingOrderId === order.id}
-                                className="h-8 px-3 text-xs flex-shrink-0"
+                                className="h-8 w-8 p-0 text-green-600 hover:text-green-700 hover:bg-green-50"
                               >
                                 {completingOrderId === order.id ? (
-                                  <Loader2 className="h-3 w-3 animate-spin" />
+                                  <Loader2 className="h-4 w-4 animate-spin" />
                                 ) : (
-                                  <>
-                                    <CheckCircle2 className="h-3 w-3 mr-1" />
-                                    완료
-                                  </>
+                                  <CheckCircle2 className="h-5 w-5" />
                                 )}
                               </Button>
                             </div>
                           ))}
                         </div>
                       ) : (
-                        <p className="text-sm text-muted-foreground text-center py-2">
-                          주문 없음
+                        <p className="text-xs text-muted-foreground text-center py-1">
+                          대기 중인 주문 없음
                         </p>
                       )}
                     </div>
@@ -393,7 +381,7 @@ export default function RoomsPage() {
             })}
         </div>
       )}
-      
+
     </div>
   );
 }

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { X } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { BBQ_SETS } from '@/lib/constants';
@@ -36,7 +36,7 @@ export function OrderForm({ onClose, token }: OrderFormProps) {
     }
 
     const orderType: 'bbq' | 'fire' = selectedSet.startsWith('bbq') ? 'bbq' : 'fire';
-    
+
     const order = {
       type: orderType,
       items: [
@@ -96,110 +96,117 @@ export function OrderForm({ onClose, token }: OrderFormProps) {
   };
 
   return (
-    <Dialog open={true} onOpenChange={onClose}>
-      <DialogContent className="max-h-[90vh] overflow-y-auto">
-        <DialogHeader>
-          <DialogTitle>불멍/바베큐 주문</DialogTitle>
-        </DialogHeader>
-        <div className="space-y-6 py-4">
-          {/* Set Selection */}
-          <div>
-            <label className="mb-2 block text-sm font-medium">세트 선택</label>
-            <div className="space-y-2">
-              {BBQ_SETS.map((set) => (
-                <button
-                  key={set.id}
-                  onClick={() => setSelectedSet(set.id)}
-                  className={`w-full rounded-lg border p-4 text-left transition-colors ${
-                    selectedSet === set.id
-                      ? 'border-primary bg-primary/10'
-                      : 'border-border hover:bg-muted'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-semibold">{set.name}</h4>
-                      <p className="mt-1 text-sm text-muted-foreground">
-                        {set.items.join(', ')}
+    <Drawer open={true} onOpenChange={(open) => !open && onClose()}>
+      <DrawerContent className="max-h-[90vh]">
+        <div className="mx-auto w-full max-w-lg">
+          <DrawerHeader>
+            <DrawerTitle className="text-xl font-bold text-center">불멍/바베큐 주문</DrawerTitle>
+          </DrawerHeader>
+
+          <div className="space-y-6 px-4 py-2 overflow-y-auto max-h-[calc(85vh-150px)]">
+            {/* Set Selection */}
+            <div>
+              <label className="mb-2 block text-sm font-medium">세트 선택</label>
+              <div className="space-y-2">
+                {BBQ_SETS.map((set) => (
+                  <button
+                    key={set.id}
+                    onClick={() => setSelectedSet(set.id)}
+                    className={`w-full rounded-lg border p-4 text-left transition-all ${selectedSet === set.id
+                        ? 'border-primary bg-primary/10 ring-1 ring-primary'
+                        : 'border-border hover:bg-muted'
+                      }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h4 className="font-semibold">{set.name}</h4>
+                        <p className="mt-1 text-sm text-muted-foreground">
+                          {set.items.join(', ')}
+                        </p>
+                      </div>
+                      <p className="font-semibold text-primary">
+                        {set.price.toLocaleString()}원
                       </p>
                     </div>
-                    <p className="font-semibold text-primary">
-                      {set.price.toLocaleString()}원
-                    </p>
-                  </div>
-                </button>
-              ))}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
 
-          {/* Quantity */}
-          {selectedSet && (
+            {/* Quantity */}
+            {selectedSet && (
+              <div className="animate-in fade-in slide-in-from-bottom-2">
+                <label className="mb-2 block text-sm font-medium">수량</label>
+                <div className="flex items-center gap-4">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-10 w-10"
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                  >
+                    -
+                  </Button>
+                  <span className="text-xl font-semibold w-8 text-center">{quantity}</span>
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    className="h-10 w-10"
+                    onClick={() => setQuantity(quantity + 1)}
+                  >
+                    +
+                  </Button>
+                </div>
+              </div>
+            )}
+
+            {/* Delivery Time */}
             <div>
-              <label className="mb-2 block text-sm font-medium">수량</label>
-              <div className="flex items-center gap-4">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                >
-                  -
-                </Button>
-                <span className="text-lg font-semibold">{quantity}</span>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => setQuantity(quantity + 1)}
-                >
-                  +
-                </Button>
-              </div>
+              <label className="mb-2 block text-sm font-medium">배송 시간</label>
+              <Input
+                type="time"
+                value={deliveryTime}
+                onChange={(e) => setDeliveryTime(e.target.value)}
+                className="h-12 text-lg"
+              />
             </div>
-          )}
 
-          {/* Delivery Time */}
-          <div>
-            <label className="mb-2 block text-sm font-medium">배송 시간</label>
-            <Input
-              type="time"
-              value={deliveryTime}
-              onChange={(e) => setDeliveryTime(e.target.value)}
-            />
+            {/* Notes */}
+            <div>
+              <label className="mb-2 block text-sm font-medium">요청사항</label>
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                placeholder="예: 문 앞에 놓아주세요"
+                className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm min-h-[80px]"
+                rows={3}
+              />
+            </div>
+
+            {/* Total */}
+            {selectedSetData && (
+              <div className="rounded-lg bg-orange-50 p-4 border border-orange-100">
+                <div className="flex items-center justify-between">
+                  <span className="font-medium text-orange-900">총 결제 금액</span>
+                  <span className="text-2xl font-bold text-primary">
+                    {(selectedSetData.price * quantity).toLocaleString()}원
+                  </span>
+                </div>
+              </div>
+            )}
           </div>
 
-          {/* Notes */}
-          <div>
-            <label className="mb-2 block text-sm font-medium">요청사항</label>
-            <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              placeholder="예: 문 앞에 놓아주세요"
-              className="w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
-              rows={3}
-            />
-          </div>
-
-          {/* Total */}
-          {selectedSetData && (
-            <div className="rounded-lg bg-muted p-4">
-              <div className="flex items-center justify-between">
-                <span className="font-medium">총액</span>
-                <span className="text-xl font-bold text-primary">
-                  {(selectedSetData.price * quantity).toLocaleString()}원
-                </span>
-              </div>
+          <DrawerFooter className="px-4 pb-8 pt-2">
+            <div className="flex gap-3">
+              <Button variant="outline" onClick={onClose} className="flex-1 h-12 text-base">
+                취소
+              </Button>
+              <Button onClick={handleSubmit} className="flex-[2] h-12 text-base font-semibold shadow-md">
+                주문하기
+              </Button>
             </div>
-          )}
+          </DrawerFooter>
         </div>
-
-        <div className="flex gap-2">
-          <Button variant="outline" onClick={onClose} className="flex-1">
-            취소
-          </Button>
-          <Button onClick={handleSubmit} className="flex-1">
-            주문하기
-          </Button>
-        </div>
-      </DialogContent>
-    </Dialog>
+      </DrawerContent>
+    </Drawer>
   );
 }

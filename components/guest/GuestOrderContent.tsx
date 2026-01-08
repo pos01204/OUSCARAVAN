@@ -16,20 +16,20 @@ interface GuestOrderContentProps {
 export function GuestOrderContent({ token }: GuestOrderContentProps) {
   const { guestInfo } = useGuestStore();
   const [showOrderForm, setShowOrderForm] = useState(false);
-  
+
   return (
     <main className="space-y-6" role="main" aria-label="주문 페이지">
       {/* Golden Ticket */}
       <section aria-label="쿠폰">
         <CouponFlip roomNumber={guestInfo.room} />
       </section>
-      
+
       {/* Menu Showcase */}
       <section aria-label="시그니처 메뉴">
         <h2 className="mb-4 text-xl font-heading font-bold">시그니처 메뉴</h2>
         <MenuCarousel />
       </section>
-      
+
       {/* BBQ & Fire Sets */}
       <section aria-label="불멍/바베큐 주문">
         <h2 className="mb-4 text-xl font-heading font-bold">
@@ -45,7 +45,7 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
             </p>
             <button
               onClick={() => setShowOrderForm(true)}
-              className="w-full rounded-lg bg-primary px-4 py-3 font-medium text-primary-foreground transition-colors hover:bg-primary/90 focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+              className="w-full rounded-lg bg-primary px-4 py-3 font-medium text-primary-foreground transition-all hover:bg-primary/90 active:scale-[0.98] shadow-md hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
               aria-label="주문 폼 열기"
             >
               주문하기
@@ -53,7 +53,7 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
           </CardContent>
         </Card>
       </section>
-      
+
       {/* Order Form Modal */}
       {showOrderForm && (
         <OrderForm
@@ -61,43 +61,43 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
           token={token}
         />
       )}
-      
+
       {/* Cafe Info */}
       <section aria-label="카페 정보">
         <Card>
-        <CardHeader>
-          <CardTitle>카페 정보</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="flex items-center gap-2">
-            <MapPin className="h-5 w-5 text-muted-foreground" />
-            <span className="text-sm">{CAFE_INFO.address}</span>
-          </div>
-          <div className="flex items-start gap-3">
-            <Clock className="h-5 w-5 text-primary" />
-            <div>
-              <p className="font-medium">운영 시간</p>
-              <p className="text-sm text-muted-foreground">
-                평일: {CAFE_INFO.hours.weekday}
-              </p>
-              <p className="text-sm text-muted-foreground">
-                주말: {CAFE_INFO.hours.weekend}
-              </p>
-              <p className="mt-1 text-sm font-semibold text-destructive">
-                {CAFE_INFO.hours.closed}
-              </p>
+          <CardHeader>
+            <CardTitle>카페 정보</CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-3">
+            <div className="flex items-center gap-2">
+              <MapPin className="h-5 w-5 text-muted-foreground" />
+              <span className="text-sm">{CAFE_INFO.address}</span>
             </div>
-          </div>
-          <div className="flex items-center gap-2">
-            <Phone className="h-5 w-5 text-muted-foreground" />
-            <a
-              href={`tel:${CAFE_INFO.phone}`}
-              className="text-sm text-primary hover:underline"
-            >
-              {CAFE_INFO.phone}
-            </a>
-          </div>
-        </CardContent>
+            <div className="flex items-start gap-3">
+              <Clock className="h-5 w-5 text-primary" />
+              <div>
+                <p className="font-medium">운영 시간</p>
+                <p className="text-sm text-muted-foreground">
+                  평일: {CAFE_INFO.hours.weekday}
+                </p>
+                <p className="text-sm text-muted-foreground">
+                  주말: {CAFE_INFO.hours.weekend}
+                </p>
+                <p className="mt-1 text-sm font-semibold text-destructive">
+                  {CAFE_INFO.hours.closed}
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2">
+              <Phone className="h-5 w-5 text-muted-foreground" />
+              <a
+                href={`tel:${CAFE_INFO.phone}`}
+                className="text-sm text-primary hover:underline"
+              >
+                {CAFE_INFO.phone}
+              </a>
+            </div>
+          </CardContent>
         </Card>
       </section>
     </main>

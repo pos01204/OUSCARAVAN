@@ -53,10 +53,10 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="relative overflow-hidden rounded-lg bg-gradient-to-br from-primary/20 to-accent/20 p-8 text-center"
+        className="relative overflow-hidden rounded-lg bg-gradient-to-br from-orange-100 to-amber-50 p-8 text-center border border-orange-100/50 shadow-sm"
         aria-label="환영 메시지"
       >
-        <h1 className="font-heading text-3xl font-bold text-foreground">
+        <h1 className="font-heading text-2xl font-semibold text-foreground">
           {WELCOME_MESSAGE.korean.replace('{name}', reservation.guestName)}
         </h1>
         {/* 호수 정보는 고객에게 노출하지 않음 (관리자 편의용) */}
