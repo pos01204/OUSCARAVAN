@@ -12,6 +12,7 @@ import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { calculateTotalAmount } from '@/lib/utils/reservation';
+import { useSwipe } from '@/lib/hooks/useSwipe';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
 // 상태별 색상 시스템 (강화)
@@ -56,6 +57,16 @@ export function ReservationCalendarView({
   const [view, setView] = useState<View>('month');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  // Phase 3: 스와이프 제스처로 모달 닫기
+  const swipeHandlers = useSwipe({
+    onSwipeDown: () => {
+      // 모바일에서만 아래로 스와이프하여 모달 닫기
+      if (window.innerWidth <= 768) {
+        setIsModalOpen(false);
+      }
+    },
+  });
 
   // 날짜별 예약 그룹화 (하이브리드 방식용) - 먼저 계산
   const reservationsByDate = useMemo(() => {
@@ -627,12 +638,13 @@ export function ReservationCalendarView({
         />
       </div>
 
-      {/* 날짜별 예약 목록 모달 - Phase 1: 모바일 최적화 */}
+      {/* 날짜별 예약 목록 모달 - Phase 1: 모바일 최적화, Phase 3: 스와이프 닫기 */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
         <DialogContent 
           className="md:max-w-2xl max-h-[90vh] md:max-h-[80vh] p-0 md:p-6"
           aria-labelledby="reservation-modal-title"
           aria-describedby="reservation-modal-description"
+          {...swipeHandlers}
         >
           {/* 모바일: 전체 화면, 데스크톱: 중앙 모달 */}
           <div className="flex flex-col h-full md:h-auto">

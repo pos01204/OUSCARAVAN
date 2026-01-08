@@ -1,14 +1,16 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { type Reservation } from '@/lib/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, RefreshCw } from 'lucide-react';
 import { calculateTotalAmount } from '@/lib/utils/reservation';
 import { cn } from '@/lib/utils';
+import { usePullToRefresh } from '@/lib/hooks/usePullToRefresh';
 
 interface ReservationListViewProps {
   reservations: Reservation[];
@@ -27,6 +29,29 @@ export function ReservationListView({
   checkin,
   checkout,
 }: ReservationListViewProps) {
+  const router = useRouter();
+
+  // Phase 3: 풀 투 리프레시 기능
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth <= 768);
+    };
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
+  }, []);
+
+  const { ref, isPulling, pullDistance, isRefreshing, pullProgress, handlers } = usePullToRefresh({
+    onRefresh: async () => {
+      // 페이지 새로고침
+      router.refresh();
+    },
+    enabled: isMobile, // 모바일에서만 활성화
+  });
+
   const getStatusBadge = (status: Reservation['status']) => {
     const variants: Record<Reservation['status'], { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
       pending: { label: '대기', variant: 'outline' },
@@ -55,7 +80,37 @@ export function ReservationListView({
   }
 
   return (
-    <div className="space-y-4">
+    <div 
+      ref={ref}
+      className="space-y-4 relative"
+      {...handlers}
+    >
+      {/* Phase 3: 풀 투 리프레시 인디케이터 */}
+      {isPulling && (
+        <div 
+          className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm transition-opacity"
+          style={{
+            height: `${Math.min(pullDistance, 80)}px`,
+            opacity: pullProgress,
+          }}
+        >
+          <div className="flex flex-col items-center gap-2">
+            <RefreshCw 
+              className={cn(
+                "h-6 w-6 text-primary transition-transform",
+                isRefreshing && "animate-spin"
+              )}
+              style={{
+                transform: `rotate(${pullProgress * 180}deg)`,
+              }}
+            />
+            <p className="text-sm text-muted-foreground">
+              {pullDistance >= 80 ? '놓으면 새로고침' : '아래로 당겨서 새로고침'}
+            </p>
+          </div>
+        </div>
+      )}
+
       {total !== undefined && total > 0 && (
         <p className="text-sm text-muted-foreground">
           총 {total}건의 예약이 있습니다.
