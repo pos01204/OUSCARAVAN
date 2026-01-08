@@ -721,107 +721,20 @@ export function ReservationCalendarView({
                   {sortReservationsByPriority(
                     selectedDateReservations.filter(r => r.status === 'assigned')
                   ).map((reservation) => (
-                      const checkin = new Date(reservation.checkin);
-                      const checkout = new Date(reservation.checkout);
-                      const isCheckinDay = selectedDate ? isSameDay(checkin, selectedDate) : false;
-                      const isCheckoutDay = selectedDate ? isSameDay(checkout, selectedDate) : false;
-                      
-                      const checkinCheckoutBadges = [];
-                      if (isCheckinDay && isCheckoutDay) {
-                        checkinCheckoutBadges.push(
-                          <Badge key="both" variant="default" className="bg-purple-600 text-white text-xs">
-                            ✓→ 체크인+체크아웃
-                          </Badge>
-                        );
-                      } else if (isCheckinDay) {
-                        checkinCheckoutBadges.push(
-                          <Badge key="checkin" variant="default" className="bg-green-600 text-white text-xs">
-                            ✓ 체크인
-                          </Badge>
-                        );
-                      } else if (isCheckoutDay) {
-                        checkinCheckoutBadges.push(
-                          <Badge key="checkout" variant="default" className="bg-blue-600 text-white text-xs">
-                            → 체크아웃
-                          </Badge>
-                        );
-                      }
-                      
-                      return (
-                        <Card 
-                          key={reservation.id} 
-                          className="cursor-pointer hover:bg-muted/50 transition-colors"
-                          onClick={() => handleViewDetail(reservation.id)}
-                        >
-                          <CardContent className="p-4">
-                            <div className="flex items-start justify-between gap-4">
-                              <div className="flex-1 min-w-0">
-                                <div className="flex items-center gap-2 mb-2 flex-wrap">
-                                  <h4 className="font-semibold text-base">
-                                    {reservation.guestName}
-                                  </h4>
-                                  {getStatusBadge(reservation.status)}
-                                  {checkinCheckoutBadges}
-                                </div>
-                                
-                                <div className="space-y-1 text-sm text-muted-foreground">
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">예약번호:</span>
-                                    <span>{reservation.reservationNumber}</span>
-                                  </div>
-                                  
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">체크인:</span>
-                                    <span>{format(checkin, 'yyyy-MM-dd')}</span>
-                                    {isCheckinDay && (
-                                      <Badge variant="outline" className="text-xs">체크인일</Badge>
-                                    )}
-                                  </div>
-                                  
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">체크아웃:</span>
-                                    <span>{format(checkout, 'yyyy-MM-dd')}</span>
-                                    {isCheckoutDay && (
-                                      <Badge variant="outline" className="text-xs">체크아웃일</Badge>
-                                    )}
-                                  </div>
-                                  
-                                  <div className="flex items-center gap-2">
-                                    <span className="font-medium">방 배정:</span>
-                                    <span className="text-foreground font-medium">
-                                      {reservation.assignedRoom || '미배정'}
-                                    </span>
-                                  </div>
-                                </div>
-                              </div>
-                              
-                              <div className="flex-shrink-0 text-right">
-                                <div className="text-lg font-bold text-primary">
-                                  {calculateTotalAmount(reservation).totalAmount.toLocaleString()}원
-                                </div>
-                                <Button 
-                                  variant="outline" 
-                                  size="sm" 
-                                  className="mt-2"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    handleViewDetail(reservation.id);
-                                  }}
-                                >
-                                  상세 보기
-                                </Button>
-                              </div>
-                            </div>
-                          </CardContent>
-                        </Card>
-                      );
-                    })}
+                    <ReservationModalCard
+                      key={reservation.id}
+                      reservation={reservation}
+                      selectedDate={selectedDate}
+                      onViewDetail={handleViewDetail}
+                      onCloseModal={handleCloseModal}
+                    />
+                  ))}
                 </TabsContent>
                 
                 <TabsContent value="pending" className="mt-4 space-y-3">
                   {sortReservationsByPriority(
                     selectedDateReservations.filter(r => r.status === 'pending')
-                  ).map((reservation) => {
+                  ).map((reservation) => (
                     <ReservationModalCard
                       key={reservation.id}
                       reservation={reservation}
