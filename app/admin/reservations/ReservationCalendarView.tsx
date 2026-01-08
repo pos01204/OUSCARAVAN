@@ -415,17 +415,18 @@ export function ReservationCalendarView({
         style={{
           backgroundColor: colorConfig.bg,
           color: colorConfig.text,
-          padding: '2px 4px',
-          borderRadius: '3px',
-          fontSize: '10px',
+          padding: '6px 8px',
+          borderRadius: '4px',
+          fontSize: '11px',
           fontWeight: '700',
           textAlign: 'center',
           width: '100%',
-          minHeight: '24px',
+          minHeight: '38px',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
           letterSpacing: '0.2px',
+          lineHeight: '1.5',
         }}
         title={titleString}
       >

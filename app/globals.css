@@ -107,7 +107,7 @@
   
   /* 날짜 셀 크기 대폭 확대 (텍스트 잘림 방지) */
   .rbc-day-bg {
-    min-height: 160px !important; /* 높이 더 확대 (120px → 160px) */
+    min-height: 200px !important; /* 높이 더 확대 (160px → 200px) */
     position: relative;
   }
   
@@ -115,43 +115,44 @@
   .rbc-date-cell {
     font-size: 16px !important;
     font-weight: 700;
-    padding: 4px 3px !important;
+    padding: 5px 3px !important;
     line-height: 1.2 !important;
   }
   
   /* 이벤트 텍스트 크기 확대 및 2줄 제한 */
   .rbc-event {
-    min-height: 30px !important; /* 높이 증가 (22px → 30px) */
-    font-size: 11px !important; /* 폰트 크기 증가 (9px → 11px) */
-    padding: 4px 6px !important; /* 패딩 증가 */
-    margin-bottom: 3px !important; /* 간격 증가 */
-    line-height: 1.4 !important; /* 줄 간격 조정 */
+    min-height: 38px !important; /* 높이 증가 (30px → 38px) */
+    font-size: 11px !important; /* 폰트 크기 유지 */
+    padding: 6px 8px !important; /* 패딩 증가 */
+    margin-bottom: 4px !important; /* 간격 증가 */
+    line-height: 1.5 !important; /* 줄 간격 증가 (1.4 → 1.5) */
     border-radius: 4px !important;
     overflow: hidden !important; /* 2줄 초과 시 잘림 */
     white-space: normal !important; /* 줄바꿈 허용 */
     word-break: break-word !important;
-    max-height: calc(1.4em * 2) !important; /* 최대 2줄 높이 */
+    max-height: calc(1.5em * 2 + 12px) !important; /* 최대 2줄 높이 (패딩 포함) */
     display: flex !important;
     align-items: center !important;
   }
   
   /* 그룹 카운트 스타일 최적화 (미배정/체크인/체크아웃) */
   .rbc-event.rbc-event-grouped {
-    font-size: 12px !important; /* 폰트 크기 증가 (10px → 12px) */
+    font-size: 12px !important; /* 폰트 크기 유지 */
     font-weight: 700;
-    min-height: 32px !important; /* 높이 증가 (24px → 32px) */
-    padding: 5px 7px !important; /* 패딩 증가 */
+    min-height: 40px !important; /* 높이 증가 (32px → 40px) */
+    padding: 7px 9px !important; /* 패딩 증가 */
     letter-spacing: 0.2px;
     white-space: normal !important;
     word-break: break-word !important;
-    max-height: calc(1.4em * 2) !important; /* 최대 2줄 높이 */
+    max-height: calc(1.5em * 2 + 14px) !important; /* 최대 2줄 높이 (패딩 포함) */
     display: flex !important;
     align-items: center !important;
+    line-height: 1.5 !important; /* 줄 간격 증가 */
   }
   
   /* 날짜 셀 전체를 클릭 가능 영역으로 확대 */
   .rbc-day-slot {
-    min-height: 160px !important; /* 높이 확대 (120px → 160px) */
+    min-height: 200px !important; /* 높이 확대 (160px → 200px) */
   }
   
   /* 요일 헤더 크기 조정 */
@@ -184,23 +185,23 @@
   /* 월간 뷰에서 이벤트가 여러 개일 때 간격 조정 */
   .rbc-month-view .rbc-day-slot .rbc-events-container {
     margin-right: 0;
-    max-height: calc(100% - 30px) !important; /* 날짜 숫자 공간 확보 */
+    max-height: calc(100% - 35px) !important; /* 날짜 숫자 공간 확보 */
   }
   
   .rbc-month-view .rbc-day-slot .rbc-event {
-    margin-bottom: 3px !important; /* 간격 증가 */
+    margin-bottom: 4px !important; /* 간격 증가 */
   }
   
   /* 월간 뷰 테이블 셀 패딩 조정 */
   .rbc-month-view .rbc-day-bg {
-    padding: 2px !important;
+    padding: 3px !important;
   }
   
   /* 이벤트 컨테이너 최적화 - 스크롤 가능하도록 */
   .rbc-events-container {
     margin-right: 0 !important;
     overflow-y: auto !important;
-    max-height: 130px !important; /* 셀 높이에 맞춤 (90px → 130px) */
+    max-height: 165px !important; /* 셀 높이에 맞춤 (130px → 165px) */
   }
   
   /* 이벤트 내용이 2줄을 넘지 않도록 */
@@ -211,7 +212,7 @@
     display: -webkit-box !important;
     -webkit-line-clamp: 2 !important; /* 최대 2줄 */
     -webkit-box-orient: vertical !important;
-    line-height: 1.4 !important;
+    line-height: 1.5 !important; /* 줄 간격 증가 */
   }
   
   /* 오늘 날짜 표시 최적화 */
@@ -221,7 +222,7 @@
   
   /* 월간 뷰 테이블 행 높이 확보 */
   .rbc-month-row {
-    min-height: 160px !important; /* 높이 확대 (120px → 160px) */
+    min-height: 200px !important; /* 높이 확대 (160px → 200px) */
   }
   
   .rbc-month-view {
