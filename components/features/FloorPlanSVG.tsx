@@ -37,13 +37,19 @@ function FloorPlanSVGComponent({
       preserveAspectRatio="xMidYMid meet"
       style={{ maxWidth: '100%', height: 'auto' }}
     >
-      {/* 배경 그리드 (선택사항) */}
+      {/* 배경 그리드 (선택사항) - 약도 구조를 위한 가이드라인 */}
       <defs>
         <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-          <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e5e7eb" strokeWidth="0.5" opacity="0.3" />
+          <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e5e7eb" strokeWidth="0.5" opacity="0.2" />
         </pattern>
       </defs>
-      <rect width="100%" height="100%" fill="url(#grid)" opacity="0.2" />
+      {/* 도로 표시 (중앙 세로선) */}
+      <rect x="450" y="0" width="20" height="700" fill="#d1d5db" opacity="0.3" />
+      <text x="460" y="350" textAnchor="middle" dominantBaseline="middle" 
+            style={{ fontSize: '12px', fill: '#6b7280', fontFamily: 'system-ui' }}
+            transform="rotate(-90 460 350)">
+        도로
+      </text>
       
       {/* 공간 렌더링 */}
       {spaces.map((space) => {

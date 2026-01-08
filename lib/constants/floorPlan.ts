@@ -28,88 +28,99 @@ export interface FloorPlanConfig {
 
 /**
  * 약도 설정
- * 실제 약도 구조에 맞춰 좌표 조정 완료
- * 레이아웃: 4열 2행 (1-4호, 5-8호) + 2개 (9-10호)
+ * 실제 약도 구조에 맞춰 정확한 좌표 조정 완료
+ * 
+ * 레이아웃 구조:
+ * - 왼쪽 섹션 (도로 서쪽): 주차공간 1, 관리동, 1-6호 (2열 3행)
+ * - 중앙: 도로
+ * - 오른쪽 섹션 (도로 동쪽): 주차공간 2, 카페, 건물/창고, 주차공간 3, 7-10호
+ * 
+ * 방 배치:
+ * - 왼쪽 열 (위→아래): 2호, 4호, 6호
+ * - 왼쪽 오른쪽 열 (위→아래): 1호, 3호, 5호
+ * - 오른쪽 상단 행 (왼→오): 7호, 8호, 9호
+ * - 오른쪽 하단: 10호
  */
 export const FLOOR_PLAN_CONFIG: FloorPlanConfig = {
-  viewBox: "0 0 800 500",  // SVG 뷰포트 크기 (실제 약도에 맞게 조정)
+  viewBox: "0 0 1000 700",  // SVG 뷰포트 크기 (실제 약도 비율에 맞게 조정)
   grid: {
-    columns: 4,            // 4열 그리드
-    rows: 3,               // 3행 그리드 (2행 + 1행)
-    gap: 15,               // 공간 간 간격 (픽셀)
+    columns: 2,            // 좌우 2개 섹션
+    rows: 4,               // 행 수
+    gap: 20,               // 공간 간 간격 (픽셀)
   },
   spaces: [
-    // 첫 번째 행: 1-4호 (4인실)
+    // 왼쪽 섹션 - 오른쪽 열 (1호, 3호, 5호)
     {
       id: '1',
       name: '1호',
       displayName: '1호',
-      coordinates: { x: 20, y: 20, width: 180, height: 140 },
-      capacity: 4,
-    },
-    {
-      id: '2',
-      name: '2호',
-      displayName: '2호',
-      coordinates: { x: 220, y: 20, width: 180, height: 140 },
+      coordinates: { x: 280, y: 200, width: 120, height: 100 },
       capacity: 4,
     },
     {
       id: '3',
       name: '3호',
       displayName: '3호',
-      coordinates: { x: 420, y: 20, width: 180, height: 140 },
+      coordinates: { x: 280, y: 320, width: 120, height: 100 },
+      capacity: 4,
+    },
+    {
+      id: '5',
+      name: '5호',
+      displayName: '5호',
+      coordinates: { x: 280, y: 440, width: 120, height: 100 },
+      capacity: 4,
+    },
+    // 왼쪽 섹션 - 왼쪽 열 (2호, 4호, 6호)
+    {
+      id: '2',
+      name: '2호',
+      displayName: '2호',
+      coordinates: { x: 120, y: 200, width: 120, height: 100 },
       capacity: 4,
     },
     {
       id: '4',
       name: '4호',
       displayName: '4호',
-      coordinates: { x: 620, y: 20, width: 180, height: 140 },
-      capacity: 4,
-    },
-    // 두 번째 행: 5-8호 (5,7,8호는 4인실, 6호는 2인실)
-    {
-      id: '5',
-      name: '5호',
-      displayName: '5호',
-      coordinates: { x: 20, y: 180, width: 180, height: 140 },
+      coordinates: { x: 120, y: 320, width: 120, height: 100 },
       capacity: 4,
     },
     {
       id: '6',
       name: '6호',
       displayName: '6호',
-      coordinates: { x: 220, y: 180, width: 180, height: 140 },
+      coordinates: { x: 120, y: 440, width: 120, height: 100 },
       capacity: 2,
     },
+    // 오른쪽 섹션 - 상단 행 (7호, 8호, 9호)
     {
       id: '7',
       name: '7호',
       displayName: '7호',
-      coordinates: { x: 420, y: 180, width: 180, height: 140 },
+      coordinates: { x: 560, y: 400, width: 120, height: 100 },
       capacity: 4,
     },
     {
       id: '8',
       name: '8호',
       displayName: '8호',
-      coordinates: { x: 620, y: 180, width: 180, height: 140 },
+      coordinates: { x: 700, y: 400, width: 120, height: 100 },
       capacity: 4,
     },
-    // 세 번째 행: 9-10호 (9호는 4인실, 10호는 2인실)
     {
       id: '9',
       name: '9호',
       displayName: '9호',
-      coordinates: { x: 20, y: 340, width: 180, height: 140 },
+      coordinates: { x: 840, y: 400, width: 120, height: 100 },
       capacity: 4,
     },
+    // 오른쪽 섹션 - 하단 (10호)
     {
       id: '10',
       name: '10호',
       displayName: '10호',
-      coordinates: { x: 220, y: 340, width: 180, height: 140 },
+      coordinates: { x: 700, y: 520, width: 120, height: 100 },
       capacity: 2,
     },
   ],
