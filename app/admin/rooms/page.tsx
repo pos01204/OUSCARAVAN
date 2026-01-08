@@ -13,6 +13,7 @@ import { Loader2, ShoppingCart, CheckCircle2 } from 'lucide-react';
 import { formatDateTimeToKorean } from '@/lib/utils/date';
 import { useNotificationStore } from '@/lib/store/notifications';
 import { useNotificationStream } from '@/lib/hooks/useNotificationStream';
+import { AdminRoomsSkeleton } from '@/components/admin/AdminRoomsSkeleton';
 
 interface RoomWithReservation extends Room {
   reservation?: {
@@ -218,12 +219,12 @@ export default function RoomsPage() {
     return <Badge variant={variant}>{label}</Badge>;
   };
 
+  // ... import moved to top
+
+  // ... (inside component)
+
   if (isLoading) {
-    return (
-      <div className="flex items-center justify-center min-h-[400px]">
-        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
-      </div>
-    );
+    return <AdminRoomsSkeleton />;
   }
 
   return (
