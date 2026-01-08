@@ -21,10 +21,11 @@ export default async function AdminLayout({
   return (
     <div className="min-h-screen bg-background">
       <nav className="border-b bg-card" aria-label="주요 네비게이션">
-        <div className="container mx-auto flex h-16 items-center justify-between px-4">
-          <div className="flex items-center gap-6">
-            <Link href="/admin" className="text-lg font-semibold" aria-label="OUSCARAVAN 관리자 홈">
-              OUSCARAVAN 관리자
+        <div className="container mx-auto flex h-14 md:h-16 items-center justify-between px-4">
+          <div className="flex items-center gap-3 md:gap-6">
+            <Link href="/admin" className="text-base md:text-lg font-semibold" aria-label="OUSCARAVAN 관리자 홈">
+              <span className="hidden md:inline">OUSCARAVAN 관리자</span>
+              <span className="md:hidden">관리자</span>
             </Link>
             {/* 데스크톱 네비게이션 */}
             <div className="hidden gap-4 md:flex">

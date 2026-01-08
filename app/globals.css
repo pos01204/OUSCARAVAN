@@ -238,3 +238,15 @@ button:active {
     font-size: 16px; /* iOS 줌 방지 */
   }
 }
+
+/* Phase 2: 하단 네비게이션 안전 영역 고려 */
+.bottom-nav {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Phase 2: 모바일 헤더 간소화 */
+@media (max-width: 768px) {
+  header {
+    height: 56px; /* h-14 */
+  }
+}

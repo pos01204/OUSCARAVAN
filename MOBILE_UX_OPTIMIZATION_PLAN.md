@@ -667,17 +667,19 @@ const VirtualizedReservationList = ({ reservations }: Props) => {
    - 고정 헤더 및 스크롤 가능한 콘텐츠
    - 데스크톱에서는 기존 중앙 모달 유지
 
-### Phase 2 (단기 - 2주)
-4. ✅ 모바일 모달 최적화
+### Phase 2 (단기 - 2주) ✅ 완료 (2025-01-15)
+4. ✅ 모바일 모달 최적화 (Phase 1에서 완료)
    - 전체 화면 모달
    - 하단 시트 패턴
-   - 스와이프 닫기
+   - 스와이프 닫기 (선택사항, 향후 구현)
 5. ✅ 리스트 뷰 카드 개선
-   - 접이식 상세 정보
-   - 핵심 정보 우선 표시
+   - 접이식 상세 정보 (ChevronDown 아이콘으로 확장/축소)
+   - 핵심 정보 우선 표시 (예약자명, 날짜, 방 배정)
+   - 상세 정보는 확장 시에만 표시
 6. ✅ 네비게이션 개선
-   - 하단 네비게이션 안전 영역 고려
-   - 상단 헤더 간소화
+   - 하단 네비게이션 안전 영역 고려 (`env(safe-area-inset-bottom)`)
+   - 상단 헤더 간소화 (모바일: h-14, 텍스트 간소화)
+   - 게스트 헤더 모바일 최적화 (로고만 표시)
 
 ### Phase 3 (중기 - 3주)
 7. ✅ 제스처 지원
@@ -818,14 +820,14 @@ const triggerHaptic = (type: 'light' | 'medium' | 'heavy' = 'light') => {
 - [x] 상세 필터 하단 시트 구현
 - [x] 모든 버튼 터치 타겟 44x44px 이상
 
-### Phase 2 체크리스트
-- [ ] 모바일 전체 화면 모달 구현
-- [ ] 하단 시트 패턴 적용
-- [ ] 스와이프 닫기 기능
-- [ ] 리스트 카드 접이식 상세 정보
-- [ ] 핵심 정보 우선 표시
-- [ ] 하단 네비게이션 안전 영역 고려
-- [ ] 상단 헤더 간소화
+### Phase 2 체크리스트 ✅ 완료 (2025-01-15)
+- [x] 모바일 전체 화면 모달 구현 (Phase 1에서 완료)
+- [x] 하단 시트 패턴 적용 (Phase 1에서 완료)
+- [ ] 스와이프 닫기 기능 (선택사항, 향후 구현)
+- [x] 리스트 카드 접이식 상세 정보
+- [x] 핵심 정보 우선 표시
+- [x] 하단 네비게이션 안전 영역 고려
+- [x] 상단 헤더 간소화
 
 ### Phase 3 체크리스트
 - [ ] 스와이프 네비게이션 구현
@@ -877,16 +879,50 @@ const triggerHaptic = (type: 'light' | 'medium' | 'heavy' = 'light') => {
 - ✅ **접근성 개선**: 터치 영역 확대로 사용성 향상
 
 ### 구현 파일 목록
+
+#### Phase 1
 - `components/ui/sheet.tsx` (신규 생성)
 - `app/globals.css` (모바일 최적화 CSS 추가)
 - `app/admin/reservations/ReservationCalendarView.tsx` (모바일 모달 최적화, 색상 강화)
 - `app/admin/reservations/ReservationFiltersClient.tsx` (접이식 필터 디자인)
 
+#### Phase 2
+- `app/admin/reservations/ReservationListView.tsx` (접이식 카드 컴포넌트 추가)
+- `components/guest/GuestBottomNav.tsx` (안전 영역 추가)
+- `components/shared/BottomNav.tsx` (안전 영역 추가)
+- `components/guest/GuestHeader.tsx` (모바일 간소화)
+- `app/admin/layout.tsx` (모바일 헤더 간소화)
+- `app/guest/[token]/layout.tsx` (모바일 헤더 높이 조정)
+- `app/globals.css` (안전 영역 및 모바일 헤더 CSS 추가)
+
+### Phase 2 구현 완료 (2025-01-15)
+
+#### 1. 리스트 뷰 카드 개선
+- ✅ **접이식 상세 정보**: 카드 헤더 클릭으로 상세 정보 확장/축소
+- ✅ **핵심 정보 우선 표시**: 
+  - 기본 상태: 예약자명, 체크인/체크아웃 날짜, 방 배정, 상태 배지
+  - 확장 시: 예약번호, 상품 정보, 옵션, 결제금액 상세, 상세보기 버튼
+- ✅ **ChevronDown 아이콘**: 확장 상태를 시각적으로 표시
+
+#### 2. 네비게이션 최적화
+- ✅ **하단 네비게이션 안전 영역**: `env(safe-area-inset-bottom)` 적용
+  - iPhone의 홈 인디케이터 영역 고려
+  - `GuestBottomNav`, `BottomNav` 컴포넌트에 적용
+- ✅ **상단 헤더 간소화**:
+  - 모바일: 높이 56px (h-14), 로고만 표시
+  - 게스트 헤더: 모바일에서 "OUSCARAVAN" 로고만 표시
+  - 관리자 헤더: 모바일에서 "관리자"로 텍스트 간소화
+  - 데스크톱: 기존 레이아웃 유지
+
+#### 3. 추가 개선 사항
+- ✅ **게스트 레이아웃 조정**: 모바일 헤더 높이(56px) 반영하여 `pt-14` 적용
+- ✅ **터치 타겟 유지**: 모든 버튼 44x44px 이상 유지
+
 ### 다음 단계
-Phase 2 작업 준비:
-- 리스트 뷰 카드 개선
-- 네비게이션 최적화
+Phase 3 작업 준비:
 - 제스처 지원 (스와이프, 풀 투 리프레시)
+- 성능 최적화 (리스트 가상화, 지연 로딩)
+- 접근성 개선 (ARIA 레이블, 키보드 네비게이션)
 
 ---
 

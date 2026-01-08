@@ -1,9 +1,14 @@
+'use client';
+
+import { useState } from 'react';
 import Link from 'next/link';
 import { type Reservation } from '@/lib/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { ChevronDown } from 'lucide-react';
 import { calculateTotalAmount } from '@/lib/utils/reservation';
+import { cn } from '@/lib/utils';
 
 interface ReservationListViewProps {
   reservations: Reservation[];
@@ -57,72 +62,112 @@ export function ReservationListView({
         </p>
       )}
       {reservations.map((reservation) => (
-        <Card key={reservation.id}>
-          <CardHeader>
-            <div className="flex items-center justify-between">
-              <div>
-                <CardTitle>{reservation.guestName}</CardTitle>
-                <CardDescription>
-                  예약번호: {reservation.reservationNumber}
-                </CardDescription>
-              </div>
-              {getStatusBadge(reservation.status)}
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-4 md:grid-cols-2">
-              <div>
-                <p className="text-sm text-muted-foreground">체크인</p>
-                <p className="font-medium">{reservation.checkin}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">체크아웃</p>
-                <p className="font-medium">{reservation.checkout}</p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">예약 상품</p>
-                <div className="space-y-1">
-                  <p className="font-medium">{reservation.roomType}</p>
-                  {reservation.options && reservation.options.length > 0 && (
-                    <div className="flex flex-wrap gap-1">
-                      {reservation.options.map((option, index) => (
-                        <Badge key={index} variant="secondary" className="text-xs">
-                          {option.optionName}
-                        </Badge>
-                      ))}
-                    </div>
-                  )}
-                </div>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">배정된 방</p>
-                <p className="font-medium">
-                  {reservation.assignedRoom || '미배정'}
-                </p>
-              </div>
-              <div>
-                <p className="text-sm text-muted-foreground">결제금액</p>
-                <p className="font-medium">
-                  {calculateTotalAmount(reservation).totalAmount.toLocaleString()}원
-                </p>
-                {reservation.options && reservation.options.length > 0 && (
-                  <p className="text-xs text-muted-foreground mt-1">
-                    (객실: {calculateTotalAmount(reservation).roomAmount.toLocaleString()}원
-                    + 옵션: {calculateTotalAmount(reservation).optionsAmount.toLocaleString()}원)
-                  </p>
-                )}
-              </div>
-            </div>
-            <div className="mt-4 flex gap-2">
-              <Link href={`/admin/reservations/${reservation.id}`}>
-                <Button variant="outline" size="sm">
-                  상세 보기
-                </Button>
-              </Link>
-            </div>
-          </CardContent>
-        </Card>
+        <ReservationCard
+          key={reservation.id}
+          reservation={reservation}
+          getStatusBadge={getStatusBadge}
+        />
       ))}
     </div>
+  );
+}
+
+// Phase 2: 접이식 카드 컴포넌트
+function ReservationCard({
+  reservation,
+  getStatusBadge,
+}: {
+  reservation: Reservation;
+  getStatusBadge: (status: Reservation['status']) => JSX.Element;
+}) {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const { totalAmount, roomAmount, optionsAmount } = calculateTotalAmount(reservation);
+
+  return (
+    <Card className="mb-3">
+      <CardHeader
+        className="pb-3 cursor-pointer"
+        onClick={() => setIsExpanded(!isExpanded)}
+      >
+        <div className="flex items-start justify-between">
+          <div className="flex-1 min-w-0">
+            <CardTitle className="text-lg mb-1 truncate">
+              {reservation.guestName}
+            </CardTitle>
+            <div className="flex items-center gap-2 text-sm text-muted-foreground flex-wrap">
+              <span>{reservation.checkin}</span>
+              <span>→</span>
+              <span>{reservation.checkout}</span>
+              {reservation.assignedRoom && (
+                <>
+                  <span>·</span>
+                  <span className="font-medium text-foreground">
+                    {reservation.assignedRoom}
+                  </span>
+                </>
+              )}
+            </div>
+          </div>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {getStatusBadge(reservation.status)}
+            <ChevronDown
+              className={cn(
+                'h-5 w-5 transition-transform text-muted-foreground',
+                isExpanded ? 'rotate-180' : ''
+              )}
+            />
+          </div>
+        </div>
+      </CardHeader>
+
+      {isExpanded && (
+        <CardContent className="pt-0 space-y-3">
+          {/* 상세 정보 */}
+          <div className="grid grid-cols-2 gap-3 text-sm">
+            <div>
+              <p className="text-muted-foreground text-xs mb-1">예약번호</p>
+              <p className="font-medium">{reservation.reservationNumber}</p>
+            </div>
+            <div>
+              <p className="text-muted-foreground text-xs mb-1">배정된 방</p>
+              <p className="font-medium">
+                {reservation.assignedRoom || '미배정'}
+              </p>
+            </div>
+            <div className="col-span-2">
+              <p className="text-muted-foreground text-xs mb-1">예약 상품</p>
+              <p className="font-medium">{reservation.roomType}</p>
+              {reservation.options && reservation.options.length > 0 && (
+                <div className="flex flex-wrap gap-1 mt-1">
+                  {reservation.options.map((option, index) => (
+                    <Badge key={index} variant="secondary" className="text-xs">
+                      {option.optionName}
+                    </Badge>
+                  ))}
+                </div>
+              )}
+            </div>
+            <div className="col-span-2">
+              <p className="text-muted-foreground text-xs mb-1">결제금액</p>
+              <p className="font-bold text-lg text-primary">
+                {totalAmount.toLocaleString()}원
+              </p>
+              {reservation.options && reservation.options.length > 0 && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  (객실: {roomAmount.toLocaleString()}원
+                  + 옵션: {optionsAmount.toLocaleString()}원)
+                </p>
+              )}
+            </div>
+          </div>
+
+          <Link href={`/admin/reservations/${reservation.id}`}>
+            <Button className="w-full min-h-[44px]" size="lg">
+              상세보기
+            </Button>
+          </Link>
+        </CardContent>
+      )}
+    </Card>
   );
 }
