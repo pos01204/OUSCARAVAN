@@ -439,9 +439,8 @@ export function ReservationCalendarView({
       return;
     }
     
-    // 그룹화된 이벤트인 경우 해당 날짜의 모달 열기
-    if (event.id.startsWith('group-')) {
-      const eventDate = format(event.start, 'yyyy-MM-dd');
+    // 체크인 건수 이벤트인 경우 (간소화된 버전) 또는 그룹화된 이벤트인 경우 해당 날짜의 모달 열기
+    if (event.id.startsWith('checkin-') || event.id.startsWith('group-')) {
       const date = new Date(event.start);
       setSelectedDate(date);
       setIsModalOpen(true);
