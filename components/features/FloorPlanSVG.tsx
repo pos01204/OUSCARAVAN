@@ -15,7 +15,7 @@ function FloorPlanSVGComponent({
   onSpaceClick,
   showLabels = true,
 }: FloorPlanSVGProps) {
-  const { viewBox, spaces } = FLOOR_PLAN_CONFIG;
+  const { viewBox, spaces, facilities } = FLOOR_PLAN_CONFIG;
 
   // 배정된 공간 정보 메모이제이션
   const assignedSpace = useMemo(() => {
@@ -51,6 +51,57 @@ function FloorPlanSVGComponent({
         도로
       </text>
       
+      {/* 시설 렌더링 (주차공간, 관리동, 카페, 건물 등) */}
+      {facilities.map((facility) => {
+        const getFacilityColor = () => {
+          switch (facility.type) {
+            case 'parking':
+              return { fill: '#f3f4f6', stroke: '#9ca3af' };
+            case 'building':
+              return { fill: '#e5e7eb', stroke: '#6b7280' };
+            case 'cafe':
+              return { fill: '#fef3c7', stroke: '#f59e0b' };
+            case 'warehouse':
+              return { fill: '#e5e7eb', stroke: '#6b7280' };
+            default:
+              return { fill: '#f9fafb', stroke: '#d1d5db' };
+          }
+        };
+        
+        const colors = getFacilityColor();
+        
+        return (
+          <g key={facility.id}>
+            <rect
+              x={facility.coordinates.x}
+              y={facility.coordinates.y}
+              width={facility.coordinates.width}
+              height={facility.coordinates.height}
+              fill={colors.fill}
+              stroke={colors.stroke}
+              strokeWidth={1.5}
+              rx="4"
+              ry="4"
+              opacity="0.8"
+            />
+            <text
+              x={facility.coordinates.x + facility.coordinates.width / 2}
+              y={facility.coordinates.y + facility.coordinates.height / 2}
+              textAnchor="middle"
+              dominantBaseline="middle"
+              style={{
+                fontSize: '12px',
+                fontWeight: '600',
+                fill: '#374151',
+                fontFamily: 'system-ui, -apple-system, sans-serif',
+              }}
+            >
+              {facility.name}
+            </text>
+          </g>
+        );
+      })}
+      
       {/* 공간 렌더링 */}
       {spaces.map((space) => {
         const isAssigned = space.id === assignedSpaceId;
@@ -83,33 +134,16 @@ function FloorPlanSVGComponent({
                 filter: isAssigned ? 'drop-shadow(0 2px 4px rgba(239, 68, 68, 0.3))' : 'none',
               }}
             />
-            {/* 공간 번호 텍스트 */}
-            {showLabels && (
+            {/* 배정된 공간에만 "당신의 공간" 레이블 표시 (호수 정보는 표시하지 않음) */}
+            {isAssigned && (
               <text
                 x={space.coordinates.x + space.coordinates.width / 2}
                 y={space.coordinates.y + space.coordinates.height / 2}
                 textAnchor="middle"
                 dominantBaseline="middle"
                 style={{
-                  fontSize: '16px',
-                  fontWeight: isAssigned ? 'bold' : '600',
-                  fill: isAssigned ? '#dc2626' : '#374151',
-                  fontFamily: 'system-ui, -apple-system, sans-serif',
-                }}
-              >
-                {space.displayName}
-              </text>
-            )}
-            {/* 배정된 공간에만 "당신의 공간" 레이블 표시 (선택사항) */}
-            {isAssigned && showLabels && (
-              <text
-                x={space.coordinates.x + space.coordinates.width / 2}
-                y={space.coordinates.y + space.coordinates.height / 2 + 20}
-                textAnchor="middle"
-                dominantBaseline="middle"
-                style={{
-                  fontSize: '12px',
-                  fontWeight: '600',
+                  fontSize: '14px',
+                  fontWeight: 'bold',
                   fill: '#ef4444',
                   fontFamily: 'system-ui, -apple-system, sans-serif',
                 }}

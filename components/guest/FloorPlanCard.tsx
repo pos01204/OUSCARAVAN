@@ -27,7 +27,7 @@ function FloorPlanCardComponent({ assignedRoom }: FloorPlanCardProps) {
       </CardHeader>
       <CardContent className="space-y-4">
         <div className="w-full rounded-lg border-2 border-border bg-muted/30 p-3 md:p-4 overflow-hidden">
-          <FloorPlanViewer assignedRoom={assignedRoom} showLabels={true} />
+          <FloorPlanViewer assignedRoom={assignedRoom} showLabels={false} />
         </div>
         <div className="flex items-center justify-center gap-2 text-sm" role="status" aria-live="polite">
           <div 

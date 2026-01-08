@@ -16,9 +16,22 @@ export interface FloorPlanSpace {
   capacity: number;        // 수용 인원 (4인실 또는 2인실)
 }
 
+export interface FloorPlanFacility {
+  id: string;              // 시설 식별자
+  name: string;            // 시설 이름 (예: "주차공간 1", "관리동")
+  coordinates: {
+    x: number;
+    y: number;
+    width: number;
+    height: number;
+  };
+  type: 'parking' | 'building' | 'cafe' | 'warehouse'; // 시설 타입
+}
+
 export interface FloorPlanConfig {
   viewBox: string;         // SVG viewBox (예: "0 0 800 600")
   spaces: FloorPlanSpace[]; // 공간 목록
+  facilities: FloorPlanFacility[]; // 시설 목록
   grid?: {
     columns: number;       // 그리드 열 수
     rows: number;         // 그리드 행 수
@@ -122,6 +135,46 @@ export const FLOOR_PLAN_CONFIG: FloorPlanConfig = {
       displayName: '10호',
       coordinates: { x: 700, y: 520, width: 120, height: 100 },
       capacity: 2,
+    },
+  ],
+  facilities: [
+    // 왼쪽 섹션 - 상단
+    {
+      id: 'parking-1',
+      name: '주차공간 1',
+      coordinates: { x: 20, y: 20, width: 380, height: 80 },
+      type: 'parking',
+    },
+    {
+      id: 'management',
+      name: '관리동',
+      coordinates: { x: 20, y: 110, width: 380, height: 70 },
+      type: 'building',
+    },
+    // 오른쪽 섹션 - 상단
+    {
+      id: 'parking-2',
+      name: '주차공간 2',
+      coordinates: { x: 520, y: 20, width: 460, height: 80 },
+      type: 'parking',
+    },
+    {
+      id: 'cafe',
+      name: '카페(오우스마켓)',
+      coordinates: { x: 520, y: 110, width: 460, height: 100 },
+      type: 'cafe',
+    },
+    {
+      id: 'warehouse',
+      name: '건물/창고',
+      coordinates: { x: 520, y: 220, width: 300, height: 80 },
+      type: 'warehouse',
+    },
+    {
+      id: 'parking-3',
+      name: '주차공간 3',
+      coordinates: { x: 520, y: 310, width: 300, height: 70 },
+      type: 'parking',
     },
   ],
 };
