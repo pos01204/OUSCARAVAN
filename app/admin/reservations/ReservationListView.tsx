@@ -11,6 +11,7 @@ import { ChevronDown, RefreshCw } from 'lucide-react';
 import { calculateTotalAmount } from '@/lib/utils/reservation';
 import { cn } from '@/lib/utils';
 import { usePullToRefresh } from '@/lib/hooks/usePullToRefresh';
+import { RoomAssignmentDrawer } from '@/components/admin/RoomAssignmentDrawer';
 
 interface ReservationListViewProps {
   reservations: Reservation[];
@@ -20,74 +21,74 @@ interface ReservationListViewProps {
   checkin?: string;
   checkout?: string;
 }
+const router = useRouter();
+const [isMobile, setIsMobile] = useState(false);
 
-export function ReservationListView({
-  reservations,
-  total,
-  search,
-  status,
-  checkin,
-  checkout,
-}: ReservationListViewProps) {
-  const router = useRouter();
+// Quick Assignment State
+const [assigningReservation, setAssigningReservation] = useState<Reservation | null>(null);
+const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  // Phase 3: 풀 투 리프레시 기능
-  const [isMobile, setIsMobile] = useState(false);
+useEffect(() => {
+  // ... (same mobile check logic)
+  const checkMobile = () => {
+    setIsMobile(window.innerWidth <= 768);
+  };
+  checkMobile();
+  window.addEventListener('resize', checkMobile);
+  return () => window.removeEventListener('resize', checkMobile);
+}, []);
 
-  useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
+const { ref, isPulling, pullDistance, isRefreshing, pullProgress, handlers } = usePullToRefresh({
+  onRefresh: async () => {
+    router.refresh();
+  },
+  enabled: isMobile,
+});
 
-  const { ref, isPulling, pullDistance, isRefreshing, pullProgress, handlers } = usePullToRefresh({
-    onRefresh: async () => {
-      // 페이지 새로고침
-      router.refresh();
-    },
-    enabled: isMobile, // 모바일에서만 활성화
-  });
-
-  const getStatusBadge = (status: Reservation['status']) => {
-    const variants: Record<Reservation['status'], { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
-      pending: { label: '대기', variant: 'outline' },
-      assigned: { label: '배정 완료', variant: 'secondary' },
-      checked_in: { label: '체크인', variant: 'default' },
-      checked_out: { label: '체크아웃', variant: 'secondary' },
-      cancelled: { label: '취소', variant: 'destructive' },
-    };
-    
-    const { label, variant } = variants[status];
-    return <Badge variant={variant}>{label}</Badge>;
+const getStatusBadge = (status: Reservation['status']) => {
+  // ... (same badge logic)
+  const variants: Record<Reservation['status'], { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
+    pending: { label: '대기', variant: 'outline' },
+    assigned: { label: '배정 완료', variant: 'secondary' },
+    checked_in: { label: '체크인', variant: 'default' },
+    checked_out: { label: '체크아웃', variant: 'secondary' },
+    cancelled: { label: '취소', variant: 'destructive' },
   };
 
-  if (reservations.length === 0) {
-    return (
-      <Card>
-        <CardContent className="py-8 text-center">
-          <p className="text-muted-foreground">
-            {search || status || checkin || checkout
-              ? '검색 결과가 없습니다.'
-              : '등록된 예약이 없습니다.'}
-          </p>
-        </CardContent>
-      </Card>
-    );
-  }
+  const { label, variant } = variants[status];
+  return <Badge variant={variant}>{label}</Badge>;
+};
 
+const handleQuickAssign = (reservation: Reservation) => {
+  setAssigningReservation(reservation);
+  setIsDrawerOpen(true);
+};
+
+if (reservations.length === 0) {
+  // ... (same empty state)
   return (
-    <div 
+    <Card>
+      <CardContent className="py-8 text-center">
+        <p className="text-muted-foreground">
+          {search || status || checkin || checkout
+            ? '검색 결과가 없습니다.'
+            : '등록된 예약이 없습니다.'}
+        </p>
+      </CardContent>
+    </Card>
+  );
+}
+
+return (
+  <>
+    <div
       ref={ref}
       className="space-y-4 relative"
       {...handlers}
     >
-      {/* Phase 3: 풀 투 리프레시 인디케이터 */}
+      {/* ... (same pull to refresh indicator) */}
       {isPulling && (
-        <div 
+        <div
           className="fixed top-0 left-0 right-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm transition-opacity"
           style={{
             height: `${Math.min(pullDistance, 80)}px`,
@@ -95,7 +96,7 @@ export function ReservationListView({
           }}
         >
           <div className="flex flex-col items-center gap-2">
-            <RefreshCw 
+            <RefreshCw
               className={cn(
                 "h-6 w-6 text-primary transition-transform",
                 isRefreshing && "animate-spin"
@@ -121,19 +122,33 @@ export function ReservationListView({
           key={reservation.id}
           reservation={reservation}
           getStatusBadge={getStatusBadge}
+          onQuickAssign={handleQuickAssign}
         />
       ))}
     </div>
-  );
+
+    <RoomAssignmentDrawer
+      isOpen={isDrawerOpen}
+      onClose={() => setIsDrawerOpen(false)}
+      reservation={assigningReservation}
+      onAssignSuccess={() => {
+        setIsDrawerOpen(false);
+        router.refresh();
+      }}
+    />
+  </>
+);
 }
 
 // Phase 2: 접이식 카드 컴포넌트
 function ReservationCard({
   reservation,
   getStatusBadge,
+  onQuickAssign,
 }: {
   reservation: Reservation;
   getStatusBadge: (status: Reservation['status']) => JSX.Element;
+  onQuickAssign: (reservation: Reservation) => void;
 }) {
   const [isExpanded, setIsExpanded] = useState(false);
   const { totalAmount, roomAmount, optionsAmount } = calculateTotalAmount(reservation);
@@ -227,15 +242,29 @@ function ReservationCard({
             </div>
           </div>
 
-          <Link href={`/admin/reservations/${reservation.id}`}>
-            <Button 
-              className="w-full min-h-[44px]" 
-              size="lg"
-              aria-label={`${reservation.guestName}님 예약 상세 페이지로 이동`}
-            >
-              상세보기
-            </Button>
-          </Link>
+          <div className="flex gap-2">
+            {!reservation.assignedRoom && (
+              <Button
+                variant="default" // Primary color for action
+                className="flex-1 min-h-[44px]"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onQuickAssign(reservation);
+                }}
+              >
+                방 배정하기
+              </Button>
+            )}
+            <Link href={`/admin/reservations/${reservation.id}`} className={!reservation.assignedRoom ? 'flex-1' : 'w-full'}>
+              <Button
+                variant="outline"
+                className="w-full min-h-[44px]"
+                aria-label={`${reservation.guestName}님 예약 상세 페이지로 이동`}
+              >
+                상세보기
+              </Button>
+            </Link>
+          </div>
         </CardContent>
       )}
     </Card>
