@@ -26,8 +26,8 @@ interface GuestHomeContentProps {
 }
 
 export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) {
-  const { setGuestInfo, isCheckedIn } = useGuestStore();
-  
+  const { setGuestInfo, isCheckedIn, isCheckedOut } = useGuestStore();
+
   useEffect(() => {
     // Railway API에서 가져온 예약 정보로 게스트 정보 설정
     setGuestInfo({
@@ -36,16 +36,18 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
       checkinDate: reservation.checkin,
       checkoutDate: reservation.checkout,
     });
-    
-    // 자동 체크인 (체크인 날짜가 오늘인 경우)
-    if (reservation.checkin && !isCheckedIn) {
-      const today = new Date().toISOString().split('T')[0];
-      if (reservation.checkin.startsWith(today)) {
+
+    // 서버 상태와 동기화 (새로고침 시 초기화 방지)
+    if (reservation.status === 'checked_in') {
+      if (!isCheckedIn) {
         useGuestStore.getState().checkIn();
       }
+    } else if (reservation.status === 'checked_out') {
+      if (!isCheckedIn) useGuestStore.getState().checkIn();
+      if (!isCheckedOut) useGuestStore.getState().checkOut();
     }
-  }, [reservation, setGuestInfo, isCheckedIn]);
-  
+  }, [reservation, setGuestInfo, isCheckedIn, isCheckedOut]);
+
   return (
     <main className="space-y-6" role="main" aria-label="고객 홈 페이지">
       {/* Hero Section */}
@@ -61,21 +63,21 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
         </h1>
         {/* 호수 정보는 고객에게 노출하지 않음 (관리자 편의용) */}
       </motion.section>
-      
+
       {/* Checkout Reminder */}
       <CheckoutReminder />
-      
+
       {/* Time Countdown */}
       <TimeCountdown />
-      
+
       {/* 약도 카드 (체크인 완료 후 배정된 공간 표시) */}
       {reservation.assignedRoom && (
         <FloorPlanCard assignedRoom={reservation.assignedRoom} />
       )}
-      
+
       {/* 주문 동기화 컴포넌트 (백그라운드에서 주기적으로 주문 목록 동기화) */}
       <GuestOrderSync token={token} />
-      
+
       {/* Status Cards Grid */}
       <section className="grid gap-4 md:grid-cols-2" aria-label="서비스 정보 카드">
         <WifiCard />
@@ -83,7 +85,7 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
         <SunsetWidget />
         <CheckInOut token={token} />
       </section>
-      
+
       {/* 예약 상품 및 옵션 정보 */}
       <section aria-label="예약 상품 정보">
         <Card>
@@ -117,7 +119,7 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
                 </div>
               </div>
             </div>
-            
+
             {/* OPTION 상품들 */}
             {reservation.options && reservation.options.length > 0 && (
               <div className="space-y-2">
@@ -126,7 +128,7 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
                   {reservation.options.map((option, index) => {
                     const formatted = formatOptionName(option.optionName);
                     const hasPrice = option.optionPrice > 0;
-                    
+
                     return (
                       <div key={index} className="p-3 bg-muted rounded-md border border-border/50">
                         <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
@@ -135,9 +137,9 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
                             {formatted.tags.length > 0 && (
                               <div className="flex flex-wrap gap-1 mb-1.5">
                                 {formatted.tags.map((tag, tagIndex) => (
-                                  <Badge 
-                                    key={tagIndex} 
-                                    variant="outline" 
+                                  <Badge
+                                    key={tagIndex}
+                                    variant="outline"
                                     className="text-xs px-1.5 py-0.5 h-auto font-normal"
                                   >
                                     {tag}
@@ -145,16 +147,16 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
                                 ))}
                               </div>
                             )}
-                            
+
                             {/* 메인 옵션명 */}
                             <p className="font-medium text-sm leading-relaxed break-words">
                               {formatted.mainName || formatted.fullName}
                             </p>
-                            
+
                             {/* OPTION 배지 */}
                             <Badge variant="secondary" className="mt-1.5 text-xs">OPTION</Badge>
                           </div>
-                          
+
                           {/* 가격 */}
                           <div className="flex-shrink-0 sm:text-right">
                             <p className={`font-semibold text-base whitespace-nowrap ${hasPrice ? 'text-foreground' : 'text-muted-foreground'}`}>
@@ -172,7 +174,7 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
                 </div>
               </div>
             )}
-            
+
             {/* 총 결제금액 */}
             <div className="pt-4 border-t">
               <div className="flex items-center justify-between">
@@ -194,7 +196,7 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
           </CardContent>
         </Card>
       </section>
-      
+
       {/* Order History */}
       <OrderHistory />
     </main>

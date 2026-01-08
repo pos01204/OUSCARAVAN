@@ -17,20 +17,24 @@ function FloorPlanCardComponent({ assignedRoom }: FloorPlanCardProps) {
   }
 
   return (
-    <Card className="border-primary/20 shadow-sm" role="region" aria-label="배정된 공간 약도">
-      <CardHeader>
+    <Card className="border-primary/10 shadow-sm overflow-hidden" role="region" aria-label="배정된 공간 약도">
+      <CardHeader className="pb-3">
         <div className="flex items-center gap-2">
-          <MapPin className="h-5 w-5 text-primary" aria-hidden="true" />
-          <CardTitle>배정된 공간</CardTitle>
+          <div className="p-1.5 rounded-full bg-primary/10">
+            <MapPin className="h-4 w-4 text-primary" aria-hidden="true" />
+          </div>
+          <div>
+            <CardTitle className="text-lg">배정된 공간</CardTitle>
+            <CardDescription>지정된 카라반 위치를 확인하세요</CardDescription>
+          </div>
         </div>
-        <CardDescription>약도에서 당신의 공간을 확인하세요</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4 pb-4">
+      <CardContent className="space-y-4 pb-6">
         <div className="w-full rounded-lg border-2 border-border bg-muted/30 p-3 md:p-4 overflow-hidden">
           <FloorPlanViewer assignedRoom={assignedRoom} showLabels={false} />
         </div>
         <div className="flex items-center justify-center gap-2 text-sm mb-0" role="status" aria-live="polite">
-          <div 
+          <div
             className="h-3 w-3 rounded-full bg-red-500 border-2 border-red-600 animate-pulse"
             aria-label="배정된 공간 표시"
           ></div>
