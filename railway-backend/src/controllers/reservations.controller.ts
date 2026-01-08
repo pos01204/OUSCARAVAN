@@ -9,6 +9,9 @@ import {
   type Reservation,
 } from '../services/reservations.service';
 import { v4 as uuidv4 } from 'uuid';
+import { sendReservationAssignedNotification } from '../utils/n8n';
+import { createReservationAssignedNotification } from '../services/notifications-helper.service';
+import pool from '../config/database';
 
 export async function listReservations(req: Request, res: Response) {
   try {
@@ -278,6 +281,146 @@ export async function deleteReservationHandler(req: Request, res: Response) {
     res.status(204).send();
   } catch (error: any) {
     console.error('Delete reservation error:', error);
+    
+    if (error.message === 'Reservation not found') {
+      return res.status(404).json({
+        error: 'Reservation not found',
+        code: 'RESERVATION_NOT_FOUND',
+      });
+    }
+
+    res.status(500).json({
+      error: 'Internal server error',
+      code: 'INTERNAL_ERROR',
+    });
+  }
+}
+
+/**
+ * 방 배정 완료 API (알림톡 트리거 포함)
+ * PATCH /api/admin/reservations/:id/assign
+ */
+export async function assignRoomHandler(req: Request, res: Response) {
+  try {
+    const { id } = req.params;
+    const {
+      roomNumber,
+      phoneNumber,
+      sendNotification = true, // 기본값: true
+    } = req.body;
+
+    // 필수 필드 검증
+    if (!roomNumber || !phoneNumber) {
+      return res.status(400).json({
+        error: 'Missing required fields',
+        code: 'MISSING_FIELDS',
+        details: {
+          required: ['roomNumber', 'phoneNumber'],
+        },
+      });
+    }
+
+    // 전화번호 형식 검증 (간단한 검증)
+    const phoneRegex = /^[0-9-+\s()]+$/;
+    if (!phoneRegex.test(phoneNumber)) {
+      return res.status(400).json({
+        error: 'Invalid phone number format',
+        code: 'INVALID_PHONE',
+      });
+    }
+
+    // 예약 존재 여부 확인
+    const existingReservation = await getReservationById(id);
+    if (!existingReservation) {
+      return res.status(404).json({
+        error: 'Reservation not found',
+        code: 'RESERVATION_NOT_FOUND',
+      });
+    }
+
+    // 방 중복 배정 검증 (날짜 범위가 겹치는 예약이 있는지 확인)
+    // SQL로 직접 조회하여 정확한 날짜 범위 검증
+    const conflictQuery = `
+      SELECT id, guest_name, checkin, checkout, assigned_room, status
+      FROM reservations
+      WHERE assigned_room = $1
+        AND id != $2
+        AND status != 'cancelled'
+        AND (
+          (checkin::date <= $3::date AND checkout::date > $3::date)
+          OR (checkin::date < $4::date AND checkout::date >= $4::date)
+          OR (checkin::date >= $3::date AND checkout::date <= $4::date)
+        )
+      LIMIT 1
+    `;
+    
+    const conflictResult = await pool.query(conflictQuery, [
+      roomNumber,
+      id,
+      existingReservation.checkin,
+      existingReservation.checkout,
+    ]);
+    
+    if (conflictResult.rows.length > 0) {
+      const conflict = conflictResult.rows[0];
+      return res.status(409).json({
+        error: 'Room already assigned to another reservation',
+        code: 'ROOM_ALREADY_ASSIGNED',
+        details: {
+          roomNumber,
+          conflictingReservation: {
+            id: conflict.id,
+            guestName: conflict.guest_name,
+            checkin: conflict.checkin,
+            checkout: conflict.checkout,
+          },
+        },
+      });
+    }
+
+    // 고유 토큰 생성 (없는 경우)
+    const uniqueToken = existingReservation.uniqueToken || uuidv4();
+
+    // 전화번호 정리 (하이픈/공백 제거)
+    const cleanedPhone = phoneNumber.replace(/[-\s()]/g, '');
+
+    // 예약 업데이트
+    const reservation = await updateReservation(id, {
+      assignedRoom: roomNumber,
+      phone: cleanedPhone,
+      uniqueToken,
+      status: 'assigned',
+    });
+
+    // 알림톡 발송 (sendNotification이 true인 경우)
+    if (sendNotification !== false) {
+      try {
+        await sendReservationAssignedNotification({
+          reservationId: reservation.id,
+          guestName: reservation.guestName,
+          phone: cleanedPhone,
+          uniqueToken,
+          assignedRoom: roomNumber,
+          checkin: reservation.checkin,
+          checkout: reservation.checkout,
+        });
+      } catch (webhookError) {
+        console.error('[AssignRoom] Failed to send notification:', webhookError);
+        // 웹훅 실패해도 배정은 성공으로 처리
+      }
+    }
+
+    // 예약 배정 알림 생성 (SSE)
+    try {
+      await createReservationAssignedNotification(reservation.id);
+    } catch (notificationError) {
+      console.error('[AssignRoom] Failed to create notification:', notificationError);
+      // 알림 생성 실패해도 배정은 성공으로 처리
+    }
+
+    res.json(reservation);
+  } catch (error: any) {
+    console.error('Assign room error:', error);
     
     if (error.message === 'Reservation not found') {
       return res.status(404).json({

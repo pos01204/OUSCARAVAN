@@ -13,6 +13,7 @@ import {
   createReservationHandler,
   updateReservationHandler,
   deleteReservationHandler,
+  assignRoomHandler,
 } from '../controllers/reservations.controller';
 import {
   listRooms,
@@ -84,6 +85,7 @@ router.get('/reservations', listReservations);
 router.get('/reservations/:id', getReservation);
 router.post('/reservations', validateCreateReservation, createReservationHandler);
 router.patch('/reservations/:id', validateUpdateReservation, updateReservationHandler);
+router.patch('/reservations/:id/assign', assignRoomHandler); // 방 배정 완료 API
 router.delete('/reservations/:id', deleteReservationHandler);
 
 // 방 관리

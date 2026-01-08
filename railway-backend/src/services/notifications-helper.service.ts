@@ -190,3 +190,34 @@ export async function createOrderCancelledNotification(orderId: string): Promise
     // 알림 생성 실패는 주문 취소 프로세스를 중단하지 않음
   }
 }
+
+/**
+ * 예약 배정 알림 생성
+ */
+export async function createReservationAssignedNotification(reservationId: string): Promise<void> {
+  try {
+    const reservation = await getReservationById(reservationId);
+    if (!reservation) return;
+
+    const notification = await createNotification({
+      type: 'reservation_assigned',
+      title: '방 배정 완료',
+      message: `${reservation.guestName}님의 예약이 ${reservation.assignedRoom || '방 미배정'}에 배정되었습니다.`,
+      priority: 'high',
+      metadata: {
+        reservationId: reservation.id,
+        reservationNumber: reservation.reservationNumber,
+        guestName: reservation.guestName,
+        room: reservation.assignedRoom,
+      },
+      linkType: 'reservation',
+      linkId: reservation.id,
+    });
+
+    // SSE로 실시간 전송
+    sendNotification('admin', notification);
+  } catch (error) {
+    console.error('[Notification] Failed to create reservation assigned notification:', error);
+    // 알림 생성 실패는 방 배정 프로세스를 중단하지 않음
+  }
+}
