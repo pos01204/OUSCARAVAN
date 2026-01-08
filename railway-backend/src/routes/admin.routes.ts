@@ -21,6 +21,7 @@ import {
   createRoomHandler,
   updateRoomHandler,
   deleteRoomHandler,
+  getRoomOrders,
 } from '../controllers/rooms.controller';
 import {
   listOrders,
@@ -91,6 +92,7 @@ router.delete('/reservations/:id', deleteReservationHandler);
 // 방 관리
 router.get('/rooms', listRooms);
 router.get('/rooms/:id', getRoom);
+router.get('/rooms/:roomName/orders', getRoomOrders); // 객실별 주문 내역
 router.post('/rooms', validateRoom, createRoomHandler);
 router.patch('/rooms/:id', validateRoom, updateRoomHandler);
 router.delete('/rooms/:id', deleteRoomHandler);

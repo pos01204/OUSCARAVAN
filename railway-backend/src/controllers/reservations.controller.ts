@@ -12,6 +12,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { sendReservationAssignedNotification } from '../utils/n8n';
 import { createReservationAssignedNotification } from '../services/notifications-helper.service';
 import pool from '../config/database';
+import { validatePhone } from '../utils/validation';
 
 export async function listReservations(req: Request, res: Response) {
   try {
@@ -20,15 +21,28 @@ export async function listReservations(req: Request, res: Response) {
       checkin,
       checkout,
       search,
+      assignedRoom,
       page,
       limit,
     } = req.query;
+
+    // assignedRoom 파라미터 처리
+    // "null" 문자열이면 null로, 값이 있으면 해당 방 번호로
+    let assignedRoomFilter: string | null | undefined = undefined;
+    if (assignedRoom !== undefined) {
+      if (assignedRoom === 'null' || assignedRoom === null) {
+        assignedRoomFilter = null; // 미배정만
+      } else {
+        assignedRoomFilter = assignedRoom as string; // 특정 방
+      }
+    }
 
     const filters = {
       status: status as string | undefined,
       checkin: checkin as string | undefined,
       checkout: checkout as string | undefined,
       search: search as string | undefined,
+      assignedRoom: assignedRoomFilter,
       page: page ? parseInt(page as string) : 1,
       limit: limit ? parseInt(limit as string) : 20,
     };
@@ -320,12 +334,14 @@ export async function assignRoomHandler(req: Request, res: Response) {
       });
     }
 
-    // 전화번호 형식 검증 (간단한 검증)
-    const phoneRegex = /^[0-9-+\s()]+$/;
-    if (!phoneRegex.test(phoneNumber)) {
+    // 전화번호 형식 검증 (validatePhone 유틸리티 사용)
+    if (!validatePhone(phoneNumber)) {
       return res.status(400).json({
         error: 'Invalid phone number format',
         code: 'INVALID_PHONE',
+        details: {
+          expectedFormat: '010-1234-5678 or 01012345678',
+        },
       });
     }
 

@@ -52,6 +52,7 @@ export async function getReservations(filters: {
   checkin?: string;
   checkout?: string;
   search?: string;
+  assignedRoom?: string | null; // null이면 미배정만, 문자열이면 해당 방만
   page?: number;
   limit?: number;
 }): Promise<{ reservations: Reservation[]; total: number }> {
@@ -60,6 +61,7 @@ export async function getReservations(filters: {
     checkin,
     checkout,
     search,
+    assignedRoom,
     page = 1,
     limit = 20,
   } = filters;
@@ -78,16 +80,34 @@ export async function getReservations(filters: {
 
   // 체크인 날짜 필터
   if (checkin) {
-    conditions.push(`checkin = $${paramIndex}`);
-    params.push(checkin);
-    paramIndex++;
+    // "tomorrow" 문자열인 경우 내일 날짜로 변환
+    if (checkin === 'tomorrow') {
+      conditions.push(`checkin::date = CURRENT_DATE + INTERVAL '1 day'`);
+    } else {
+      conditions.push(`checkin::date = $${paramIndex}::date`);
+      params.push(checkin);
+      paramIndex++;
+    }
   }
 
   // 체크아웃 날짜 필터
   if (checkout) {
-    conditions.push(`checkout = $${paramIndex}`);
+    conditions.push(`checkout::date = $${paramIndex}::date`);
     params.push(checkout);
     paramIndex++;
+  }
+
+  // 방 배정 필터
+  if (assignedRoom !== undefined) {
+    if (assignedRoom === null) {
+      // 미배정만 조회
+      conditions.push(`assigned_room IS NULL`);
+    } else {
+      // 특정 방만 조회
+      conditions.push(`assigned_room = $${paramIndex}`);
+      params.push(assignedRoom);
+      paramIndex++;
+    }
   }
 
   // 검색 필터 (예약자명, 예약번호)
@@ -124,7 +144,7 @@ export async function getReservations(filters: {
       updated_at
     FROM reservations
     ${whereClause}
-    ORDER BY created_at DESC
+    ORDER BY checkin ASC, created_at DESC
     LIMIT $${paramIndex} OFFSET $${paramIndex + 1}
   `;
   params.push(limit, offset);

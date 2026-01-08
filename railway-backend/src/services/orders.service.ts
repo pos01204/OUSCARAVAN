@@ -130,6 +130,44 @@ export async function getAllOrders(filters: {
   return { orders, total };
 }
 
+/**
+ * 객실별 주문 내역 조회
+ */
+export async function getOrdersByRoomName(roomName: string): Promise<Order[]> {
+  const query = `
+    SELECT 
+      o.id,
+      o.reservation_id,
+      o.type,
+      o.items,
+      o.total_amount,
+      o.status,
+      o.delivery_time,
+      o.notes,
+      o.created_at,
+      o.updated_at
+    FROM orders o
+    INNER JOIN reservations r ON o.reservation_id = r.id
+    WHERE r.assigned_room = $1
+    ORDER BY o.created_at DESC
+  `;
+
+  const result = await pool.query(query, [roomName]);
+
+  return result.rows.map((row) => ({
+    id: row.id,
+    reservationId: row.reservation_id,
+    type: row.type,
+    items: row.items,
+    totalAmount: row.total_amount,
+    status: row.status,
+    deliveryTime: row.delivery_time || undefined,
+    notes: row.notes || undefined,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at,
+  }));
+}
+
 export async function getOrderById(id: string): Promise<Order | null> {
   const query = `
     SELECT 

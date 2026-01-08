@@ -6,6 +6,7 @@ import {
   updateRoom,
   deleteRoom,
 } from '../services/rooms.service';
+import { getOrdersByRoomName } from '../services/orders.service';
 
 export async function listRooms(req: Request, res: Response) {
   try {
@@ -160,6 +161,36 @@ export async function deleteRoomHandler(req: Request, res: Response) {
       });
     }
 
+    res.status(500).json({
+      error: 'Internal server error',
+      code: 'INTERNAL_ERROR',
+    });
+  }
+}
+
+/**
+ * 객실별 주문 내역 조회
+ * GET /api/admin/rooms/:roomName/orders
+ */
+export async function getRoomOrders(req: Request, res: Response) {
+  try {
+    const { roomName } = req.params;
+
+    if (!roomName) {
+      return res.status(400).json({
+        error: 'Room name is required',
+        code: 'MISSING_ROOM_NAME',
+      });
+    }
+
+    const orders = await getOrdersByRoomName(roomName);
+
+    res.json({
+      orders,
+      total: orders.length,
+    });
+  } catch (error) {
+    console.error('Get room orders error:', error);
     res.status(500).json({
       error: 'Internal server error',
       code: 'INTERNAL_ERROR',
