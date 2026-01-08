@@ -410,10 +410,10 @@ export function ReservationCalendarView({
         const checkoutDate = new Date(checkout.getFullYear(), checkout.getMonth(), checkout.getDate());
         checkoutDate.setHours(0, 0, 0, 0);
 
-        // 날짜 범위 확인: 체크인 <= 선택일 <= 체크아웃
-        const isInRange = checkinDate <= targetDate && targetDate <= checkoutDate;
+        // 날짜 범위 확인: 체크인 날짜인 경우만 표시 (사용자 요청: 해당 날짜에 체크인 하는 인원만 노출)
+        const isCheckInDay = checkinDate.getTime() === targetDate.getTime();
 
-        return isInRange;
+        return isCheckInDay;
       } catch (error) {
         console.error('[Calendar] Error filtering reservation for date:', {
           reservationId: reservation.id,
@@ -425,14 +425,13 @@ export function ReservationCalendarView({
       }
     });
 
-    console.log('[Calendar] Reservations for date:', {
+    console.log('[Calendar] Reservations for date (Check-in Only):', {
       date: format(targetDate, 'yyyy-MM-dd'),
       count: filtered.length,
       reservations: filtered.map(r => ({
         id: r.id,
         guestName: r.guestName,
         checkin: r.checkin,
-        checkout: r.checkout,
       })),
     });
 
@@ -769,12 +768,16 @@ export function ReservationCalendarView({
                         >
                           <div className="flex items-center gap-2 flex-1 min-w-0">
                             {getStatusBadge(reservation.status)}
-                            <span className="font-medium truncate">{reservation.guestName}</span>
+                            <div className="flex flex-col min-w-0">
+                              <span className="font-medium truncate">{reservation.guestName}</span>
+                              <span className="text-xs text-muted-foreground truncate">{reservation.roomType}</span>
+                            </div>
+
                             {!reservation.assignedRoom && (
                               <Button
                                 size="sm"
                                 variant="default"
-                                className="h-6 text-[10px] px-2 ml-2 bg-orange-500 hover:bg-orange-600 border-none"
+                                className="h-7 text-xs px-2 ml-auto shrink-0 bg-primary hover:bg-primary/90"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleQuickAssign(reservation);
@@ -784,7 +787,15 @@ export function ReservationCalendarView({
                               </Button>
                             )}
                           </div>
-                          <div className="text-sm text-muted-foreground ml-2">
+
+                          {/* 배정된 방이 있으면 표시 */}
+                          {reservation.assignedRoom && (
+                            <Badge variant="outline" className="ml-auto shrink-0">
+                              {reservation.assignedRoom}
+                            </Badge>
+                          )}
+
+                          <div className="text-sm font-semibold ml-2 min-w-[80px] text-right">
                             {calculateTotalAmount(reservation).totalAmount.toLocaleString()}원
                           </div>
                         </div>
