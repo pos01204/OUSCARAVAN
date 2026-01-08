@@ -25,11 +25,11 @@ function FloorPlanCardComponent({ assignedRoom }: FloorPlanCardProps) {
         </div>
         <CardDescription>약도에서 당신의 공간을 확인하세요</CardDescription>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-4 pb-4">
         <div className="w-full rounded-lg border-2 border-border bg-muted/30 p-3 md:p-4 overflow-hidden">
           <FloorPlanViewer assignedRoom={assignedRoom} showLabels={false} />
         </div>
-        <div className="flex items-center justify-center gap-2 text-sm" role="status" aria-live="polite">
+        <div className="flex items-center justify-center gap-2 text-sm mb-0" role="status" aria-live="polite">
           <div 
             className="h-3 w-3 rounded-full bg-red-500 border-2 border-red-600 animate-pulse"
             aria-label="배정된 공간 표시"

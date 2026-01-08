@@ -254,6 +254,12 @@
   
   .rbc-month-view {
     height: auto !important;
+    min-height: 600px !important; /* 최소 높이 보장 */
+  }
+  
+  /* 캘린더 컨테이너 스크롤 가능하도록 */
+  .rbc-calendar {
+    overflow-y: visible !important;
   }
 }
 

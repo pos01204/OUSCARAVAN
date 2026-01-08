@@ -602,13 +602,13 @@ export function ReservationCalendarView({
 
       {/* 그리드 뷰 */}
       {calendarViewType === 'grid' && (
-        <div className="h-[calc(100vh-200px)] md:h-[700px] mt-4 rounded-lg border border-border bg-card overflow-hidden">
+        <div className="h-[calc(100vh-200px)] md:h-[700px] mt-4 rounded-lg border border-border bg-card overflow-y-auto">
           <Calendar
           localizer={localizer}
           events={events}
           startAccessor="start"
           endAccessor="end"
-          style={{ height: '100%', padding: '8px' }}
+          style={{ height: '100%', minHeight: '600px', padding: '8px' }}
           view={view}
           onView={setView}
           date={currentDate}

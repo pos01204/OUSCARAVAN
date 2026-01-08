@@ -55,7 +55,7 @@ export interface FloorPlanConfig {
  * - 오른쪽 하단: 10호
  */
 export const FLOOR_PLAN_CONFIG: FloorPlanConfig = {
-  viewBox: "0 0 600 480",  // SVG 뷰포트 크기 (가로 너비 추가 축소, 카드에 맞춤)
+  viewBox: "0 0 600 260",  // SVG 뷰포트 크기 (세로 높이 축소하여 아래 여백 제거)
   grid: {
     columns: 2,            // 좌우 2개 섹션
     rows: 4,               // 행 수
@@ -113,26 +113,28 @@ export const FLOOR_PLAN_CONFIG: FloorPlanConfig = {
     // 7-10호 시작 위치: x: 280 + 150 + 6 간격 = 436
     // 사용 가능 너비: 600 - 436 = 164
     // 상단 행: 7호, 8호, 9호 (3개 가로 배치)
-    // 각 방 너비: (164 - 6*2 간격) / 3 = 약 50
+    // 각 방 너비를 1-6호와 통일: width: 102 (높이는 55로 통일)
+    // 하지만 공간 제약으로 인해 약간 축소 필요: (164 - 6*2 간격) / 3 = 약 50
+    // 통일성을 위해 가능한 한 크게 조정: width: 50 → 52로 약간 증가
     {
       id: '7',
       name: '7호',
       displayName: '7호',
-      coordinates: { x: 436, y: 130, width: 50, height: 55 },
+      coordinates: { x: 436, y: 130, width: 52, height: 55 },
       capacity: 4,
     },
     {
       id: '8',
       name: '8호',
       displayName: '8호',
-      coordinates: { x: 492, y: 130, width: 50, height: 55 },
+      coordinates: { x: 494, y: 130, width: 52, height: 55 },
       capacity: 4,
     },
     {
       id: '9',
       name: '9호',
       displayName: '9호',
-      coordinates: { x: 548, y: 130, width: 50, height: 55 },
+      coordinates: { x: 552, y: 130, width: 52, height: 55 },
       capacity: 4,
     },
     // 하단 행: 10호 (1개만, 중앙 정렬)
@@ -140,7 +142,7 @@ export const FLOOR_PLAN_CONFIG: FloorPlanConfig = {
       id: '10',
       name: '10호',
       displayName: '10호',
-      coordinates: { x: 492, y: 195, width: 50, height: 55 },
+      coordinates: { x: 494, y: 195, width: 52, height: 55 },
       capacity: 2,
     },
   ],
