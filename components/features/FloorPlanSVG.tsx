@@ -56,7 +56,7 @@ function FloorPlanSVGComponent({
         const getFacilityColor = () => {
           switch (facility.type) {
             case 'parking':
-              return { fill: '#f3f4f6', stroke: '#9ca3af' };
+              return { fill: '#dbeafe', stroke: '#3b82f6' }; // 파란색 계열로 주차공간 구분
             case 'building':
               return { fill: '#e5e7eb', stroke: '#6b7280' };
             case 'cafe':
@@ -84,20 +84,23 @@ function FloorPlanSVGComponent({
               ry="4"
               opacity="0.8"
             />
-            <text
-              x={facility.coordinates.x + facility.coordinates.width / 2}
-              y={facility.coordinates.y + facility.coordinates.height / 2}
-              textAnchor="middle"
-              dominantBaseline="middle"
-              style={{
-                fontSize: '12px',
-                fontWeight: '600',
-                fill: '#374151',
-                fontFamily: 'system-ui, -apple-system, sans-serif',
-              }}
-            >
-              {facility.name}
-            </text>
+            {/* 건물/창고는 텍스트 표시하지 않음 */}
+            {facility.name && (
+              <text
+                x={facility.coordinates.x + facility.coordinates.width / 2}
+                y={facility.coordinates.y + facility.coordinates.height / 2}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                style={{
+                  fontSize: '12px',
+                  fontWeight: '600',
+                  fill: '#374151',
+                  fontFamily: 'system-ui, -apple-system, sans-serif',
+                }}
+              >
+                {facility.name}
+              </text>
+            )}
           </g>
         );
       })}

@@ -106,34 +106,34 @@ export const FLOOR_PLAN_CONFIG: FloorPlanConfig = {
       coordinates: { x: 120, y: 440, width: 120, height: 100 },
       capacity: 2,
     },
-    // 오른쪽 섹션 - 상단 행 (7호, 8호, 9호)
+    // 오른쪽 섹션 - 상단 행 (7호, 8호, 9호) - 건물/창고와 주차공간 3의 오른쪽
     {
       id: '7',
       name: '7호',
       displayName: '7호',
-      coordinates: { x: 560, y: 400, width: 120, height: 100 },
+      coordinates: { x: 840, y: 220, width: 120, height: 100 },
       capacity: 4,
     },
     {
       id: '8',
       name: '8호',
       displayName: '8호',
-      coordinates: { x: 700, y: 400, width: 120, height: 100 },
+      coordinates: { x: 840, y: 330, width: 120, height: 100 },
       capacity: 4,
     },
     {
       id: '9',
       name: '9호',
       displayName: '9호',
-      coordinates: { x: 840, y: 400, width: 120, height: 100 },
+      coordinates: { x: 840, y: 440, width: 120, height: 100 },
       capacity: 4,
     },
-    // 오른쪽 섹션 - 하단 (10호)
+    // 오른쪽 섹션 - 하단 (10호) - 8호 아래
     {
       id: '10',
       name: '10호',
       displayName: '10호',
-      coordinates: { x: 700, y: 520, width: 120, height: 100 },
+      coordinates: { x: 840, y: 550, width: 120, height: 100 },
       capacity: 2,
     },
   ],
@@ -166,7 +166,7 @@ export const FLOOR_PLAN_CONFIG: FloorPlanConfig = {
     },
     {
       id: 'warehouse',
-      name: '건물/창고',
+      name: '', // 텍스트 노출하지 않음
       coordinates: { x: 520, y: 220, width: 300, height: 80 },
       type: 'warehouse',
     },
