@@ -34,7 +34,7 @@ export default function NotificationsPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [filters, updateUnreadCount]);
+  }, [filters, setNotifications, updateUnreadCount]);
 
   useEffect(() => {
     loadNotifications();

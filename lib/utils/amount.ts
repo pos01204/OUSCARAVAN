@@ -88,7 +88,7 @@ export function safeParseAmount(
 export function sumAmounts(
   amounts: Array<string | number | null | undefined>
 ): number {
-  return amounts.reduce((sum, amount) => {
+  return amounts.reduce<number>((sum, amount) => {
     return sum + parseAmount(amount, 0);
   }, 0);
 }
