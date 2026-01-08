@@ -108,38 +108,39 @@ export const FLOOR_PLAN_CONFIG: FloorPlanConfig = {
       coordinates: { x: 10, y: 240, width: 102, height: 55 },
       capacity: 2,
     },
-    // 오른쪽 섹션 - 2열 2행 배치 (7-10호)
+    // 오른쪽 섹션 - ㅜ 형태 배치 (7-10호)
     // 건물/창고(x: 280, width: 150)와 주차공간 3의 오른쪽에 배치
     // 7-10호 시작 위치: x: 280 + 150 + 6 간격 = 436
-    // 각 방 너비를 줄여서 viewBox(600) 내에 맞춤: (600 - 436 - 여유) / 2 = 약 80
-    // 상단 행: 7호 (왼쪽), 8호 (오른쪽)
+    // 사용 가능 너비: 600 - 436 = 164
+    // 상단 행: 7호, 8호, 9호 (3개 가로 배치)
+    // 각 방 너비: (164 - 6*2 간격) / 3 = 약 50
     {
       id: '7',
       name: '7호',
       displayName: '7호',
-      coordinates: { x: 436, y: 130, width: 80, height: 55 },
+      coordinates: { x: 436, y: 130, width: 50, height: 55 },
       capacity: 4,
     },
     {
       id: '8',
       name: '8호',
       displayName: '8호',
-      coordinates: { x: 522, y: 130, width: 80, height: 55 },
+      coordinates: { x: 492, y: 130, width: 50, height: 55 },
       capacity: 4,
     },
-    // 하단 행: 9호 (왼쪽), 10호 (오른쪽)
     {
       id: '9',
       name: '9호',
       displayName: '9호',
-      coordinates: { x: 436, y: 195, width: 80, height: 55 },
+      coordinates: { x: 548, y: 130, width: 50, height: 55 },
       capacity: 4,
     },
+    // 하단 행: 10호 (1개만, 중앙 정렬)
     {
       id: '10',
       name: '10호',
       displayName: '10호',
-      coordinates: { x: 522, y: 195, width: 80, height: 55 },
+      coordinates: { x: 492, y: 195, width: 50, height: 55 },
       capacity: 2,
     },
   ],

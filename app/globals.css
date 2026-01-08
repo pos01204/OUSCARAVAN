@@ -173,6 +173,16 @@
     min-height: 200px !important; /* 높이 확대 (160px → 200px) */
   }
   
+  /* 월간 뷰 전체 높이 조정 */
+  .rbc-month-view {
+    min-height: 600px !important; /* 최소 높이 보장 */
+  }
+  
+  /* 월간 뷰 테이블 행 높이 조정 */
+  .rbc-month-row {
+    min-height: 200px !important; /* 각 행의 최소 높이 */
+  }
+  
   /* 요일 헤더 크기 조정 */
   .rbc-header {
     font-size: 11px !important;
