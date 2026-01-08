@@ -606,9 +606,8 @@ export function ReservationCalendarView({
     });
   }, [selectedDate]);
 
-  // 상태별 배지 (개선된 색상 시스템 사용)
-  const getStatusBadge = (status: Reservation['status']) => {
-    const colorConfig = STATUS_COLORS[status] || STATUS_COLORS.pending;
+  // 상태별 배지
+  const getStatusBadge = useCallback((status: Reservation['status']) => {
     const variants: Record<Reservation['status'], { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
       pending: { label: '대기', variant: 'outline' },
       assigned: { label: '배정 완료', variant: 'secondary' },
@@ -618,7 +617,7 @@ export function ReservationCalendarView({
     };
     const { label, variant } = variants[status];
     return <Badge variant={variant}>{label}</Badge>;
-  };
+  }, []);
 
   return (
     <>
