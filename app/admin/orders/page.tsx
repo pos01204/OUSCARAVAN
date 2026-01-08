@@ -27,14 +27,14 @@ export default function OrdersPage() {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
-  
+
   const fetchOrders = async () => {
     try {
       setIsLoading(true);
       const status = searchParams.get('status') || undefined;
       const date = searchParams.get('date') || undefined;
       const search = searchParams.get('search') || undefined;
-      
+
       const data = await getAdminOrders({
         status,
         date,
@@ -45,7 +45,7 @@ export default function OrdersPage() {
       const status = searchParams.get('status') || undefined;
       const date = searchParams.get('date') || undefined;
       const search = searchParams.get('search') || undefined;
-      
+
       logError('Failed to fetch orders', error, {
         component: 'OrdersPage',
         filters: { status, date, search },
@@ -59,25 +59,25 @@ export default function OrdersPage() {
       setIsLoading(false);
     }
   };
-  
+
   // 주문 목록 조회 (쿼리 파라미터 변경 시 재조회)
   useEffect(() => {
     fetchOrders();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
-  
+
   // 주문 상태 업데이트
   const handleStatusUpdate = async (orderId: string, newStatus: Order['status']) => {
     setIsUpdating(true);
-    
+
     try {
       await updateOrderStatus(orderId, newStatus);
-      
+
       toast({
         title: '상태 업데이트 완료',
         description: '주문 상태가 변경되었습니다.',
       });
-      
+
       fetchOrders();
       setIsDialogOpen(false);
       setSelectedOrder(null);
@@ -87,10 +87,10 @@ export default function OrdersPage() {
         orderId,
         newStatus,
       });
-      
+
       // 사용자 친화적인 에러 메시지 추출
       const errorMessage = extractUserFriendlyMessage(error);
-      
+
       toast({
         title: '업데이트 실패',
         description: errorMessage,
@@ -100,13 +100,13 @@ export default function OrdersPage() {
       setIsUpdating(false);
     }
   };
-  
+
   // 주문 상세 보기
   const handleViewDetail = (order: Order) => {
     setSelectedOrder(order);
     setIsDialogOpen(true);
   };
-  
+
   const getStatusBadge = (status: Order['status']) => {
     // ⚠️ 상태 배지 세분화: 주황/초록/회색
     const variants: Record<Order['status'], { label: string; className: string }> = {
@@ -115,7 +115,7 @@ export default function OrdersPage() {
       delivering: { label: '배송중', className: 'bg-blue-100 text-blue-800 border-blue-200' },
       completed: { label: '완료', className: 'bg-green-100 text-green-800 border-green-200' },
     };
-    
+
     const { label, className } = variants[status] || variants.pending;
     return (
       <Badge variant="outline" className={className}>
@@ -123,7 +123,7 @@ export default function OrdersPage() {
       </Badge>
     );
   };
-  
+
   const getNextStatus = (currentStatus: Order['status']): Order['status'] | null => {
     const statusFlow: Record<Order['status'], Order['status']> = {
       pending: 'preparing',
@@ -131,11 +131,11 @@ export default function OrdersPage() {
       delivering: 'completed',
       completed: 'completed',
     };
-    
+
     const next = statusFlow[currentStatus];
     return next === currentStatus ? null : next;
   };
-  
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     return date.toLocaleString('ko-KR', {
@@ -146,11 +146,11 @@ export default function OrdersPage() {
       minute: '2-digit',
     });
   };
-  
+
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('ko-KR').format(price) + '원';
   };
-  
+
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
@@ -158,46 +158,24 @@ export default function OrdersPage() {
       </div>
     );
   }
-  
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">주문히스토리</h1>
-          <p className="text-muted-foreground">
-            누적된 주문 내역 조회 및 필터링
-          </p>
+
         </div>
         <Button variant="outline" onClick={fetchOrders}>
           <RefreshCw className="mr-2 h-4 w-4" />
           새로고침
         </Button>
       </div>
-      
+
       <OrderFiltersClient />
-      
-      {/* 총액 요약 표시 */}
-      {orders.length > 0 && (
-        <Card className="bg-muted">
-          <CardContent className="p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">총 주문 금액</p>
-                <p className="text-2xl font-bold mt-1">
-                  {formatPrice(
-                    orders.reduce((sum, order) => sum + (order.totalAmount || 0), 0)
-                  )}
-                </p>
-              </div>
-              <div className="text-right">
-                <p className="text-sm text-muted-foreground">주문 건수</p>
-                <p className="text-xl font-semibold mt-1">{orders.length}건</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
-      
+
+
+
       {orders.length === 0 ? (
         <Card>
           <CardContent className="py-8 text-center">
@@ -209,80 +187,58 @@ export default function OrdersPage() {
           </CardContent>
         </Card>
       ) : (
-        <div className="space-y-4">
+        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {orders.map((order) => {
             const nextStatus = getNextStatus(order.status);
-            
+
             return (
-              <Card key={order.id}>
-                <CardHeader>
-                  <div className="flex items-center justify-between">
+              <Card key={order.id} className="flex flex-col">
+                <CardHeader className="p-4 pb-2">
+                  <div className="flex items-start justify-between">
                     <div>
-                      <CardTitle>
-                        {order.type === 'bbq' ? '바베큐' : '불멍'} 주문
-                      </CardTitle>
-                      <CardDescription>
-                        주문 ID: {order.id.substring(0, 8)}...
-                      </CardDescription>
+                      <div className="flex items-center gap-2 mb-1">
+                        <Badge variant={order.type === 'bbq' ? 'secondary' : 'default'} className="rounded-sm">
+                          {order.type === 'bbq' ? '바베큐' : '불멍'}
+                        </Badge>
+                        <span className="text-xs text-muted-foreground font-mono">
+                          #{order.id.substring(0, 6)}
+                        </span>
+                      </div>
+                      <h3 className="font-bold text-lg">
+                        {order.items[0]?.name}
+                        {order.items.length > 1 && ` 외 ${order.items.length - 1}건`}
+                      </h3>
                     </div>
                     {getStatusBadge(order.status)}
                   </div>
                 </CardHeader>
-                <CardContent>
-                  <div className="grid gap-4 md:grid-cols-2">
-                    <div>
-                      <p className="text-sm text-muted-foreground">주문 시간</p>
-                      <p className="font-medium">{formatDate(order.createdAt)}</p>
-                    </div>
-                    {order.deliveryTime && (
-                      <div>
-                        <p className="text-sm text-muted-foreground">배송 예정 시간</p>
-                        <p className="font-medium">{order.deliveryTime}</p>
-                      </div>
-                    )}
-                    <div>
-                      <p className="text-sm text-muted-foreground">주문 항목</p>
-                      <div className="mt-1 space-y-1">
-                        {order.items.map((item) => (
-                          <p key={item.id} className="text-sm">
-                            {item.name} × {item.quantity}
-                          </p>
-                        ))}
-                      </div>
-                    </div>
-                    <div>
-                      <p className="text-sm text-muted-foreground">총 금액</p>
-                      <p className="font-medium text-lg">{formatPrice(order.totalAmount)}</p>
-                    </div>
+                <CardContent className="p-4 pt-2 flex-1 flex flex-col justify-end">
+                  <div className="text-sm text-muted-foreground mb-4">
+                    <p>{formatDate(order.createdAt)}</p>
                     {order.notes && (
-                      <div className="md:col-span-2">
-                        <p className="text-sm text-muted-foreground">요청사항</p>
-                        <p className="text-sm">{order.notes}</p>
-                      </div>
+                      <p className="mt-1 text-orange-600 truncate">
+                        🔔 {order.notes}
+                      </p>
                     )}
                   </div>
-                  <div className="mt-4 flex gap-2">
+
+                  <div className="flex gap-2 mt-auto">
                     <Button
                       variant="outline"
                       size="sm"
+                      className="flex-1"
                       onClick={() => handleViewDetail(order)}
                     >
-                      상세 보기
+                      상세
                     </Button>
                     {nextStatus && (
                       <Button
                         size="sm"
+                        className="flex-1"
                         onClick={() => handleStatusUpdate(order.id, nextStatus)}
                         disabled={isUpdating}
                       >
-                        {isUpdating ? (
-                          <>
-                            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                            처리 중...
-                          </>
-                        ) : (
-                          `다음 단계로 (${getStatusBadge(nextStatus).props.children})`
-                        )}
+                        {isUpdating ? <Loader2 className="h-3 w-3 animate-spin" /> : getStatusBadge(nextStatus).props.children}로 변경
                       </Button>
                     )}
                   </div>
@@ -292,7 +248,7 @@ export default function OrdersPage() {
           })}
         </div>
       )}
-      
+
       {/* 주문 상세 다이얼로그 */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-2xl">
@@ -302,7 +258,7 @@ export default function OrdersPage() {
               주문 정보 및 상태 관리
             </DialogDescription>
           </DialogHeader>
-          
+
           {selectedOrder && (
             <div className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
@@ -335,7 +291,7 @@ export default function OrdersPage() {
                   <p className="font-medium text-lg">{formatPrice(selectedOrder.totalAmount)}</p>
                 </div>
               </div>
-              
+
               <div>
                 <p className="text-sm text-muted-foreground mb-2">주문 항목</p>
                 <div className="space-y-2">
@@ -357,14 +313,14 @@ export default function OrdersPage() {
                   ))}
                 </div>
               </div>
-              
+
               {selectedOrder.notes && (
                 <div>
                   <p className="text-sm text-muted-foreground">요청사항</p>
                   <p className="text-sm p-2 bg-muted rounded-md">{selectedOrder.notes}</p>
                 </div>
               )}
-              
+
               <div className="pt-4 border-t">
                 <p className="text-sm text-muted-foreground mb-2">상태 변경</p>
                 <div className="flex gap-2 flex-wrap">
