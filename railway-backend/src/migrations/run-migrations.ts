@@ -168,6 +168,87 @@ export async function runMigrations(): Promise<void> {
     // 알림 시스템 테이블 추가 마이그레이션 실행
     await runMigration('005_add_notifications', migration005AddNotifications);
     
+    // 방 이름을 1호~10호로 변경하는 마이그레이션 실행
+    // 마이그레이션 SQL을 직접 포함 (파일 읽기 대신)
+    const migration006UpdateRoomsToNumbered = `
+-- 방 이름을 1호~10호로 변경
+-- 6호, 10호: 2인실
+-- 나머지 (1~5, 7~9): 4인실
+
+BEGIN;
+
+-- 1. 예약 테이블의 assigned_room 업데이트
+UPDATE reservations
+SET assigned_room = CASE
+  WHEN assigned_room = 'A1' THEN '1호'
+  WHEN assigned_room = 'A2' THEN '2호'
+  WHEN assigned_room = 'A3' THEN '3호'
+  WHEN assigned_room = 'A4' THEN '4호'
+  WHEN assigned_room = 'A5' THEN '5호'
+  WHEN assigned_room = 'A6' THEN '6호'
+  WHEN assigned_room = 'A7' THEN '7호'
+  WHEN assigned_room = 'A8' THEN '8호'
+  WHEN assigned_room = 'B1' THEN '9호'
+  WHEN assigned_room = 'B2' THEN '10호'
+  ELSE assigned_room
+END
+WHERE assigned_room IN ('A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'B1', 'B2');
+
+-- 2. 방 테이블의 name 업데이트 및 capacity 수정
+-- capacity는 원래 name 기준으로 계산 (변경 전 값 사용)
+UPDATE rooms
+SET 
+  name = CASE
+    WHEN name = 'A1' THEN '1호'
+    WHEN name = 'A2' THEN '2호'
+    WHEN name = 'A3' THEN '3호'
+    WHEN name = 'A4' THEN '4호'
+    WHEN name = 'A5' THEN '5호'
+    WHEN name = 'A6' THEN '6호'
+    WHEN name = 'A7' THEN '7호'
+    WHEN name = 'A8' THEN '8호'
+    WHEN name = 'B1' THEN '9호'
+    WHEN name = 'B2' THEN '10호'
+    ELSE name
+  END,
+  capacity = CASE
+    WHEN name IN ('A6', 'B2') THEN 2  -- 6호(A6), 10호(B2)는 2인실
+    ELSE 4  -- 나머지는 4인실
+  END,
+  updated_at = NOW()
+WHERE name IN ('A1', 'A2', 'A3', 'A4', 'A5', 'A6', 'A7', 'A8', 'B1', 'B2');
+
+-- 3. 만약 기존 방이 없다면 새로 생성
+INSERT INTO rooms (id, name, type, capacity, status, created_at, updated_at)
+SELECT 
+  gen_random_uuid(),
+  room_name,
+  '오션뷰카라반',
+  room_capacity,
+  'available',
+  NOW(),
+  NOW()
+FROM (VALUES
+  ('1호', 4),
+  ('2호', 4),
+  ('3호', 4),
+  ('4호', 4),
+  ('5호', 4),
+  ('6호', 2),
+  ('7호', 4),
+  ('8호', 4),
+  ('9호', 4),
+  ('10호', 2)
+) AS rooms_data(room_name, room_capacity)
+WHERE NOT EXISTS (
+  SELECT 1 FROM rooms WHERE name = rooms_data.room_name
+)
+ON CONFLICT (name) DO NOTHING;
+
+COMMIT;
+`;
+    await runMigration('006_update_rooms_to_numbered', migration006UpdateRoomsToNumbered);
+    
     // 방 개수 확인
     const result = await pool.query('SELECT COUNT(*) as count FROM rooms');
     const roomCount = parseInt(result.rows[0].count, 10);

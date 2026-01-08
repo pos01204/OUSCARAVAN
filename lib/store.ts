@@ -48,7 +48,7 @@ export const useGuestStore = create<GuestStore>((set) => ({
   // 초기 상태
   guestInfo: {
     name: 'Guest',
-    room: '',
+    room: '', // 호수 정보는 저장하되 고객에게 노출하지 않음 (관리자 편의용)
     checkinDate: null,
     checkoutDate: null,
   },

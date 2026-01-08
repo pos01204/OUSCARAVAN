@@ -53,7 +53,7 @@ export function GuestReservationInfo({ token, initialReservation }: GuestReserva
       <div className="flex items-start justify-between gap-2">
         <div className="flex-1">
           <p className="text-sm font-medium">
-            {reservation.guestName}님 · {reservation.assignedRoom || '방 미배정'}
+            {reservation.guestName}님
           </p>
           <p className="text-xs text-muted-foreground mt-1">
             체크인: {reservation.checkin} · 체크아웃: {reservation.checkout}

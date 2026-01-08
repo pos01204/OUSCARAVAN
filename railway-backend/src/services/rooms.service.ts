@@ -41,6 +41,7 @@ export interface RoomWithReservation extends Room {
  */
 export async function getRooms(): Promise<RoomWithReservation[]> {
   // 먼저 모든 방을 조회
+  // 1호~10호 순서로 정렬
   const roomsQuery = `
     SELECT 
       id,
@@ -53,12 +54,8 @@ export async function getRooms(): Promise<RoomWithReservation[]> {
     FROM rooms
     ORDER BY 
       CASE 
-        WHEN name ~ '^[AB]\\d+$' THEN 
-          CASE SUBSTRING(name FROM 1 FOR 1)
-            WHEN 'A' THEN 0
-            WHEN 'B' THEN 1
-            ELSE 999
-          END * 1000 + CAST(SUBSTRING(name FROM 2) AS INTEGER)
+        WHEN name ~ '^\\d+호$' THEN 
+          CAST(SUBSTRING(name FROM '^(\\d+)') AS INTEGER)
         ELSE 999
       END ASC,
       name ASC

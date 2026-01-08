@@ -237,12 +237,7 @@ export function GuestCheckInOutContent({ reservation, token }: GuestCheckInOutCo
             <span className="text-sm text-muted-foreground">체크아웃</span>
             <span className="text-sm font-medium">{reservation.checkout}</span>
           </div>
-          {reservation.assignedRoom && (
-            <div className="flex justify-between">
-              <span className="text-sm text-muted-foreground">배정된 방</span>
-              <span className="text-sm font-medium">{reservation.assignedRoom}</span>
-            </div>
-          )}
+          {/* 호수 정보는 고객에게 노출하지 않음 (관리자 편의용) */}
         </CardContent>
         </Card>
       </section>

@@ -39,16 +39,16 @@ function calculateTimeLeft(targetTime: string): TimeLeft | null {
 export function TimeCountdown() {
   const { isCheckedIn, isCheckedOut, guestInfo } = useGuestStore();
   const [timeLeft, setTimeLeft] = useState<TimeLeft | null>(null);
-  const [targetType, setTargetType] = useState<'checkin' | 'checkout'>('checkin');
 
   useEffect(() => {
-    if (isCheckedOut) {
+    // 체크인 후에는 카운트다운을 표시하지 않음 (체크아웃 카운트다운 제거)
+    if (isCheckedIn || isCheckedOut) {
       setTimeLeft(null);
       return;
     }
 
-    const target = isCheckedIn ? CHECK_IN_OUT.checkOut : CHECK_IN_OUT.checkIn;
-    setTargetType(isCheckedIn ? 'checkout' : 'checkin');
+    // 체크인 전에만 체크인 카운트다운 표시
+    const target = CHECK_IN_OUT.checkIn;
     
     const updateTime = () => {
       const calculated = calculateTimeLeft(target);
@@ -65,7 +65,7 @@ export function TimeCountdown() {
     return null;
   }
 
-  const label = targetType === 'checkin' ? '체크인까지' : '체크아웃까지';
+  const label = '체크인까지';
   const isUrgent = timeLeft.hours === 0 && timeLeft.minutes < 60;
 
   return (
