@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { getNotifications, markNotificationAsRead, deleteNotification } from '@/lib/api';
 import { useNotificationStore } from '@/lib/store/notifications';
@@ -20,7 +20,7 @@ export default function NotificationsPage() {
     isRead?: boolean;
   }>({});
 
-  const loadNotifications = async () => {
+  const loadNotifications = useCallback(async () => {
     setIsLoading(true);
     try {
       const response = await getNotifications({
@@ -34,11 +34,11 @@ export default function NotificationsPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [filters, updateUnreadCount]);
 
   useEffect(() => {
     loadNotifications();
-  }, [filters]);
+  }, [loadNotifications]);
 
   const handleNotificationClick = async (notification: Notification) => {
     if (!notification.isRead) {

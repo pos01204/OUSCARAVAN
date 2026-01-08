@@ -13,7 +13,7 @@ interface NotificationStore {
   markAsRead: (id: string) => void;
   markAllAsRead: () => void;
   deleteNotification: (id: string) => void;
-  updateUnreadCount: (count: number) => void;
+  updateUnreadCount: (count: number | ((prev: number) => number)) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: Error | null) => void;
   clearError: () => void;
@@ -63,7 +63,10 @@ export const useNotificationStore = create<NotificationStore>((set) => ({
       };
     }),
 
-  updateUnreadCount: (count) => set({ unreadCount: count }),
+  updateUnreadCount: (count) =>
+    set((state) => ({
+      unreadCount: typeof count === 'function' ? count(state.unreadCount) : count,
+    })),
 
   setLoading: (loading) => set({ isLoading: loading }),
 
