@@ -85,16 +85,16 @@ export function ReservationsViewClient({
 
   return (
     <Tabs value={view} onValueChange={(v) => setView(v as 'list' | 'calendar')} className="w-full">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2">
-          <TabsList>
-            <TabsTrigger value="calendar">
-              <Calendar className="mr-2 h-4 w-4" />
-              캘린더
+      <div className="flex items-center justify-between mb-3 md:mb-4">
+        <div className="flex items-center gap-2 w-full md:w-auto">
+          <TabsList className="w-full md:w-auto">
+            <TabsTrigger value="calendar" className="flex-1 md:flex-initial min-h-[44px]">
+              <Calendar className="mr-2 h-4 w-4 md:h-4 md:w-4" />
+              <span className="text-sm md:text-sm font-medium">캘린더</span>
             </TabsTrigger>
-            <TabsTrigger value="list">
-              <List className="mr-2 h-4 w-4" />
-              리스트
+            <TabsTrigger value="list" className="flex-1 md:flex-initial min-h-[44px]">
+              <List className="mr-2 h-4 w-4 md:h-4 md:w-4" />
+              <span className="text-sm md:text-sm font-medium">리스트</span>
             </TabsTrigger>
           </TabsList>
         </div>

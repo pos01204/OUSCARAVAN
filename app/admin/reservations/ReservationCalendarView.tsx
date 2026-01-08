@@ -57,12 +57,25 @@ export function ReservationCalendarView({
   const [view, setView] = useState<View>('month');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // 모바일 여부 확인
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsMobile(window.innerWidth <= 768);
+      const handleResize = () => {
+        setIsMobile(window.innerWidth <= 768);
+      };
+      window.addEventListener('resize', handleResize);
+      return () => window.removeEventListener('resize', handleResize);
+    }
+  }, []);
 
   // Phase 3: 스와이프 제스처로 모달 닫기
   const swipeHandlers = useSwipe({
     onSwipeDown: () => {
       // 모바일에서만 아래로 스와이프하여 모달 닫기
-      if (window.innerWidth <= 768) {
+      if (isMobile) {
         setIsModalOpen(false);
       }
     },
@@ -391,18 +404,25 @@ export function ReservationCalendarView({
       colorConfig = { bg: '#4B5563', text: 'white' };
     }
     
-    // 모든 이벤트를 건수로 표시
+    // 모든 이벤트를 건수로 표시 (모바일 최적화)
+    // CSS로 모바일 스타일링 처리하므로 여기서는 기본값 사용
     return (
       <div
+        className="rbc-event-mobile"
         style={{
           backgroundColor: colorConfig.bg,
           color: colorConfig.text,
-          padding: '2px 6px',
-          borderRadius: '4px',
-          fontSize: '0.7rem',
+          padding: '6px 8px',
+          borderRadius: '6px',
+          fontSize: '13px',
           fontWeight: '700',
           textAlign: 'center',
           width: '100%',
+          minHeight: '32px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          letterSpacing: '0.3px',
         }}
         title={titleString}
       >
@@ -601,13 +621,14 @@ export function ReservationCalendarView({
 
   return (
     <>
-      <div className="h-[500px] md:h-[600px] mt-4 rounded-lg border border-border bg-card overflow-hidden">
+      {/* 모바일 최적화: 더 큰 높이와 간소화된 레이아웃 */}
+      <div className="h-[calc(100vh-280px)] md:h-[600px] mt-4 rounded-lg border border-border bg-card overflow-hidden">
         <Calendar
           localizer={localizer}
           events={events}
           startAccessor="start"
           endAccessor="end"
-          style={{ height: '100%', padding: '12px' }}
+          style={{ height: '100%', padding: '8px' }}
           view={view}
           onView={setView}
           date={currentDate}
@@ -632,8 +653,8 @@ export function ReservationCalendarView({
               return localizer?.format(date, 'EEE', culture) || '';
             },
           }}
-          // 모바일에서는 월간 뷰만 허용
-          views={['month', 'week', 'day', 'agenda']}
+          // 모바일에서는 월간 뷰만 허용, 데스크톱에서는 모든 뷰 허용
+          views={isMobile ? ['month'] : ['month', 'week', 'day', 'agenda']}
           defaultView="month"
         />
       </div>

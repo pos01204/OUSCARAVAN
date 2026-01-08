@@ -903,6 +903,14 @@ const triggerHaptic = (type: 'light' | 'medium' | 'heavy' = 'light') => {
 - `app/admin/reservations/ReservationListView.tsx` (ARIA 레이블, 키보드 네비게이션, 풀 투 리프레시 추가)
 - `app/admin/reservations/ReservationCalendarView.tsx` (ARIA 레이블, 키보드 네비게이션, 스와이프 닫기 추가)
 
+#### Phase 4
+- `components/admin/AdminBottomNav.tsx` (신규 생성 - 관리자 전용 바텀 네비게이션)
+- `components/shared/ConditionalBottomNav.tsx` (관리자 페이지 제외 로직 추가)
+- `app/admin/layout.tsx` (상단 네비게이션 간소화, 바텀 네비게이션 추가)
+- `app/admin/reservations/ReservationCalendarView.tsx` (캘린더 뷰 모바일 가독성 대폭 개선)
+- `app/admin/reservations/ReservationsViewClient.tsx` (뷰 전환 탭 모바일 최적화)
+- `app/globals.css` (캘린더 셀 및 이벤트 크기 확대, 툴바 간소화)
+
 ### Phase 2 구현 완료 (2025-01-15)
 
 #### 1. 리스트 뷰 카드 개선
@@ -989,6 +997,49 @@ const triggerHaptic = (type: 'light' | 'medium' | 'heavy' = 'light') => {
   - 현재는 예약 수가 적어 가상화 불필요
   - 향후 필요 시 `@tanstack/react-virtual` 라이브러리 사용
 
+### Phase 4: 관리자 페이지 모바일 최적화 완료 (2025-01-15)
+
+#### 1. 관리자 페이지 바텀 네비게이션
+- ✅ **게스트 네비게이션 제거**: 관리자 페이지에서 게스트용 바텀 네비게이션 제거
+- ✅ **관리자 전용 바텀 네비게이션 생성**: 
+  - 대시보드, 예약, 방, 주문 메뉴
+  - 모바일에서만 표시 (데스크톱에서는 상단 네비게이션 사용)
+  - 터치 타겟 44x44px 이상 확보
+  - 안전 영역 고려 (`env(safe-area-inset-bottom)`)
+
+#### 2. 관리자 페이지 상단 네비게이션 간소화
+- ✅ **모바일 헤더 간소화**: 
+  - 모바일에서 햄버거 메뉴 제거 (바텀 네비게이션으로 대체)
+  - 로고와 로그아웃 버튼만 표시
+  - 데스크톱에서는 기존 네비게이션 유지
+
+#### 3. 캘린더 뷰 모바일 가독성 대폭 개선
+- ✅ **캘린더 셀 크기 확대**: 
+  - 모바일에서 최소 높이 80px (기존 60px에서 증가)
+  - 날짜 숫자 크기 18px (기존 16px에서 증가)
+  - 요일 헤더 크기 14px, 패딩 12px
+- ✅ **이벤트 표시 개선**: 
+  - 이벤트 텍스트 크기 13px (기존 11px에서 증가)
+  - 이벤트 최소 높이 32px (기존 28px에서 증가)
+  - 이벤트 간격 4px 확보
+  - 그룹 카운트 스타일 강화 (14px, 36px 높이)
+- ✅ **캘린더 높이 최적화**: 
+  - 모바일: `calc(100vh-280px)` (화면 높이에 맞춤)
+  - 데스크톱: 600px 유지
+- ✅ **툴바 간소화**: 
+  - 모바일에서 버튼 크기 44x44px 이상
+  - 폰트 크기 14px
+  - 라벨 크기 18px
+- ✅ **뷰 옵션 제한**: 
+  - 모바일에서 월간 뷰만 허용 (주/일/일정 뷰 숨김)
+  - 데스크톱에서는 모든 뷰 허용
+
+#### 4. 뷰 전환 탭 개선
+- ✅ **모바일 최적화**: 
+  - 전체 너비 사용 (`w-full`)
+  - 탭 버튼 최소 높이 44px
+  - 아이콘과 텍스트 크기 조정
+
 ### 향후 구현 예정 (선택사항)
 - 리스트 가상화 (대량 데이터 처리 시, 예: 100건 이상)
 - 이미지 지연 로딩 (향후 이미지 기능 추가 시)
@@ -1000,6 +1051,6 @@ const triggerHaptic = (type: 'light' | 'medium' | 'heavy' = 'light') => {
 
 ---
 
-**문서 버전**: 1.1  
+**문서 버전**: 1.2  
 **최종 업데이트**: 2025-01-15  
 **작성자**: AI Assistant
