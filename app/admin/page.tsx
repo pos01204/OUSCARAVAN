@@ -1,169 +1,41 @@
 import { Suspense } from 'react';
-import { getAdminStatsServer, getReservationsServer } from '@/lib/admin-api-server';
-import { type Reservation, type AdminStats } from '@/lib/api';
+import { getReservationsServer } from '@/lib/admin-api-server';
 import { logError } from '@/lib/logger';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
 import { Skeleton } from '@/components/ui/skeleton';
-import Link from 'next/link';
+import { Card } from '@/components/ui/card';
+import { CriticalStatusBanner } from '@/components/admin/CriticalStatusBanner';
+import { NotificationFeed } from '@/components/admin/NotificationFeed';
+import { formatDateToISO } from '@/lib/utils/date';
 
-// 통계 컴포넌트
-async function StatsCards() {
-  let stats: AdminStats = {
-    todayReservations: 0,
-    pendingCheckins: 0,
-    pendingCheckouts: 0,
-    pendingOrders: 0,
-  };
+// D-1 미배정 예약 배너 컴포넌트
+async function CriticalBanner() {
+  let unassignedCount = 0;
   
   try {
-    stats = await getAdminStatsServer();
+    // 내일 날짜 계산
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = formatDateToISO(tomorrow);
+    
+    if (tomorrowStr) {
+      // 내일 체크인 예정이고 미배정인 예약 조회
+      const data = await getReservationsServer({
+        checkin: tomorrowStr,
+        limit: 1000, // 충분히 큰 값
+      });
+      
+      // 미배정 예약만 필터링
+      unassignedCount = (data.reservations || []).filter(
+        (r) => !r.assignedRoom
+      ).length;
+    }
   } catch (error) {
-    logError('Failed to fetch admin stats', error, {
-      component: 'StatsCards',
+    logError('Failed to fetch D-1 unassigned reservations', error, {
+      component: 'CriticalBanner',
     });
   }
   
-  return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">
-            오늘 예약
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats.todayReservations}</div>
-          <p className="text-xs text-muted-foreground">
-            오늘 예정된 예약
-          </p>
-        </CardContent>
-      </Card>
-      
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">
-            체크인
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats.pendingCheckins}</div>
-          <p className="text-xs text-muted-foreground">
-            오늘 체크인 예정
-          </p>
-        </CardContent>
-      </Card>
-      
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">
-            체크아웃
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats.pendingCheckouts}</div>
-          <p className="text-xs text-muted-foreground">
-            오늘 체크아웃 예정
-          </p>
-        </CardContent>
-      </Card>
-      
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">
-            주문
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="text-2xl font-bold">{stats.pendingOrders}</div>
-          <p className="text-xs text-muted-foreground">
-            처리 대기 중인 주문
-          </p>
-        </CardContent>
-      </Card>
-    </div>
-  );
-}
-
-// 최근 예약 목록 컴포넌트
-async function RecentReservations() {
-  let reservations: Reservation[] = [];
-  
-  try {
-    const data = await getReservationsServer({ limit: 5 });
-    reservations = data.reservations || [];
-  } catch (error) {
-    logError('Failed to fetch recent reservations', error, {
-      component: 'RecentReservations',
-    });
-  }
-  
-  const getStatusBadge = (status: Reservation['status']) => {
-    const variants: Record<Reservation['status'], { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
-      pending: { label: '대기', variant: 'outline' },
-      assigned: { label: '배정 완료', variant: 'secondary' },
-      checked_in: { label: '체크인', variant: 'default' },
-      checked_out: { label: '체크아웃', variant: 'secondary' },
-      cancelled: { label: '취소', variant: 'destructive' },
-    };
-    return variants[status] || { label: status, variant: 'outline' };
-  };
-  
-  return (
-    <Card>
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle>최근 예약</CardTitle>
-            <CardDescription>
-              최근 등록된 예약 목록 (최대 5개)
-            </CardDescription>
-          </div>
-          <Button asChild variant="outline" size="sm">
-            <Link href="/admin/reservations">전체 보기</Link>
-          </Button>
-        </div>
-      </CardHeader>
-      <CardContent>
-        {reservations.length === 0 ? (
-          <p className="text-sm text-muted-foreground text-center py-4">
-            예약이 없습니다.
-          </p>
-        ) : (
-          <div className="space-y-4">
-            {reservations.map((reservation) => {
-              const statusBadge = getStatusBadge(reservation.status);
-              return (
-                <Link
-                  key={reservation.id}
-                  href={`/admin/reservations/${reservation.id}`}
-                  className="block rounded-lg border p-4 transition-colors hover:bg-muted/50"
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <p className="font-medium">{reservation.guestName}</p>
-                        <Badge variant={statusBadge.variant}>
-                          {statusBadge.label}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground">
-                        {reservation.reservationNumber} · {reservation.assignedRoom || '방 미배정'}
-                      </p>
-                      <p className="text-xs text-muted-foreground mt-1">
-                        {reservation.checkin} ~ {reservation.checkout}
-                      </p>
-                    </div>
-                  </div>
-                </Link>
-              );
-            })}
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
+  return <CriticalStatusBanner unassignedCount={unassignedCount} />;
 }
 
 export default async function AdminDashboard() {
@@ -171,47 +43,28 @@ export default async function AdminDashboard() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold">대시보드</h1>
+        <h1 className="text-3xl font-bold">홈</h1>
         <p className="text-muted-foreground">
-          오우스카라반 예약 관리 시스템
+          실시간 업무 알림 및 긴급 투두 리스트
         </p>
       </div>
       
+      {/* 상단 배너 (Critical Status) */}
       <Suspense fallback={
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-          {[1, 2, 3, 4].map((i) => (
-            <Card key={i}>
-              <CardHeader className="space-y-0 pb-2">
-                <Skeleton className="h-4 w-20" />
-              </CardHeader>
-              <CardContent>
-                <Skeleton className="h-8 w-16 mb-2" />
-                <Skeleton className="h-3 w-24" />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      }>
-        <StatsCards />
-      </Suspense>
-      
-      <Suspense fallback={
-        <Card>
-          <CardHeader>
-            <Skeleton className="h-6 w-32 mb-2" />
-            <Skeleton className="h-4 w-48" />
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              {[1, 2, 3].map((i) => (
-                <Skeleton key={i} className="h-20 w-full" />
-              ))}
-            </div>
-          </CardContent>
+        <Card className="border-orange-200 bg-orange-50">
+          <div className="p-4">
+            <Skeleton className="h-5 w-64" />
+          </div>
         </Card>
       }>
-        <RecentReservations />
+        <CriticalBanner />
       </Suspense>
+      
+      {/* 실시간 피드 리스트 (SSE 연동) */}
+      <div>
+        <h2 className="text-xl font-semibold mb-4">실시간 알림</h2>
+        <NotificationFeed />
+      </div>
     </div>
   );
 }

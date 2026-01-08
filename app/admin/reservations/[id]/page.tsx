@@ -27,6 +27,7 @@ export default function ReservationDetailPage() {
   const [rooms, setRooms] = useState<Room[]>([]);
   const [assignedRoom, setAssignedRoom] = useState('');
   const [phone, setPhone] = useState('');
+  const [sendNotification, setSendNotification] = useState(true); // 알림톡 발송 체크박스 (기본 활성화)
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
   
@@ -76,10 +77,11 @@ export default function ReservationDetailPage() {
       return;
     }
     
-    if (!phone) {
+    // ⚠️ 중요: 전화번호 필수 검증 (클라이언트 측)
+    if (!phone || phone.trim() === '') {
       toast({
         title: '전화번호 필요',
-        description: '전화번호를 입력해주세요.',
+        description: '연락처는 필수 입력 항목입니다.',
         variant: 'destructive',
       });
       return;
@@ -89,7 +91,7 @@ export default function ReservationDetailPage() {
     if (!validatePhone(phone)) {
       toast({
         title: '전화번호 형식 오류',
-        description: '올바른 전화번호 형식을 입력해주세요. (예: 010-1234-5678)',
+        description: '올바른 전화번호 형식이 아닙니다. (예: 010-1234-5678)',
         variant: 'destructive',
       });
       return;
@@ -117,8 +119,8 @@ export default function ReservationDetailPage() {
       
       setReservation(updatedReservation);
       
-      // 4. n8n Webhook 호출 (알림톡 발송 트리거)
-      if (reservation?.guestName && reservation?.checkin && reservation?.checkout) {
+      // 4. n8n Webhook 호출 (알림톡 발송 트리거) - 체크박스가 활성화된 경우에만
+      if (sendNotification && reservation?.guestName && reservation?.checkin && reservation?.checkout) {
         try {
           await sendReservationAssignedToN8N({
             reservationId,
@@ -142,9 +144,13 @@ export default function ReservationDetailPage() {
       const isUpdate = reservation?.assignedRoom && reservation.assignedRoom !== sanitizedRoom;
       toast({
         title: '저장 완료',
-        description: isUpdate 
-          ? '방 배정이 수정되었고 알림톡이 발송되었습니다.'
-          : '예약 정보가 저장되었고 알림톡이 발송되었습니다.',
+        description: sendNotification
+          ? (isUpdate 
+              ? '방 배정이 수정되었고 알림톡이 발송되었습니다.'
+              : '예약 정보가 저장되었고 알림톡이 발송되었습니다.')
+          : (isUpdate
+              ? '방 배정이 수정되었습니다.'
+              : '예약 정보가 저장되었습니다.'),
       });
       
       // 예약 목록으로 이동
@@ -399,17 +405,36 @@ export default function ReservationDetailPage() {
             </div>
             
             <div className="space-y-2">
-              <Label htmlFor="phone">전화번호 *</Label>
+              <Label htmlFor="phone">연락처 *</Label>
               <Input
                 id="phone"
                 type="tel"
                 placeholder="010-1234-5678"
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
+                required
+                className={!phone ? 'border-destructive' : ''}
               />
+              {!phone && (
+                <p className="text-xs text-destructive">연락처는 필수 입력 항목입니다.</p>
+              )}
               <p className="text-xs text-muted-foreground">
                 하이픈(-) 없이 입력해도 됩니다.
               </p>
+            </div>
+            
+            {/* 알림톡 발송 체크박스 */}
+            <div className="flex items-center space-x-2 p-3 bg-muted rounded-md">
+              <input
+                type="checkbox"
+                id="sendNotification"
+                checked={sendNotification}
+                onChange={(e) => setSendNotification(e.target.checked)}
+                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary"
+              />
+              <Label htmlFor="sendNotification" className="text-sm font-normal cursor-pointer">
+                방 배정 안내 알림톡 즉시 발송
+              </Label>
             </div>
             
             {reservation.uniqueToken && (

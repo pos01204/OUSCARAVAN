@@ -1,7 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
-import { useState, useTransition } from 'react';
+import { useState, useTransition, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -25,16 +25,36 @@ import {
 import { Search, Filter, X } from 'lucide-react';
 import { sanitizeInput } from '@/lib/security';
 
-export function ReservationFiltersClient() {
+interface ReservationFiltersClientProps {
+  initialFilter?: string | null;
+  initialView?: string | null;
+  initialCheckin?: string | null;
+}
+
+export function ReservationFiltersClient({
+  initialFilter,
+  initialView,
+  initialCheckin,
+}: ReservationFiltersClientProps = {}) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   
+  // 서버에서 전달된 초기값 또는 searchParams 사용
   const [status, setStatus] = useState(searchParams.get('status') || 'all');
-  const [checkin, setCheckin] = useState(searchParams.get('checkin') || '');
+  const [checkin, setCheckin] = useState(
+    initialCheckin || searchParams.get('checkin') || ''
+  );
   const [checkout, setCheckout] = useState(searchParams.get('checkout') || '');
   const [search, setSearch] = useState(searchParams.get('search') || '');
+  
+  // 초기 필터 적용 (서버에서 전달된 경우)
+  useEffect(() => {
+    if (initialCheckin) {
+      setCheckin(initialCheckin);
+    }
+  }, [initialCheckin, setCheckin]);
   
   // 활성 필터 확인
   const hasActiveFilters = status !== 'all' || checkin || checkout || search;

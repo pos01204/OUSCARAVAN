@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ReservationFiltersClient } from './ReservationFiltersClient';
 import { ReservationsViewClient } from './ReservationsViewClient';
+import { formatDateToISO } from '@/lib/utils/date';
 
 // 예약 데이터 조회 컴포넌트 (서버 컴포넌트)
 async function ReservationsData({
@@ -93,25 +94,48 @@ export default async function ReservationsPage({
     checkin?: string;
     checkout?: string;
     search?: string;
+    filter?: string;
+    view?: string;
   };
 }) {
-  const status = searchParams?.status;
-  const checkin = searchParams?.checkin;
-  const checkout = searchParams?.checkout;
-  const search = searchParams?.search;
+  let status = searchParams?.status;
+  let checkin = searchParams?.checkin;
+  let checkout = searchParams?.checkout;
+  let search = searchParams?.search;
+  const filter = searchParams?.filter;
+  const view = searchParams?.view;
+  
+  // ⚠️ 중요: searchParams 감지하여 자동 필터 적용 (딥 링크)
+  if (filter === 'd1-unassigned') {
+    // 내일 날짜 계산
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = formatDateToISO(tomorrow);
+    
+    if (tomorrowStr) {
+      // 즉시 필터 적용
+      checkin = tomorrowStr;
+      // 미배정 필터는 클라이언트 컴포넌트에서 처리
+      status = 'all'; // 상태 필터는 모두 표시하되, 미배정만 필터링
+    }
+  }
   
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">예약 관리</h1>
+          <h1 className="text-3xl font-bold">예약/배정</h1>
           <p className="text-muted-foreground">
-            예약 목록 및 관리
+            캘린더 확인 및 D-1 방 배정 집중 처리
           </p>
         </div>
       </div>
       
-      <ReservationFiltersClient />
+      <ReservationFiltersClient 
+        initialFilter={filter}
+        initialView={view}
+        initialCheckin={checkin}
+      />
       
       <Suspense fallback={<ReservationsSkeleton />}>
         <ReservationsData

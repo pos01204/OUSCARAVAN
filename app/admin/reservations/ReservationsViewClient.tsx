@@ -1,6 +1,7 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import { Calendar, List } from 'lucide-react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ReservationCalendarView } from './ReservationCalendarView';
@@ -25,7 +26,27 @@ export function ReservationsViewClient({
   checkin,
   checkout,
 }: ReservationsViewClientProps) {
-  const [view, setView] = useState<'list' | 'calendar'>('calendar');
+  const searchParams = useSearchParams();
+  const filter = searchParams.get('filter');
+  const viewParam = searchParams.get('view');
+  
+  // ⚠️ 중요: searchParams 감지하여 자동 뷰 전환 및 필터 적용
+  const [view, setView] = useState<'list' | 'calendar'>(() => {
+    // filter=d1-unassigned이거나 view=list인 경우 리스트 뷰로 시작
+    if (filter === 'd1-unassigned' || viewParam === 'list') {
+      return 'list';
+    }
+    return 'calendar';
+  });
+  
+  // searchParams 변경 시 뷰 업데이트
+  useEffect(() => {
+    if (filter === 'd1-unassigned' || viewParam === 'list') {
+      setView('list');
+    } else if (viewParam === 'calendar') {
+      setView('calendar');
+    }
+  }, [filter, viewParam]);
   
   // 리스트 뷰용 필터링된 예약 목록
   const filteredReservations = useMemo(() => {
@@ -69,19 +90,21 @@ export function ReservationsViewClient({
       );
     }
     
-    // 미배정 필터 (URL 파라미터로 확인)
-    // 빠른 필터 "미배정만"은 리스트 뷰에서만 작동
-    // 실제 구현은 URL 파라미터나 별도 상태로 관리 가능
+    // ⚠️ 중요: 미배정 필터 (filter=d1-unassigned 또는 URL 파라미터)
+    if (filter === 'd1-unassigned') {
+      // 미배정 예약만 필터링
+      filtered = filtered.filter(r => !r.assignedRoom);
+    }
     
     console.log('[ReservationsViewClient] Filtered reservations:', {
       view,
       total: reservations.length,
       filtered: filtered.length,
-      filters: { status, checkin, checkout, search },
+      filters: { status, checkin, checkout, search, filter },
     });
     
     return filtered;
-  }, [reservations, view, status, checkin, checkout, search]);
+  }, [reservations, view, status, checkin, checkout, search, filter]);
 
   return (
     <Tabs value={view} onValueChange={(v) => setView(v as 'list' | 'calendar')} className="w-full">

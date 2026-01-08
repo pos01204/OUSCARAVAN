@@ -2,14 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Calendar, Home, ShoppingCart } from 'lucide-react';
+import { Calendar, Home, ShoppingCart, LayoutDashboard } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { href: '/admin', label: '대시보드', icon: LayoutDashboard },
-  { href: '/admin/reservations', label: '예약', icon: Calendar },
-  { href: '/admin/rooms', label: '방', icon: Home },
-  { href: '/admin/orders', label: '주문', icon: ShoppingCart },
+  { href: '/admin', label: '홈', icon: Home }, // Alert Feed
+  { href: '/admin/reservations', label: '예약/배정', icon: Calendar }, // Management
+  { href: '/admin/rooms', label: '현장관리', icon: LayoutDashboard }, // Live Board
+  { href: '/admin/orders', label: '주문히스토리', icon: ShoppingCart }, // History
 ];
 
 export function AdminBottomNav() {
