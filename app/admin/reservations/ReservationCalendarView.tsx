@@ -329,17 +329,17 @@ export function ReservationCalendarView({
     const titleString = typeof event.title === 'string' ? event.title : String(event.title || '');
     
     if (titleString.includes('미배정')) {
-      // 미배정: 회색
-      colorConfig = { bg: '#6B7280', text: 'white' };
+      // 미배정: 더 진한 회색 (Phase 1: 색상 강화)
+      colorConfig = { bg: '#4B5563', text: 'white' };
     } else if (titleString.includes('체크인')) {
-      // 체크인: 초록색
-      colorConfig = { bg: '#059669', text: 'white' };
+      // 체크인: 더 진한 초록색 (Phase 1: 색상 강화)
+      colorConfig = { bg: '#047857', text: 'white' };
     } else if (titleString.includes('체크아웃')) {
-      // 체크아웃: 파란색
-      colorConfig = { bg: '#2563EB', text: 'white' };
+      // 체크아웃: 더 진한 파란색 (Phase 1: 색상 강화)
+      colorConfig = { bg: '#1D4ED8', text: 'white' };
     } else {
       // 기본: 회색
-      colorConfig = { bg: '#6B7280', text: 'white' };
+      colorConfig = { bg: '#4B5563', text: 'white' };
     }
     
     return {
@@ -368,16 +368,16 @@ export function ReservationCalendarView({
     // title을 string으로 변환
     const titleString = typeof event.title === 'string' ? event.title : String(event.title || '');
     
-    // 색상 결정
+    // 색상 결정 (Phase 1: 색상 강화)
     let colorConfig;
     if (titleString.includes('미배정')) {
-      colorConfig = { bg: '#6B7280', text: 'white' };
+      colorConfig = { bg: '#4B5563', text: 'white' };
     } else if (titleString.includes('체크인')) {
-      colorConfig = { bg: '#059669', text: 'white' };
+      colorConfig = { bg: '#047857', text: 'white' };
     } else if (titleString.includes('체크아웃')) {
-      colorConfig = { bg: '#2563EB', text: 'white' };
+      colorConfig = { bg: '#1D4ED8', text: 'white' };
     } else {
-      colorConfig = { bg: '#6B7280', text: 'white' };
+      colorConfig = { bg: '#4B5563', text: 'white' };
     }
     
     // 모든 이벤트를 건수로 표시
@@ -627,20 +627,25 @@ export function ReservationCalendarView({
         />
       </div>
 
-      {/* 날짜별 예약 목록 모달 */}
+      {/* 날짜별 예약 목록 모달 - Phase 1: 모바일 최적화 */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>
-              {selectedDate && format(selectedDate, 'yyyy년 M월 d일 (EEE)', { locale: ko })} 예약 목록
-            </DialogTitle>
-            <DialogDescription>
-              {selectedDateReservations.length > 0 
-                ? `총 ${selectedDateReservations.length}건의 예약이 있습니다.`
-                : '이 날짜에는 예약이 없습니다.'}
-            </DialogDescription>
-          </DialogHeader>
+        <DialogContent className="md:max-w-2xl max-h-[90vh] md:max-h-[80vh] p-0 md:p-6">
+          {/* 모바일: 전체 화면, 데스크톱: 중앙 모달 */}
+          <div className="flex flex-col h-full md:h-auto">
+            {/* 고정 헤더 */}
+            <DialogHeader className="px-4 py-3 md:px-0 md:py-0 border-b md:border-0 sticky top-0 bg-background z-10 md:static">
+              <DialogTitle className="text-lg md:text-xl font-semibold">
+                {selectedDate && format(selectedDate, 'yyyy년 M월 d일 (EEE)', { locale: ko })} 예약 목록
+              </DialogTitle>
+              <DialogDescription className="mt-1 md:mt-2">
+                {selectedDateReservations.length > 0 
+                  ? `총 ${selectedDateReservations.length}건의 예약이 있습니다.`
+                  : '이 날짜에는 예약이 없습니다.'}
+              </DialogDescription>
+            </DialogHeader>
           
+          {/* 스크롤 가능한 콘텐츠 */}
+          <div className="flex-1 overflow-y-auto px-4 py-2 md:px-0 md:py-0">
           {selectedDateReservations.length > 0 ? (
             <div className="space-y-3 mt-4">
               {/* 상태별 탭 분리 */}
@@ -1246,6 +1251,9 @@ export function ReservationCalendarView({
                 필터 적용
               </Button>
             )}
+          </div>
+            </div>
+          )}
           </div>
         </DialogContent>
       </Dialog>

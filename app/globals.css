@@ -98,6 +98,57 @@
   padding: 2px 6px;
 }
 
+/* Phase 1: 모바일 최적화 - 캘린더 셀 크기 확대 */
+@media (max-width: 768px) {
+  .rbc-day-bg {
+    min-height: 60px; /* 모바일에서 최소 높이 확보 (48px 이상) */
+  }
+  
+  .rbc-date-cell {
+    font-size: 16px; /* 날짜 숫자 크기 확대 */
+    font-weight: 600;
+    padding: 4px;
+  }
+  
+  .rbc-event {
+    min-height: 28px; /* 터치 영역 확보 */
+    font-size: 11px;
+    padding: 4px 6px;
+  }
+  
+  /* 그룹 카운트 스타일 강화 */
+  .rbc-event.rbc-event-grouped {
+    font-size: 12px;
+    font-weight: 700;
+    min-height: 32px;
+    padding: 6px 8px;
+  }
+  
+  /* 날짜 셀 전체를 클릭 가능 영역으로 확대 */
+  .rbc-day-slot {
+    min-height: 60px;
+  }
+}
+
+/* Phase 1: 색상 강화 - 미배정/체크인/체크아웃 색상 더 진하게 */
+.rbc-event[data-status="unassigned"] {
+  background-color: #4B5563 !important; /* 더 진한 회색 */
+  color: white !important;
+  font-weight: 700;
+}
+
+.rbc-event[data-status="checkin"] {
+  background-color: #047857 !important; /* 더 진한 초록 */
+  color: white !important;
+  font-weight: 700;
+}
+
+.rbc-event[data-status="checkout"] {
+  background-color: #1D4ED8 !important; /* 더 진한 파랑 */
+  color: white !important;
+  font-weight: 700;
+}
+
 .rbc-toolbar {
   @apply mb-4 flex items-center justify-between flex-wrap gap-2;
 }
@@ -161,4 +212,29 @@
 .rbc-popup-content {
   @apply text-sm;
   color: rgba(34, 30, 29, 0.6);
+}
+
+/* Phase 1: 모든 버튼 터치 타겟 44x44px 이상 */
+button, .clickable {
+  min-height: 44px;
+  min-width: 44px;
+}
+
+/* 터치 피드백 */
+button:active {
+  transform: scale(0.95);
+  opacity: 0.8;
+  transition: transform 0.1s, opacity 0.1s;
+}
+
+/* 모바일 입력 필드 터치 타겟 확대 */
+@media (max-width: 768px) {
+  input[type="text"],
+  input[type="date"],
+  input[type="email"],
+  input[type="tel"],
+  select {
+    min-height: 44px;
+    font-size: 16px; /* iOS 줌 방지 */
+  }
 }
