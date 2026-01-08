@@ -199,7 +199,7 @@ export function ReservationCalendarView({
       invalid: reservations.length - validReservations.length,
     });
     
-    // 날짜별로 미배정/체크인/체크아웃 건수만 표시
+    // ⚠️ 간소화: 날짜별로 체크인 건수만 표시 (배지 하나만)
     const eventMap = new Map<string, ReservationEvent>();
     const processedDates = new Set<string>();
     
@@ -214,66 +214,26 @@ export function ReservationCalendarView({
       const currentDate = new Date(dateKey + 'T00:00:00');
       if (isNaN(currentDate.getTime())) return;
       
-      // 1. 미배정 건수
-      const unassignedReservations = dateReservations.filter(r => !r.assignedRoom);
-      const unassignedCount = unassignedReservations.length;
-      if (unassignedCount > 0) {
-        const unassignedKey = `${dateKey}-unassigned`;
-        const dayStart = new Date(currentDate);
-        dayStart.setHours(0, 0, 0, 0);
-        const dayEnd = new Date(currentDate);
-        dayEnd.setHours(23, 59, 59, 999);
-        
-        eventMap.set(unassignedKey, {
-          id: `group-${unassignedKey}`,
-          title: `미배정: ${unassignedCount}건`,
-          start: dayStart,
-          end: dayEnd,
-          resource: unassignedReservations[0],
-        });
-      }
-      
-      // 2. 체크인 건수
+      // 체크인 건수만 계산
       const checkinReservations = dateReservations.filter(r => {
         const rCheckin = new Date(r.checkin);
         return isSameDay(rCheckin, currentDate);
       });
       const checkinCount = checkinReservations.length;
+      
+      // 체크인 건수가 0보다 큰 경우에만 이벤트 생성
       if (checkinCount > 0) {
-        const checkinKey = `${dateKey}-checkin`;
         const dayStart = new Date(currentDate);
         dayStart.setHours(0, 0, 0, 0);
         const dayEnd = new Date(currentDate);
         dayEnd.setHours(23, 59, 59, 999);
         
-        eventMap.set(checkinKey, {
-          id: `group-${checkinKey}`,
-          title: `체크인: ${checkinCount}건`,
+        eventMap.set(dateKey, {
+          id: `checkin-${dateKey}`,
+          title: `${checkinCount}건`, // 간소화: "체크인: N건" → "N건"
           start: dayStart,
           end: dayEnd,
           resource: checkinReservations[0],
-        });
-      }
-      
-      // 3. 체크아웃 건수
-      const checkoutReservations = dateReservations.filter(r => {
-        const rCheckout = new Date(r.checkout);
-        return isSameDay(rCheckout, currentDate);
-      });
-      const checkoutCount = checkoutReservations.length;
-      if (checkoutCount > 0) {
-        const checkoutKey = `${dateKey}-checkout`;
-        const dayStart = new Date(currentDate);
-        dayStart.setHours(0, 0, 0, 0);
-        const dayEnd = new Date(currentDate);
-        dayEnd.setHours(23, 59, 59, 999);
-        
-        eventMap.set(checkoutKey, {
-          id: `group-${checkoutKey}`,
-          title: `체크아웃: ${checkoutCount}건`,
-          start: dayStart,
-          end: dayEnd,
-          resource: checkoutReservations[0],
         });
       }
     });
@@ -351,23 +311,8 @@ export function ReservationCalendarView({
       };
     }
     
-    // 그룹 이벤트 색상 결정 (미배정/체크인/체크아웃)
-    let colorConfig;
-    const titleString = typeof event.title === 'string' ? event.title : String(event.title || '');
-    
-    if (titleString.includes('미배정')) {
-      // 미배정: 더 진한 회색 (Phase 1: 색상 강화)
-      colorConfig = { bg: '#4B5563', text: 'white' };
-    } else if (titleString.includes('체크인')) {
-      // 체크인: 더 진한 초록색 (Phase 1: 색상 강화)
-      colorConfig = { bg: '#047857', text: 'white' };
-    } else if (titleString.includes('체크아웃')) {
-      // 체크아웃: 더 진한 파란색 (Phase 1: 색상 강화)
-      colorConfig = { bg: '#1D4ED8', text: 'white' };
-    } else {
-      // 기본: 회색
-      colorConfig = { bg: '#4B5563', text: 'white' };
-    }
+    // 간소화: 체크인 건수만 표시 (초록색 배지)
+    const colorConfig = { bg: '#047857', text: 'white' }; // 체크인 색상 고정
     
     return {
       style: {
@@ -390,25 +335,14 @@ export function ReservationCalendarView({
     };
   };
 
-  // 커스텀 이벤트 컴포넌트 (미배정/체크인/체크아웃 건수만 표시)
+  // 커스텀 이벤트 컴포넌트 (체크인 건수만 표시 - 간소화)
   const EventComponent = useCallback(({ event }: { event: ReservationEvent }) => {
-    // title을 string으로 변환
+    // title을 string으로 변환 (예: "3건")
     const titleString = typeof event.title === 'string' ? event.title : String(event.title || '');
     
-    // 색상 결정 (Phase 1: 색상 강화)
-    let colorConfig;
-    if (titleString.includes('미배정')) {
-      colorConfig = { bg: '#4B5563', text: 'white' };
-    } else if (titleString.includes('체크인')) {
-      colorConfig = { bg: '#047857', text: 'white' };
-    } else if (titleString.includes('체크아웃')) {
-      colorConfig = { bg: '#1D4ED8', text: 'white' };
-    } else {
-      colorConfig = { bg: '#4B5563', text: 'white' };
-    }
+    // 간소화: 체크인 건수만 표시 (초록색 배지)
+    const colorConfig = { bg: '#047857', text: 'white' };
     
-    // 모든 이벤트를 건수로 표시 (모바일 최적화)
-    // CSS로 모바일 스타일링 처리하므로 여기서는 기본값 사용
     return (
       <div
         className="rbc-event-mobile"
@@ -431,7 +365,7 @@ export function ReservationCalendarView({
           overflow: 'hidden',
           textOverflow: 'ellipsis',
         }}
-        title={titleString}
+        title={`체크인 ${titleString}`}
       >
         {titleString}
       </div>

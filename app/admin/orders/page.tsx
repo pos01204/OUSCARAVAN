@@ -108,15 +108,20 @@ export default function OrdersPage() {
   };
   
   const getStatusBadge = (status: Order['status']) => {
-    const variants: Record<Order['status'], { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
-      pending: { label: '대기', variant: 'outline' },
-      preparing: { label: '준비 중', variant: 'secondary' },
-      delivering: { label: '배송 중', variant: 'default' },
-      completed: { label: '완료', variant: 'default' },
+    // ⚠️ 상태 배지 세분화: 주황/초록/회색
+    const variants: Record<Order['status'], { label: string; className: string }> = {
+      pending: { label: '준비중', className: 'bg-orange-100 text-orange-800 border-orange-200' },
+      preparing: { label: '준비중', className: 'bg-orange-100 text-orange-800 border-orange-200' },
+      delivering: { label: '배송중', className: 'bg-blue-100 text-blue-800 border-blue-200' },
+      completed: { label: '완료', className: 'bg-green-100 text-green-800 border-green-200' },
     };
     
-    const { label, variant } = variants[status];
-    return <Badge variant={variant}>{label}</Badge>;
+    const { label, className } = variants[status] || variants.pending;
+    return (
+      <Badge variant="outline" className={className}>
+        {label}
+      </Badge>
+    );
   };
   
   const getNextStatus = (currentStatus: Order['status']): Order['status'] | null => {
@@ -158,9 +163,9 @@ export default function OrdersPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">주문 관리</h1>
+          <h1 className="text-3xl font-bold">주문히스토리</h1>
           <p className="text-muted-foreground">
-            주문 목록 및 상태 관리
+            누적된 주문 내역 조회 및 필터링
           </p>
         </div>
         <Button variant="outline" onClick={fetchOrders}>
@@ -170,6 +175,28 @@ export default function OrdersPage() {
       </div>
       
       <OrderFiltersClient />
+      
+      {/* 총액 요약 표시 */}
+      {orders.length > 0 && (
+        <Card className="bg-muted">
+          <CardContent className="p-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-muted-foreground">총 주문 금액</p>
+                <p className="text-2xl font-bold mt-1">
+                  {formatPrice(
+                    orders.reduce((sum, order) => sum + (order.totalAmount || 0), 0)
+                  )}
+                </p>
+              </div>
+              <div className="text-right">
+                <p className="text-sm text-muted-foreground">주문 건수</p>
+                <p className="text-xl font-semibold mt-1">{orders.length}건</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
       
       {orders.length === 0 ? (
         <Card>
