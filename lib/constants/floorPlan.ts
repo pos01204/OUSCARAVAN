@@ -41,151 +41,155 @@ export interface FloorPlanConfig {
 
 /**
  * 약도 설정
- * 실제 약도 구조에 맞춰 정확한 좌표 조정 완료
+ * CSV 그리드 형식에 맞춰 정확한 좌표 조정 완료
+ * 
+ * CSV 그리드 구조 (8열):
+ * 행 1: 주차공간1, (빈), (빈), 주차공간2, (빈), (빈), (빈), (빈)
+ * 행 2: 관리동, (빈), (빈), 카페(오우스마켓), (빈), (빈), (빈), (빈)
+ * 행 3: 2호, 1호, (빈), (빈), (빈), (빈), (빈), (빈)
+ * 행 4: 4호, 3호, (빈), 건물/창고, (빈), 7호, 8호, 9호
+ * 행 5: 6호, 5호, (빈), 주차공간3, (빈), (빈), 10호, (빈)
  * 
  * 레이아웃 구조:
- * - 왼쪽 섹션 (도로 서쪽): 주차공간 1, 관리동, 1-6호 (2열 3행)
- * - 중앙: 도로
- * - 오른쪽 섹션 (도로 동쪽): 주차공간 2, 카페, 건물/창고, 주차공간 3, 7-10호
+ * - 왼쪽 섹션 (열 1-2): 주차공간 1, 관리동, 1-6호 (2열 3행)
+ * - 중앙: 도로 (열 3)
+ * - 오른쪽 섹션 (열 4-8): 주차공간 2, 카페, 건물/창고, 주차공간 3, 7-10호
  * 
  * 방 배치:
  * - 왼쪽 열 (위→아래): 2호, 4호, 6호
  * - 왼쪽 오른쪽 열 (위→아래): 1호, 3호, 5호
- * - 오른쪽 상단 행 (왼→오): 7호, 8호, 9호
- * - 오른쪽 하단: 10호
+ * - 오른쪽 행 4 (왼→오): 7호, 8호, 9호
+ * - 오른쪽 행 5 열 7: 10호
  */
 export const FLOOR_PLAN_CONFIG: FloorPlanConfig = {
-  viewBox: "0 0 600 310",  // SVG 뷰포트 크기 (하단 5~6호가 잘리지 않도록 높이 증가)
+  viewBox: "0 0 800 280",  // SVG 뷰포트 크기 (CSV 그리드 8열 구조에 맞춤)
   grid: {
-    columns: 2,            // 좌우 2개 섹션
-    rows: 4,               // 행 수
-    gap: 6,                // 공간 간 간격 (픽셀) - 추가 축소
+    columns: 8,            // CSV 그리드 8열
+    rows: 5,               // CSV 그리드 5행
+    gap: 4,                // 공간 간 간격 (픽셀)
   },
   spaces: [
-    // 왼쪽 섹션 - 오른쪽 열 (1호, 3호, 5호)
-    // 관리동 및 주차공간 1의 너비(280)에 맞춰 2개 방이 나란히 배치
-    // 각 방 너비: (280 - 6 간격) / 2 = 137
+    // CSV 그리드 구조에 맞춰 배치 (8열 구조)
+    // 각 열 너비: (800 - 7*4 간격) / 8 = 96.5 → 96
+    // 열 위치: 열1=10, 열2=110, 열3=210(도로), 열4=218, 열5=318, 열6=418, 열7=518, 열8=618
+    
+    // 행 3: 2호(열1), 1호(열2)
+    {
+      id: '2',
+      name: '2호',
+      displayName: '2호',
+      coordinates: { x: 10, y: 120, width: 96, height: 50 },
+      capacity: 4,
+    },
     {
       id: '1',
       name: '1호',
       displayName: '1호',
-      coordinates: { x: 153, y: 110, width: 137, height: 55 },
+      coordinates: { x: 110, y: 120, width: 96, height: 50 },
+      capacity: 4,
+    },
+    // 행 4: 4호(열1), 3호(열2), 건물/창고(열4), 7호(열6), 8호(열7), 9호(열8)
+    {
+      id: '4',
+      name: '4호',
+      displayName: '4호',
+      coordinates: { x: 10, y: 174, width: 96, height: 50 },
       capacity: 4,
     },
     {
       id: '3',
       name: '3호',
       displayName: '3호',
-      coordinates: { x: 153, y: 175, width: 137, height: 55 },
+      coordinates: { x: 110, y: 174, width: 96, height: 50 },
       capacity: 4,
     },
-    {
-      id: '5',
-      name: '5호',
-      displayName: '5호',
-      coordinates: { x: 153, y: 240, width: 137, height: 55 },
-      capacity: 4,
-    },
-    // 왼쪽 섹션 - 왼쪽 열 (2호, 4호, 6호)
-    {
-      id: '2',
-      name: '2호',
-      displayName: '2호',
-      coordinates: { x: 10, y: 110, width: 137, height: 55 },
-      capacity: 4,
-    },
-    {
-      id: '4',
-      name: '4호',
-      displayName: '4호',
-      coordinates: { x: 10, y: 175, width: 137, height: 55 },
-      capacity: 4,
-    },
-    {
-      id: '6',
-      name: '6호',
-      displayName: '6호',
-      coordinates: { x: 10, y: 240, width: 137, height: 55 },
-      capacity: 2,
-    },
-    // 오른쪽 섹션 - ㅜ 형태 배치 (7-10호)
-    // 주차공간 2 및 카페의 너비(286)에 맞춰 배치
-    // 주차공간 3도 286 너비로 변경됨
-    // 7-10호는 주차공간 3과 같은 너비 영역(286) 내에 배치
-    // 상단 행: 7호, 8호, 9호 (3개 가로 배치)
-    // 각 방 너비: (286 - 6*2 간격) / 3 = 약 91.33 → 91로 설정
     {
       id: '7',
       name: '7호',
       displayName: '7호',
-      coordinates: { x: 304, y: 130, width: 91, height: 55 },
+      coordinates: { x: 418, y: 174, width: 96, height: 50 },
       capacity: 4,
     },
     {
       id: '8',
       name: '8호',
       displayName: '8호',
-      coordinates: { x: 401, y: 130, width: 91, height: 55 },
+      coordinates: { x: 518, y: 174, width: 96, height: 50 },
       capacity: 4,
     },
     {
       id: '9',
       name: '9호',
       displayName: '9호',
-      coordinates: { x: 498, y: 130, width: 91, height: 55 },
+      coordinates: { x: 618, y: 174, width: 96, height: 50 },
       capacity: 4,
     },
-    // 하단 행: 10호 (1개만, 중앙 정렬)
+    // 행 5: 6호(열1), 5호(열2), 주차공간3(열4), 10호(열7)
+    {
+      id: '6',
+      name: '6호',
+      displayName: '6호',
+      coordinates: { x: 10, y: 228, width: 96, height: 50 },
+      capacity: 2,
+    },
+    {
+      id: '5',
+      name: '5호',
+      displayName: '5호',
+      coordinates: { x: 110, y: 228, width: 96, height: 50 },
+      capacity: 4,
+    },
     {
       id: '10',
       name: '10호',
       displayName: '10호',
-      coordinates: { x: 401, y: 195, width: 91, height: 55 },
+      coordinates: { x: 518, y: 228, width: 96, height: 50 },
       capacity: 2,
     },
   ],
   facilities: [
-    // 왼쪽 섹션 - 상단
-    // 도로를 중앙(300)에 배치하기 위해 왼쪽 섹션 너비 조정
-    // 도로 중앙: x: 296 (300 - 4, 도로 너비 8의 중앙)
-    // 왼쪽 섹션 끝: x: 290 (도로 시작 전)
+    // CSV 그리드 구조에 맞춰 배치 (8열 구조)
+    // 각 열 너비: 96, 간격: 4
+    // 열 위치: 열1=10, 열2=110, 열3=210(도로), 열4=218, 열5=318, 열6=418, 열7=518, 열8=618
+    
+    // 행 1: 주차공간1(열1-2), 주차공간2(열4-8)
     {
       id: 'parking-1',
       name: '주차공간 1',
-      coordinates: { x: 10, y: 10, width: 280, height: 45 },
+      coordinates: { x: 10, y: 10, width: 196, height: 50 }, // 열1-2 (96*2 + 4 간격)
       type: 'parking',
     },
-    {
-      id: 'management',
-      name: '관리동',
-      coordinates: { x: 10, y: 65, width: 280, height: 35 },
-      type: 'building',
-    },
-    // 오른쪽 섹션 - 상단
-    // 도로 중앙: x: 296, 도로 너비: 8
-    // 오른쪽 섹션 시작: x: 304 (296 + 8)
     {
       id: 'parking-2',
       name: '주차공간 2',
-      coordinates: { x: 304, y: 10, width: 286, height: 45 },
+      coordinates: { x: 218, y: 10, width: 492, height: 50 }, // 열4-8 (96*5 + 4*4 간격)
       type: 'parking',
+    },
+    // 행 2: 관리동(열1-2), 카페(열4-8)
+    {
+      id: 'management',
+      name: '관리동',
+      coordinates: { x: 10, y: 64, width: 196, height: 50 }, // 열1-2
+      type: 'building',
     },
     {
       id: 'cafe',
       name: '카페(오우스마켓)',
-      coordinates: { x: 304, y: 65, width: 286, height: 55 },
+      coordinates: { x: 218, y: 64, width: 492, height: 50 }, // 열4-8
       type: 'cafe',
     },
+    // 행 4: 건물/창고(열4)
     {
       id: 'warehouse',
       name: '', // 텍스트 노출하지 않음
-      coordinates: { x: 304, y: 130, width: 286, height: 45 },
+      coordinates: { x: 218, y: 174, width: 96, height: 50 }, // 열4
       type: 'warehouse',
     },
+    // 행 5: 주차공간3(열4)
     {
       id: 'parking-3',
       name: '주차공간 3',
-      coordinates: { x: 304, y: 185, width: 286, height: 35 },
+      coordinates: { x: 218, y: 228, width: 96, height: 50 }, // 열4
       type: 'parking',
     },
   ],
