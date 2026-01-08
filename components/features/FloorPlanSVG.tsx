@@ -44,10 +44,10 @@ function FloorPlanSVGComponent({
         </pattern>
       </defs>
       {/* 도로 표시 (중앙 세로선) - 카라반 높이에 맞춰 조정 */}
-      <rect x="270" y="0" width="12" height="480" fill="#d1d5db" opacity="0.3" />
-      <text x="276" y="240" textAnchor="middle" dominantBaseline="middle" 
-            style={{ fontSize: '9px', fill: '#6b7280', fontFamily: 'system-ui' }}
-            transform="rotate(-90 276 240)">
+      <rect x="250" y="0" width="10" height="400" fill="#d1d5db" opacity="0.3" />
+      <text x="255" y="200" textAnchor="middle" dominantBaseline="middle" 
+            style={{ fontSize: '8px', fill: '#6b7280', fontFamily: 'system-ui' }}
+            transform="rotate(-90 255 200)">
         도로
       </text>
       

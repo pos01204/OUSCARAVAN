@@ -55,35 +55,35 @@ export interface FloorPlanConfig {
  * - 오른쪽 하단: 10호
  */
 export const FLOOR_PLAN_CONFIG: FloorPlanConfig = {
-  viewBox: "0 0 700 550",  // SVG 뷰포트 크기 (가로 너비 축소)
+  viewBox: "0 0 650 500",  // SVG 뷰포트 크기 (가로 너비 추가 축소)
   grid: {
     columns: 2,            // 좌우 2개 섹션
     rows: 4,               // 행 수
-    gap: 10,               // 공간 간 간격 (픽셀) - 축소
+    gap: 8,                // 공간 간 간격 (픽셀) - 추가 축소
   },
   spaces: [
     // 왼쪽 섹션 - 오른쪽 열 (1호, 3호, 5호)
-    // 주차공간 1과 관리동의 가로 너비(250)에 맞춰 2개 방이 나란히 배치
-    // 각 방 너비: (250 - 10 간격) / 2 = 120
+    // 주차공간 1과 관리동의 가로 너비(230)에 맞춰 2개 방이 나란히 배치
+    // 각 방 너비: (230 - 8 간격) / 2 = 111
     {
       id: '1',
       name: '1호',
       displayName: '1호',
-      coordinates: { x: 140, y: 135, width: 120, height: 65 },
+      coordinates: { x: 129, y: 120, width: 111, height: 60 },
       capacity: 4,
     },
     {
       id: '3',
       name: '3호',
       displayName: '3호',
-      coordinates: { x: 140, y: 210, width: 120, height: 65 },
+      coordinates: { x: 129, y: 190, width: 111, height: 60 },
       capacity: 4,
     },
     {
       id: '5',
       name: '5호',
       displayName: '5호',
-      coordinates: { x: 140, y: 285, width: 120, height: 65 },
+      coordinates: { x: 129, y: 260, width: 111, height: 60 },
       capacity: 4,
     },
     // 왼쪽 섹션 - 왼쪽 열 (2호, 4호, 6호)
@@ -91,53 +91,54 @@ export const FLOOR_PLAN_CONFIG: FloorPlanConfig = {
       id: '2',
       name: '2호',
       displayName: '2호',
-      coordinates: { x: 10, y: 135, width: 120, height: 65 },
+      coordinates: { x: 10, y: 120, width: 111, height: 60 },
       capacity: 4,
     },
     {
       id: '4',
       name: '4호',
       displayName: '4호',
-      coordinates: { x: 10, y: 210, width: 120, height: 65 },
+      coordinates: { x: 10, y: 190, width: 111, height: 60 },
       capacity: 4,
     },
     {
       id: '6',
       name: '6호',
       displayName: '6호',
-      coordinates: { x: 10, y: 285, width: 120, height: 65 },
+      coordinates: { x: 10, y: 260, width: 111, height: 60 },
       capacity: 2,
     },
     // 오른쪽 섹션 - 2열 2행 배치 (7-10호)
-    // 건물/창고와 주차공간 3의 오른쪽에 배치
-    // 상단 행: 7호, 9호
+    // 건물/창고(x: 330, width: 180)와 주차공간 3의 오른쪽에 배치
+    // 7-10호 시작 위치: x: 330 + 180 + 8 간격 = 518
+    // 상단 행: 7호 (왼쪽), 9호 (오른쪽)
     {
       id: '7',
       name: '7호',
       displayName: '7호',
-      coordinates: { x: 570, y: 150, width: 120, height: 65 },
+      coordinates: { x: 518, y: 140, width: 111, height: 60 },
       capacity: 4,
     },
     {
       id: '9',
       name: '9호',
       displayName: '9호',
-      coordinates: { x: 570, y: 225, width: 120, height: 65 },
+      coordinates: { x: 637, y: 140, width: 111, height: 60 },
       capacity: 4,
     },
-    // 하단 행: 8호, 10호
+    // 하단 행: 8호 (왼쪽), 10호 (오른쪽)
     {
       id: '8',
       name: '8호',
       displayName: '8호',
-      coordinates: { x: 570, y: 300, width: 120, height: 65 },
+      coordinates: { x: 637, y: 210, width: 111, height: 60 },
       capacity: 4,
     },
     {
       id: '10',
       name: '10호',
       displayName: '10호',
-      coordinates: { x: 570, y: 375, width: 120, height: 65 },
+      coordinates: { x: 637, y: 280, width: 111, height: 60 },
       capacity: 2,
     },
   ],
@@ -146,38 +147,38 @@ export const FLOOR_PLAN_CONFIG: FloorPlanConfig = {
     {
       id: 'parking-1',
       name: '주차공간 1',
-      coordinates: { x: 10, y: 10, width: 250, height: 55 },
+      coordinates: { x: 10, y: 10, width: 230, height: 50 },
       type: 'parking',
     },
     {
       id: 'management',
       name: '관리동',
-      coordinates: { x: 10, y: 75, width: 250, height: 45 },
+      coordinates: { x: 10, y: 70, width: 230, height: 40 },
       type: 'building',
     },
     // 오른쪽 섹션 - 상단
     {
       id: 'parking-2',
       name: '주차공간 2',
-      coordinates: { x: 360, y: 10, width: 330, height: 55 },
+      coordinates: { x: 330, y: 10, width: 310, height: 50 },
       type: 'parking',
     },
     {
       id: 'cafe',
       name: '카페(오우스마켓)',
-      coordinates: { x: 360, y: 75, width: 330, height: 65 },
+      coordinates: { x: 330, y: 70, width: 310, height: 60 },
       type: 'cafe',
     },
     {
       id: 'warehouse',
       name: '', // 텍스트 노출하지 않음
-      coordinates: { x: 360, y: 150, width: 200, height: 55 },
+      coordinates: { x: 330, y: 140, width: 180, height: 50 },
       type: 'warehouse',
     },
     {
       id: 'parking-3',
       name: '주차공간 3',
-      coordinates: { x: 360, y: 215, width: 200, height: 45 },
+      coordinates: { x: 330, y: 200, width: 180, height: 40 },
       type: 'parking',
     },
   ],
