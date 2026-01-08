@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo } from 'react';
+import { useMemo, memo, useCallback } from 'react';
 import { FLOOR_PLAN_CONFIG } from '@/lib/constants/floorPlan';
 import type { FloorPlanSpace } from '@/types/floorPlan';
 
@@ -10,7 +10,7 @@ interface FloorPlanSVGProps {
   showLabels?: boolean;
 }
 
-export function FloorPlanSVG({
+function FloorPlanSVGComponent({
   assignedSpaceId,
   onSpaceClick,
   showLabels = true,
@@ -22,6 +22,11 @@ export function FloorPlanSVG({
     if (!assignedSpaceId) return null;
     return spaces.find(space => space.id === assignedSpaceId);
   }, [assignedSpaceId, spaces]);
+
+  // 공간 클릭 핸들러 메모이제이션
+  const handleSpaceClick = useCallback((spaceId: string) => {
+    onSpaceClick?.(spaceId);
+  }, [onSpaceClick]);
 
   return (
     <svg
@@ -58,8 +63,16 @@ export function FloorPlanSVG({
               rx="4"
               ry="4"
               className={onSpaceClick ? 'cursor-pointer hover:opacity-90 transition-all duration-200' : ''}
-              onClick={() => onSpaceClick?.(space.id)}
+              onClick={() => handleSpaceClick(space.id)}
               aria-label={`공간 ${space.displayName}${isAssigned ? ', 당신의 공간' : ''}`}
+              role={onSpaceClick ? 'button' : undefined}
+              tabIndex={onSpaceClick ? 0 : undefined}
+              onKeyDown={onSpaceClick ? (e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  handleSpaceClick(space.id);
+                }
+              } : undefined}
               style={{
                 filter: isAssigned ? 'drop-shadow(0 2px 4px rgba(239, 68, 68, 0.3))' : 'none',
               }}
@@ -104,3 +117,6 @@ export function FloorPlanSVG({
     </svg>
   );
 }
+
+// React.memo로 불필요한 리렌더링 방지
+export const FloorPlanSVG = memo(FloorPlanSVGComponent);

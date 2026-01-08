@@ -1,5 +1,6 @@
 'use client';
 
+import { memo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FloorPlanViewer } from '@/components/features/FloorPlanViewer';
 import { MapPin } from 'lucide-react';
@@ -9,7 +10,7 @@ interface FloorPlanCardProps {
   assignedRoom?: string;
 }
 
-export function FloorPlanCard({ assignedRoom }: FloorPlanCardProps) {
+function FloorPlanCardComponent({ assignedRoom }: FloorPlanCardProps) {
   const { isCheckedIn } = useGuestStore();
   
   // 체크인 완료 후에만 표시 (assignedRoom이 있는 경우)
@@ -19,10 +20,10 @@ export function FloorPlanCard({ assignedRoom }: FloorPlanCardProps) {
   }
 
   return (
-    <Card className="border-primary/20 shadow-sm">
+    <Card className="border-primary/20 shadow-sm" role="region" aria-label="배정된 공간 약도">
       <CardHeader>
         <div className="flex items-center gap-2">
-          <MapPin className="h-5 w-5 text-primary" />
+          <MapPin className="h-5 w-5 text-primary" aria-hidden="true" />
           <CardTitle>배정된 공간</CardTitle>
         </div>
         <CardDescription>약도에서 당신의 공간을 확인하세요</CardDescription>
@@ -31,8 +32,11 @@ export function FloorPlanCard({ assignedRoom }: FloorPlanCardProps) {
         <div className="w-full rounded-lg border-2 border-border bg-muted/30 p-3 md:p-4 overflow-hidden">
           <FloorPlanViewer assignedRoom={assignedRoom} showLabels={true} />
         </div>
-        <div className="flex items-center justify-center gap-2 text-sm">
-          <div className="h-3 w-3 rounded-full bg-red-500 border-2 border-red-600 animate-pulse"></div>
+        <div className="flex items-center justify-center gap-2 text-sm" role="status" aria-live="polite">
+          <div 
+            className="h-3 w-3 rounded-full bg-red-500 border-2 border-red-600 animate-pulse"
+            aria-label="배정된 공간 표시"
+          ></div>
           <p className="font-medium text-primary">
             당신의 공간
           </p>
@@ -41,3 +45,6 @@ export function FloorPlanCard({ assignedRoom }: FloorPlanCardProps) {
     </Card>
   );
 }
+
+// React.memo로 불필요한 리렌더링 방지
+export const FloorPlanCard = memo(FloorPlanCardComponent);
