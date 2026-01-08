@@ -155,7 +155,7 @@ export function RoomAssignmentDrawer({
     };
 
     const sortedRooms = [...rooms]
-        .filter(room => !/^[AB]\d+/.test(room.name)) // 레거시 데이터(A/B동) 제외
+        .filter(room => !/^[AB]/i.test(room.name)) // 레거시 데이터(A/B동) 명시적으로 제외 (case-insensitive)
         .sort((a, b) => {
             const aMatch = a.name.match(/^(\d+)호$/);
             const bMatch = b.name.match(/^(\d+)호$/);
