@@ -11,6 +11,7 @@ import { OrderHistory } from '@/components/features/OrderHistory';
 import { CheckoutReminder } from '@/components/features/CheckoutReminder';
 import { TimeCountdown } from '@/components/features/TimeCountdown';
 import { GuestOrderSync } from '@/components/guest/GuestOrderSync';
+import { FloorPlanCard } from '@/components/guest/FloorPlanCard';
 import { WELCOME_MESSAGE } from '@/lib/constants';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -66,6 +67,11 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
       
       {/* Time Countdown */}
       <TimeCountdown />
+      
+      {/* 약도 카드 (체크인 완료 후 배정된 공간 표시) */}
+      {reservation.assignedRoom && (
+        <FloorPlanCard assignedRoom={reservation.assignedRoom} />
+      )}
       
       {/* 주문 동기화 컴포넌트 (백그라운드에서 주기적으로 주문 목록 동기화) */}
       <GuestOrderSync token={token} />
