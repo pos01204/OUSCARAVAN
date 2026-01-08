@@ -1252,8 +1252,7 @@ export function ReservationCalendarView({
               </Button>
             )}
           </div>
-            </div>
-          )}
+          </div>
           </div>
         </DialogContent>
       </Dialog>
