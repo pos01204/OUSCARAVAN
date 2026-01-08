@@ -629,15 +629,19 @@ export function ReservationCalendarView({
 
       {/* 날짜별 예약 목록 모달 - Phase 1: 모바일 최적화 */}
       <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent className="md:max-w-2xl max-h-[90vh] md:max-h-[80vh] p-0 md:p-6">
+        <DialogContent 
+          className="md:max-w-2xl max-h-[90vh] md:max-h-[80vh] p-0 md:p-6"
+          aria-labelledby="reservation-modal-title"
+          aria-describedby="reservation-modal-description"
+        >
           {/* 모바일: 전체 화면, 데스크톱: 중앙 모달 */}
           <div className="flex flex-col h-full md:h-auto">
             {/* 고정 헤더 */}
             <DialogHeader className="px-4 py-3 md:px-0 md:py-0 border-b md:border-0 sticky top-0 bg-background z-10 md:static">
-              <DialogTitle className="text-lg md:text-xl font-semibold">
+              <DialogTitle id="reservation-modal-title" className="text-lg md:text-xl font-semibold">
                 {selectedDate && format(selectedDate, 'yyyy년 M월 d일 (EEE)', { locale: ko })} 예약 목록
               </DialogTitle>
-              <DialogDescription className="mt-1 md:mt-2">
+              <DialogDescription id="reservation-modal-description" className="mt-1 md:mt-2">
                 {selectedDateReservations.length > 0 
                   ? `총 ${selectedDateReservations.length}건의 예약이 있습니다.`
                   : '이 날짜에는 예약이 없습니다.'}
@@ -1237,7 +1241,11 @@ export function ReservationCalendarView({
           )}
           
           <div className="flex justify-end gap-2 mt-4 pt-4 border-t">
-            <Button variant="outline" onClick={handleCloseModal}>
+            <Button 
+              variant="outline" 
+              onClick={handleCloseModal}
+              aria-label="예약 목록 모달 닫기"
+            >
               닫기
             </Button>
             {selectedDate && (
@@ -1247,6 +1255,7 @@ export function ReservationCalendarView({
                   router.push(`/admin/reservations?checkin=${dateStr}`);
                   handleCloseModal();
                 }}
+                aria-label={`${format(selectedDate, 'yyyy년 M월 d일', { locale: ko })} 체크인 예약 필터 적용`}
               >
                 필터 적용
               </Button>

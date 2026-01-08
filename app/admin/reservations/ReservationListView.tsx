@@ -88,6 +88,16 @@ function ReservationCard({
       <CardHeader
         className="pb-3 cursor-pointer"
         onClick={() => setIsExpanded(!isExpanded)}
+        role="button"
+        tabIndex={0}
+        aria-expanded={isExpanded}
+        aria-label={`${reservation.guestName}님 예약 상세 정보 ${isExpanded ? '접기' : '펼치기'}`}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault();
+            setIsExpanded(!isExpanded);
+          }
+        }}
       >
         <div className="flex items-start justify-between">
           <div className="flex-1 min-w-0">
@@ -115,6 +125,7 @@ function ReservationCard({
                 'h-5 w-5 transition-transform text-muted-foreground',
                 isExpanded ? 'rotate-180' : ''
               )}
+              aria-hidden="true"
             />
           </div>
         </div>
@@ -162,7 +173,11 @@ function ReservationCard({
           </div>
 
           <Link href={`/admin/reservations/${reservation.id}`}>
-            <Button className="w-full min-h-[44px]" size="lg">
+            <Button 
+              className="w-full min-h-[44px]" 
+              size="lg"
+              aria-label={`${reservation.guestName}님 예약 상세 페이지로 이동`}
+            >
               상세보기
             </Button>
           </Link>
