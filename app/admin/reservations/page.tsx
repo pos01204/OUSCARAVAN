@@ -25,7 +25,7 @@ async function ReservationsData({
   // (필터는 리스트 뷰에서만 적용)
   let reservations: Reservation[] = [];
   let total = 0;
-  
+
   try {
     // 캘린더를 위해 필터 없이 모든 예약 조회 (limit을 크게 설정)
     const data = await getReservationsServer({
@@ -37,7 +37,7 @@ async function ReservationsData({
     });
     reservations = data.reservations || [];
     total = data.total || 0;
-    
+
     console.log('[ReservationsData] Fetched reservations:', {
       count: reservations.length,
       total,
@@ -49,7 +49,7 @@ async function ReservationsData({
       filters: { status, checkin, checkout, search },
     });
   }
-  
+
   return (
     <ReservationsViewClient
       reservations={reservations}
@@ -104,14 +104,14 @@ export default async function ReservationsPage({
   let search = searchParams?.search;
   const filter = searchParams?.filter;
   const view = searchParams?.view;
-  
+
   // ⚠️ 중요: searchParams 감지하여 자동 필터 적용 (딥 링크)
   if (filter === 'd1-unassigned') {
     // 내일 날짜 계산
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
     const tomorrowStr = formatDateToISO(tomorrow);
-    
+
     if (tomorrowStr) {
       // 즉시 필터 적용
       checkin = tomorrowStr;
@@ -119,24 +119,22 @@ export default async function ReservationsPage({
       status = 'all'; // 상태 필터는 모두 표시하되, 미배정만 필터링
     }
   }
-  
+
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold">예약/배정</h1>
-          <p className="text-muted-foreground">
-            캘린더 확인 및 D-1 방 배정 집중 처리
-          </p>
+
         </div>
       </div>
-      
-      <ReservationFiltersClient 
+
+      <ReservationFiltersClient
         initialFilter={filter}
         initialView={view}
         initialCheckin={checkin}
       />
-      
+
       <Suspense fallback={<ReservationsSkeleton />}>
         <ReservationsData
           status={status}

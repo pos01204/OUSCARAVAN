@@ -40,7 +40,7 @@ export function ReservationFiltersClient({
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
   const [isSheetOpen, setIsSheetOpen] = useState(false);
-  
+
   // 서버에서 전달된 초기값 또는 searchParams 사용
   const [status, setStatus] = useState(searchParams.get('status') || 'all');
   const [checkin, setCheckin] = useState(
@@ -48,17 +48,17 @@ export function ReservationFiltersClient({
   );
   const [checkout, setCheckout] = useState(searchParams.get('checkout') || '');
   const [search, setSearch] = useState(searchParams.get('search') || '');
-  
+
   // 초기 필터 적용 (서버에서 전달된 경우)
   useEffect(() => {
     if (initialCheckin) {
       setCheckin(initialCheckin);
     }
   }, [initialCheckin, setCheckin]);
-  
+
   // 활성 필터 확인
   const hasActiveFilters = status !== 'all' || checkin || checkout || search;
-  
+
   const handleFilterChange = () => {
     startTransition(() => {
       const params = new URLSearchParams();
@@ -70,12 +70,12 @@ export function ReservationFiltersClient({
         const sanitizedSearch = sanitizeInput(search, { maxLength: 100 });
         params.set('search', sanitizedSearch);
       }
-      
+
       router.push(`/admin/reservations?${params.toString()}`);
       setIsSheetOpen(false); // 모바일 시트 닫기
     });
   };
-  
+
   const handleReset = () => {
     setStatus('all');
     setCheckin('');
@@ -85,15 +85,15 @@ export function ReservationFiltersClient({
       router.push('/admin/reservations');
     });
   };
-  
+
   return (
     <div className="mb-4">
-      {/* 빠른 필터 (항상 표시) */}
-      <div className="flex flex-wrap gap-2 mb-3">
+      {/* 빠른 필터 (항상 표시 - 가로 스크롤) */}
+      <div className="flex overflow-x-auto pb-2 -mx-4 px-4 md:mx-0 md:px-0 md:pb-0 gap-2 mb-3 scrollbar-hide">
         <Button
           variant="outline"
           size="sm"
-          className="min-h-[44px] min-w-[44px]" // Phase 1: 터치 타겟 확대
+          className="min-h-[36px] whitespace-nowrap flex-shrink-0"
           onClick={() => {
             const today = new Date().toISOString().split('T')[0];
             setCheckin(today);
@@ -104,14 +104,13 @@ export function ReservationFiltersClient({
               router.push(`/admin/reservations?checkin=${today}`);
             });
           }}
-          aria-label="오늘 체크인 예약 필터 적용"
         >
           오늘 체크인
         </Button>
         <Button
           variant="outline"
           size="sm"
-          className="min-h-[44px] min-w-[44px]" // Phase 1: 터치 타겟 확대
+          className="min-h-[36px] whitespace-nowrap flex-shrink-0"
           onClick={() => {
             const today = new Date().toISOString().split('T')[0];
             setCheckin('');
@@ -122,47 +121,45 @@ export function ReservationFiltersClient({
               router.push(`/admin/reservations?checkout=${today}`);
             });
           }}
-          aria-label="오늘 체크아웃 예약 필터 적용"
         >
           오늘 체크아웃
         </Button>
         <Button
           variant="outline"
           size="sm"
-          className="min-h-[44px] min-w-[44px]" // Phase 1: 터치 타겟 확대
+          className="min-h-[36px] whitespace-nowrap flex-shrink-0"
           onClick={() => {
             setStatus('all');
             setCheckin('');
             setCheckout('');
             setSearch('');
             startTransition(() => {
-              router.push('/admin/reservations');
+              // 'filter' 파라미터를 사용하여 리스트 뷰에서 필터링
+              const params = new URLSearchParams();
+              params.set('filter', 'd1-unassigned');
+              params.set('view', 'list'); // 리스트 뷰로 강제 전환
+              router.push(`/admin/reservations?${params.toString()}`);
             });
           }}
-          title="리스트 뷰에서 미배정 예약을 확인하세요"
-          aria-label="미배정 예약만 표시 (리스트 뷰에서 확인)"
         >
           미배정만
         </Button>
         <Button
           variant="outline"
           size="sm"
-          className="min-h-[44px] min-w-[44px]" // Phase 1: 터치 타겟 확대
+          className="min-h-[36px] whitespace-nowrap flex-shrink-0"
           onClick={() => {
             const today = new Date();
             const weekStart = new Date(today);
             weekStart.setDate(today.getDate() - today.getDay());
             const weekEnd = new Date(weekStart);
             weekEnd.setDate(weekStart.getDate() + 6);
-            setCheckin(weekStart.toISOString().split('T')[0]);
-            setCheckout(weekEnd.toISOString().split('T')[0]);
             setStatus('all');
             setSearch('');
             startTransition(() => {
               router.push(`/admin/reservations?checkin=${weekStart.toISOString().split('T')[0]}&checkout=${weekEnd.toISOString().split('T')[0]}`);
             });
           }}
-          aria-label="이번 주 예약 필터 적용"
         >
           이번 주
         </Button>
@@ -206,7 +203,7 @@ export function ReservationFiltersClient({
                   />
                 </div>
               </div>
-              
+
               {/* 상태 선택 */}
               <div className="space-y-2">
                 <Label htmlFor="filter-status">상태</Label>
@@ -224,7 +221,7 @@ export function ReservationFiltersClient({
                   </SelectContent>
                 </Select>
               </div>
-              
+
               {/* 날짜 선택 */}
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-2">
@@ -248,7 +245,7 @@ export function ReservationFiltersClient({
                   />
                 </div>
               </div>
-              
+
               {/* 적용 버튼 */}
               <div className="flex gap-2 pt-4">
                 <Button
@@ -271,7 +268,7 @@ export function ReservationFiltersClient({
           </SheetContent>
         </Sheet>
       </div>
-      
+
       {/* 활성 필터 표시 */}
       {hasActiveFilters && (
         <div className="flex flex-wrap items-center gap-2 mb-3">
@@ -375,7 +372,7 @@ export function ReservationFiltersClient({
           </Button>
         </div>
       )}
-      
+
       {/* 데스크톱: 컴팩트 필터 바 (모바일에서는 숨김) */}
       <div className="hidden md:flex flex-wrap items-center gap-2 p-3 bg-muted/30 rounded-md border">
         <div className="flex items-center gap-2">
@@ -393,7 +390,7 @@ export function ReservationFiltersClient({
             aria-label="예약자명 또는 예약번호로 검색"
           />
         </div>
-        
+
         <Select value={status} onValueChange={setStatus}>
           <SelectTrigger className="w-32 min-h-[44px]" aria-label="예약 상태 선택">
             <SelectValue placeholder="상태" />
@@ -407,7 +404,7 @@ export function ReservationFiltersClient({
             <SelectItem value="cancelled">취소</SelectItem>
           </SelectContent>
         </Select>
-        
+
         <Input
           type="date"
           placeholder="체크인"
@@ -416,7 +413,7 @@ export function ReservationFiltersClient({
           onChange={(e) => setCheckin(e.target.value)}
           aria-label="체크인 날짜 선택"
         />
-        
+
         <Input
           type="date"
           placeholder="체크아웃"
@@ -425,7 +422,7 @@ export function ReservationFiltersClient({
           onChange={(e) => setCheckout(e.target.value)}
           aria-label="체크아웃 날짜 선택"
         />
-        
+
         <Button
           onClick={handleFilterChange}
           disabled={isPending}

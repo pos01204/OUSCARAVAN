@@ -598,26 +598,29 @@ export function ReservationCalendarView({
   return (
     <>
       {/* 뷰 타입 선택 버튼 */}
-      <div className="flex items-center justify-end gap-2 mb-3">
-        <Button
-          variant={calendarViewType === 'grid' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setCalendarViewType('grid')}
-          className="min-h-[36px]"
-        >
-          <CalendarIcon className="h-4 w-4 mr-2" />
-          그리드
-        </Button>
-        <Button
-          variant={calendarViewType === 'timeline' ? 'default' : 'outline'}
-          size="sm"
-          onClick={() => setCalendarViewType('timeline')}
-          className="min-h-[36px]"
-        >
-          <List className="h-4 w-4 mr-2" />
-          타임라인
-        </Button>
-      </div>
+      {/* 뷰 타입 선택 버튼 (모바일에서는 숨김 - 계층 구조 단순화) */}
+      {!isMobile && (
+        <div className="flex items-center justify-end gap-2 mb-3">
+          <Button
+            variant={calendarViewType === 'grid' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setCalendarViewType('grid')}
+            className="min-h-[36px]"
+          >
+            <CalendarIcon className="h-4 w-4 mr-2" />
+            그리드
+          </Button>
+          <Button
+            variant={calendarViewType === 'timeline' ? 'default' : 'outline'}
+            size="sm"
+            onClick={() => setCalendarViewType('timeline')}
+            className="min-h-[36px]"
+          >
+            <List className="h-4 w-4 mr-2" />
+            타임라인
+          </Button>
+        </div>
+      )}
 
       {/* 그리드 뷰 */}
       {calendarViewType === 'grid' && (
@@ -763,21 +766,36 @@ export function ReservationCalendarView({
                       }).slice(0, 3).map((reservation) => (
                         <div
                           key={reservation.id}
-                          className="flex items-center justify-between p-2 rounded-md bg-muted/50 hover:bg-muted cursor-pointer"
+                          className="flex items-center justify-between p-3 rounded-md bg-muted/50 hover:bg-muted cursor-pointer"
                           onClick={() => handleViewDetail(reservation.id)}
                         >
-                          <div className="flex items-center gap-2 flex-1 min-w-0">
-                            {getStatusBadge(reservation.status)}
-                            <div className="flex flex-col min-w-0">
-                              <span className="font-medium truncate">{reservation.guestName}</span>
-                              <span className="text-xs text-muted-foreground truncate">{reservation.roomType}</span>
+                          <div className="flex items-center gap-3 flex-1 min-w-0 overflow-hidden">
+                            {/* 1. 뱃지 */}
+                            <div className="shrink-0">
+                              {getStatusBadge(reservation.status)}
                             </div>
 
-                            {!reservation.assignedRoom && (
+                            {/* 2. 예약자명 */}
+                            <div className="font-bold text-base shrink-0">
+                              {reservation.guestName}
+                            </div>
+
+                            {/* 3. 예약 정보 & 가격 */}
+                            <div className="text-sm text-muted-foreground truncate flex items-center gap-1">
+                              <span>{reservation.roomType}</span>
+                              <span className="text-xs opacity-70">
+                                • {calculateTotalAmount(reservation).totalAmount.toLocaleString()}원
+                              </span>
+                            </div>
+                          </div>
+
+                          {/* 4. 방 배정 버튼 또는 방 번호 */}
+                          <div className="ml-2 shrink-0">
+                            {!reservation.assignedRoom ? (
                               <Button
                                 size="sm"
                                 variant="default"
-                                className="h-7 text-xs px-2 ml-auto shrink-0 bg-primary hover:bg-primary/90"
+                                className="h-8 px-3 text-xs bg-primary hover:bg-primary/90 shadow-sm"
                                 onClick={(e) => {
                                   e.stopPropagation();
                                   handleQuickAssign(reservation);
@@ -785,18 +803,11 @@ export function ReservationCalendarView({
                               >
                                 방 배정
                               </Button>
+                            ) : (
+                              <Badge variant="outline" className="text-primary border-primary/30">
+                                {reservation.assignedRoom}
+                              </Badge>
                             )}
-                          </div>
-
-                          {/* 배정된 방이 있으면 표시 */}
-                          {reservation.assignedRoom && (
-                            <Badge variant="outline" className="ml-auto shrink-0">
-                              {reservation.assignedRoom}
-                            </Badge>
-                          )}
-
-                          <div className="text-sm font-semibold ml-2 min-w-[80px] text-right">
-                            {calculateTotalAmount(reservation).totalAmount.toLocaleString()}원
                           </div>
                         </div>
                       ))}
