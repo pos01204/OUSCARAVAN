@@ -55,7 +55,7 @@ export interface FloorPlanConfig {
  * - 오른쪽 하단: 10호
  */
 export const FLOOR_PLAN_CONFIG: FloorPlanConfig = {
-  viewBox: "0 0 600 260",  // SVG 뷰포트 크기 (세로 높이 축소하여 아래 여백 제거)
+  viewBox: "0 0 600 310",  // SVG 뷰포트 크기 (하단 5~6호가 잘리지 않도록 높이 증가)
   grid: {
     columns: 2,            // 좌우 2개 섹션
     rows: 4,               // 행 수
@@ -63,27 +63,27 @@ export const FLOOR_PLAN_CONFIG: FloorPlanConfig = {
   },
   spaces: [
     // 왼쪽 섹션 - 오른쪽 열 (1호, 3호, 5호)
-    // 7-10호와 크기 통일: width: 50, height: 55
-    // 각 방 너비: 50, 간격: 6
+    // 관리동 및 주차공간 1의 너비(280)에 맞춰 2개 방이 나란히 배치
+    // 각 방 너비: (280 - 6 간격) / 2 = 137
     {
       id: '1',
       name: '1호',
       displayName: '1호',
-      coordinates: { x: 66, y: 110, width: 50, height: 55 },
+      coordinates: { x: 153, y: 110, width: 137, height: 55 },
       capacity: 4,
     },
     {
       id: '3',
       name: '3호',
       displayName: '3호',
-      coordinates: { x: 66, y: 175, width: 50, height: 55 },
+      coordinates: { x: 153, y: 175, width: 137, height: 55 },
       capacity: 4,
     },
     {
       id: '5',
       name: '5호',
       displayName: '5호',
-      coordinates: { x: 66, y: 240, width: 50, height: 55 },
+      coordinates: { x: 153, y: 240, width: 137, height: 55 },
       capacity: 4,
     },
     // 왼쪽 섹션 - 왼쪽 열 (2호, 4호, 6호)
@@ -91,50 +91,48 @@ export const FLOOR_PLAN_CONFIG: FloorPlanConfig = {
       id: '2',
       name: '2호',
       displayName: '2호',
-      coordinates: { x: 10, y: 110, width: 50, height: 55 },
+      coordinates: { x: 10, y: 110, width: 137, height: 55 },
       capacity: 4,
     },
     {
       id: '4',
       name: '4호',
       displayName: '4호',
-      coordinates: { x: 10, y: 175, width: 50, height: 55 },
+      coordinates: { x: 10, y: 175, width: 137, height: 55 },
       capacity: 4,
     },
     {
       id: '6',
       name: '6호',
       displayName: '6호',
-      coordinates: { x: 10, y: 240, width: 50, height: 55 },
+      coordinates: { x: 10, y: 240, width: 137, height: 55 },
       capacity: 2,
     },
     // 오른쪽 섹션 - ㅜ 형태 배치 (7-10호)
-    // 건물/창고(x: 304, width: 150)와 주차공간 3의 오른쪽에 배치
-    // 7-10호 시작 위치: x: 304 + 150 + 6 간격 = 460
-    // 사용 가능 너비: 600 - 460 = 140
+    // 주차공간 2 및 카페의 너비(286)에 맞춰 배치
+    // 주차공간 3도 286 너비로 변경됨
+    // 7-10호는 주차공간 3과 같은 너비 영역(286) 내에 배치
     // 상단 행: 7호, 8호, 9호 (3개 가로 배치)
-    // 1-6호와 크기 통일: width: 50, height: 55
-    // 각 방 너비: (140 - 6*2 간격) / 3 = 약 42.67 → 42로 설정
-    // 통일성을 위해 높이는 55로 유지
+    // 각 방 너비: (286 - 6*2 간격) / 3 = 약 91.33 → 91로 설정
     {
       id: '7',
       name: '7호',
       displayName: '7호',
-      coordinates: { x: 460, y: 130, width: 50, height: 55 },
+      coordinates: { x: 304, y: 130, width: 91, height: 55 },
       capacity: 4,
     },
     {
       id: '8',
       name: '8호',
       displayName: '8호',
-      coordinates: { x: 516, y: 130, width: 50, height: 55 },
+      coordinates: { x: 401, y: 130, width: 91, height: 55 },
       capacity: 4,
     },
     {
       id: '9',
       name: '9호',
       displayName: '9호',
-      coordinates: { x: 572, y: 130, width: 50, height: 55 },
+      coordinates: { x: 498, y: 130, width: 91, height: 55 },
       capacity: 4,
     },
     // 하단 행: 10호 (1개만, 중앙 정렬)
@@ -142,7 +140,7 @@ export const FLOOR_PLAN_CONFIG: FloorPlanConfig = {
       id: '10',
       name: '10호',
       displayName: '10호',
-      coordinates: { x: 516, y: 195, width: 50, height: 55 },
+      coordinates: { x: 401, y: 195, width: 91, height: 55 },
       capacity: 2,
     },
   ],
@@ -181,13 +179,13 @@ export const FLOOR_PLAN_CONFIG: FloorPlanConfig = {
     {
       id: 'warehouse',
       name: '', // 텍스트 노출하지 않음
-      coordinates: { x: 304, y: 130, width: 150, height: 45 },
+      coordinates: { x: 304, y: 130, width: 286, height: 45 },
       type: 'warehouse',
     },
     {
       id: 'parking-3',
       name: '주차공간 3',
-      coordinates: { x: 304, y: 185, width: 150, height: 35 },
+      coordinates: { x: 304, y: 185, width: 286, height: 35 },
       type: 'parking',
     },
   ],
