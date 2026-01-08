@@ -1,9 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import { ConditionalBottomNav } from "@/components/shared/ConditionalBottomNav";
-import { ConditionalHeader } from "@/components/shared/ConditionalHeader";
-import { ConditionalFooter } from "@/components/shared/ConditionalFooter";
+import { RootLayoutWrapper } from "@/components/shared/RootLayoutWrapper";
 import { Toaster } from "@/components/ui/toaster";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -43,14 +41,9 @@ export default function RootLayout({
   return (
     <html lang="ko" className="h-full">
       <body className={`${inter.className} flex min-h-screen flex-col`}>
-        <ConditionalHeader />
-        <main className="flex flex-1 flex-col pb-16 pt-16 md:pb-0 md:pt-0">
-          <div className="container mx-auto max-w-md flex-1 px-4 py-6 md:max-w-2xl">
-            {children}
-          </div>
-          <ConditionalFooter />
-        </main>
-        <ConditionalBottomNav />
+        <RootLayoutWrapper>
+          {children}
+        </RootLayoutWrapper>
         <Toaster />
       </body>
     </html>
