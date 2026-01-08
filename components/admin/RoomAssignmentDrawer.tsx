@@ -154,14 +154,16 @@ export function RoomAssignmentDrawer({
         }
     };
 
-    const sortedRooms = [...rooms].sort((a, b) => {
-        const aMatch = a.name.match(/^(\d+)호$/);
-        const bMatch = b.name.match(/^(\d+)호$/);
-        if (aMatch && bMatch) {
-            return parseInt(aMatch[1]) - parseInt(bMatch[1]);
-        }
-        return a.name.localeCompare(b.name);
-    });
+    const sortedRooms = [...rooms]
+        .filter(room => !/^[AB]\d+/.test(room.name)) // 레거시 데이터(A/B동) 제외
+        .sort((a, b) => {
+            const aMatch = a.name.match(/^(\d+)호$/);
+            const bMatch = b.name.match(/^(\d+)호$/);
+            if (aMatch && bMatch) {
+                return parseInt(aMatch[1]) - parseInt(bMatch[1]);
+            }
+            return a.name.localeCompare(b.name);
+        });
 
     return (
         <Drawer open={isOpen} onOpenChange={(open) => !open && onClose()}>

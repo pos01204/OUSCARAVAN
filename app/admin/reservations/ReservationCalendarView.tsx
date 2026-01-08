@@ -214,46 +214,28 @@ export function ReservationCalendarView({
       invalid: reservations.length - validReservations.length,
     });
 
-    // ⚠️ 간소화: 날짜별로 체크인 건수만 표시 (배지 하나만)
-    const eventMap = new Map<string, ReservationEvent>();
-    const processedDates = new Set<string>();
+    // 개별 예약 이벤트를 생성 (바 형태의 월간 뷰)
+    const events = validReservations.map((reservation) => {
+      const start = new Date(reservation.checkin);
+      start.setHours(0, 0, 0, 0);
+      const end = new Date(reservation.checkout);
+      end.setHours(23, 59, 59, 999); // 당일 끝까지
 
-    // 모든 날짜를 한 번만 순회하여 이벤트 생성
-    Object.keys(reservationsByDate).forEach((dateKey) => {
-      if (processedDates.has(dateKey)) return;
-      processedDates.add(dateKey);
+      // 타이틀 포맷: "객실명 예약자"
+      const roomName = reservation.assignedRoom || '미배정';
+      const truncatedRoom = roomName.startsWith('A') || roomName.startsWith('B') ? roomName : roomName; // 레거시 필터링은 Drawer에서 했지만 표시는 그대로
 
-      const dateReservations = reservationsByDate[dateKey] || [];
-      if (dateReservations.length === 0) return;
-
-      const currentDate = new Date(dateKey + 'T00:00:00');
-      if (isNaN(currentDate.getTime())) return;
-
-      // 체크인 건수만 계산
-      const checkinReservations = dateReservations.filter(r => {
-        const rCheckin = new Date(r.checkin);
-        return isSameDay(rCheckin, currentDate);
-      });
-      const checkinCount = checkinReservations.length;
-
-      // 체크인 건수가 0보다 큰 경우에만 이벤트 생성
-      if (checkinCount > 0) {
-        const dayStart = new Date(currentDate);
-        dayStart.setHours(0, 0, 0, 0);
-        const dayEnd = new Date(currentDate);
-        dayEnd.setHours(23, 59, 59, 999);
-
-        eventMap.set(dateKey, {
-          id: `checkin-${dateKey}`,
-          title: `${checkinCount}건`, // 간소화: "체크인: N건" → "N건"
-          start: dayStart,
-          end: dayEnd,
-          resource: checkinReservations[0],
-        });
-      }
+      return {
+        id: reservation.id,
+        title: `${reservation.assignedRoom || '미배정'} ${reservation.guestName}`,
+        start,
+        end,
+        resource: reservation,
+        allDay: true, // 하루 종일 이벤트로 표시
+      };
     });
 
-    const events = Array.from(eventMap.values());
+    // const events = Array.from(eventMap.values()); // Removed
 
     // 타입 가드 함수: 이벤트가 유효한 날짜를 가지고 있는지 확인
     const isValidEvent = (event: ReservationEvent | undefined): event is ReservationEvent & { start: Date; end: Date } => {
@@ -298,91 +280,34 @@ export function ReservationCalendarView({
   }, [reservations, reservationsByDate]);
 
 
-  // 이벤트 스타일 커스터마이징 (미배정/체크인/체크아웃 건수 표시)
+  // 이벤트 스타일 커스터마이징 (바 형태)
   const eventStyleGetter = (event: ReservationEvent) => {
     const reservation = event.resource;
-    const isGrouped = event.id.startsWith('group-');
-
-    // 타입 안전성 보장
-    if (!event.start || !(event.start instanceof Date)) {
-      const colorConfig = STATUS_COLORS[reservation.status] || STATUS_COLORS.pending;
-      return {
-        style: {
-          backgroundColor: colorConfig.bg,
-          borderRadius: '4px',
-          opacity: 0.95,
-          color: colorConfig.text,
-          border: '0px',
-          display: 'block',
-          fontSize: '0.7rem',
-          fontWeight: '700',
-          padding: '2px 6px',
-          cursor: 'pointer',
-          marginBottom: '2px',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-          whiteSpace: 'nowrap',
-        },
-      };
-    }
-
-    // 간소화: 체크인 건수만 표시 (초록색 배지)
-    const colorConfig = { bg: '#047857', text: 'white' }; // 체크인 색상 고정
+    const colorConfig = STATUS_COLORS[reservation.status] || STATUS_COLORS.pending;
 
     return {
       style: {
         backgroundColor: colorConfig.bg,
-        borderRadius: '4px',
-        opacity: 0.95,
-        color: colorConfig.text,
+        borderRadius: '2px', // 더 각지게 변경
+        opacity: 0.9,
+        color: 'white',
         border: '0px',
         display: 'block',
-        fontSize: '0.7rem',
-        fontWeight: '700',
-        padding: '2px 6px',
-        cursor: 'pointer',
-        marginBottom: '2px',
+        fontSize: '0.75rem',
+        padding: '1px 4px',
+        marginBottom: '1px',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
-        textAlign: 'center' as const,
       },
     };
   };
 
-  // 커스텀 이벤트 컴포넌트 (체크인 건수만 표시 - 간소화)
+  // 커스텀 이벤트 컴포넌트
   const EventComponent = useCallback(({ event }: { event: ReservationEvent }) => {
-    // title을 string으로 변환 (예: "3건")
-    const titleString = typeof event.title === 'string' ? event.title : String(event.title || '');
-
-    // 간소화: 체크인 건수만 표시 (초록색 배지)
-    const colorConfig = { bg: '#047857', text: 'white' };
-
     return (
-      <div
-        className="rbc-event-mobile"
-        style={{
-          backgroundColor: colorConfig.bg,
-          color: colorConfig.text,
-          padding: '4px 6px',
-          borderRadius: '4px',
-          fontSize: '11px',
-          fontWeight: '700',
-          textAlign: 'center',
-          width: '100%',
-          height: '44px', // 터치 타겟 44px 확보
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          letterSpacing: '0.1px',
-          lineHeight: '1.2',
-          whiteSpace: 'nowrap',
-          overflow: 'hidden',
-          textOverflow: 'ellipsis',
-        }}
-        title={`체크인 ${titleString}`}
-      >
-        <span className="text-[13px]">{titleString}</span>
+      <div title={event.title as string} className="text-xs font-medium truncate">
+        {event.title}
       </div>
     );
   }, []);
@@ -712,15 +637,13 @@ export function ReservationCalendarView({
                   <CardContent className="p-4">
                     <div className="flex items-center justify-between mb-3">
                       <div className="flex items-center gap-3">
-                        <div className="text-lg font-bold text-primary">
-                          {format(date, 'd', { locale: ko })}
-                        </div>
+                        {/* 날짜 숫자 제거됨 */}
                         <div>
                           <div className="font-semibold">
                             {format(date, 'yyyy년 M월 d일 (EEE)', { locale: ko })}
                           </div>
                           <div className="text-sm text-muted-foreground">
-
+                            {reservations.length}건의 체크인
                           </div>
                         </div>
                       </div>
