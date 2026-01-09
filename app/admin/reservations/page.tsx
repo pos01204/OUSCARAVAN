@@ -107,13 +107,14 @@ export default async function ReservationsPage({
 
   // ⚠️ 중요: searchParams 감지하여 자동 필터 적용 (딥 링크)
   if (filter === 'd1-unassigned') {
-    // 오늘 날짜 계산
-    const today = new Date();
-    const todayStr = formatDateToISO(today);
+    // 내일 날짜 계산
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    const tomorrowStr = formatDateToISO(tomorrow);
 
-    if (todayStr) {
+    if (tomorrowStr) {
       // 즉시 필터 적용
-      checkin = todayStr;
+      checkin = tomorrowStr;
       // 미배정 필터는 클라이언트 컴포넌트에서 처리
       status = 'all'; // 상태 필터는 모두 표시하되, 미배정만 필터링
     }

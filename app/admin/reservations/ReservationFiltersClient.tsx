@@ -56,6 +56,14 @@ export function ReservationFiltersClient({
     }
   }, [initialCheckin, setCheckin]);
 
+  // 내일 날짜 계산
+  const tomorrow = new Date();
+  tomorrow.setDate(tomorrow.getDate() + 1);
+  const tomorrowStr = tomorrow.toISOString().split('T')[0];
+  
+  // "내일 체크인" 버튼 활성 상태 확인
+  const isTomorrowCheckinActive = checkin === tomorrowStr && !checkout && !initialFilter;
+
   // 활성 필터 확인
   const hasActiveFilters = status !== 'all' || checkin || checkout || search;
 
@@ -92,63 +100,32 @@ export function ReservationFiltersClient({
       {/* Tier 1: Filter Group (Transient Status) - Optimized for horizontal width */}
       <div className="flex items-center p-1 bg-muted/30 rounded-lg md:rounded-full border border-border/40 gap-0.5 md:gap-1 w-full overflow-hidden">
         <Button
-          variant={checkin && !checkout ? "default" : "ghost"}
+          variant={isTomorrowCheckinActive ? "default" : "ghost"}
           size="sm"
           className={`h-9 md:h-10 flex-1 rounded-md md:rounded-full whitespace-nowrap transition-all text-xs font-bold flex items-center justify-center ${
-            checkin && !checkout 
+            isTomorrowCheckinActive
               ? "shadow-sm bg-primary text-primary-foreground hover:bg-primary/90" 
               : "text-muted-foreground hover:text-foreground hover:bg-transparent"
           }`}
           onClick={() => {
-            const today = new Date().toISOString().split('T')[0];
-            if (checkin === today && !checkout) {
+            if (isTomorrowCheckinActive) {
               handleReset();
             } else {
-              setCheckin(today);
+              setCheckin(tomorrowStr);
               setCheckout('');
               setStatus('all');
               setSearch('');
               startTransition(() => {
                 const params = new URLSearchParams();
-                params.set('checkin', today);
+                params.set('checkin', tomorrowStr);
                 params.set('view', 'list');
                 router.push(`/admin/reservations?${params.toString()}`);
               });
             }
           }}
         >
-          {checkin && !checkout && <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-primary-foreground animate-pulse" />}
-          오늘 체크인
-        </Button>
-        <div className="w-[1px] h-4 bg-border/40 mx-0.5 hidden md:block" />
-        <Button
-          variant={checkout && !checkin ? "default" : "ghost"}
-          size="sm"
-          className={`h-9 md:h-10 flex-1 rounded-md md:rounded-full whitespace-nowrap transition-all text-xs font-bold flex items-center justify-center ${
-            checkout && !checkin 
-              ? "shadow-sm bg-primary text-primary-foreground hover:bg-primary/90" 
-              : "text-muted-foreground hover:text-foreground hover:bg-transparent"
-          }`}
-          onClick={() => {
-            const today = new Date().toISOString().split('T')[0];
-            if (checkout === today && !checkin) {
-              handleReset();
-            } else {
-              setCheckin('');
-              setCheckout(today);
-              setStatus('all');
-              setSearch('');
-              startTransition(() => {
-                const params = new URLSearchParams();
-                params.set('checkout', today);
-                params.set('view', 'list');
-                router.push(`/admin/reservations?${params.toString()}`);
-              });
-            }
-          }}
-        >
-          {checkout && !checkin && <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-primary-foreground animate-pulse" />}
-          오늘 체크아웃
+          {isTomorrowCheckinActive && <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-primary-foreground animate-pulse" />}
+          내일 체크인
         </Button>
         <div className="w-[1px] h-4 bg-border/40 mx-0.5 hidden md:block" />
         <Button
@@ -163,8 +140,12 @@ export function ReservationFiltersClient({
             if (initialFilter === 'd1-unassigned') {
               handleReset();
             } else {
+              const tomorrow = new Date();
+              tomorrow.setDate(tomorrow.getDate() + 1);
+              const tomorrowStr = tomorrow.toISOString().split('T')[0];
+              
               setStatus('all');
-              setCheckin('');
+              setCheckin(tomorrowStr);
               setCheckout('');
               setSearch('');
               startTransition(() => {
