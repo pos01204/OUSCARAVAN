@@ -187,16 +187,17 @@ export default function OrdersPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">주문히스토리</h1>
-
+    <div className="space-y-4 md:space-y-6 pb-0 -mb-4 md:mb-0">
+      <div className="w-full max-w-7xl mx-auto px-4 md:px-6 flex flex-col gap-0.5 md:gap-1">
+        <div className="flex items-center justify-between">
+          <div className="flex-1">
+            <h1 className="text-2xl md:text-3xl font-black tracking-tight text-foreground">주문히스토리</h1>
+          </div>
+          <Button variant="outline" onClick={fetchOrders} size="sm" className="h-8 md:h-9">
+            <RefreshCw className="mr-2 h-4 w-4" />
+            새로고침
+          </Button>
         </div>
-        <Button variant="outline" onClick={fetchOrders}>
-          <RefreshCw className="mr-2 h-4 w-4" />
-          새로고침
-        </Button>
       </div>
 
       <OrderFiltersClient />

@@ -228,14 +228,12 @@ export default function RoomsPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">현장관리</h1>
-          <p className="text-muted-foreground">
-            객실별 실시간 상태(체크인 여부, 주문 현황) 모니터링
-          </p>
-        </div>
+    <div className="space-y-4 md:space-y-6 pb-0 -mb-4 md:mb-0">
+      <div className="w-full max-w-7xl mx-auto px-4 md:px-6 flex flex-col gap-0.5 md:gap-1">
+        <h1 className="text-2xl md:text-3xl font-black tracking-tight text-foreground">현장관리</h1>
+        <p className="text-xs md:text-sm text-muted-foreground font-medium">
+          객실별 실시간 상태(체크인 여부, 주문 현황) 모니터링
+        </p>
       </div>
 
       {rooms.length === 0 ? (

@@ -41,10 +41,9 @@ async function CriticalBanner() {
 export default async function AdminDashboard() {
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-3xl font-bold">홈</h1>
-
+    <div className="space-y-4 md:space-y-6 pb-0 -mb-4 md:mb-0">
+      <div className="w-full max-w-7xl mx-auto px-4 md:px-6 flex flex-col gap-0.5 md:gap-1">
+        <h1 className="text-2xl md:text-3xl font-black tracking-tight text-foreground">홈</h1>
       </div>
 
       {/* 상단 배너 (Critical Status) */}
@@ -59,8 +58,8 @@ export default async function AdminDashboard() {
       </Suspense>
 
       {/* 실시간 피드 리스트 (SSE 연동) */}
-      <div>
-        <h2 className="text-xl font-semibold mb-4">실시간 알림</h2>
+      <div className="w-full max-w-7xl mx-auto px-4 md:px-6">
+        <h2 className="text-lg md:text-xl font-bold mb-4 text-foreground">실시간 알림</h2>
         <NotificationFeed />
       </div>
     </div>
