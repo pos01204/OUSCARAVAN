@@ -247,6 +247,13 @@ export interface GuideChecklistItem {
   helpText?: string;
 }
 
+export interface TrashCategory {
+  id: string;
+  name: string;
+  description: string;
+  examples: string[];
+}
+
 export interface GuideItem {
   id: string;
   category: string;
@@ -267,4 +274,5 @@ export interface GuideItem {
   priority?: number;
   lastUpdated?: string;
   hasCarousel?: boolean;
+  trashCategories?: TrashCategory[]; // 쓰레기 분리수거용
 }

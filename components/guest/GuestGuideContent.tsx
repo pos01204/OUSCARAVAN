@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Search, AlertCircle, BookOpen, Lightbulb, ExternalLink } from 'lucide-react';
+import { Search, AlertCircle, Lightbulb, ExternalLink } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -13,7 +13,7 @@ import { StepByStepGuide } from '@/components/features/StepByStepGuide';
 import { GuideChecklist } from '@/components/features/GuideChecklist';
 import { GuideFAQ } from '@/components/features/GuideFAQ';
 import { GuideTroubleshooting } from '@/components/features/GuideTroubleshooting';
-import { QuickAccess } from '@/components/features/QuickAccess';
+import { TrashCategoryGuide } from '@/components/features/TrashCategoryGuide';
 import Image from 'next/image';
 import type { GuideItem } from '@/types';
 
@@ -85,9 +85,6 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
         </p>
       </div>
 
-      {/* 빠른 접근 */}
-      <QuickAccess token={token} />
-
       {/* 검색 및 필터 */}
       <section className="space-y-4" aria-label="검색 및 필터">
         {/* 카테고리 필터 */}
@@ -126,14 +123,18 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
 
       {/* BBQ 가이드 캐러셀 토글 */}
       {bbqGuide && (
-        <Button
-          onClick={() => setShowBBQCarousel(!showBBQCarousel)}
-          variant="secondary"
-          className="w-full"
-          aria-label="BBQ 가이드 캐러셀 열기/닫기"
-        >
-          {showBBQCarousel ? '일반 안내 보기' : '불멍/바베큐 가이드 보기'}
-        </Button>
+        <Card className="border-primary/30 bg-primary/5">
+          <CardContent className="p-4">
+            <Button
+              onClick={() => setShowBBQCarousel(!showBBQCarousel)}
+              variant="default"
+              className="w-full h-12 text-base font-semibold"
+              aria-label="BBQ 가이드 캐러셀 열기/닫기"
+            >
+              {showBBQCarousel ? '일반 안내 보기' : '🔥 불멍/바베큐 가이드 보기'}
+            </Button>
+          </CardContent>
+        </Card>
       )}
 
       {showBBQCarousel ? (
@@ -192,24 +193,6 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
                           </Badge>
                         </div>
                       </CardHeader>
-                      {!isExpanded && (
-                        <CardContent className="pt-0">
-                          <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                            {item.steps && (
-                              <span className="flex items-center gap-1">
-                                <BookOpen className="h-4 w-4" />
-                                {item.steps.length}단계
-                              </span>
-                            )}
-                            {item.faq && item.faq.length > 0 && (
-                              <span>FAQ {item.faq.length}개</span>
-                            )}
-                            {item.troubleshooting && item.troubleshooting.length > 0 && (
-                              <span>문제 해결 {item.troubleshooting.length}개</span>
-                            )}
-                          </div>
-                        </CardContent>
-                      )}
                     </Card>
 
                     {/* 확장된 가이드 내용 */}
@@ -291,46 +274,55 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
                         </Card>
 
                         {/* 탭으로 구성된 상세 정보 */}
-                        <Tabs defaultValue="steps" className="w-full">
-                          <TabsList className="grid w-full grid-cols-4">
-                            {item.steps && item.steps.length > 0 && (
-                              <TabsTrigger value="steps">단계별 가이드</TabsTrigger>
-                            )}
-                            {item.checklist && item.checklist.length > 0 && (
-                              <TabsTrigger value="checklist">체크리스트</TabsTrigger>
-                            )}
+                        {item.id === 'trash' && item.trashCategories ? (
+                          <div className="space-y-4">
+                            <TrashCategoryGuide categories={item.trashCategories} />
                             {item.faq && item.faq.length > 0 && (
-                              <TabsTrigger value="faq">FAQ</TabsTrigger>
-                            )}
-                            {item.troubleshooting && item.troubleshooting.length > 0 && (
-                              <TabsTrigger value="troubleshooting">문제 해결</TabsTrigger>
-                            )}
-                          </TabsList>
-
-                          {item.steps && item.steps.length > 0 && (
-                            <TabsContent value="steps" className="mt-4">
-                              <StepByStepGuide steps={item.steps} />
-                            </TabsContent>
-                          )}
-
-                          {item.checklist && item.checklist.length > 0 && (
-                            <TabsContent value="checklist" className="mt-4">
-                              <GuideChecklist items={item.checklist} checklistId={item.id} />
-                            </TabsContent>
-                          )}
-
-                          {item.faq && item.faq.length > 0 && (
-                            <TabsContent value="faq" className="mt-4">
                               <GuideFAQ faqs={item.faq} searchable={true} />
-                            </TabsContent>
-                          )}
+                            )}
+                          </div>
+                        ) : (
+                          <Tabs defaultValue="steps" className="w-full">
+                            <TabsList className="grid w-full grid-cols-4">
+                              {item.steps && item.steps.length > 0 && (
+                                <TabsTrigger value="steps">단계별 가이드</TabsTrigger>
+                              )}
+                              {item.checklist && item.checklist.length > 0 && (
+                                <TabsTrigger value="checklist">체크리스트</TabsTrigger>
+                              )}
+                              {item.faq && item.faq.length > 0 && (
+                                <TabsTrigger value="faq">FAQ</TabsTrigger>
+                              )}
+                              {item.troubleshooting && item.troubleshooting.length > 0 && (
+                                <TabsTrigger value="troubleshooting">문제 해결</TabsTrigger>
+                              )}
+                            </TabsList>
 
-                          {item.troubleshooting && item.troubleshooting.length > 0 && (
-                            <TabsContent value="troubleshooting" className="mt-4">
-                              <GuideTroubleshooting items={item.troubleshooting} />
-                            </TabsContent>
-                          )}
-                        </Tabs>
+                            {item.steps && item.steps.length > 0 && (
+                              <TabsContent value="steps" className="mt-4">
+                                <StepByStepGuide steps={item.steps} />
+                              </TabsContent>
+                            )}
+
+                            {item.checklist && item.checklist.length > 0 && (
+                              <TabsContent value="checklist" className="mt-4">
+                                <GuideChecklist items={item.checklist} checklistId={item.id} />
+                              </TabsContent>
+                            )}
+
+                            {item.faq && item.faq.length > 0 && (
+                              <TabsContent value="faq" className="mt-4">
+                                <GuideFAQ faqs={item.faq} searchable={true} />
+                              </TabsContent>
+                            )}
+
+                            {item.troubleshooting && item.troubleshooting.length > 0 && (
+                              <TabsContent value="troubleshooting" className="mt-4">
+                                <GuideTroubleshooting items={item.troubleshooting} />
+                              </TabsContent>
+                            )}
+                          </Tabs>
+                        )}
 
                         {/* 관련 가이드 */}
                         {item.relatedGuides && item.relatedGuides.length > 0 && (
