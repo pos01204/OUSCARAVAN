@@ -169,7 +169,7 @@ export const MENU_CATEGORIES = {
     id: 'signature',
     name: 'Signature & Local',
     koreanName: '시그니처 및 지역 특화',
-    description: '강화도의 특색을 살린 메뉴로, 서비스 노출 시 상단 배치가 권장됩니다.',
+    description: '',
     items: [
       {
         id: 'ous-latte',
@@ -198,7 +198,7 @@ export const MENU_CATEGORIES = {
     id: 'coffee',
     name: 'Coffee',
     koreanName: '커피',
-    description: '기본적인 커피 라인업으로 원두의 퀄리티를 강조하는 섹션입니다.',
+    description: '',
     items: [
       {
         id: 'americano',
@@ -227,7 +227,7 @@ export const MENU_CATEGORIES = {
     id: 'non-coffee',
     name: 'Non-Coffee & Ade',
     koreanName: '논커피 및 에이드',
-    description: '커피를 선호하지 않는 고객을 위한 과일 및 우유 베이스 음료입니다.',
+    description: '',
     items: [
       {
         id: 'strawberry-latte',
@@ -263,7 +263,7 @@ export const MENU_CATEGORIES = {
     id: 'bakery',
     name: 'Bakery & Dessert',
     koreanName: '베이커리 및 디저트',
-    description: '음료와 함께 즐기기 좋은 당일 제조 베이커리입니다.',
+    description: '',
     items: [
       {
         id: 'salt-bread',
