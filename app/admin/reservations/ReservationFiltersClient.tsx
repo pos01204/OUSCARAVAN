@@ -87,13 +87,13 @@ export function ReservationFiltersClient({
   };
 
   return (
-    <div className="mb-4">
-      {/* 빠른 필터 (항상 표시 - 가로 스크롤) */}
-      <div className="flex overflow-x-auto pb-1 -mx-4 px-4 md:mx-0 md:px-0 scrollbar-hide gap-2 mb-2">
+    <div className="mb-8">
+      {/* Tier 1: Filter Group (Transient Status) */}
+      <div className="inline-flex items-center p-1 bg-muted/30 rounded-full border border-border/40 gap-1 overflow-x-auto max-w-full scrollbar-hide">
         <Button
-          variant={checkin && !checkout ? "default" : "outline"}
+          variant={checkin && !checkout ? "default" : "ghost"}
           size="sm"
-          className={`min-h-[38px] px-4 rounded-full whitespace-nowrap flex-shrink-0 transition-all font-semibold ${checkin && !checkout ? "shadow-md scale-105" : "hover:bg-muted/80 shadow-sm"
+          className={`h-9 px-4 rounded-full whitespace-nowrap flex-shrink-0 transition-all text-xs font-bold ${checkin && !checkout ? "shadow-sm bg-background text-foreground hover:bg-background" : "text-muted-foreground hover:text-foreground hover:bg-transparent"
             }`}
           onClick={() => {
             const today = new Date().toISOString().split('T')[0];
@@ -110,12 +110,13 @@ export function ReservationFiltersClient({
             }
           }}
         >
-          {checkin && !checkout ? "✓ 오늘 체크인" : "오늘 체크인"}
+          {checkin && !checkout && <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />}
+          오늘 체크인
         </Button>
         <Button
-          variant={checkout && !checkin ? "default" : "outline"}
+          variant={checkout && !checkin ? "default" : "ghost"}
           size="sm"
-          className={`min-h-[38px] px-4 rounded-full whitespace-nowrap flex-shrink-0 transition-all font-semibold ${checkout && !checkin ? "shadow-md scale-105" : "hover:bg-muted/80 shadow-sm"
+          className={`h-9 px-4 rounded-full whitespace-nowrap flex-shrink-0 transition-all text-xs font-bold ${checkout && !checkin ? "shadow-sm bg-background text-foreground hover:bg-background" : "text-muted-foreground hover:text-foreground hover:bg-transparent"
             }`}
           onClick={() => {
             const today = new Date().toISOString().split('T')[0];
@@ -132,12 +133,13 @@ export function ReservationFiltersClient({
             }
           }}
         >
-          {checkout && !checkin ? "✓ 오늘 체크아웃" : "오늘 체크아웃"}
+          {checkout && !checkin && <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />}
+          오늘 체크아웃
         </Button>
         <Button
-          variant={initialFilter === 'd1-unassigned' ? "default" : "outline"}
+          variant={initialFilter === 'd1-unassigned' ? "default" : "ghost"}
           size="sm"
-          className={`min-h-[38px] px-4 rounded-full whitespace-nowrap flex-shrink-0 transition-all font-semibold ${initialFilter === 'd1-unassigned' ? "shadow-md scale-105" : "hover:bg-muted/80 shadow-sm"
+          className={`h-9 px-4 rounded-full whitespace-nowrap flex-shrink-0 transition-all text-xs font-bold ${initialFilter === 'd1-unassigned' ? "shadow-sm bg-background text-foreground hover:bg-background" : "text-muted-foreground hover:text-foreground hover:bg-transparent"
             }`}
           onClick={() => {
             if (initialFilter === 'd1-unassigned') {
@@ -156,12 +158,13 @@ export function ReservationFiltersClient({
             }
           }}
         >
-          {initialFilter === 'd1-unassigned' ? "✓ 미배정만" : "미배정만"}
+          {initialFilter === 'd1-unassigned' && <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />}
+          미배정
         </Button>
         <Button
-          variant={checkin && checkout ? "default" : "outline"}
+          variant={checkin && checkout ? "default" : "ghost"}
           size="sm"
-          className={`min-h-[38px] px-4 rounded-full whitespace-nowrap flex-shrink-0 transition-all font-semibold ${checkin && checkout ? "shadow-md scale-105" : "hover:bg-muted/80 shadow-sm"
+          className={`h-9 px-4 rounded-full whitespace-nowrap flex-shrink-0 transition-all text-xs font-bold ${checkin && checkout ? "shadow-sm bg-background text-foreground hover:bg-background" : "text-muted-foreground hover:text-foreground hover:bg-transparent"
             }`}
           onClick={() => {
             const today = new Date();
@@ -185,7 +188,8 @@ export function ReservationFiltersClient({
             }
           }}
         >
-          {checkin && checkout ? "✓ 이번 주" : "이번 주"}
+          {checkin && checkout && <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />}
+          이번 주
         </Button>
       </div>
 

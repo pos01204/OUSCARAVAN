@@ -121,12 +121,10 @@ export default async function ReservationsPage({
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold">예약/배정</h1>
-
-        </div>
+    <div className="space-y-6 pb-8">
+      <div className="flex flex-col gap-1">
+        <h1 className="text-3xl font-black tracking-tight text-foreground">예약 / 배정</h1>
+        <p className="text-sm text-muted-foreground font-medium">관리자 예약 현황 및 객실 배정 시스템</p>
       </div>
 
       <ReservationFiltersClient

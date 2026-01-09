@@ -108,41 +108,42 @@ export function ReservationsViewClient({
 
   return (
     <Tabs value={view} onValueChange={(v) => setView(v as 'list' | 'calendar')} className="w-full">
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-2 w-full md:w-auto">
-          <TabsList className="w-full md:w-auto bg-muted/20 p-1 rounded-full border border-border/50 h-auto">
+      <div className="flex flex-col gap-6">
+        {/* Tier 2: Primary View Toggle (Structural Mode) */}
+        <div className="flex items-center gap-3">
+          <TabsList className="bg-muted/30 p-1 rounded-lg border border-border/40 h-auto self-start">
             <TabsTrigger
               value="calendar"
-              className="flex-1 md:flex-initial min-h-[34px] px-6 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm transition-all text-xs font-bold"
+              className="px-6 py-2 rounded-md data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all text-sm font-bold border-transparent data-[state=active]:border-border/10 border text-muted-foreground"
             >
-              <Calendar className="mr-2 h-3.5 w-3.5" />
+              <Calendar className="mr-2 h-4 w-4" />
               캘린더
             </TabsTrigger>
             <TabsTrigger
               value="list"
-              className="flex-1 md:flex-initial min-h-[34px] px-6 rounded-full data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-sm transition-all text-xs font-bold"
+              className="px-6 py-2 rounded-md data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all text-sm font-bold border-transparent data-[state=active]:border-border/10 border text-muted-foreground"
             >
-              <List className="mr-2 h-3.5 w-3.5" />
+              <List className="mr-2 h-4 w-4" />
               리스트
             </TabsTrigger>
           </TabsList>
         </div>
+
+        <TabsContent value="calendar" className="mt-0 ring-offset-background focus-visible:outline-none">
+          <ReservationCalendarView reservations={reservations} />
+        </TabsContent>
+
+        <TabsContent value="list" className="mt-0 ring-offset-background focus-visible:outline-none">
+          <ReservationListView
+            reservations={filteredReservations}
+            total={filteredReservations.length}
+            search={search}
+            status={status}
+            checkin={checkin}
+            checkout={checkout}
+          />
+        </TabsContent>
       </div>
-
-      <TabsContent value="calendar" className="mt-0">
-        <ReservationCalendarView reservations={reservations} />
-      </TabsContent>
-
-      <TabsContent value="list" className="mt-0">
-        <ReservationListView
-          reservations={filteredReservations}
-          total={filteredReservations.length}
-          search={search}
-          status={status}
-          checkin={checkin}
-          checkout={checkout}
-        />
-      </TabsContent>
     </Tabs>
   );
 }
