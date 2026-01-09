@@ -94,7 +94,7 @@ export function ReservationFiltersClient({
         <Button
           variant={checkin && !checkout ? "default" : "ghost"}
           size="sm"
-          className={`h-9 md:h-10 flex-1 rounded-md md:rounded-full whitespace-nowrap transition-all text-xs font-bold ${
+          className={`h-9 md:h-10 flex-1 rounded-md md:rounded-full whitespace-nowrap transition-all text-xs font-bold flex items-center justify-center ${
             checkin && !checkout 
               ? "shadow-sm bg-primary text-primary-foreground hover:bg-primary/90" 
               : "text-muted-foreground hover:text-foreground hover:bg-transparent"
@@ -121,7 +121,7 @@ export function ReservationFiltersClient({
         <Button
           variant={checkout && !checkin ? "default" : "ghost"}
           size="sm"
-          className={`h-9 md:h-10 flex-1 rounded-md md:rounded-full whitespace-nowrap transition-all text-xs font-bold ${
+          className={`h-9 md:h-10 flex-1 rounded-md md:rounded-full whitespace-nowrap transition-all text-xs font-bold flex items-center justify-center ${
             checkout && !checkin 
               ? "shadow-sm bg-primary text-primary-foreground hover:bg-primary/90" 
               : "text-muted-foreground hover:text-foreground hover:bg-transparent"
@@ -148,7 +148,7 @@ export function ReservationFiltersClient({
         <Button
           variant={initialFilter === 'd1-unassigned' ? "default" : "ghost"}
           size="sm"
-          className={`h-9 md:h-10 flex-1 rounded-md md:rounded-full whitespace-nowrap transition-all text-xs font-bold ${
+          className={`h-9 md:h-10 flex-1 rounded-md md:rounded-full whitespace-nowrap transition-all text-xs font-bold flex items-center justify-center ${
             initialFilter === 'd1-unassigned' 
               ? "shadow-sm bg-primary text-primary-foreground hover:bg-primary/90" 
               : "text-muted-foreground hover:text-foreground hover:bg-transparent"
@@ -172,40 +172,6 @@ export function ReservationFiltersClient({
         >
           {initialFilter === 'd1-unassigned' && <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-primary-foreground animate-pulse" />}
           미배정
-        </Button>
-        <div className="w-[1px] h-4 bg-border/40 mx-0.5 hidden md:block" />
-        <Button
-          variant={checkin && checkout ? "default" : "ghost"}
-          size="sm"
-          className={`h-9 md:h-10 flex-1 rounded-md md:rounded-full whitespace-nowrap transition-all text-xs font-bold ${
-            checkin && checkout 
-              ? "shadow-sm bg-primary text-primary-foreground hover:bg-primary/90" 
-              : "text-muted-foreground hover:text-foreground hover:bg-transparent"
-          }`}
-          onClick={() => {
-            const today = new Date();
-            const weekStart = new Date(today);
-            weekStart.setDate(today.getDate() - today.getDay());
-            const weekEnd = new Date(weekStart);
-            weekEnd.setDate(weekStart.getDate() + 6);
-            const startStr = weekStart.toISOString().split('T')[0];
-            const endStr = weekEnd.toISOString().split('T')[0];
-
-            if (checkin === startStr && checkout === endStr) {
-              handleReset();
-            } else {
-              setStatus('all');
-              setSearch('');
-              setCheckin(startStr);
-              setCheckout(endStr);
-              startTransition(() => {
-                router.push(`/admin/reservations?checkin=${startStr}&checkout=${endStr}`);
-              });
-            }
-          }}
-        >
-          {checkin && checkout && <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-primary-foreground animate-pulse" />}
-          이번 주
         </Button>
       </div>
 
