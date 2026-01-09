@@ -36,4 +36,4 @@ export function RootLayoutWrapper({ children }: RootLayoutWrapperProps) {
       )}
     </>
   );
-
+}
