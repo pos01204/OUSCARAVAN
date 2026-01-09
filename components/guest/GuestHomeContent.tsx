@@ -198,7 +198,7 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
       </section>
 
       {/* Order History */}
-      <OrderHistory />
+      <OrderHistory token={token} />
     </main>
   );
 }
