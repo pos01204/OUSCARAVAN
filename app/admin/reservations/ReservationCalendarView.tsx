@@ -50,15 +50,19 @@ interface ReservationEvent extends Event {
 
 interface ReservationCalendarViewProps {
   reservations: Reservation[];
+  viewType: 'grid' | 'timeline';
+  onViewTypeChange: (type: 'grid' | 'timeline') => void;
 }
 
 export function ReservationCalendarView({
   reservations,
+  viewType,
+  onViewTypeChange: setCalendarViewType,
 }: ReservationCalendarViewProps) {
+  const calendarViewType = viewType;
   const router = useRouter();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<View>('month');
-  const [calendarViewType, setCalendarViewType] = useState<'grid' | 'timeline'>('grid');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -527,45 +531,14 @@ export function ReservationCalendarView({
         isExpanded,
       };
     }).filter(dayObj => dayObj.reservations.length > 0 || expandedDates.has(format(dayObj.date, 'yyyy-MM-dd')));
-  }, [calendarViewType, currentDate, getReservationsForDate, expandedDates]);
+  }, [viewType, currentDate, getReservationsForDate, expandedDates]);
 
   return (
     <>
-      {/* Tier 3: Secondary View Option (Refinement) */}
-      <div className="flex items-center gap-2 mb-6">
-        <div className="flex items-center bg-muted/20 p-1 rounded-md border border-border/30">
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setCalendarViewType('grid')}
-            className={`h-7 px-3 rounded-sm transition-all text-xs font-semibold ${calendarViewType === 'grid'
-                ? "bg-background shadow-sm text-foreground"
-                : "text-muted-foreground hover:text-foreground hover:bg-transparent"
-              }`}
-          >
-            <CalendarIcon className="h-3 w-3 mr-1.5" />
-            그리드
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            onClick={() => setCalendarViewType('timeline')}
-            className={`h-7 px-3 rounded-sm transition-all text-xs font-semibold ${calendarViewType === 'timeline'
-                ? "bg-background shadow-sm text-foreground"
-                : "text-muted-foreground hover:text-foreground hover:bg-transparent"
-              }`}
-          >
-            <List className="h-3 w-3 mr-1.5" />
-            타임라인
-          </Button>
-        </div>
-        <div className="h-4 w-[1px] bg-border/40 mx-1" />
-        <span className="text-[11px] font-medium text-muted-foreground">디스플레이 모드</span>
-      </div>
 
       {/* 그리드 뷰 */}
       {
-        calendarViewType === 'grid' && (
+        viewType === 'grid' && (
           <div className="space-y-6">
             <div className="h-[calc(100vh-200px)] md:h-[700px] mt-4 rounded-lg border border-border bg-card overflow-y-auto shadow-sm">
               <Calendar

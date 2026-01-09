@@ -87,13 +87,13 @@ export function ReservationFiltersClient({
   };
 
   return (
-    <div className="mb-8">
-      {/* Tier 1: Filter Group (Transient Status) */}
-      <div className="inline-flex items-center p-1 bg-muted/30 rounded-full border border-border/40 gap-1 overflow-x-auto max-w-full scrollbar-hide">
+    <div className="mb-8 w-full max-w-7xl mx-auto px-4 md:px-0">
+      {/* Tier 1: Filter Group (Transient Status) - Optimized for horizontal width */}
+      <div className="flex items-center p-1 bg-muted/30 rounded-full border border-border/40 gap-1 w-full overflow-hidden">
         <Button
           variant={checkin && !checkout ? "default" : "ghost"}
           size="sm"
-          className={`h-9 px-4 rounded-full whitespace-nowrap flex-shrink-0 transition-all text-xs font-bold ${checkin && !checkout ? "shadow-sm bg-background text-foreground hover:bg-background" : "text-muted-foreground hover:text-foreground hover:bg-transparent"
+          className={`h-10 flex-1 rounded-full whitespace-nowrap transition-all text-xs font-bold ${checkin && !checkout ? "shadow-sm bg-background text-foreground hover:bg-background" : "text-muted-foreground hover:text-foreground hover:bg-transparent"
             }`}
           onClick={() => {
             const today = new Date().toISOString().split('T')[0];
@@ -113,10 +113,11 @@ export function ReservationFiltersClient({
           {checkin && !checkout && <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />}
           오늘 체크인
         </Button>
+        <div className="w-[1px] h-4 bg-border/40 mx-0.5" />
         <Button
           variant={checkout && !checkin ? "default" : "ghost"}
           size="sm"
-          className={`h-9 px-4 rounded-full whitespace-nowrap flex-shrink-0 transition-all text-xs font-bold ${checkout && !checkin ? "shadow-sm bg-background text-foreground hover:bg-background" : "text-muted-foreground hover:text-foreground hover:bg-transparent"
+          className={`h-10 flex-1 rounded-full whitespace-nowrap transition-all text-xs font-bold ${checkout && !checkin ? "shadow-sm bg-background text-foreground hover:bg-background" : "text-muted-foreground hover:text-foreground hover:bg-transparent"
             }`}
           onClick={() => {
             const today = new Date().toISOString().split('T')[0];
@@ -136,10 +137,11 @@ export function ReservationFiltersClient({
           {checkout && !checkin && <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />}
           오늘 체크아웃
         </Button>
+        <div className="w-[1px] h-4 bg-border/40 mx-0.5" />
         <Button
           variant={initialFilter === 'd1-unassigned' ? "default" : "ghost"}
           size="sm"
-          className={`h-9 px-4 rounded-full whitespace-nowrap flex-shrink-0 transition-all text-xs font-bold ${initialFilter === 'd1-unassigned' ? "shadow-sm bg-background text-foreground hover:bg-background" : "text-muted-foreground hover:text-foreground hover:bg-transparent"
+          className={`h-10 flex-1 rounded-full whitespace-nowrap transition-all text-xs font-bold ${initialFilter === 'd1-unassigned' ? "shadow-sm bg-background text-foreground hover:bg-background" : "text-muted-foreground hover:text-foreground hover:bg-transparent"
             }`}
           onClick={() => {
             if (initialFilter === 'd1-unassigned') {
@@ -161,10 +163,11 @@ export function ReservationFiltersClient({
           {initialFilter === 'd1-unassigned' && <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-primary animate-pulse" />}
           미배정
         </Button>
+        <div className="w-[1px] h-4 bg-border/40 mx-0.5" />
         <Button
           variant={checkin && checkout ? "default" : "ghost"}
           size="sm"
-          className={`h-9 px-4 rounded-full whitespace-nowrap flex-shrink-0 transition-all text-xs font-bold ${checkin && checkout ? "shadow-sm bg-background text-foreground hover:bg-background" : "text-muted-foreground hover:text-foreground hover:bg-transparent"
+          className={`h-10 flex-1 rounded-full whitespace-nowrap transition-all text-xs font-bold ${checkin && checkout ? "shadow-sm bg-background text-foreground hover:bg-background" : "text-muted-foreground hover:text-foreground hover:bg-transparent"
             }`}
           onClick={() => {
             const today = new Date();
