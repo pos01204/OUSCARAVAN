@@ -107,21 +107,20 @@ export default async function ReservationsPage({
 
   // ⚠️ 중요: searchParams 감지하여 자동 필터 적용 (딥 링크)
   if (filter === 'd1-unassigned') {
-    // 내일 날짜 계산
-    const tomorrow = new Date();
-    tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowStr = formatDateToISO(tomorrow);
+    // 오늘 날짜 계산
+    const today = new Date();
+    const todayStr = formatDateToISO(today);
 
-    if (tomorrowStr) {
+    if (todayStr) {
       // 즉시 필터 적용
-      checkin = tomorrowStr;
+      checkin = todayStr;
       // 미배정 필터는 클라이언트 컴포넌트에서 처리
       status = 'all'; // 상태 필터는 모두 표시하되, 미배정만 필터링
     }
   }
 
   return (
-    <div className="space-y-4 md:space-y-6 pb-0">
+    <div className="space-y-4 md:space-y-6 pb-0 -mb-4 md:mb-0">
       <div className="w-full max-w-7xl mx-auto px-4 md:px-6 flex flex-col gap-0.5 md:gap-1">
         <h1 className="text-2xl md:text-3xl font-black tracking-tight text-foreground">예약 / 배정</h1>
         <p className="text-xs md:text-sm text-muted-foreground font-medium">관리자 예약 현황 및 객실 배정 시스템</p>

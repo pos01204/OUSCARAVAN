@@ -111,7 +111,7 @@ export function ReservationsViewClient({
 
   return (
     <Tabs value={view} onValueChange={(v) => setView(v as 'list' | 'calendar')} className="w-full">
-      <div className="flex flex-col gap-4 md:gap-6 w-full max-w-7xl mx-auto px-4 md:px-6 pb-20 md:pb-0">
+      <div className="flex flex-col gap-4 md:gap-6 w-full max-w-7xl mx-auto px-4 md:px-6 pb-0">
         {/* Tier 2 & 3: Unified View Control Layer (Structural & Display) */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full gap-3">
           {/* Left: Primary View Toggle (Tier 2) */}

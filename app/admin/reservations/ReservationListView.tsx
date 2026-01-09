@@ -89,7 +89,7 @@ export function ReservationListView({
     <>
       <div
         ref={ref}
-        className="space-y-4 relative pb-20 md:pb-4"
+        className="space-y-4 relative pb-0"
         {...handlers}
       >
         {isPulling && (
