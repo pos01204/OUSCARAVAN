@@ -102,7 +102,7 @@ export function ReservationFiltersClient({
         <Button
           variant={isTomorrowCheckinActive ? "default" : "ghost"}
           size="sm"
-          className={`h-9 md:h-10 flex-1 rounded-md md:rounded-full whitespace-nowrap transition-all text-xs font-bold flex items-center justify-center ${
+          className={`h-8 md:h-9 flex-1 rounded-md md:rounded-full whitespace-nowrap transition-all text-xs font-bold flex items-center justify-center ${
             isTomorrowCheckinActive
               ? "shadow-sm bg-primary text-primary-foreground hover:bg-primary/90" 
               : "text-muted-foreground hover:text-foreground hover:bg-transparent"
@@ -131,7 +131,7 @@ export function ReservationFiltersClient({
         <Button
           variant={initialFilter === 'd1-unassigned' ? "default" : "ghost"}
           size="sm"
-          className={`h-9 md:h-10 flex-1 rounded-md md:rounded-full whitespace-nowrap transition-all text-xs font-bold flex items-center justify-center ${
+          className={`h-8 md:h-9 flex-1 rounded-md md:rounded-full whitespace-nowrap transition-all text-xs font-bold flex items-center justify-center ${
             initialFilter === 'd1-unassigned' 
               ? "shadow-sm bg-primary text-primary-foreground hover:bg-primary/90" 
               : "text-muted-foreground hover:text-foreground hover:bg-transparent"

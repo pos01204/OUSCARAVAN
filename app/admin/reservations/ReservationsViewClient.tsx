@@ -115,17 +115,17 @@ export function ReservationsViewClient({
         {/* Tier 2 & 3: Unified View Control Layer (Structural & Display) */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full gap-3">
           {/* Left: Primary View Toggle (Tier 2) */}
-          <TabsList className="bg-muted/30 p-1 rounded-lg border border-border/40 h-auto w-full sm:w-auto">
+          <TabsList className="bg-muted/30 p-0.5 rounded-lg border border-border/40 h-auto w-full sm:w-auto">
             <TabsTrigger
               value="calendar"
-              className="flex-1 sm:flex-none px-6 md:px-8 py-2.5 rounded-md data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all text-xs md:text-sm font-bold border-transparent data-[state=active]:border-border/10 border text-muted-foreground"
+              className="flex-1 sm:flex-none px-6 md:px-8 py-2 rounded-md data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all text-xs md:text-sm font-bold border-transparent data-[state=active]:border-border/10 border text-muted-foreground flex items-center justify-center"
             >
               <Calendar className="mr-1.5 md:mr-2 h-3.5 w-3.5 md:h-4 md:w-4" />
               캘린더
             </TabsTrigger>
             <TabsTrigger
               value="list"
-              className="flex-1 sm:flex-none px-6 md:px-8 py-2.5 rounded-md data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all text-xs md:text-sm font-bold border-transparent data-[state=active]:border-border/10 border text-muted-foreground"
+              className="flex-1 sm:flex-none px-6 md:px-8 py-2 rounded-md data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all text-xs md:text-sm font-bold border-transparent data-[state=active]:border-border/10 border text-muted-foreground flex items-center justify-center"
             >
               <List className="mr-1.5 md:mr-2 h-3.5 w-3.5 md:h-4 md:w-4" />
               리스트
