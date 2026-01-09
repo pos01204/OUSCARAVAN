@@ -646,23 +646,6 @@ export function ReservationCalendarView({
                             </div>
                           </div>
                         </div>
-                        <Button
-                          variant={isExpanded ? "secondary" : "outline"}
-                          size="sm"
-                          onClick={() => {
-                            const dateKey = format(date, 'yyyy-MM-dd');
-                            const newExpanded = new Set(expandedDates);
-                            if (newExpanded.has(dateKey)) {
-                              newExpanded.delete(dateKey);
-                            } else {
-                              newExpanded.add(dateKey);
-                            }
-                            setExpandedDates(newExpanded);
-                          }}
-                          className="h-8 text-xs px-3"
-                        >
-                          {isExpanded ? '접기' : '더 보기'}
-                        </Button>
                       </div>
 
                       <div className="space-y-2 mt-3">
