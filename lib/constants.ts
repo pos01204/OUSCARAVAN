@@ -938,39 +938,79 @@ export const BBQ_SETS = [
   },
 ];
 
-// FAQ 데이터
+// FAQ 데이터 (중요도 순으로 정렬)
 export const FAQ_DATA = [
+  // 우선순위 1 (최우선)
   {
     id: 'checkin',
     category: '체크인/체크아웃',
     question: '체크인 시간은 언제인가요?',
-    answer: '체크인 시간은 오후 3시입니다. 체크아웃은 오전 11시입니다.',
+    answer: '체크인 시간은 오후 3시(15:00)입니다. 체크아웃은 오전 11시(11:00)입니다. 조기 체크인은 불가능하며, 체크인 시간 이후에만 입실 가능합니다.',
+    priority: 5,
   },
+  {
+    id: 'early-checkin',
+    category: '체크인/체크아웃',
+    question: '조기 체크인 가능한가요?',
+    answer: '조기 체크인은 불가능합니다. 체크인 시간(오후 3시) 이후에만 입실 가능합니다. 체크인 시간 전 도착 시 관리자에게 연락해주세요.',
+    priority: 4,
+  },
+  // 우선순위 2 (높음)
   {
     id: 'wifi',
     category: '시설 이용',
     question: 'WiFi 비밀번호를 잊어버렸어요.',
-    answer: '홈 화면에서 WiFi 카드를 클릭하여 비밀번호를 확인하거나 QR 코드를 스캔하세요.',
+    answer: '홈 화면의 WiFi 카드에서 비밀번호를 확인하거나 QR 코드를 스캔하세요. 안내 페이지에서도 WiFi 연결 방법을 확인할 수 있습니다.',
+    priority: 3,
   },
   {
     id: 'bbq-order',
     category: '주문 및 결제',
     question: '바베큐 세트는 어떻게 주문하나요?',
-    answer: '마켓 탭에서 원하는 세트를 선택하고 주문하세요. 배송 시간을 지정할 수 있습니다.',
+    answer: '주문/카페 이용 탭에서 원하는 세트를 선택하고 주문하세요. 배송 시간을 지정할 수 있습니다.',
+    priority: 3,
   },
+  // 우선순위 3 (중간)
   {
     id: 'parking',
     category: '기타',
     question: '주차는 어디에 하나요?',
-    answer: '지정된 주차장에 주차해주세요. 가이드 탭에서 주차 안내를 확인하실 수 있습니다.',
+    answer: '지정된 주차장에 주차해주세요. 주차 안내는 안내 페이지에서 확인하실 수 있습니다.',
+    priority: 2,
   },
 ];
 
 // 응급 연락처
 export const EMERGENCY_CONTACTS = {
-  fire: { name: '소방서', number: '119' },
-  police: { name: '경찰서', number: '112' },
-  hospital: { name: '응급실', number: '010-9999-8888', description: '가장 가까운 병원' },
-  pharmacy: { name: '24시간 약국', number: '010-8888-7777', description: '인근 약국' },
-  manager: { name: '관리자', number: '010-1234-5678' },
+  fire: {
+    name: '소방서',
+    number: '119',
+    mapLink: 'https://map.naver.com/v5/search/강화군+소방서',
+    priority: 1,
+  },
+  police: {
+    name: '경찰서',
+    number: '112',
+    mapLink: 'https://map.naver.com/v5/search/강화군+경찰서',
+    priority: 1,
+  },
+  hospital: {
+    name: '응급실',
+    number: '119', // 실제 병원 번호로 변경 필요
+    description: '가장 가까운 병원',
+    mapLink: 'https://map.naver.com/v5/search/강화군+응급실',
+    priority: 1,
+  },
+  pharmacy: {
+    name: '24시간 약국',
+    number: '010-8888-7777', // 실제 약국 번호로 변경 필요
+    description: '인근 약국',
+    mapLink: 'https://map.naver.com/v5/search/강화군+24시간약국',
+    priority: 2,
+  },
+  manager: {
+    name: '관리자',
+    number: '0507-1335-5154',
+    priority: 2,
+  },
 };

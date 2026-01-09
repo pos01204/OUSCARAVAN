@@ -27,7 +27,7 @@ export default async function GuestHelpPage({
         </div>
       }
     >
-      <GuestHelpContent />
+      <GuestHelpContent token={params.token} />
     </Suspense>
   );
 }
