@@ -151,11 +151,6 @@ export const GUIDE_DATA: { categories: string[]; items: GuideItem[] } = {
         '필터는 정기적으로 청소하면 효율이 좋아집니다.',
       ],
       relatedGuides: ['hot-water', 'projector'],
-      checklist: [
-        { id: 'check-1', text: '컨트롤러 위치 확인', required: true },
-        { id: 'check-2', text: '전원 작동 확인', required: true },
-        { id: 'check-3', text: '원하는 온도 설정 확인', required: false },
-      ],
       tags: ['난방', '에어컨', '온도', '컨트롤러', '실내'],
       priority: 5,
     },

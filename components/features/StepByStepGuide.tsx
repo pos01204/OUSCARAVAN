@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronLeft, ChevronRight, CheckCircle2, AlertCircle } from 'lucide-react';
+import { ChevronLeft, ChevronRight, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -10,21 +10,10 @@ import type { GuideStep } from '@/types';
 
 interface StepByStepGuideProps {
   steps: GuideStep[];
-  onStepComplete?: (stepNumber: number) => void;
-  completedSteps?: number[];
 }
 
-export function StepByStepGuide({ steps, onStepComplete, completedSteps = [] }: StepByStepGuideProps) {
+export function StepByStepGuide({ steps }: StepByStepGuideProps) {
   const [currentStep, setCurrentStep] = useState(0);
-  const [completed, setCompleted] = useState<number[]>(completedSteps);
-
-  const handleStepComplete = (stepNumber: number) => {
-    if (!completed.includes(stepNumber)) {
-      const newCompleted = [...completed, stepNumber];
-      setCompleted(newCompleted);
-      onStepComplete?.(stepNumber);
-    }
-  };
 
   const handlePrevious = () => {
     if (currentStep > 0) {
@@ -45,7 +34,6 @@ export function StepByStepGuide({ steps, onStepComplete, completedSteps = [] }: 
   }
 
   const step = steps[currentStep];
-  const isCompleted = completed.includes(step.number);
   const canGoNext = currentStep < steps.length - 1;
   const canGoPrevious = currentStep > 0;
 
@@ -83,12 +71,6 @@ export function StepByStepGuide({ steps, onStepComplete, completedSteps = [] }: 
                   <Badge variant="outline" className="font-semibold">
                     STEP {step.number}
                   </Badge>
-                  {isCompleted && (
-                    <Badge variant="default" className="bg-green-500">
-                      <CheckCircle2 className="h-3 w-3 mr-1" />
-                      완료
-                    </Badge>
-                  )}
                 </div>
                 <h3 className="text-xl font-bold text-foreground">{step.title}</h3>
               </div>
@@ -135,19 +117,6 @@ export function StepByStepGuide({ steps, onStepComplete, completedSteps = [] }: 
                 ⏱️ 예상 소요 시간: {step.estimatedTime}
               </div>
             )}
-
-            {/* 완료 버튼 */}
-            {!isCompleted && (
-              <Button
-                onClick={() => handleStepComplete(step.number)}
-                variant="outline"
-                className="w-full"
-                aria-label={`${step.title} 단계 완료`}
-              >
-                <CheckCircle2 className="h-4 w-4 mr-2" />
-                이 단계 완료
-              </Button>
-            )}
           </div>
         </CardContent>
       </Card>
@@ -172,8 +141,6 @@ export function StepByStepGuide({ steps, onStepComplete, completedSteps = [] }: 
               className={`h-2 w-2 rounded-full transition-all ${
                 index === currentStep
                   ? 'bg-primary w-6'
-                  : completed.includes(steps[index].number)
-                  ? 'bg-green-500'
                   : 'bg-muted-foreground/30'
               }`}
               aria-label={`${index + 1}단계로 이동`}
