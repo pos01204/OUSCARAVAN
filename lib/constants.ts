@@ -163,41 +163,157 @@ export const BBQ_GUIDE_SLIDES = [
   },
 ];
 
-// 메뉴 아이템
-export const MENU_ITEMS = [
-  {
-    id: 'ous-latte',
-    name: 'OUS Latte',
-    description: '부드러운 라떼',
-    price: 5000,
-    image: '/images/menu/ous-latte.jpg',
+// 메뉴 아이템 (카테고리별)
+export const MENU_CATEGORIES = {
+  signature: {
+    id: 'signature',
+    name: 'Signature & Local',
+    koreanName: '시그니처 및 지역 특화',
+    description: '강화도의 특색을 살린 메뉴로, 서비스 노출 시 상단 배치가 권장됩니다.',
+    items: [
+      {
+        id: 'ous-latte',
+        name: '오우스 라떼',
+        description: '섞지 않고 마실 때 첫 맛은 고소하고 끝 맛은 곡물의 단맛이 느껴지는 시그니처 라떼',
+        price: 7000,
+        image: '/images/menu/ous-latte.jpg',
+      },
+      {
+        id: 'ginseng-blended',
+        name: '강화 인삼 블렌디드',
+        description: '강화도 특산물인 인삼을 활용하여 건강하고 쌉싸름한 풍미를 살린 아이스 블렌디드 음료',
+        price: 7800,
+        image: '/images/menu/ginseng-blended.jpg',
+      },
+      {
+        id: 'choco-matcha',
+        name: '초코나무숲',
+        description: '진한 말차와 초코가 어우러져 달콤 쌉싸름한 맛의 조화를 이룬 라떼',
+        price: 7500,
+        image: '/images/menu/choco-matcha.jpg',
+      },
+    ],
   },
-  {
-    id: 'salt-bread',
-    name: 'Salt Bread',
-    description: '바삭한 소금빵',
-    price: 4000,
-    image: '/images/menu/salt-bread.jpg',
+  coffee: {
+    id: 'coffee',
+    name: 'Coffee',
+    koreanName: '커피',
+    description: '기본적인 커피 라인업으로 원두의 퀄리티를 강조하는 섹션입니다.',
+    items: [
+      {
+        id: 'americano',
+        name: '아메리카노',
+        description: '깔끔하고 밸런스 좋은 원두를 사용한 기본 커피',
+        price: 5900,
+        image: '/images/menu/americano.jpg',
+      },
+      {
+        id: 'cafe-latte',
+        name: '카페 라떼',
+        description: '고소한 우유와 에스프레소가 조화를 이루는 부드러운 라떼',
+        price: 6200,
+        image: '/images/menu/cafe-latte.jpg',
+      },
+      {
+        id: 'vanilla-bean-latte',
+        name: '바닐라 빈 라떼',
+        description: '천연 바닐라 빈의 향긋함이 느껴지는 달콤한 라떼',
+        price: 6800,
+        image: '/images/menu/vanilla-bean-latte.jpg',
+      },
+    ],
   },
-  {
-    id: 'ginseng-blended',
-    name: 'Ginseng Blended',
-    description: '건강한 인삼 블렌드',
-    price: 6000,
-    image: '/images/menu/ginseng-blended.jpg',
+  nonCoffee: {
+    id: 'non-coffee',
+    name: 'Non-Coffee & Ade',
+    koreanName: '논커피 및 에이드',
+    description: '커피를 선호하지 않는 고객을 위한 과일 및 우유 베이스 음료입니다.',
+    items: [
+      {
+        id: 'strawberry-latte',
+        name: '리얼 딸기 라떼',
+        description: '신선한 딸기 과육이 씹히는 달콤한 시즌 음료 (Only Ice)',
+        price: 7600,
+        image: '/images/menu/strawberry-latte.jpg',
+      },
+      {
+        id: 'mango-juice',
+        name: '100% 꾸덕 망고주스',
+        description: '물을 섞지 않은 듯 진하고 걸쭉한 망고 본연의 맛',
+        price: 7500,
+        image: '/images/menu/mango-juice.jpg',
+      },
+      {
+        id: 'yuzu-ade',
+        name: '청귤 에이드',
+        description: '상큼한 청귤 청과 탄산수가 만나 청량감을 주는 음료',
+        price: 6900,
+        image: '/images/menu/yuzu-ade.jpg',
+      },
+      {
+        id: 'peach-oolong',
+        name: '피치 우롱 티',
+        description: '복숭아의 달콤한 향과 우롱차의 깔끔함이 어우러진 차',
+        price: 6500,
+        image: '/images/menu/peach-oolong.jpg',
+      },
+    ],
   },
-];
+  bakery: {
+    id: 'bakery',
+    name: 'Bakery & Dessert',
+    koreanName: '베이커리 및 디저트',
+    description: '음료와 함께 즐기기 좋은 당일 제조 베이커리입니다.',
+    items: [
+      {
+        id: 'salt-bread',
+        name: '소금빵',
+        description: '고소한 버터 풍미와 소금의 짭조름함이 특징인 오우스 대표 빵',
+        price: 3800,
+        image: '/images/menu/salt-bread.jpg',
+      },
+      {
+        id: 'cookie',
+        name: '수제 쿠키',
+        description: '초코칩, 견과류 등이 듬뿍 들어간 묵직한 스타일의 쿠키',
+        price: 4000,
+        image: '/images/menu/cookie.jpg',
+      },
+      {
+        id: 'financier',
+        name: '휘낭시에',
+        description: '겉은 쫀득하고 속은 촉촉하게 구워낸 프랑스식 구움과자',
+        price: 3200,
+        image: '/images/menu/financier.jpg',
+      },
+    ],
+  },
+};
+
+// 레거시 호환성을 위한 단일 배열 (deprecated)
+export const MENU_ITEMS = Object.values(MENU_CATEGORIES).flatMap(category => category.items);
 
 // 카페 정보
 export const CAFE_INFO = {
-  name: 'OUSMARKET',
+  name: '오우스마켓 (OWS MARKET)',
+  business: {
+    businessName: '오우스마켓 (OWS MARKET)',
+    representative: '강유진',
+    businessNumber: '810-31-01206',
+    businessType: '개인사업자 (일반과세자)',
+    storeAddress: '인천광역시 강화군 삼산면 삼산북로 149',
+    registeredAddress: '인천광역시 강화군 삼산면 삼산남로 903',
+    phone: '0507-1335-5154',
+    phoneType: '네이버 스마트콜/비즈니스 번호',
+    businessCategory: '서비스, 소매 / 커피점, 기타 식품 소매업',
+  },
   hours: {
     weekday: '09:00 - 18:00',
     weekend: '09:00 - 19:00',
     closed: '수요일 휴무',
   },
-  phone: '010-1234-5678',
-  address: '강원도 속초시 OUSCARAVAN 내',
+  phone: '0507-1335-5154',
+  address: '인천광역시 강화군 삼산면 삼산북로 149',
 };
 
 // 불멍/바베큐 세트

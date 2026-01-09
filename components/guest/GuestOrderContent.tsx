@@ -25,8 +25,8 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
       </section>
 
       {/* Menu Showcase */}
-      <section aria-label="시그니처 메뉴">
-        <h2 className="mb-4 text-xl font-heading font-bold">시그니처 메뉴</h2>
+      <section aria-label="메뉴">
+        <h2 className="mb-6 text-2xl md:text-3xl font-heading font-black">메뉴</h2>
         <MenuCarousel />
       </section>
 
@@ -68,15 +68,19 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
           <CardHeader>
             <CardTitle>카페 정보</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3">
-            <div className="flex items-center gap-2">
-              <MapPin className="h-5 w-5 text-muted-foreground" />
-              <span className="text-sm">{CAFE_INFO.address}</span>
+          <CardContent className="space-y-4">
+            <div className="flex items-start gap-3">
+              <MapPin className="h-5 w-5 text-muted-foreground mt-0.5" />
+              <div className="flex-1">
+                <p className="font-medium mb-1">매장 위치</p>
+                <p className="text-sm text-muted-foreground">{CAFE_INFO.address}</p>
+                <p className="text-xs text-muted-foreground mt-1">(매장 방문 및 길 안내용)</p>
+              </div>
             </div>
             <div className="flex items-start gap-3">
-              <Clock className="h-5 w-5 text-primary" />
-              <div>
-                <p className="font-medium">운영 시간</p>
+              <Clock className="h-5 w-5 text-primary mt-0.5" />
+              <div className="flex-1">
+                <p className="font-medium mb-1">운영 시간</p>
                 <p className="text-sm text-muted-foreground">
                   평일: {CAFE_INFO.hours.weekday}
                 </p>
@@ -88,14 +92,47 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
                 </p>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Phone className="h-5 w-5 text-muted-foreground" />
-              <a
-                href={`tel:${CAFE_INFO.phone}`}
-                className="text-sm text-primary hover:underline"
-              >
-                {CAFE_INFO.phone}
-              </a>
+            <div className="flex items-start gap-3">
+              <Phone className="h-5 w-5 text-muted-foreground mt-0.5" />
+              <div className="flex-1">
+                <p className="font-medium mb-1">대표 전화번호</p>
+                <a
+                  href={`tel:${CAFE_INFO.phone.replace(/-/g, '')}`}
+                  className="text-sm text-primary hover:underline font-medium"
+                >
+                  {CAFE_INFO.phone}
+                </a>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {CAFE_INFO.business.phoneType}
+                </p>
+              </div>
+            </div>
+            
+            {/* 사업자 정보 */}
+            <div className="pt-4 border-t">
+              <p className="text-xs font-semibold text-muted-foreground mb-3">사업자 정보</p>
+              <div className="space-y-2 text-xs">
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">상호명</span>
+                  <span className="font-medium">{CAFE_INFO.business.businessName}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">대표자</span>
+                  <span className="font-medium">{CAFE_INFO.business.representative}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">사업자등록번호</span>
+                  <span className="font-medium">{CAFE_INFO.business.businessNumber}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-muted-foreground">업태/종목</span>
+                  <span className="font-medium text-right max-w-[60%]">{CAFE_INFO.business.businessCategory}</span>
+                </div>
+                <div className="pt-2">
+                  <p className="text-muted-foreground mb-1">사업장 주소 (등록)</p>
+                  <p className="font-medium text-xs">{CAFE_INFO.business.registeredAddress}</p>
+                </div>
+              </div>
             </div>
           </CardContent>
         </Card>
