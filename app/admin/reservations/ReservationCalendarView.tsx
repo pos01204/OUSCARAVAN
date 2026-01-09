@@ -286,17 +286,19 @@ export function ReservationCalendarView({
     return {
       style: {
         backgroundColor: colorConfig.bg,
-        borderRadius: '2px', // 더 각지게 변경
-        opacity: 0.9,
+        borderRadius: isMobile ? '3px' : '4px',
+        opacity: 0.95, // 조금 더 선명하게
         color: 'white',
-        border: '0px',
+        border: '0.5px solid rgba(0,0,0,0.1)', // 미세한 테두리로 구분감 제공
         display: 'block',
-        fontSize: '0.75rem',
-        padding: '1px 4px',
+        fontSize: isMobile ? '0.65rem' : '0.75rem', // 모바일에서 텍스트 잘림 방지
+        lineHeight: isMobile ? '1.2' : '1.4',
+        padding: isMobile ? '1px 2px' : '2px 6px',
         marginBottom: '1px',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
+        boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
       },
     };
   };
@@ -304,8 +306,20 @@ export function ReservationCalendarView({
   // 커스텀 이벤트 컴포넌트
   const EventComponent = useCallback(({ event }: { event: ReservationEvent }) => {
     return (
-      <div title={event.title as string} className="text-xs font-medium truncate">
+      <div
+        title={event.title as string}
+        className={`${isMobile ? 'text-[9px]' : 'text-[11px]'} font-semibold truncate leading-tight py-0.5`}
+      >
         {event.title}
+      </div>
+    );
+  }, [isMobile]);
+
+  // 커스텀 "더 보기" 컴포넌트
+  const ShowMoreComponent = useCallback(({ count }: { count: number }) => {
+    return (
+      <div className="text-[10px] md:text-xs text-primary font-bold hover:underline cursor-pointer py-0.5 px-1 bg-primary/5 rounded w-full text-center mt-1 border border-primary/20">
+        +{count}건 더 보기
       </div>
     );
   }, []);
@@ -313,7 +327,8 @@ export function ReservationCalendarView({
   // 커스텀 컴포넌트 설정
   const components: Components<ReservationEvent> = useMemo(() => ({
     event: EventComponent as any, // react-big-calendar 타입 호환성
-  }), [EventComponent]);
+    showMore: ShowMoreComponent as any,
+  }), [EventComponent, ShowMoreComponent]);
 
   // 선택된 날짜의 예약 목록 가져오기
   const getReservationsForDate = useCallback((date: Date) => {
@@ -557,6 +572,11 @@ export function ReservationCalendarView({
             onNavigate={setCurrentDate}
             onSelectSlot={handleSelectSlot}
             onSelectEvent={handleSelectEvent}
+            onShowMore={(events, date) => {
+              // "+N개 더 보기" 클릭 시 해당 날짜의 모달 오픈
+              setSelectedDate(date);
+              setIsModalOpen(true);
+            }}
             eventPropGetter={eventStyleGetter}
             components={components}
             messages={messages}
