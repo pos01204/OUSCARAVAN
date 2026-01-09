@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { AdminMobileNav } from '@/components/admin/AdminMobileNav';
 import { AdminBottomNav } from '@/components/admin/AdminBottomNav';
 import { NotificationBell } from '@/components/admin/notifications/NotificationBell';
+import { AdminNotificationSetup } from '@/components/admin/AdminNotificationSetup';
 
 export default async function AdminLayout({
   children,
@@ -86,6 +87,7 @@ export default async function AdminLayout({
         </div>
       </nav>
       <main className="container mx-auto px-4 py-4 md:py-8" role="main">
+        <AdminNotificationSetup />
         {children}
       </main>
       {/* 모바일 바텀 네비게이션 */}

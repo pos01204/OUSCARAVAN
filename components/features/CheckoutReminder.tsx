@@ -1,51 +1,104 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Bell, X } from 'lucide-react';
+import { Bell, X, CheckCircle2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CHECK_IN_OUT } from '@/lib/constants';
-import {
-  requestNotificationPermission,
-  scheduleCheckoutReminder,
-  showNotification,
-} from '@/lib/notifications';
+import { alarmService } from '@/lib/alarm-service';
 import { useGuestStore } from '@/lib/store';
 
 export function CheckoutReminder() {
-  const { isCheckedIn, isCheckedOut, guestInfo } = useGuestStore();
-  const [notificationEnabled, setNotificationEnabled] = useState(false);
+  const { isCheckedIn, isCheckedOut } = useGuestStore();
+  const [alarmScheduled, setAlarmScheduled] = useState(false);
   const [dismissed, setDismissed] = useState(false);
+  const [serviceWorkerReady, setServiceWorkerReady] = useState(false);
+  const [alarmId, setAlarmId] = useState<string | null>(null);
 
   useEffect(() => {
-    // 체크인되어 있고 체크아웃하지 않은 경우에만 알림 설정
+    // 체크인되어 있고 체크아웃하지 않은 경우에만 알람 설정
     if (!isCheckedIn || isCheckedOut || dismissed) {
       return;
     }
 
-    // 알림 권한 요청
-    requestNotificationPermission().then((granted) => {
-      if (granted) {
-        setNotificationEnabled(true);
+    // Service Worker 초기화 및 알람 설정
+    const setupAlarm = async () => {
+      try {
+        // Service Worker 초기화
+        const initialized = await alarmService.initialize();
+        if (!initialized) {
+          console.warn('[CheckoutReminder] Service Worker 초기화 실패');
+          return;
+        }
+
+        setServiceWorkerReady(true);
+
+        // 체크아웃 시간 파싱 (예: "11:00")
+        const [hours, minutes] = CHECK_IN_OUT.checkOut.split(':').map(Number);
         
-        // 체크아웃 1시간 전 알림 스케줄링
-        const cleanup = scheduleCheckoutReminder(
-          CHECK_IN_OUT.checkOut,
-          () => {
-            showNotification('체크아웃 알림', {
-              body: '체크아웃 시간까지 1시간 남았습니다. 준비해주세요!',
-              tag: 'checkout-reminder',
-            });
+        // 오늘 날짜로 체크아웃 시간 설정
+        const today = new Date();
+        const checkoutDate = new Date(today);
+        checkoutDate.setHours(hours, minutes, 0, 0);
+        
+        // 체크아웃 시간이 이미 지났다면 내일로 설정
+        if (checkoutDate < today) {
+          checkoutDate.setDate(checkoutDate.getDate() + 1);
+        }
+        
+        // 1시간 전 시간 계산
+        const reminderTime = new Date(checkoutDate);
+        reminderTime.setHours(reminderTime.getHours() - 1);
+        
+        const now = new Date();
+        
+        // 이미 1시간 전이 지났다면 체크아웃 30분 전으로 설정
+        if (reminderTime <= now) {
+          reminderTime.setTime(checkoutDate.getTime() - 30 * 60 * 1000);
+          
+          // 그래도 지났다면 체크아웃 10분 전으로 설정
+          if (reminderTime <= now) {
+            reminderTime.setTime(checkoutDate.getTime() - 10 * 60 * 1000);
           }
+        }
+
+        // 알람 스케줄링
+        const id = await alarmService.scheduleAlarm(
+          reminderTime,
+          '체크아웃 알림',
+          '체크아웃 시간까지 1시간 남았습니다. 준비해주세요!',
+          'checkout-reminder'
         );
 
-        return cleanup;
+        setAlarmId(id);
+        setAlarmScheduled(true);
+        
+        console.log(`[CheckoutReminder] 알람 설정 완료: ${reminderTime.toLocaleString()}`);
+      } catch (error) {
+        console.error('[CheckoutReminder] 알람 설정 실패:', error);
       }
-    });
+    };
+
+    setupAlarm();
+
+    // 컴포넌트 언마운트 시 알람 취소
+    return () => {
+      if (alarmId) {
+        alarmService.cancelAlarm(alarmId).catch(console.error);
+      }
+    };
   }, [isCheckedIn, isCheckedOut, dismissed]);
 
-  // 알림 배너 표시 (체크인 후 체크아웃 전)
-  if (!isCheckedIn || isCheckedOut || dismissed || !notificationEnabled) {
+  // 알람 배너 닫기
+  const handleDismiss = async () => {
+    if (alarmId) {
+      await alarmService.cancelAlarm(alarmId);
+    }
+    setDismissed(true);
+  };
+
+  // 알람 배너 표시 (체크인 후 체크아웃 전, 알람이 설정된 경우)
+  if (!isCheckedIn || isCheckedOut || dismissed || !alarmScheduled) {
     return null;
   }
 
@@ -53,19 +106,30 @@ export function CheckoutReminder() {
     <Card className="border-primary/50 bg-primary/5">
       <CardContent className="flex items-center justify-between p-4">
         <div className="flex items-center gap-3">
-          <Bell className="h-5 w-5 text-primary" />
+          {serviceWorkerReady ? (
+            <CheckCircle2 className="h-5 w-5 text-primary" />
+          ) : (
+            <Bell className="h-5 w-5 text-primary" />
+          )}
           <div>
-            <p className="text-sm font-medium">체크아웃 알림이 설정되었습니다</p>
+            <p className="text-sm font-medium">
+              {serviceWorkerReady
+                ? '체크아웃 알림이 설정되었습니다'
+                : '알림 설정 중...'}
+            </p>
             <p className="text-xs text-muted-foreground">
-              체크아웃 1시간 전에 알림을 받으실 수 있습니다
+              {serviceWorkerReady
+                ? '브라우저를 닫아도 알림을 받으실 수 있습니다'
+                : '잠시만 기다려주세요'}
             </p>
           </div>
         </div>
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => setDismissed(true)}
+          onClick={handleDismiss}
           className="h-8 w-8"
+          aria-label="알림 닫기"
         >
           <X className="h-4 w-4" />
         </Button>

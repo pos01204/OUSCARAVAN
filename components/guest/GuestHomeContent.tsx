@@ -10,6 +10,7 @@ import { CheckInOut } from '@/components/features/CheckInOut';
 import { OrderHistory } from '@/components/features/OrderHistory';
 import { CheckoutReminder } from '@/components/features/CheckoutReminder';
 import { TimeCountdown } from '@/components/features/TimeCountdown';
+import { PWAInstallPrompt } from '@/components/features/PWAInstallPrompt';
 import { GuestOrderSync } from '@/components/guest/GuestOrderSync';
 import { FloorPlanCard } from '@/components/guest/FloorPlanCard';
 import { WELCOME_MESSAGE } from '@/lib/constants';
@@ -63,6 +64,9 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
         </h1>
         {/* 호수 정보는 고객에게 노출하지 않음 (관리자 편의용) */}
       </motion.section>
+
+      {/* PWA Install Prompt */}
+      <PWAInstallPrompt />
 
       {/* Checkout Reminder */}
       <CheckoutReminder />

@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import { useNotificationStore } from '@/lib/store/notifications';
+import { adminNotificationService } from '@/lib/admin-notification-service';
 
 export function useNotificationStream() {
   const { addNotification, updateUnreadCount } = useNotificationStore();
@@ -12,6 +13,9 @@ export function useNotificationStream() {
   const baseReconnectDelay = 1000; // 1초
 
   useEffect(() => {
+    // Service Worker 초기화
+    adminNotificationService.initialize();
+
     const connect = () => {
       // 기존 연결이 있으면 정리
       if (eventSourceRef.current) {
@@ -28,7 +32,7 @@ export function useNotificationStream() {
         reconnectAttempts.current = 0; // 재연결 성공 시 카운터 리셋
       };
 
-      eventSource.onmessage = (event) => {
+      eventSource.onmessage = async (event) => {
         try {
           const data = JSON.parse(event.data);
 
@@ -40,6 +44,17 @@ export function useNotificationStream() {
             if (!data.data.isRead) {
               updateUnreadCount((prev) => prev + 1);
             }
+
+            // 브라우저 알림 표시 (Service Worker를 통해)
+            await adminNotificationService.showNotification({
+              id: data.data.id,
+              type: data.data.type,
+              title: data.data.title,
+              message: data.data.message,
+              priority: data.data.priority || 'medium',
+              linkType: data.data.linkType,
+              linkId: data.data.linkId,
+            });
           }
         } catch (error) {
           console.error('[NotificationStream] Error parsing message:', error);
