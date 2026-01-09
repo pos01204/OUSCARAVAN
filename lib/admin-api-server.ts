@@ -45,29 +45,18 @@ export async function adminApiServer(
   endpoint: string,
   options: RequestInit = {}
 ) {
-  // 서버 사이드에서 쿠키 읽기
-  const cookieStore = await cookies();
-  const token = cookieStore.get('admin-token')?.value;
-
-  if (!token) {
-    throw new ApiError('Unauthorized', 'UNAUTHORIZED', 401);
-  }
+  // 인증 체크 제거 - 모든 사용자가 접근 가능
 
   try {
     const response = await fetchWithTimeout(`${API_URL}${endpoint}`, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
         ...options.headers,
       },
     });
 
     if (!response.ok) {
-      if (response.status === 401) {
-        throw new ApiError('Unauthorized', 'UNAUTHORIZED', 401);
-      }
-
       // 에러 응답 파싱 시도
       let errorMessage = `API Error: ${response.statusText}`;
       let errorCode: ApiErrorCode | undefined;

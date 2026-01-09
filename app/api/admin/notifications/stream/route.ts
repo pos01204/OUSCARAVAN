@@ -4,21 +4,14 @@ import { API_CONFIG } from '@/lib/constants';
 
 export async function GET(request: NextRequest) {
   try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get('admin-token')?.value;
-    
-    if (!token) {
-      return new Response('Unauthorized', { status: 401 });
-    }
+    // 인증 체크 제거 - 모든 사용자가 접근 가능
 
     const apiUrl = API_CONFIG.baseUrl;
     const streamUrl = `${apiUrl}/api/admin/notifications/stream`;
 
-    // Railway API로 SSE 연결 프록시
+    // Railway API로 SSE 연결 프록시 (인증 헤더 제거)
     const response = await fetch(streamUrl, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: {},
     });
 
     if (!response.ok) {

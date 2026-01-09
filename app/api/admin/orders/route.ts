@@ -12,15 +12,7 @@ const API_URL = API_CONFIG.baseUrl;
  */
 export async function GET(request: NextRequest) {
   try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get('admin-token')?.value;
-
-    if (!token) {
-      return NextResponse.json(
-        { error: 'Unauthorized', code: 'UNAUTHORIZED' },
-        { status: 401 }
-      );
-    }
+    // 인증 체크 제거 - 모든 사용자가 접근 가능
 
     const searchParams = request.nextUrl.searchParams;
     const queryString = searchParams.toString();
@@ -29,7 +21,6 @@ export async function GET(request: NextRequest) {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
       },
     });
 

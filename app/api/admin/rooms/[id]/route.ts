@@ -15,15 +15,7 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get('admin-token')?.value;
-
-    if (!token) {
-      return NextResponse.json(
-        { error: 'Unauthorized', code: 'UNAUTHORIZED' },
-        { status: 401 }
-      );
-    }
+    // 인증 체크 제거 - 모든 사용자가 접근 가능
 
     const body = await request.json();
 
@@ -31,7 +23,6 @@ export async function PATCH(
       method: 'PATCH',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
       },
       body: JSON.stringify(body),
     });
@@ -62,21 +53,12 @@ export async function DELETE(
   { params }: { params: { id: string } }
 ) {
   try {
-    const cookieStore = await cookies();
-    const token = cookieStore.get('admin-token')?.value;
-
-    if (!token) {
-      return NextResponse.json(
-        { error: 'Unauthorized', code: 'UNAUTHORIZED' },
-        { status: 401 }
-      );
-    }
+    // 인증 체크 제거 - 모든 사용자가 접근 가능
 
     const response = await fetch(`${API_URL}/api/admin/rooms/${params.id}`, {
       method: 'DELETE',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`,
       },
     });
 

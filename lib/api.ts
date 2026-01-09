@@ -147,36 +147,18 @@ export async function adminApi(
   endpoint: string,
   options: RequestInit = {}
 ) {
-  // 클라이언트 사이드에서 쿠키 읽기
-  const token = typeof window !== 'undefined' 
-    ? document.cookie
-        .split('; ')
-        .find(row => row.startsWith('admin-token='))
-        ?.split('=')[1]
-    : null;
+  // 인증 체크 제거 - 모든 사용자가 접근 가능
   
   try {
     const response = await fetchWithRetry(`${API_URL}${endpoint}`, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': token ? `Bearer ${token}` : '',
         ...options.headers,
       },
     });
     
     if (!response.ok) {
-      if (response.status === 401) {
-        // 인증 실패 시 쿠키 삭제 후 로그인 페이지로 리다이렉트
-        if (typeof window !== 'undefined') {
-          // 쿠키 삭제
-          document.cookie = 'admin-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
-          // 리다이렉트는 에러 처리 후 컴포넌트에서 처리하도록 변경
-          // window.location.href = '/login';
-        }
-        throw new ApiError('Unauthorized', 'UNAUTHORIZED', 401);
-      }
-      
       // 에러 응답 파싱 시도
       let errorMessage = `API Error: ${response.statusText}`;
       let errorCode: ApiErrorCode | undefined;

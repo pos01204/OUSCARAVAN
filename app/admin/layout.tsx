@@ -1,7 +1,4 @@
-import { redirect } from 'next/navigation';
-import { cookies } from 'next/headers';
 import Link from 'next/link';
-import { adminLogout } from '@/lib/auth';
 import { Button } from '@/components/ui/button';
 import { AdminMobileNav } from '@/components/admin/AdminMobileNav';
 import { AdminBottomNav } from '@/components/admin/AdminBottomNav';
@@ -13,13 +10,7 @@ export default async function AdminLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const cookieStore = await cookies();
-  const token = cookieStore.get('admin-token')?.value;
-  
-  // 인증 체크 (미들웨어에서도 처리하지만 이중 체크)
-  if (!token) {
-    redirect('/login');
-  }
+  // 인증 체크 제거 - 모든 사용자가 접근 가능
   
   return (
     <div className="min-h-screen bg-background pb-16 md:pb-0">
@@ -67,22 +58,6 @@ export default async function AdminLayout({
           </div>
           <div className="flex items-center gap-2">
             <NotificationBell />
-            <form action={async () => {
-            'use server';
-            cookies().delete('admin-token');
-            redirect('/login');
-          }}>
-            <Button 
-              type="submit" 
-              variant="outline" 
-              size="sm" 
-              className="min-h-[44px]"
-              aria-label="로그아웃"
-            >
-              <span className="hidden md:inline">로그아웃</span>
-              <span className="md:hidden">나가기</span>
-            </Button>
-          </form>
           </div>
         </div>
       </nav>
