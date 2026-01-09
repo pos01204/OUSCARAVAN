@@ -316,13 +316,26 @@ export function ReservationCalendarView({
   }, [isMobile]);
 
   // 커스텀 "더 보기" 컴포넌트
-  const ShowMoreComponent = useCallback(({ count }: { count: number }) => {
+  const ShowMoreComponent = useCallback(({ count, slotMetrics }: { count: number; slotMetrics: any }) => {
     return (
-      <div className="text-[10px] md:text-xs text-primary font-bold hover:underline cursor-pointer py-0.5 px-1 bg-primary/5 rounded w-full text-center mt-1 border border-primary/20">
+      <div
+        className="text-[10px] md:text-xs text-primary font-bold hover:bg-primary/10 cursor-pointer py-1 px-1 bg-primary/5 rounded w-full text-center mt-1 border border-primary/20 transition-colors"
+        onClick={(e) => {
+          e.stopPropagation();
+          // slotMetrics.date를 사용하여 해당 날짜를 가져옴
+          const date = slotMetrics.date;
+          setCalendarViewType('timeline');
+          setCurrentDate(date);
+          const dateKey = format(date, 'yyyy-MM-dd');
+          const newExpanded = new Set(expandedDates);
+          newExpanded.add(dateKey);
+          setExpandedDates(newExpanded);
+        }}
+      >
         +{count}건 더 보기
       </div>
     );
-  }, []);
+  }, [expandedDates]);
 
   // 커스텀 컴포넌트 설정
   const components: Components<ReservationEvent> = useMemo(() => ({
@@ -637,16 +650,14 @@ export function ReservationCalendarView({
                 <Card key={format(date, 'yyyy-MM-dd')} className={`border-l-4 transition-all ${isExpanded ? 'border-l-primary shadow-md' : 'border-l-muted'}`}>
                   <CardContent className="p-3">
                     <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-2">
-                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${isExpanded ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'}`}>
-                          {format(date, 'd')}
-                        </div>
-                        <div>
-                          <div className="font-bold text-sm">
-                            {format(date, 'M.d (EEE)', { locale: ko })}
+                      <div className="flex items-center gap-3">
+                        <div className="flex flex-col">
+                          <div className="font-bold text-base text-foreground">
+                            {format(date, 'M월 d일 (EEE)', { locale: ko })}
                           </div>
-                          <div className="text-[10px] text-muted-foreground">
-                            {isExpanded ? '전체 내역' : `${reservations.length}건의 체크인`}
+                          <div className="text-xs text-muted-foreground flex items-center gap-2">
+                            <span className="inline-block w-1 h-1 rounded-full bg-primary/40"></span>
+                            {isExpanded ? '전체 예약 현황' : `${reservations.length}건의 체크인`}
                           </div>
                         </div>
                       </div>
@@ -698,35 +709,36 @@ export function ReservationCalendarView({
                         const isExpanded = expandedDates.has(dateKey);
                         const displayReservations = isExpanded ? sorted : sorted.slice(0, 3);
 
-                        return displayReservations.map((reservation) => (
+                        return displayReservations.map((reservation, index) => (
                           <div
                             key={reservation.id}
-                            className="flex items-center justify-between p-2 rounded-md bg-muted/40 hover:bg-muted/60 transition-colors cursor-pointer border border-transparent hover:border-primary/20"
+                            className={`flex items-center justify-between p-3 rounded-md transition-all cursor-pointer border ${index % 2 === 0 ? 'bg-background border-border/50' : 'bg-muted/30 border-transparent'
+                              } hover:bg-primary/5 hover:border-primary/30 shadow-sm`}
                             onClick={() => handleViewDetail(reservation.id)}
                           >
-                            <div className="flex items-center gap-2 flex-1 min-w-0 overflow-hidden">
-                              <div className="shrink-0 scale-90 origin-left">
+                            <div className="flex items-center gap-3 flex-1 min-w-0 overflow-hidden">
+                              <div className="shrink-0">
                                 {getStatusBadge(reservation.status)}
                               </div>
 
-                              <div className="font-bold text-sm shrink-0">
+                              <div className="font-bold text-base shrink-0">
                                 {reservation.guestName}
                               </div>
 
-                              <div className="text-[11px] text-muted-foreground truncate flex items-center gap-1">
-                                <span className="font-semibold text-primary/80">{reservation.roomType.split('(')[0]}</span>
-                                <span className="text-[10px] opacity-60">
-                                  • {calculateTotalAmount(reservation).totalAmount.toLocaleString()}원
+                              <div className="text-sm text-muted-foreground truncate flex items-center gap-2">
+                                <span className="font-semibold text-primary/70">{reservation.roomType.split('(')[0]}</span>
+                                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-muted/50 border border-border/50">
+                                  {calculateTotalAmount(reservation).totalAmount.toLocaleString()}원
                                 </span>
                               </div>
                             </div>
 
-                            <div className="ml-1 shrink-0">
+                            <div className="ml-2 shrink-0">
                               {!reservation.assignedRoom ? (
                                 <Button
                                   size="sm"
                                   variant="default"
-                                  className="h-6 px-2 text-[10px] bg-primary hover:bg-primary/90 shadow-sm"
+                                  className="h-8 px-4 text-xs font-bold bg-primary hover:bg-primary/90 shadow-md transform active:scale-95 transition-all"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     handleQuickAssign(reservation);
@@ -735,7 +747,7 @@ export function ReservationCalendarView({
                                   배정
                                 </Button>
                               ) : (
-                                <Badge variant="outline" className="text-[10px] py-0 h-5 px-1.5 text-primary border-primary/30">
+                                <Badge variant="outline" className="text-xs font-bold py-1 px-2.5 text-primary border-primary/50 bg-primary/5">
                                   {reservation.assignedRoom}
                                 </Badge>
                               )}
