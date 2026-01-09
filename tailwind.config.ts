@@ -34,8 +34,8 @@ const config: Config = {
         },
       },
       fontFamily: {
-        sans: ["Pretendard", "sans-serif"],
-        heading: ["Montserrat", "sans-serif"],
+        sans: ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "sans-serif"],
+        heading: ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "sans-serif"],
       },
       animation: {
         "fade-in": "fadeIn 0.5s ease-in-out",

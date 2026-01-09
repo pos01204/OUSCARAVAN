@@ -32,6 +32,11 @@ export function TimeCard() {
             </div>
           </div>
         </div>
+        <div className="pt-2 border-t border-border/50">
+          <p className="text-xs text-muted-foreground leading-relaxed">
+            객실 준비로 인해 조기 체크인은 불가합니다.
+          </p>
+        </div>
       </CardContent>
     </Card>
   );

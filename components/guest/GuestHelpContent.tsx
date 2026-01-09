@@ -10,7 +10,6 @@ import {
 } from '@/components/ui/accordion';
 import { FAQ_DATA, EMERGENCY_CONTACTS } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
-import { CheckInInfoCard } from '@/components/features/CheckInInfoCard';
 import { useMemo } from 'react';
 
 interface GuestHelpContentProps {
@@ -33,11 +32,6 @@ export function GuestHelpContent({ token }: GuestHelpContentProps) {
       >
         <Phone className="h-6 w-6" aria-hidden="true" />
       </a>
-
-      {/* 체크인 정보 카드 */}
-      <section aria-label="체크인 안내">
-        <CheckInInfoCard token={token} />
-      </section>
 
       {/* 응급 연락처 */}
       <section aria-label="응급 연락처">

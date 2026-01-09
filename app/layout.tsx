@@ -1,10 +1,7 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
 import "./globals.css";
 import { RootLayoutWrapper } from "@/components/shared/RootLayoutWrapper";
 import { Toaster } from "@/components/ui/toaster";
-
-const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
   title: "OUSCARAVAN - 스마트 컨시어지",
@@ -40,7 +37,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko" className="h-full">
-      <body className={`${inter.className} flex min-h-screen flex-col`}>
+      <body className="flex min-h-screen flex-col">
         <RootLayoutWrapper>
           {children}
         </RootLayoutWrapper>
