@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { getAdminOrders, updateOrderStatus, type Order } from '@/lib/api';
 import { logError } from '@/lib/logger';
@@ -19,7 +19,7 @@ import {
 } from '@/components/ui/dialog';
 import { OrderFiltersClient } from './OrderFiltersClient';
 
-export default function OrdersPage() {
+function OrdersPageContent() {
   const { toast } = useToast();
   const searchParams = useSearchParams();
   const [orders, setOrders] = useState<Order[]>([]);
@@ -380,5 +380,17 @@ export default function OrdersPage() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+export default function OrdersPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex items-center justify-center min-h-[400px]">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    }>
+      <OrdersPageContent />
+    </Suspense>
   );
 }

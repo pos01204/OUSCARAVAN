@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { API_CONFIG } from '@/lib/constants';
 
+// 동적 렌더링 강제 (searchParams 사용)
+export const dynamic = 'force-dynamic';
+
 export async function GET(request: NextRequest) {
   try {
     // 인증 체크 제거 - 모든 사용자가 접근 가능
