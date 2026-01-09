@@ -531,24 +531,26 @@ export function ReservationCalendarView({
 
   return (
     <>
-      {/* 뷰 타입 선택 버튼 */}
-      <div className="flex items-center justify-end gap-2 mb-3">
+      {/* 뷰 타입 선택 버튼 - 프리미엄 필 스타일 */}
+      <div className="flex items-center justify-end gap-2 mb-4 bg-muted/20 p-1 rounded-full border border-border/50 w-fit ml-auto">
         <Button
-          variant={calendarViewType === 'grid' ? 'default' : 'outline'}
+          variant={calendarViewType === 'grid' ? 'default' : 'ghost'}
           size="sm"
           onClick={() => setCalendarViewType('grid')}
-          className="min-h-[36px] flex-1 md:flex-none"
+          className={`min-h-[34px] h-8 px-4 rounded-full transition-all text-xs font-bold ${calendarViewType === 'grid' ? "shadow-sm bg-primary" : "hover:bg-muted/50"
+            }`}
         >
-          <CalendarIcon className="h-4 w-4 mr-2" />
+          <CalendarIcon className="h-3.5 w-3.5 mr-2" />
           그리드
         </Button>
         <Button
-          variant={calendarViewType === 'timeline' ? 'default' : 'outline'}
+          variant={calendarViewType === 'timeline' ? 'default' : 'ghost'}
           size="sm"
           onClick={() => setCalendarViewType('timeline')}
-          className="min-h-[36px] flex-1 md:flex-none"
+          className={`min-h-[34px] h-8 px-4 rounded-full transition-all text-xs font-bold ${calendarViewType === 'timeline' ? "shadow-sm bg-primary" : "hover:bg-muted/50"
+            }`}
         >
-          <List className="h-4 w-4 mr-2" />
+          <List className="h-3.5 w-3.5 mr-2" />
           타임라인
         </Button>
       </div>
