@@ -316,10 +316,22 @@ export function ReservationCalendarView({
   }, [isMobile]);
 
   // 커스텀 "더 보기" 컴포넌트
-  const ShowMoreComponent = useCallback(({ count }: { count: number }) => {
+  const ShowMoreComponent = useCallback(({ count, slotMetrics, events: slotEvents }: { count: number; slotMetrics: any; events: ReservationEvent[] }) => {
     return (
       <div
         className="text-[10px] md:text-xs text-primary font-bold hover:bg-primary/20 cursor-pointer py-1 px-1 bg-primary/10 rounded w-full text-center mt-1 border border-primary/30 transition-all transform active:scale-95 shadow-sm"
+        onClick={(e) => {
+          e.stopPropagation();
+          // 날짜 정보 추출 (여러 경로 시도)
+          const date = slotMetrics?.date || (slotEvents?.[0]?.start);
+
+          if (date) {
+            setSelectedDate(new Date(date));
+            setIsModalOpen(true);
+          } else {
+            console.error('[Calendar] Failed to determine date for "Show More"');
+          }
+        }}
       >
         +{count}건 더 보기
       </div>
@@ -417,7 +429,7 @@ export function ReservationCalendarView({
   const selectedDateReservations = useMemo(() => {
     if (!selectedDate) return [];
 
-    const dateReservations = getReservationsForDate(selectedDate);
+    const dateReservations = getReservationsForDate(selectedDate, true);
 
     // 중요도 순서로 정렬
     return [...dateReservations].sort((a, b) => {
