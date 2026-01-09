@@ -22,10 +22,8 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
-import { Search, Filter, X, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Search, Filter, X } from 'lucide-react';
 import { sanitizeInput } from '@/lib/security';
-import { format, isSameDay } from 'date-fns';
-import { ko } from 'date-fns/locale';
 
 interface ReservationFiltersClientProps {
   initialFilter?: string | null;
@@ -50,14 +48,11 @@ export function ReservationFiltersClient({
   );
   const [checkout, setCheckout] = useState(searchParams.get('checkout') || '');
   const [search, setSearch] = useState(searchParams.get('search') || '');
-  const [currentMonth, setCurrentMonth] = useState(new Date());
 
   // 초기 필터 적용 (서버에서 전달된 경우)
   useEffect(() => {
     if (initialCheckin) {
       setCheckin(initialCheckin);
-      const date = new Date(initialCheckin);
-      setCurrentMonth(date);
     }
   }, [initialCheckin, setCheckin]);
 
@@ -91,30 +86,6 @@ export function ReservationFiltersClient({
     });
   };
 
-  const handlePreviousMonth = () => {
-    const prevMonth = new Date(currentMonth);
-    prevMonth.setMonth(prevMonth.getMonth() - 1);
-    setCurrentMonth(prevMonth);
-  };
-
-  const handleNextMonth = () => {
-    const nextMonth = new Date(currentMonth);
-    nextMonth.setMonth(nextMonth.getMonth() + 1);
-    setCurrentMonth(nextMonth);
-  };
-
-  const handleToday = () => {
-    const today = new Date();
-    setCurrentMonth(today);
-    const todayStr = today.toISOString().split('T')[0];
-    setCheckin(todayStr);
-    setCheckout('');
-    setStatus('all');
-    setSearch('');
-    startTransition(() => {
-      router.push(`/admin/reservations?checkin=${todayStr}`);
-    });
-  };
 
   return (
     <div className="mb-6 w-full max-w-7xl mx-auto px-4 md:px-6 space-y-4">
@@ -137,7 +108,6 @@ export function ReservationFiltersClient({
               setCheckout('');
               setStatus('all');
               setSearch('');
-              setCurrentMonth(new Date());
               startTransition(() => {
                 router.push(`/admin/reservations?checkin=${today}`);
               });
@@ -165,7 +135,6 @@ export function ReservationFiltersClient({
               setCheckout(today);
               setStatus('all');
               setSearch('');
-              setCurrentMonth(new Date());
               startTransition(() => {
                 router.push(`/admin/reservations?checkout=${today}`);
               });
@@ -192,7 +161,6 @@ export function ReservationFiltersClient({
               setCheckin('');
               setCheckout('');
               setSearch('');
-              setCurrentMonth(new Date());
               startTransition(() => {
                 const params = new URLSearchParams();
                 params.set('filter', 'd1-unassigned');
@@ -230,7 +198,6 @@ export function ReservationFiltersClient({
               setSearch('');
               setCheckin(startStr);
               setCheckout(endStr);
-              setCurrentMonth(weekStart);
               startTransition(() => {
                 router.push(`/admin/reservations?checkin=${startStr}&checkout=${endStr}`);
               });
@@ -240,45 +207,6 @@ export function ReservationFiltersClient({
           {checkin && checkout && <span className="mr-1.5 h-1.5 w-1.5 rounded-full bg-primary-foreground animate-pulse" />}
           이번 주
         </Button>
-      </div>
-
-      {/* 날짜 네비게이션 */}
-      <div className="flex items-center gap-2 md:gap-3">
-        <span className="text-sm md:text-base font-semibold text-foreground whitespace-nowrap">
-          {format(currentMonth, 'yyyy년 M월', { locale: ko })}
-        </span>
-        <div className="flex items-center gap-1.5">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handlePreviousMonth}
-            className="h-8 md:h-9 px-3 md:px-4 text-xs md:text-sm border-border/40 hover:bg-muted/50"
-          >
-            <ChevronLeft className="h-3.5 w-3.5 md:h-4 md:w-4" />
-            <span className="hidden sm:inline ml-1">이전</span>
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleToday}
-            className={`h-8 md:h-9 px-3 md:px-4 text-xs md:text-sm ${
-              isSameDay(currentMonth, new Date())
-                ? 'bg-primary text-primary-foreground border-primary hover:bg-primary/90'
-                : 'border-border/40 hover:bg-muted/50'
-            }`}
-          >
-            오늘
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={handleNextMonth}
-            className="h-8 md:h-9 px-3 md:px-4 text-xs md:text-sm border-border/40 hover:bg-muted/50"
-          >
-            <span className="hidden sm:inline mr-1">다음</span>
-            <ChevronRight className="h-3.5 w-3.5 md:h-4 md:w-4" />
-          </Button>
-        </div>
       </div>
 
       {/* 활성 필터 표시 */}

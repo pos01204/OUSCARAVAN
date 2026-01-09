@@ -612,7 +612,7 @@ export function ReservationCalendarView({
                   onClick={() => setCurrentDate(new Date())}
                   className="min-h-[36px]"
                 >
-                  오늘
+                  이번 달
                 </Button>
                 <Button
                   variant="outline"

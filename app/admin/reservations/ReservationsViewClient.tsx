@@ -111,7 +111,7 @@ export function ReservationsViewClient({
 
   return (
     <Tabs value={view} onValueChange={(v) => setView(v as 'list' | 'calendar')} className="w-full">
-      <div className="flex flex-col gap-4 md:gap-6 w-full max-w-7xl mx-auto px-4 md:px-6">
+      <div className="flex flex-col gap-4 md:gap-6 w-full max-w-7xl mx-auto px-4 md:px-6 pb-20 md:pb-0">
         {/* Tier 2 & 3: Unified View Control Layer (Structural & Display) */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full gap-3">
           {/* Left: Primary View Toggle (Tier 2) */}
@@ -134,9 +134,8 @@ export function ReservationsViewClient({
 
           {/* Right: Secondary View Option (Tier 3) - Only visible in Calendar view */}
           {view === 'calendar' && (
-            <div className="flex items-center gap-2 md:gap-3 w-full sm:w-auto">
-              <span className="text-[11px] md:text-[12px] font-bold text-muted-foreground tracking-tight whitespace-nowrap">디스플레이</span>
-              <div className="flex items-center bg-muted/20 p-1 rounded-md border border-border/30 flex-1 sm:flex-none">
+            <div className="flex items-center w-full sm:w-auto">
+              <div className="flex items-center bg-muted/20 p-1 rounded-md border border-border/30 w-full sm:w-auto">
                 <Button
                   variant="ghost"
                   size="sm"
