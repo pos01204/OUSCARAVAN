@@ -65,102 +65,80 @@ export function ReservationModalCard({
   };
 
   return (
-    <Card 
-      className="cursor-pointer hover:bg-muted/50 transition-colors border"
+    <Card
+      className="cursor-pointer hover:bg-muted/50 transition-colors border shadow-sm"
       onClick={() => onViewDetail(reservation.id)}
     >
-      <CardContent className="p-4 md:p-5">
-        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+      <CardContent className="p-3 md:p-4">
+        <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
           {/* 왼쪽: 예약 정보 */}
-          <div className="flex-1 min-w-0 space-y-3">
+          <div className="flex-1 min-w-0 space-y-2">
             {/* 이름 및 배지 */}
-            <div className="flex items-center gap-2 flex-wrap">
-              <h4 className="font-semibold text-base md:text-lg">
+            <div className="flex items-center gap-1.5 flex-wrap">
+              <h4 className="font-bold text-sm md:text-base">
                 {reservation.guestName}
               </h4>
               {getStatusBadge(reservation.status)}
               {checkinCheckoutBadges}
             </div>
-            
+
             {/* 예약 상세 정보 */}
-            <div className="space-y-2 text-sm">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 text-[11px] md:text-xs">
               <div className="flex items-center gap-2">
-                <span className="font-medium text-muted-foreground min-w-[80px]">예약번호:</span>
+                <span className="font-medium text-muted-foreground min-w-[50px]">번호:</span>
                 <span className="text-foreground">{reservation.reservationNumber}</span>
               </div>
-              
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-medium text-muted-foreground min-w-[80px]">체크인:</span>
-                <span className="text-foreground">{format(checkin, 'yyyy-MM-dd')}</span>
-                {isCheckinDay && (
-                  <Badge variant="outline" className="text-xs">체크인일</Badge>
-                )}
-              </div>
-              
-              <div className="flex items-center gap-2 flex-wrap">
-                <span className="font-medium text-muted-foreground min-w-[80px]">체크아웃:</span>
-                <span className="text-foreground">{format(checkout, 'yyyy-MM-dd')}</span>
-                {isCheckoutDay && (
-                  <Badge variant="outline" className="text-xs">체크아웃일</Badge>
-                )}
-              </div>
-              
+
               <div className="flex items-center gap-2">
-                <span className="font-medium text-muted-foreground min-w-[80px]">방 배정:</span>
-                <span className={reservation.assignedRoom ? 'text-foreground font-medium' : 'text-muted-foreground'}>
+                <span className="font-medium text-muted-foreground min-w-[50px]">객실:</span>
+                <span className="text-foreground break-words font-semibold">{reservation.roomType.split('(')[0]}</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="font-medium text-muted-foreground min-w-[50px]">배정:</span>
+                <span className={reservation.assignedRoom ? 'text-primary font-bold' : 'text-muted-foreground'}>
                   {reservation.assignedRoom || '미배정'}
                 </span>
               </div>
-              
-              <div className="flex items-start gap-2">
-                <span className="font-medium text-muted-foreground min-w-[80px]">객실:</span>
-                <span className="text-foreground break-words">{reservation.roomType}</span>
+
+              <div className="flex items-center gap-2">
+                <span className="font-medium text-muted-foreground min-w-[50px]">일정:</span>
+                <span className="text-foreground">
+                  {format(checkin, 'MM.dd')} ~ {format(checkout, 'MM.dd')}
+                </span>
               </div>
-              
-              {reservation.options && reservation.options.length > 0 && (
-                <div className="flex items-start gap-2">
-                  <span className="font-medium text-muted-foreground min-w-[80px]">옵션:</span>
-                  <div className="flex flex-wrap gap-1">
-                    {reservation.options.map((opt, idx) => (
-                      <Badge key={idx} variant="outline" className="text-xs">
-                        {opt.optionName}
-                      </Badge>
-                    ))}
-                  </div>
-                </div>
-              )}
             </div>
           </div>
-          
+
           {/* 오른쪽: 금액 및 버튼 */}
-          <div className="flex-shrink-0 flex flex-col items-end md:items-end gap-3">
-            <div className="text-lg md:text-xl font-bold text-primary">
+          <div className="flex flex-row md:flex-col items-center md:items-end justify-between md:justify-start gap-2 pt-2 md:pt-0 border-t md:border-t-0 border-dashed">
+            <div className="text-sm md:text-base font-bold text-primary">
               {totalAmount.toLocaleString()}원
             </div>
-            <div className="flex flex-col md:flex-row gap-2 w-full md:w-auto">
-              <Button 
-                variant="outline" 
+            <div className="flex gap-1.5">
+              <Button
+                variant="outline"
                 size="sm"
-                className="min-h-[36px] text-xs md:text-sm"
+                className="h-7 px-2 text-[10px] md:text-xs"
                 onClick={(e) => {
                   e.stopPropagation();
                   onViewDetail(reservation.id);
                 }}
               >
-                상세 보기
+                상세
               </Button>
               {!reservation.assignedRoom && (
-                <Button 
-                  variant="default" 
+                <Button
+                  variant="default"
                   size="sm"
-                  className="min-h-[36px] text-xs md:text-sm"
+                  className="h-7 px-2 text-[10px] md:text-xs"
                   onClick={(e) => {
                     e.stopPropagation();
                     router.push(`/admin/reservations/${reservation.id}`);
                     onCloseModal();
                   }}
                 >
-                  방 배정
+                  배정
                 </Button>
               )}
             </div>

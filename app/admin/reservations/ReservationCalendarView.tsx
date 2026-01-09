@@ -330,50 +330,26 @@ export function ReservationCalendarView({
     showMore: ShowMoreComponent as any,
   }), [EventComponent, ShowMoreComponent]);
 
-  // 선택된 날짜의 예약 목록 가져오기
-  const getReservationsForDate = useCallback((date: Date) => {
-    // 날짜만 비교하기 위해 시간 부분 제거
-    const targetDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-    targetDate.setHours(0, 0, 0, 0);
+  // 특정 날짜의 예약 목록 가져오기 (isFullList가 true면 해당 날짜에 머무는 모든 예약 반환)
+  const getReservationsForDate = useCallback((date: Date, isFullList: boolean = false) => {
+    const targetDate = startOfDay(date);
 
-    const filtered = reservations.filter((reservation) => {
+    return reservations.filter((reservation) => {
       try {
-        // 체크인 날짜 (시간 제거)
-        const checkin = new Date(reservation.checkin);
-        const checkinDate = new Date(checkin.getFullYear(), checkin.getMonth(), checkin.getDate());
-        checkinDate.setHours(0, 0, 0, 0);
+        const checkin = startOfDay(new Date(reservation.checkin));
+        const checkout = startOfDay(new Date(reservation.checkout));
 
-        // 체크아웃 날짜 (시간 제거)
-        const checkout = new Date(reservation.checkout);
-        const checkoutDate = new Date(checkout.getFullYear(), checkout.getMonth(), checkout.getDate());
-        checkoutDate.setHours(0, 0, 0, 0);
-
-        // 날짜 범위 확인: 체크인 날짜인 경우만 표시 (사용자 요청: 해당 날짜에 체크인 하는 인원만 노출)
-        const isCheckInDay = checkinDate.getTime() === targetDate.getTime();
-
-        return isCheckInDay;
+        if (isFullList) {
+          // 해당 날짜에 머무는 모든 예약 (체크인 <= 날짜 <= 체크아웃)
+          return targetDate >= checkin && targetDate <= checkout;
+        } else {
+          // 체크인 날짜인 경우만 (기본 보기)
+          return checkin.getTime() === targetDate.getTime();
+        }
       } catch (error) {
-        console.error('[Calendar] Error filtering reservation for date:', {
-          reservationId: reservation.id,
-          checkin: reservation.checkin,
-          checkout: reservation.checkout,
-          error,
-        });
         return false;
       }
     });
-
-    console.log('[Calendar] Reservations for date (Check-in Only):', {
-      date: format(targetDate, 'yyyy-MM-dd'),
-      count: filtered.length,
-      reservations: filtered.map(r => ({
-        id: r.id,
-        guestName: r.guestName,
-        checkin: r.checkin,
-      })),
-    });
-
-    return filtered;
   }, [reservations]);
 
   // 날짜 클릭 핸들러 (모달로 해당 날짜의 예약 표시)
@@ -525,13 +501,19 @@ export function ReservationCalendarView({
     const days = eachDayOfInterval({ start, end });
 
     return days.map(day => {
-      const dayReservations = getReservationsForDate(day);
+      const dateKey = format(day, 'yyyy-MM-dd');
+      const isExpanded = expandedDates.has(dateKey);
+
+      // 확장 상태면 전체 목록, 아니면 체크인만 목록
+      const dayReservations = getReservationsForDate(day, isExpanded);
+
       return {
         date: day,
         reservations: dayReservations,
+        isExpanded,
       };
-    }).filter(day => day.reservations.length > 0);
-  }, [calendarViewType, currentDate, getReservationsForDate]);
+    }).filter(dayObj => dayObj.reservations.length > 0 || expandedDates.has(format(dayObj.date, 'yyyy-MM-dd')));
+  }, [calendarViewType, currentDate, getReservationsForDate, expandedDates]);
 
   return (
     <>
@@ -573,9 +555,13 @@ export function ReservationCalendarView({
             onSelectSlot={handleSelectSlot}
             onSelectEvent={handleSelectEvent}
             onShowMore={(events, date) => {
-              // "+N개 더 보기" 클릭 시 해당 날짜의 모달 오픈
-              setSelectedDate(date);
-              setIsModalOpen(true);
+              // "+N개 더 보기" 클릭 시 타임라인 뷰로 전환하고 해당 날짜 확장
+              setCalendarViewType('timeline');
+              setCurrentDate(date);
+              const dateKey = format(date, 'yyyy-MM-dd');
+              const newExpanded = new Set(expandedDates);
+              newExpanded.add(dateKey);
+              setExpandedDates(newExpanded);
             }}
             eventPropGetter={eventStyleGetter}
             components={components}
@@ -647,31 +633,39 @@ export function ReservationCalendarView({
 
           <div className="space-y-4 max-h-[calc(100vh-400px)] overflow-y-auto">
             {timelineReservations.length > 0 ? (
-              timelineReservations.map(({ date, reservations }) => (
-                <Card key={format(date, 'yyyy-MM-dd')} className="border-l-4 border-l-primary">
-                  <CardContent className="p-4">
-                    <div className="flex items-center justify-between mb-3">
-                      <div className="flex items-center gap-3">
-                        {/* 날짜 숫자 제거됨 */}
+              timelineReservations.map(({ date, reservations, isExpanded }) => (
+                <Card key={format(date, 'yyyy-MM-dd')} className={`border-l-4 transition-all ${isExpanded ? 'border-l-primary shadow-md' : 'border-l-muted'}`}>
+                  <CardContent className="p-3">
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-2">
+                        <div className={`w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold ${isExpanded ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'}`}>
+                          {format(date, 'd')}
+                        </div>
                         <div>
-                          <div className="font-semibold">
-                            {format(date, 'yyyy년 M월 d일 (EEE)', { locale: ko })}
+                          <div className="font-bold text-sm">
+                            {format(date, 'M.d (EEE)', { locale: ko })}
                           </div>
-                          <div className="text-sm text-muted-foreground">
-                            {reservations.length}건의 체크인
+                          <div className="text-[10px] text-muted-foreground">
+                            {isExpanded ? '전체 내역' : `${reservations.length}건의 체크인`}
                           </div>
                         </div>
                       </div>
                       <Button
-                        variant="outline"
+                        variant={isExpanded ? "secondary" : "outline"}
                         size="sm"
                         onClick={() => {
-                          setSelectedDate(date);
-                          setIsModalOpen(true);
+                          const dateKey = format(date, 'yyyy-MM-dd');
+                          const newExpanded = new Set(expandedDates);
+                          if (newExpanded.has(dateKey)) {
+                            newExpanded.delete(dateKey);
+                          } else {
+                            newExpanded.add(dateKey);
+                          }
+                          setExpandedDates(newExpanded);
                         }}
-                        className="min-h-[36px]"
+                        className="h-8 text-xs px-3"
                       >
-                        상세 보기
+                        {isExpanded ? '접기' : '더 보기'}
                       </Button>
                     </div>
 
@@ -707,45 +701,41 @@ export function ReservationCalendarView({
                         return displayReservations.map((reservation) => (
                           <div
                             key={reservation.id}
-                            className="flex items-center justify-between p-3 rounded-md bg-muted/50 hover:bg-muted cursor-pointer"
+                            className="flex items-center justify-between p-2 rounded-md bg-muted/40 hover:bg-muted/60 transition-colors cursor-pointer border border-transparent hover:border-primary/20"
                             onClick={() => handleViewDetail(reservation.id)}
                           >
-                            <div className="flex items-center gap-3 flex-1 min-w-0 overflow-hidden">
-                              {/* 1. 뱃지 */}
-                              <div className="shrink-0">
+                            <div className="flex items-center gap-2 flex-1 min-w-0 overflow-hidden">
+                              <div className="shrink-0 scale-90 origin-left">
                                 {getStatusBadge(reservation.status)}
                               </div>
 
-                              {/* 2. 예약자명 */}
-                              <div className="font-bold text-base shrink-0">
+                              <div className="font-bold text-sm shrink-0">
                                 {reservation.guestName}
                               </div>
 
-                              {/* 3. 예약 정보 & 가격 */}
-                              <div className="text-sm text-muted-foreground truncate flex items-center gap-1">
-                                <span className="font-semibold">{reservation.roomType.split('(')[0]}</span>
-                                <span className="text-xs opacity-70">
+                              <div className="text-[11px] text-muted-foreground truncate flex items-center gap-1">
+                                <span className="font-semibold text-primary/80">{reservation.roomType.split('(')[0]}</span>
+                                <span className="text-[10px] opacity-60">
                                   • {calculateTotalAmount(reservation).totalAmount.toLocaleString()}원
                                 </span>
                               </div>
                             </div>
 
-                            {/* 4. 방 배정 버튼 또는 방 번호 */}
-                            <div className="ml-2 shrink-0">
+                            <div className="ml-1 shrink-0">
                               {!reservation.assignedRoom ? (
                                 <Button
                                   size="sm"
                                   variant="default"
-                                  className="h-8 px-3 text-xs bg-primary hover:bg-primary/90 shadow-sm"
+                                  className="h-6 px-2 text-[10px] bg-primary hover:bg-primary/90 shadow-sm"
                                   onClick={(e) => {
                                     e.stopPropagation();
                                     handleQuickAssign(reservation);
                                   }}
                                 >
-                                  방 배정
+                                  배정
                                 </Button>
                               ) : (
-                                <Badge variant="outline" className="text-primary border-primary/30">
+                                <Badge variant="outline" className="text-[10px] py-0 h-5 px-1.5 text-primary border-primary/30">
                                   {reservation.assignedRoom}
                                 </Badge>
                               )}
