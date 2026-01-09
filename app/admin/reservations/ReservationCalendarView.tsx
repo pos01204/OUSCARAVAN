@@ -429,7 +429,7 @@ export function ReservationCalendarView({
   const selectedDateReservations = useMemo(() => {
     if (!selectedDate) return [];
 
-    const dateReservations = getReservationsForDate(selectedDate, true);
+    const dateReservations = getReservationsForDate(selectedDate, false);
 
     // 중요도 순서로 정렬
     return [...dateReservations].sort((a, b) => {
@@ -518,8 +518,8 @@ export function ReservationCalendarView({
       const dateKey = format(day, 'yyyy-MM-dd');
       const isExpanded = expandedDates.has(dateKey);
 
-      // 확장 상태면 전체 목록, 아니면 체크인만 목록
-      const dayReservations = getReservationsForDate(day, isExpanded);
+      // 해당 날짜의 체크인 인원만을 기준으로 목록 생성
+      const dayReservations = getReservationsForDate(day, false);
 
       return {
         date: day,
