@@ -111,55 +111,55 @@ export function ReservationsViewClient({
 
   return (
     <Tabs value={view} onValueChange={(v) => setView(v as 'list' | 'calendar')} className="w-full">
-      <div className="flex flex-col gap-8 w-full max-w-7xl mx-auto px-4 md:px-0">
+      <div className="flex flex-col gap-4 md:gap-6 w-full max-w-7xl mx-auto px-4 md:px-6">
         {/* Tier 2 & 3: Unified View Control Layer (Structural & Display) */}
-        <div className="flex items-center justify-between w-full">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between w-full gap-3">
           {/* Left: Primary View Toggle (Tier 2) */}
-          <TabsList className="bg-muted/30 p-1 rounded-lg border border-border/40 h-auto">
+          <TabsList className="bg-muted/30 p-1 rounded-lg border border-border/40 h-auto w-full sm:w-auto">
             <TabsTrigger
               value="calendar"
-              className="px-8 py-2.5 rounded-md data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all text-sm font-bold border-transparent data-[state=active]:border-border/10 border text-muted-foreground"
+              className="flex-1 sm:flex-none px-6 md:px-8 py-2.5 rounded-md data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all text-xs md:text-sm font-bold border-transparent data-[state=active]:border-border/10 border text-muted-foreground"
             >
-              <Calendar className="mr-2 h-4 w-4" />
+              <Calendar className="mr-1.5 md:mr-2 h-3.5 w-3.5 md:h-4 md:w-4" />
               캘린더
             </TabsTrigger>
             <TabsTrigger
               value="list"
-              className="px-8 py-2.5 rounded-md data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all text-sm font-bold border-transparent data-[state=active]:border-border/10 border text-muted-foreground"
+              className="flex-1 sm:flex-none px-6 md:px-8 py-2.5 rounded-md data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm transition-all text-xs md:text-sm font-bold border-transparent data-[state=active]:border-border/10 border text-muted-foreground"
             >
-              <List className="mr-2 h-4 w-4" />
+              <List className="mr-1.5 md:mr-2 h-3.5 w-3.5 md:h-4 md:w-4" />
               리스트
             </TabsTrigger>
           </TabsList>
 
           {/* Right: Secondary View Option (Tier 3) - Only visible in Calendar view */}
           {view === 'calendar' && (
-            <div className="flex items-center gap-3">
-              <span className="text-[12px] font-bold text-muted-foreground tracking-tight">디스플레이</span>
-              <div className="flex items-center bg-muted/20 p-1 rounded-md border border-border/30">
+            <div className="flex items-center gap-2 md:gap-3 w-full sm:w-auto">
+              <span className="text-[11px] md:text-[12px] font-bold text-muted-foreground tracking-tight whitespace-nowrap">디스플레이</span>
+              <div className="flex items-center bg-muted/20 p-1 rounded-md border border-border/30 flex-1 sm:flex-none">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setCalendarViewType('grid')}
-                  className={`h-8 px-4 rounded-sm transition-all text-xs font-bold ${calendarViewType === 'grid'
+                  className={`h-8 px-3 md:px-4 rounded-sm transition-all text-xs font-bold flex-1 sm:flex-none ${calendarViewType === 'grid'
                     ? "bg-background shadow-sm text-foreground"
                     : "text-muted-foreground hover:text-foreground hover:bg-transparent"
                     }`}
                 >
-                  <CalendarIcon className="h-3.5 w-3.5 mr-2" />
-                  그리드
+                  <CalendarIcon className="h-3.5 w-3.5 mr-1.5 md:mr-2" />
+                  <span className="hidden sm:inline">그리드</span>
                 </Button>
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => setCalendarViewType('timeline')}
-                  className={`h-8 px-4 rounded-sm transition-all text-xs font-bold ${calendarViewType === 'timeline'
+                  className={`h-8 px-3 md:px-4 rounded-sm transition-all text-xs font-bold flex-1 sm:flex-none ${calendarViewType === 'timeline'
                     ? "bg-background shadow-sm text-foreground"
                     : "text-muted-foreground hover:text-foreground hover:bg-transparent"
                     }`}
                 >
-                  <List className="h-3.5 w-3.5 mr-2" />
-                  타임라인
+                  <List className="h-3.5 w-3.5 mr-1.5 md:mr-2" />
+                  <span className="hidden sm:inline">타임라인</span>
                 </Button>
               </div>
             </div>
