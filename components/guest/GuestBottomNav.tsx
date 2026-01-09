@@ -15,7 +15,7 @@ export function GuestBottomNav({ token }: GuestBottomNavProps) {
   const navItems = [
     { href: `/guest/${token}`, label: '홈', icon: Home },
     { href: `/guest/${token}/guide`, label: '안내', icon: BookOpen },
-    { href: `/guest/${token}/order`, label: '주문', icon: ShoppingBag },
+    { href: `/guest/${token}/order`, label: '주문/카페 이용', icon: ShoppingBag },
     { href: `/guest/${token}/help`, label: '도움말', icon: HelpCircle },
   ];
 

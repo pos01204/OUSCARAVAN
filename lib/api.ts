@@ -316,7 +316,7 @@ export async function getOrders(token: string): Promise<OrdersResponse> {
 export async function createOrder(
   token: string,
   data: {
-    type: 'bbq' | 'fire';
+    type: 'bbq' | 'fire' | 'kiosk';
     items: Array<{
       id: string;
       name: string;

@@ -316,6 +316,124 @@ export const CAFE_INFO = {
   address: '인천광역시 강화군 삼산면 삼산북로 149',
 };
 
+// 키오스크 판매 물품
+export const KIOSK_ITEMS = {
+  beverages: {
+    id: 'beverages',
+    name: '음료/간식',
+    items: [
+      {
+        id: 'water-500ml',
+        name: '생수 500ml',
+        price: 2000,
+        image: '/images/kiosk/water-500ml.jpg',
+      },
+      {
+        id: 'water-1.5l',
+        name: '생수 1.5L',
+        price: 3000,
+        image: '/images/kiosk/water-1.5l.jpg',
+      },
+      {
+        id: 'cola',
+        name: '콜라',
+        price: 3000,
+        image: '/images/kiosk/cola.jpg',
+      },
+      {
+        id: 'sprite',
+        name: '사이다',
+        price: 3000,
+        image: '/images/kiosk/sprite.jpg',
+      },
+      {
+        id: 'chips',
+        name: '과자',
+        price: 2500,
+        image: '/images/kiosk/chips.jpg',
+      },
+      {
+        id: 'chocolate',
+        name: '초콜릿',
+        price: 3000,
+        image: '/images/kiosk/chocolate.jpg',
+      },
+    ],
+  },
+  dailyNecessities: {
+    id: 'daily-necessities',
+    name: '생필품',
+    items: [
+      {
+        id: 'toothbrush',
+        name: '칫솔',
+        price: 3000,
+        image: '/images/kiosk/toothbrush.jpg',
+      },
+      {
+        id: 'toothpaste',
+        name: '치약',
+        price: 4000,
+        image: '/images/kiosk/toothpaste.jpg',
+      },
+      {
+        id: 'shampoo',
+        name: '샴푸',
+        price: 5000,
+        image: '/images/kiosk/shampoo.jpg',
+      },
+      {
+        id: 'body-wash',
+        name: '바디워시',
+        price: 5000,
+        image: '/images/kiosk/body-wash.jpg',
+      },
+      {
+        id: 'towel',
+        name: '수건',
+        price: 8000,
+        image: '/images/kiosk/towel.jpg',
+      },
+      {
+        id: 'tissue',
+        name: '휴지',
+        price: 2000,
+        image: '/images/kiosk/tissue.jpg',
+      },
+    ],
+  },
+  others: {
+    id: 'others',
+    name: '기타 용품',
+    items: [
+      {
+        id: 'ice',
+        name: '얼음',
+        price: 3000,
+        image: '/images/kiosk/ice.jpg',
+      },
+      {
+        id: 'charcoal',
+        name: '숯 (추가)',
+        price: 5000,
+        image: '/images/kiosk/charcoal.jpg',
+      },
+      {
+        id: 'lighter',
+        name: '라이터',
+        price: 2000,
+        image: '/images/kiosk/lighter.jpg',
+      },
+      {
+        id: 'trash-bag',
+        name: '쓰레기봉투',
+        price: 2000,
+        image: '/images/kiosk/trash-bag.jpg',
+      },
+    ],
+  },
+};
+
 // 불멍/바베큐 세트
 export const BBQ_SETS = [
   {

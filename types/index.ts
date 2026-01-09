@@ -27,7 +27,7 @@ export interface Reservation {
 export interface Order {
   id: string;
   reservationId: string;
-  type: 'bbq' | 'fire';
+  type: 'bbq' | 'fire' | 'kiosk';
   items: OrderItem[];
   totalAmount: number;
   status: 'pending' | 'preparing' | 'delivering' | 'completed';

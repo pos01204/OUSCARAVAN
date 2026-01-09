@@ -9,7 +9,7 @@ export interface GuestInfo {
 
 export interface Order {
   id: string;
-  type: 'bbq' | 'fire';
+  type: 'bbq' | 'fire' | 'kiosk';
   items: OrderItem[];
   totalAmount: number;
   status: 'pending' | 'preparing' | 'delivering' | 'completed';
