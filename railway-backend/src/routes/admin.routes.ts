@@ -1,6 +1,7 @@
 import express from 'express';
 import { Request, Response, NextFunction } from 'express';
-import { authenticate, AuthRequest } from '../middleware/auth.middleware';
+// 인증 미들웨어 제거 - 모든 사용자가 접근 가능
+// import { authenticate, AuthRequest } from '../middleware/auth.middleware';
 import {
   validateCreateReservation,
   validateUpdateReservation,
@@ -42,44 +43,9 @@ import { setupNotificationSSE } from '../services/notifications-sse.service';
 
 const router = express.Router();
 
-// n8n에서 예약 생성 시 API Key 인증 허용
-const authenticateOrApiKey = (req: AuthRequest, res: Response, next: NextFunction) => {
-  // Express는 헤더 이름을 소문자로 변환하므로 여러 형식 확인
-  const apiKey = req.headers['x-api-key'] || 
-                 req.headers['x-apikey'] || 
-                 req.headers['api-key'] ||
-                 (req.headers['x-api-key'] as string)?.trim();
-  
-  // 디버깅을 위한 로그
-  console.log('API Key check:', {
-    hasApiKey: !!apiKey,
-    apiKeyLength: apiKey ? String(apiKey).length : 0,
-    hasEnvKey: !!process.env.N8N_API_KEY,
-    envKeyLength: process.env.N8N_API_KEY ? process.env.N8N_API_KEY.length : 0,
-    headers: Object.keys(req.headers).filter(k => k.toLowerCase().includes('api')),
-  });
-  
-  // API Key 인증 (n8n에서 사용)
-  if (apiKey && process.env.N8N_API_KEY) {
-    const apiKeyStr = String(apiKey).trim();
-    const envKeyStr = String(process.env.N8N_API_KEY).trim();
-    
-    if (apiKeyStr === envKeyStr) {
-      console.log('API Key authentication successful');
-      return next();
-    } else {
-      console.log('API Key mismatch:', {
-        received: apiKeyStr.substring(0, 10) + '...',
-        expected: envKeyStr.substring(0, 10) + '...',
-      });
-    }
-  }
-  
-  // JWT 토큰 인증 (관리자 페이지에서 사용)
-  authenticate(req, res, next);
-};
-
-router.use(authenticateOrApiKey); // 모든 관리자 라우트에 인증 적용
+// 인증 체크 제거 - 모든 사용자가 접근 가능
+// n8n API Key 체크도 제거 (필요시 나중에 추가 가능)
+// router.use(authenticateOrApiKey); // 주석 처리 - 인증 없이 접근 가능
 
 // 예약 관리
 router.get('/reservations', listReservations);
