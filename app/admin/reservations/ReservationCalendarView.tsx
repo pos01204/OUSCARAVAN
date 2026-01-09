@@ -319,7 +319,7 @@ export function ReservationCalendarView({
   const ShowMoreComponent = useCallback(({ count }: { count: number }) => {
     return (
       <div
-        className="text-[10px] md:text-xs text-primary font-bold hover:bg-primary/10 cursor-pointer py-1 px-1 bg-primary/5 rounded w-full text-center mt-1 border border-primary/20 transition-colors"
+        className="text-[10px] md:text-xs text-primary font-bold hover:bg-primary/20 cursor-pointer py-1 px-1 bg-primary/10 rounded w-full text-center mt-1 border border-primary/30 transition-all transform active:scale-95 shadow-sm"
       >
         +{count}건 더 보기
       </div>
@@ -558,22 +558,16 @@ export function ReservationCalendarView({
               onSelectSlot={handleSelectSlot}
               onSelectEvent={handleSelectEvent}
               onShowMore={(events, date) => {
-                // "+N개 더 보기" 클릭 시 해당 날짜를 선택 상태로 변경하여 하단에 상세 목록 표시
+                // "+N개 더 보기" 클릭 시 해당 날짜의 예약 리스트 정보를 담은 모달을 열어 "확장"된 느낌 제공
                 setSelectedDate(date);
-                // 부드러운 스크롤 효과 (상세 목록 섹션으로)
-                setTimeout(() => {
-                  const element = document.getElementById('daily-details-section');
-                  if (element) {
-                    element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  }
-                }, 100);
+                setIsModalOpen(true);
               }}
               eventPropGetter={eventStyleGetter}
               components={components}
               messages={messages}
               culture="ko"
               selectable
-              popup={false}
+              popup={false} // 커스텀 Dialog를 사용하여 "동일한 양식"으로 확장시키기 위해 false 유지
               formats={{
                 dayFormat: 'd',
                 dayHeaderFormat: (date, culture, localizer) => {
@@ -591,84 +585,6 @@ export function ReservationCalendarView({
               defaultView="month"
             />
           </div>
-
-          {/* 그리드 뷰 하단 상세 정보 섹션 (선택 시 노출) */}
-          {selectedDate && (
-            <div id="daily-details-section" className="mt-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-              <Card className="border-t-4 border-t-primary shadow-lg overflow-hidden">
-                <CardContent className="p-0">
-                  <div className="bg-muted/30 px-4 py-4 border-b flex items-center justify-between">
-                    <div>
-                      <h3 className="text-lg font-bold">
-                        {format(selectedDate, 'yyyy년 M월 d일 (EEE)', { locale: ko })} 상세 현황
-                      </h3>
-                      <p className="text-sm text-muted-foreground mt-0.5">
-                        총 {selectedDateReservations.length}건의 예약 정보
-                      </p>
-                    </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => setSelectedDate(null)}
-                      className="h-8 w-8 p-0 rounded-full hover:bg-muted"
-                    >
-                      <span className="sr-only">닫기</span>
-                      <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                      </svg>
-                    </Button>
-                  </div>
-
-                  <div className="p-4 space-y-3">
-                    {selectedDateReservations.length > 0 ? (
-                      selectedDateReservations.map((reservation, index) => (
-                        <div
-                          key={reservation.id}
-                          className={`flex items-center justify-between p-3 rounded-md transition-all cursor-pointer border ${index % 2 === 0 ? 'bg-background' : 'bg-muted/20'
-                            } border-border/60 hover:bg-primary/5 hover:border-primary/30 shadow-sm`}
-                          onClick={() => handleViewDetail(reservation.id)}
-                        >
-                          <div className="flex items-center gap-3 flex-1 min-w-0 overflow-hidden">
-                            <div className="shrink-0">{getStatusBadge(reservation.status)}</div>
-                            <div className="font-bold text-base shrink-0">{reservation.guestName}</div>
-                            <div className="text-sm text-muted-foreground truncate flex items-center gap-2">
-                              <span className="font-semibold text-primary/70">{reservation.roomType.split('(')[0]}</span>
-                              <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-muted/50 border border-border/50">
-                                {calculateTotalAmount(reservation).totalAmount.toLocaleString()}원
-                              </span>
-                            </div>
-                          </div>
-                          <div className="ml-2 shrink-0">
-                            {!reservation.assignedRoom ? (
-                              <Button
-                                size="sm"
-                                variant="default"
-                                className="h-8 px-4 text-xs font-bold bg-primary hover:bg-primary/90 shadow-md transform active:scale-95 transition-all"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  handleQuickAssign(reservation);
-                                }}
-                              >
-                                배정
-                              </Button>
-                            ) : (
-                              <Badge variant="outline" className="text-xs font-bold py-1 px-2.5 text-primary border-primary/50 bg-primary/5">
-                                {reservation.assignedRoom}
-                              </Badge>
-                            )}
-                          </div>
-                        </div>
-                      ))
-                    ) : (
-                      <div className="text-center py-8 text-muted-foreground italic">
-                        선택한 날짜에 표시할 예약 데이터가 없습니다.
-                      </div>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-          )}
         </div>
       )}
 
@@ -788,14 +704,8 @@ export function ReservationCalendarView({
                             onClick={() => handleViewDetail(reservation.id)}
                           >
                             <div className="flex items-center gap-3 flex-1 min-w-0 overflow-hidden">
-                              <div className="shrink-0">
-                                {getStatusBadge(reservation.status)}
-                              </div>
-
-                              <div className="font-bold text-base shrink-0">
-                                {reservation.guestName}
-                              </div>
-
+                              <div className="shrink-0">{getStatusBadge(reservation.status)}</div>
+                              <div className="font-bold text-base shrink-0">{reservation.guestName}</div>
                               <div className="text-sm text-muted-foreground truncate flex items-center gap-2">
                                 <span className="font-semibold text-primary/70">{reservation.roomType.split('(')[0]}</span>
                                 <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-muted/50 border border-border/50">
@@ -902,30 +812,88 @@ export function ReservationCalendarView({
                       </TabsTrigger>
                     </TabsList>
 
-                    <TabsContent value="all" className="mt-4 space-y-3">
-                      {selectedDateReservations.map((reservation) => (
-                        <ReservationModalCard
+                    <TabsContent value="all" className="mt-4 space-y-2">
+                      {selectedDateReservations.map((reservation, index) => (
+                        <div
                           key={reservation.id}
-                          reservation={reservation}
-                          selectedDate={selectedDate}
-                          onViewDetail={() => handleViewDetail(reservation.id)}
-                          onCloseModal={handleCloseModal}
-                        />
+                          className={`flex items-center justify-between p-3 rounded-md transition-all cursor-pointer border ${index % 2 === 0 ? 'bg-background' : 'bg-muted/20'
+                            } border-border/60 hover:bg-primary/5 hover:border-primary/30 shadow-sm`}
+                          onClick={() => handleViewDetail(reservation.id)}
+                        >
+                          <div className="flex items-center gap-3 flex-1 min-w-0 overflow-hidden">
+                            <div className="shrink-0">{getStatusBadge(reservation.status)}</div>
+                            <div className="font-bold text-base shrink-0">{reservation.guestName}</div>
+                            <div className="text-sm text-muted-foreground truncate flex items-center gap-2">
+                              <span className="font-semibold text-primary/70">{reservation.roomType.split('(')[0]}</span>
+                              <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-muted/50 border border-border/50">
+                                {calculateTotalAmount(reservation).totalAmount.toLocaleString()}원
+                              </span>
+                            </div>
+                          </div>
+                          <div className="ml-2 shrink-0">
+                            {!reservation.assignedRoom ? (
+                              <Button
+                                size="sm"
+                                variant="default"
+                                className="h-8 px-4 text-xs font-bold bg-primary hover:bg-primary/90 shadow-md transform active:scale-95 transition-all"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  handleQuickAssign(reservation);
+                                }}
+                              >
+                                배정
+                              </Button>
+                            ) : (
+                              <Badge variant="outline" className="text-xs font-bold py-1 px-2.5 text-primary border-primary/50 bg-primary/5">
+                                {reservation.assignedRoom}
+                              </Badge>
+                            )}
+                          </div>
+                        </div>
                       ))}
                     </TabsContent>
 
                     {['assigned', 'pending', 'checked_in', 'checked_out'].map((status) => (
-                      <TabsContent key={status} value={status} className="mt-4 space-y-3">
+                      <TabsContent key={status} value={status} className="mt-4 space-y-2">
                         {sortReservationsByPriority(selectedDateReservations)
                           .filter(r => r.status === status)
-                          .map((reservation) => (
-                            <ReservationModalCard
+                          .map((reservation, index) => (
+                            <div
                               key={reservation.id}
-                              reservation={reservation}
-                              selectedDate={selectedDate}
-                              onViewDetail={() => handleViewDetail(reservation.id)}
-                              onCloseModal={handleCloseModal}
-                            />
+                              className={`flex items-center justify-between p-3 rounded-md transition-all cursor-pointer border ${index % 2 === 0 ? 'bg-background' : 'bg-muted/20'
+                                } border-border/60 hover:bg-primary/5 hover:border-primary/30 shadow-sm`}
+                              onClick={() => handleViewDetail(reservation.id)}
+                            >
+                              <div className="flex items-center gap-3 flex-1 min-w-0 overflow-hidden">
+                                <div className="shrink-0">{getStatusBadge(reservation.status)}</div>
+                                <div className="font-bold text-base shrink-0">{reservation.guestName}</div>
+                                <div className="text-sm text-muted-foreground truncate flex items-center gap-2">
+                                  <span className="font-semibold text-primary/70">{reservation.roomType.split('(')[0]}</span>
+                                  <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-muted/50 border border-border/50">
+                                    {calculateTotalAmount(reservation).totalAmount.toLocaleString()}원
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="ml-2 shrink-0">
+                                {!reservation.assignedRoom ? (
+                                  <Button
+                                    size="sm"
+                                    variant="default"
+                                    className="h-8 px-4 text-xs font-bold bg-primary hover:bg-primary/90 shadow-md transform active:scale-95 transition-all"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleQuickAssign(reservation);
+                                    }}
+                                  >
+                                    배정
+                                  </Button>
+                                ) : (
+                                  <Badge variant="outline" className="text-xs font-bold py-1 px-2.5 text-primary border-primary/50 bg-primary/5">
+                                    {reservation.assignedRoom}
+                                  </Badge>
+                                )}
+                              </div>
+                            </div>
                           ))}
                         {selectedDateReservations.filter(r => r.status === status).length === 0 && (
                           <div className="text-center py-12 text-muted-foreground border rounded-lg border-dashed">
