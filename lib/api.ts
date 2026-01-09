@@ -943,7 +943,7 @@ export async function sendCheckOutToN8N(data: {
 export async function sendOrderToN8N(data: {
   guest: string;
   room: string;
-  orderType: 'bbq' | 'fire';
+  orderType: 'bbq' | 'fire' | 'kiosk';
   items: Array<{
     id: string;
     name: string;
