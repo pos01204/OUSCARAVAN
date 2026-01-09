@@ -669,6 +669,7 @@ export async function getAdminStats(): Promise<AdminStats> {
 
 /**
  * 알림 목록 조회
+ * Next.js API 라우트를 통해 서버 사이드에서 Railway API를 호출
  */
 export async function getNotifications(params?: {
   type?: NotificationType;
@@ -703,9 +704,39 @@ export async function getNotifications(params?: {
   }
 
   const queryString = queryParams.toString();
-  const endpoint = `/api/admin/notifications${queryString ? `?${queryString}` : ''}`;
+  // Next.js API 라우트 사용 (서버 사이드에서 쿠키를 읽어 Railway API로 프록시)
+  const url = `/api/admin/notifications${queryString ? `?${queryString}` : ''}`;
 
-  return adminApi(endpoint) as Promise<NotificationsResponse>;
+  try {
+    const response = await fetchWithRetry(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include', // 쿠키 포함
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new ApiError('로그인이 필요합니다. 다시 로그인해주세요.', 'UNAUTHORIZED', 401);
+      }
+      
+      const errorData: ApiErrorResponse = await response.json().catch(() => ({}));
+      throw new ApiError(
+        errorData.error || '알림을 불러오는데 실패했습니다.',
+        errorData.code,
+        response.status
+      );
+    }
+
+    return response.json() as Promise<NotificationsResponse>;
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    const userFriendlyMessage = extractUserFriendlyMessage(error);
+    throw new ApiError(userFriendlyMessage, 'NETWORK_ERROR', 0);
+  }
 }
 
 /**
