@@ -59,66 +59,448 @@ export const WELCOME_MESSAGE = {
 };
 
 // 가이드 데이터
-export const GUIDE_DATA = {
+import type { GuideItem } from '@/types';
+
+export const GUIDE_DATA: { categories: string[]; items: GuideItem[] } = {
   categories: ['전체', '실내', '요리', '편의시설', '규칙'],
   items: [
     {
       id: 'heating',
       category: '실내',
       title: '난방/에어컨 사용법',
-      content: '컨트롤러를 사용하여 원하는 온도를 설정하세요. 권장 온도는 20-22도입니다.',
-      images: [],
+      overview: '컨트롤러를 사용하여 원하는 온도로 설정할 수 있습니다.',
+      content: '객실 벽면에 설치된 컨트롤러를 사용하여 난방과 냉방을 조절할 수 있습니다. 권장 온도는 20-22도이며, 전력 절약을 위해 외출 시에는 전원을 끄거나 송풍 모드로 변경하는 것을 권장합니다.',
+      images: ['/images/guide/heating/controller-location.jpg', '/images/guide/heating/controller-closeup.jpg'],
       warning: false,
+      steps: [
+        {
+          number: 1,
+          title: '컨트롤러 위치 확인',
+          description: '객실 벽면에 설치된 컨트롤러를 찾아주세요.',
+          image: '/images/guide/heating/controller-location.jpg',
+        },
+        {
+          number: 2,
+          title: '전원 켜기',
+          description: '컨트롤러의 전원 버튼을 눌러주세요.',
+          image: '/images/guide/heating/power-button.jpg',
+        },
+        {
+          number: 3,
+          title: '모드 선택',
+          description: '냉방(❄️), 난방(🔥), 송풍(🌀) 모드 중 선택하세요.',
+          image: '/images/guide/heating/mode-selection.jpg',
+        },
+        {
+          number: 4,
+          title: '온도 설정',
+          description: '▲▼ 버튼으로 원하는 온도를 설정하세요. 권장 온도: 20-22도',
+          warning: '과도한 온도 설정은 전력 소비를 증가시킵니다.',
+        },
+        {
+          number: 5,
+          title: '풍량 조절',
+          description: '풍량 버튼으로 바람 세기를 조절하세요.',
+        },
+      ],
+      faq: [
+        {
+          id: 'faq-1',
+          question: '컨트롤러가 작동하지 않아요.',
+          answer: '전원 스위치가 켜져 있는지 확인하세요. 여전히 작동하지 않으면 관리자에게 연락해주세요.',
+        },
+        {
+          id: 'faq-2',
+          question: '원하는 온도가 나오지 않아요.',
+          answer: '설정 후 10-15분 정도 기다려주세요. 실내 온도가 천천히 변화합니다.',
+        },
+        {
+          id: 'faq-3',
+          question: '소음이 너무 커요.',
+          answer: '풍량을 낮추거나 송풍 모드로 변경해보세요.',
+        },
+      ],
+      troubleshooting: [
+        {
+          id: 'trouble-1',
+          problem: '전원이 켜지지 않음',
+          solution: '전원 스위치 확인 → 차단기 확인 → 관리자 연락',
+          steps: ['객실 내 전원 스위치 확인', '전기 차단기 확인', '여전히 작동하지 않으면 관리자 연락'],
+          requiresContact: true,
+          contactMethod: 'phone',
+        },
+        {
+          id: 'trouble-2',
+          problem: '바람이 나오지 않음',
+          solution: '필터 청소 필요할 수 있습니다. 관리자에게 연락해주세요.',
+          requiresContact: true,
+          contactMethod: 'phone',
+        },
+        {
+          id: 'trouble-3',
+          problem: '냉방/난방이 안 됨',
+          solution: '모드 설정 확인 → 온도 설정 확인 → 10분 대기 → 관리자 연락',
+          steps: ['모드 설정 확인', '온도 설정 확인', '10분 대기', '여전히 작동하지 않으면 관리자 연락'],
+          requiresContact: true,
+          contactMethod: 'phone',
+        },
+      ],
+      tips: [
+        '외출 시에는 전원을 끄거나 송풍 모드로 변경하면 전력을 절약할 수 있습니다.',
+        '여름에는 실내와 외부 온도 차이를 5도 이내로 유지하는 것이 좋습니다.',
+        '필터는 정기적으로 청소하면 효율이 좋아집니다.',
+      ],
+      relatedGuides: ['hot-water', 'projector'],
+      checklist: [
+        { id: 'check-1', text: '컨트롤러 위치 확인', required: true },
+        { id: 'check-2', text: '전원 작동 확인', required: true },
+        { id: 'check-3', text: '원하는 온도 설정 확인', required: false },
+      ],
+      tags: ['난방', '에어컨', '온도', '컨트롤러', '실내'],
+      priority: 5,
     },
     {
       id: 'hot-water',
       category: '편의시설',
       title: '온수 사용 안내',
-      content: '온수는 50L 용량으로 제한되어 있습니다. 샤워 간격은 최소 15분을 대기해주세요.',
-      images: [],
+      overview: '온수는 50L 용량으로 제한되어 있으며, 샤워 간격은 최소 15분을 대기해주세요.',
+      content: '온수는 50L 용량으로 제한되어 있습니다. 샤워 간격은 최소 15분을 대기해주세요. 온수가 나오지 않을 경우, 온수기 전원이 켜져 있는지 확인하고 10-15분 정도 기다려주세요.',
+      images: ['/images/guide/hot-water/water-heater.jpg'],
       warning: true,
       warningText: '50L 용량 제한. 샤워 간격 15분 대기 필수',
+      steps: [
+        {
+          number: 1,
+          title: '온수기 전원 확인',
+          description: '온수기 전원 스위치가 켜져 있는지 확인하세요.',
+        },
+        {
+          number: 2,
+          title: '온수 사용',
+          description: '샤워기나 수도꼭지를 열어 온수를 사용하세요.',
+        },
+        {
+          number: 3,
+          title: '사용 후 대기',
+          description: '온수를 모두 사용한 경우, 다음 사용을 위해 최소 15분을 대기해주세요.',
+          warning: '15분 미만 대기 시 온수가 충분히 데워지지 않을 수 있습니다.',
+        },
+      ],
+      faq: [
+        {
+          id: 'faq-1',
+          question: '온수가 나오지 않아요.',
+          answer: '온수기 전원이 켜져 있는지 확인하고, 10-15분 정도 기다려주세요. 여전히 나오지 않으면 관리자에게 연락해주세요.',
+        },
+        {
+          id: 'faq-2',
+          question: '온수가 차가워요.',
+          answer: '온수기가 충분히 가열되기까지 시간이 필요합니다. 최소 15분 이상 대기 후 다시 시도해주세요.',
+        },
+        {
+          id: 'faq-3',
+          question: '온수가 금방 떨어져요.',
+          answer: '온수는 50L 용량으로 제한되어 있습니다. 샤워 시간을 조절하거나 간격을 두고 사용해주세요.',
+        },
+      ],
+      troubleshooting: [
+        {
+          id: 'trouble-1',
+          problem: '온수가 전혀 나오지 않음',
+          solution: '온수기 전원 확인 → 15분 대기 → 관리자 연락',
+          steps: ['온수기 전원 스위치 확인', '15분 대기', '여전히 나오지 않으면 관리자 연락'],
+          requiresContact: true,
+          contactMethod: 'phone',
+        },
+        {
+          id: 'trouble-2',
+          problem: '온수가 충분히 뜨겁지 않음',
+          solution: '온수기 가열 시간이 필요합니다. 15분 이상 대기 후 다시 시도해주세요.',
+          requiresContact: false,
+        },
+      ],
+      tips: [
+        '샤워 전에 온수기 전원이 켜져 있는지 미리 확인하세요.',
+        '온수를 절약하기 위해 샤워 시간을 짧게 유지하는 것을 권장합니다.',
+        '여러 명이 연속으로 사용할 경우, 각자 15분 간격을 두는 것이 좋습니다.',
+      ],
+      relatedGuides: ['heating'],
+      tags: ['온수', '샤워', '편의시설', '용량'],
+      priority: 4,
     },
     {
       id: 'projector',
       category: '실내',
       title: '빔 프로젝터 연결 방법',
-      content: 'HDMI 케이블을 연결하거나 스마트폰 미러링 기능을 사용하세요. iOS는 AirPlay, Android는 Miracast를 지원합니다.',
-      images: [],
+      overview: 'HDMI 케이블을 연결하거나 스마트폰 미러링 기능을 사용할 수 있습니다.',
+      content: '빔 프로젝터는 HDMI 케이블을 통해 노트북이나 게임기를 연결하거나, 스마트폰의 미러링 기능을 사용할 수 있습니다. iOS는 AirPlay, Android는 Miracast를 지원합니다.',
+      images: ['/images/guide/projector/projector-setup.jpg', '/images/guide/projector/hdmi-connection.jpg'],
       warning: false,
+      steps: [
+        {
+          number: 1,
+          title: '프로젝터 전원 켜기',
+          description: '프로젝터 전원 버튼을 눌러 켜주세요.',
+          image: '/images/guide/projector/power-on.jpg',
+        },
+        {
+          number: 2,
+          title: 'HDMI 케이블 연결 (노트북/게임기)',
+          description: 'HDMI 케이블을 프로젝터와 기기에 연결하세요.',
+          image: '/images/guide/projector/hdmi-connection.jpg',
+        },
+        {
+          number: 3,
+          title: '스마트폰 미러링 (선택)',
+          description: 'iOS: AirPlay, Android: Miracast를 사용하여 무선으로 연결하세요.',
+          image: '/images/guide/projector/mirroring.jpg',
+        },
+        {
+          number: 4,
+          title: '화면 조정',
+          description: '프로젝터의 초점과 크기를 조정하여 화면을 맞춰주세요.',
+        },
+      ],
+      faq: [
+        {
+          id: 'faq-1',
+          question: '화면이 나오지 않아요.',
+          answer: 'HDMI 케이블 연결을 확인하고, 기기의 출력 설정을 확인해주세요. (Windows: Win+P, Mac: 시스템 설정)',
+        },
+        {
+          id: 'faq-2',
+          question: 'AirPlay/Miracast가 작동하지 않아요.',
+          answer: '기기와 프로젝터가 같은 WiFi 네트워크에 연결되어 있는지 확인해주세요.',
+        },
+        {
+          id: 'faq-3',
+          question: '화면이 흐릿해요.',
+          answer: '프로젝터의 초점 링을 조정하여 선명도를 개선할 수 있습니다.',
+        },
+      ],
+      troubleshooting: [
+        {
+          id: 'trouble-1',
+          problem: '화면이 전혀 나오지 않음',
+          solution: 'HDMI 케이블 확인 → 기기 출력 설정 확인 → 프로젝터 전원 재시작',
+          steps: ['HDMI 케이블 연결 확인', '기기 출력 설정 확인 (Win+P 또는 시스템 설정)', '프로젝터 전원 재시작'],
+          requiresContact: false,
+        },
+        {
+          id: 'trouble-2',
+          problem: '무선 연결이 안 됨',
+          solution: '기기와 프로젝터가 같은 WiFi에 연결되어 있는지 확인하세요.',
+          requiresContact: false,
+        },
+      ],
+      tips: [
+        '프로젝터 사용 후에는 전원을 꺼주세요.',
+        '프로젝터 렌즈는 부드러운 천으로만 닦아주세요.',
+        '장시간 사용 시 과열을 방지하기 위해 환기를 유지해주세요.',
+      ],
+      relatedGuides: ['wifi', 'heating'],
+      tags: ['프로젝터', '미러링', 'HDMI', '실내'],
+      priority: 3,
     },
     {
       id: 'wifi',
       category: '편의시설',
       title: 'WiFi 연결',
-      content: 'SSID: OUS_Guest, 비밀번호는 홈 화면에서 확인하세요.',
+      overview: 'SSID: OUS_Guest로 연결하세요. 비밀번호는 홈 화면에서 확인할 수 있습니다.',
+      content: 'WiFi 네트워크 이름(SSID)은 OUS_Guest입니다. 비밀번호는 홈 화면의 WiFi 카드에서 확인하거나 복사할 수 있습니다.',
       images: [],
       warning: false,
+      steps: [
+        {
+          number: 1,
+          title: 'WiFi 설정 열기',
+          description: '스마트폰이나 노트북의 WiFi 설정을 엽니다.',
+        },
+        {
+          number: 2,
+          title: '네트워크 선택',
+          description: 'WiFi 목록에서 "OUS_Guest"를 찾아 선택하세요.',
+        },
+        {
+          number: 3,
+          title: '비밀번호 입력',
+          description: '홈 화면의 WiFi 카드에서 비밀번호를 확인하고 입력하세요.',
+        },
+        {
+          number: 4,
+          title: '연결 확인',
+          description: '연결이 완료되면 인터넷을 사용할 수 있습니다.',
+        },
+      ],
+      faq: [
+        {
+          id: 'faq-1',
+          question: 'WiFi 목록에 OUS_Guest가 보이지 않아요.',
+          answer: 'WiFi 설정을 새로고침하거나, 기기를 재시작해보세요. 여전히 보이지 않으면 관리자에게 연락해주세요.',
+        },
+        {
+          id: 'faq-2',
+          question: '비밀번호가 맞지 않아요.',
+          answer: '홈 화면의 WiFi 카드에서 정확한 비밀번호를 다시 확인해주세요. 복사 기능을 사용하면 오타를 방지할 수 있습니다.',
+        },
+        {
+          id: 'faq-3',
+          question: '연결은 되는데 인터넷이 안 돼요.',
+          answer: 'WiFi 연결을 끊고 다시 연결해보세요. 여전히 안 되면 관리자에게 연락해주세요.',
+        },
+      ],
+      troubleshooting: [
+        {
+          id: 'trouble-1',
+          problem: 'WiFi 목록에 나타나지 않음',
+          solution: 'WiFi 설정 새로고침 → 기기 재시작 → 관리자 연락',
+          steps: ['WiFi 설정 새로고침', '기기 재시작', '여전히 보이지 않으면 관리자 연락'],
+          requiresContact: true,
+          contactMethod: 'phone',
+        },
+        {
+          id: 'trouble-2',
+          problem: '비밀번호 오류',
+          solution: '홈 화면에서 정확한 비밀번호 확인 후 다시 입력',
+          requiresContact: false,
+        },
+        {
+          id: 'trouble-3',
+          problem: '연결은 되지만 인터넷 안 됨',
+          solution: 'WiFi 연결 해제 후 재연결 → 관리자 연락',
+          requiresContact: true,
+          contactMethod: 'phone',
+        },
+      ],
+      tips: [
+        '비밀번호는 홈 화면의 WiFi 카드에서 복사 기능을 사용하면 편리합니다.',
+        '연결이 불안정할 경우, 기기를 재시작해보세요.',
+        '여러 기기를 연결할 수 있습니다.',
+      ],
+      relatedGuides: ['projector'],
+      tags: ['WiFi', '인터넷', '편의시설', '연결'],
+      priority: 5,
     },
     {
       id: 'parking',
       category: '규칙',
       title: '주차 안내',
-      content: '지정된 주차장에 주차해주세요. 차량 1대당 1대만 주차 가능합니다.',
-      images: [],
+      overview: '지정된 주차장에 주차해주세요. 차량 1대당 1대만 주차 가능합니다.',
+      content: '지정된 주차장에 주차해주세요. 차량 1대당 1대만 주차 가능하며, 다른 고객을 위해 주차 공간을 침범하지 않도록 주의해주세요.',
+      images: ['/images/guide/parking/parking-area.jpg'],
       warning: false,
+      faq: [
+        {
+          id: 'faq-1',
+          question: '주차 공간이 부족해요.',
+          answer: '차량 1대당 1대만 주차 가능합니다. 추가 주차가 필요한 경우 관리자에게 문의해주세요.',
+        },
+        {
+          id: 'faq-2',
+          question: '주차장 위치가 어디인가요?',
+          answer: '체크인 시 안내받은 주차장 위치를 확인해주세요. 불명확한 경우 관리자에게 문의해주세요.',
+        },
+      ],
+      tips: [
+        '주차 시 다른 차량의 출입을 방해하지 않도록 주의해주세요.',
+        '야간 주차 시 주변 조명을 확인해주세요.',
+      ],
+      tags: ['주차', '규칙', '차량'],
+      priority: 2,
     },
     {
       id: 'trash',
       category: '규칙',
       title: '쓰레기 분리수거',
-      content: '일반쓰레기, 재활용품, 음식물쓰레기를 분리하여 배출해주세요.',
-      images: [],
+      overview: '일반쓰레기, 재활용품, 음식물쓰레기를 분리하여 배출해주세요.',
+      content: '일반쓰레기, 재활용품, 음식물쓰레기를 분리하여 배출해주세요. 쓰레기 배출 장소는 체크인 시 안내받은 위치를 확인해주세요.',
+      images: ['/images/guide/trash/trash-bins.jpg'],
       warning: false,
+      steps: [
+        {
+          number: 1,
+          title: '쓰레기 분류',
+          description: '일반쓰레기, 재활용품, 음식물쓰레기로 분류하세요.',
+        },
+        {
+          number: 2,
+          title: '배출 장소 확인',
+          description: '체크인 시 안내받은 쓰레기 배출 장소를 확인하세요.',
+        },
+        {
+          number: 3,
+          title: '적절한 수거함에 배출',
+          description: '분류한 쓰레기를 해당 수거함에 배출하세요.',
+        },
+      ],
+      faq: [
+        {
+          id: 'faq-1',
+          question: '쓰레기 배출 장소가 어디인가요?',
+          answer: '체크인 시 안내받은 위치를 확인해주세요. 불명확한 경우 관리자에게 문의해주세요.',
+        },
+        {
+          id: 'faq-2',
+          question: '재활용품은 어떻게 분리하나요?',
+          answer: '플라스틱, 종이, 유리, 캔으로 분리하여 배출해주세요.',
+        },
+      ],
+      tips: [
+        '음식물쓰레기는 물기를 제거한 후 배출해주세요.',
+        '재활용품은 깨끗이 씻어서 배출해주세요.',
+      ],
+      tags: ['쓰레기', '분리수거', '규칙', '환경'],
+      priority: 2,
     },
     {
       id: 'bbq',
       category: '요리',
       title: 'BBQ & 불멍 가이드',
-      content: '단계별 가이드를 확인하여 안전하게 사용하세요.',
+      overview: '단계별 가이드를 확인하여 안전하게 사용하세요.',
+      content: 'BBQ와 불멍 시설을 안전하게 사용하기 위한 단계별 가이드입니다. 각 단계를 순서대로 따라하시면 안전하게 이용하실 수 있습니다.',
       images: [],
       warning: false,
       hasCarousel: true,
+      faq: [
+        {
+          id: 'faq-1',
+          question: '가스가 떨어졌어요.',
+          answer: '관리자에게 연락하여 가스 탱크 교체를 요청해주세요.',
+        },
+        {
+          id: 'faq-2',
+          question: '불이 잘 안 붙어요.',
+          answer: '점화 버튼을 누른 후 천천히 90도 회전해주세요. 급격한 회전은 금지됩니다.',
+        },
+        {
+          id: 'faq-3',
+          question: '사용 후 어떻게 정리하나요?',
+          answer: '가스 레버를 반드시 잠그고, 사용한 그릴은 식힌 후 정리해주세요.',
+        },
+      ],
+      troubleshooting: [
+        {
+          id: 'trouble-1',
+          problem: '가스가 나오지 않음',
+          solution: '가스 레버 확인 → 가스 탱크 확인 → 관리자 연락',
+          steps: ['가스 레버가 열려있는지 확인', '가스 탱크 확인', '여전히 나오지 않으면 관리자 연락'],
+          requiresContact: true,
+          contactMethod: 'phone',
+        },
+        {
+          id: 'trouble-2',
+          problem: '불이 잘 안 붙음',
+          solution: '점화 버튼을 누른 후 천천히 90도 회전',
+          requiresContact: false,
+        },
+      ],
+      tips: [
+        '사용 후에는 반드시 가스 레버를 잠가주세요.',
+        '불 주변에 가연성 물질을 두지 마세요.',
+        '사용 중에는 절대 불을 방치하지 마세요.',
+      ],
+      tags: ['BBQ', '불멍', '요리', '가스', '안전'],
+      priority: 5,
     },
   ],
 };

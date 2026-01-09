@@ -209,3 +209,62 @@ export interface NotificationStats {
   thisWeek: number;
   byType: Record<string, number>;
 }
+
+/**
+ * 가이드 관련 타입 정의
+ */
+export interface GuideStep {
+  number: number;
+  title: string;
+  description: string;
+  image?: string;
+  warning?: string;
+  estimatedTime?: string;
+}
+
+export interface GuideFAQ {
+  id: string;
+  question: string;
+  answer: string;
+  relatedGuideId?: string;
+}
+
+export interface GuideTroubleshooting {
+  id: string;
+  problem: string;
+  solution: string;
+  steps?: string[];
+  requiresContact: boolean;
+  contactMethod?: 'phone' | 'message' | 'email';
+  estimatedTime?: string;
+}
+
+export interface GuideChecklistItem {
+  id: string;
+  text: string;
+  required: boolean;
+  category?: 'checkin' | 'checkout' | 'facility';
+  helpText?: string;
+}
+
+export interface GuideItem {
+  id: string;
+  category: string;
+  title: string;
+  overview?: string;
+  content: string;
+  images: string[];
+  videoUrl?: string;
+  warning: boolean;
+  warningText?: string;
+  steps?: GuideStep[];
+  faq?: GuideFAQ[];
+  troubleshooting?: GuideTroubleshooting[];
+  tips?: string[];
+  relatedGuides?: string[];
+  checklist?: GuideChecklistItem[];
+  tags?: string[];
+  priority?: number;
+  lastUpdated?: string;
+  hasCarousel?: boolean;
+}
