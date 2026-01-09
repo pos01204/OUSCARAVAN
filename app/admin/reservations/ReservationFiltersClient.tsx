@@ -109,7 +109,10 @@ export function ReservationFiltersClient({
               setStatus('all');
               setSearch('');
               startTransition(() => {
-                router.push(`/admin/reservations?checkin=${today}`);
+                const params = new URLSearchParams();
+                params.set('checkin', today);
+                params.set('view', 'list');
+                router.push(`/admin/reservations?${params.toString()}`);
               });
             }
           }}
@@ -136,7 +139,10 @@ export function ReservationFiltersClient({
               setStatus('all');
               setSearch('');
               startTransition(() => {
-                router.push(`/admin/reservations?checkout=${today}`);
+                const params = new URLSearchParams();
+                params.set('checkout', today);
+                params.set('view', 'list');
+                router.push(`/admin/reservations?${params.toString()}`);
               });
             }
           }}
