@@ -28,7 +28,7 @@ export async function createCheckInNotification(reservationId: string): Promise<
     });
 
     // SSE로 실시간 전송
-    sendNotification('admin', notification);
+    sendNotification(notification.adminId, notification);
   } catch (error) {
     console.error('[Notification] Failed to create check-in notification:', error);
     // 알림 생성 실패는 체크인 프로세스를 중단하지 않음
@@ -59,7 +59,7 @@ export async function createCheckOutNotification(reservationId: string): Promise
     });
 
     // SSE로 실시간 전송
-    sendNotification('admin', notification);
+    sendNotification(notification.adminId, notification);
   } catch (error) {
     console.error('[Notification] Failed to create check-out notification:', error);
     // 알림 생성 실패는 체크아웃 프로세스를 중단하지 않음
@@ -105,7 +105,7 @@ export async function createOrderCreatedNotification(orderId: string): Promise<v
     });
 
     // SSE로 실시간 전송
-    sendNotification('admin', notification);
+    sendNotification(notification.adminId, notification);
   } catch (error) {
     console.error('[Notification] Failed to create order created notification:', error);
     // 알림 생성 실패는 주문 프로세스를 중단하지 않음
@@ -154,7 +154,7 @@ export async function createOrderStatusChangedNotification(
     });
 
     // SSE로 실시간 전송
-    sendNotification('admin', notification);
+    sendNotification(notification.adminId, notification);
   } catch (error) {
     console.error('[Notification] Failed to create order status changed notification:', error);
     // 알림 생성 실패는 주문 상태 변경 프로세스를 중단하지 않음
@@ -189,7 +189,7 @@ export async function createOrderCancelledNotification(orderId: string): Promise
     });
 
     // SSE로 실시간 전송
-    sendNotification('admin', notification);
+    sendNotification(notification.adminId, notification);
   } catch (error) {
     console.error('[Notification] Failed to create order cancelled notification:', error);
     // 알림 생성 실패는 주문 취소 프로세스를 중단하지 않음

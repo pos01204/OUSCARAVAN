@@ -10,13 +10,14 @@ import {
   getNotificationStats,
   NotificationFilters,
 } from '../services/notifications.service';
+import { DEFAULT_ADMIN_ID } from '../constants/admin';
 
 /**
  * 알림 목록 조회
  */
 export async function listNotifications(req: AuthRequest, res: Response) {
   try {
-    const adminId = req.user?.id || 'admin';
+    const adminId = req.user?.id || DEFAULT_ADMIN_ID;
     const filters: NotificationFilters = {
       type: req.query.type as any,
       isRead: req.query.isRead === 'true' ? true : req.query.isRead === 'false' ? false : undefined,
@@ -45,7 +46,7 @@ export async function listNotifications(req: AuthRequest, res: Response) {
 export async function markAsRead(req: AuthRequest, res: Response) {
   try {
     const { id } = req.params;
-    const adminId = req.user?.id || 'admin';
+    const adminId = req.user?.id || DEFAULT_ADMIN_ID;
 
     const notification = await markNotificationAsRead(id, adminId);
 
@@ -71,7 +72,7 @@ export async function markAsRead(req: AuthRequest, res: Response) {
  */
 export async function markAllAsRead(req: AuthRequest, res: Response) {
   try {
-    const adminId = req.user?.id || 'admin';
+    const adminId = req.user?.id || DEFAULT_ADMIN_ID;
 
     const updatedCount = await markAllNotificationsAsRead(adminId);
 
@@ -91,7 +92,7 @@ export async function markAllAsRead(req: AuthRequest, res: Response) {
 export async function deleteNotificationHandler(req: AuthRequest, res: Response) {
   try {
     const { id } = req.params;
-    const adminId = req.user?.id || 'admin';
+    const adminId = req.user?.id || DEFAULT_ADMIN_ID;
 
     await deleteNotification(id, adminId);
 
@@ -117,7 +118,7 @@ export async function deleteNotificationHandler(req: AuthRequest, res: Response)
  */
 export async function getSettings(req: AuthRequest, res: Response) {
   try {
-    const adminId = req.user?.id || 'admin';
+    const adminId = req.user?.id || DEFAULT_ADMIN_ID;
 
     const settings = await getNotificationSettings(adminId);
 
@@ -136,7 +137,7 @@ export async function getSettings(req: AuthRequest, res: Response) {
  */
 export async function updateSettings(req: AuthRequest, res: Response) {
   try {
-    const adminId = req.user?.id || 'admin';
+    const adminId = req.user?.id || DEFAULT_ADMIN_ID;
     const data = req.body;
 
     const settings = await updateNotificationSettings(adminId, data);

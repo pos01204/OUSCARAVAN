@@ -1,12 +1,9 @@
 import { Request, Response } from 'express';
 import { generateToken } from '../utils/jwt';
+import { ADMIN_CREDENTIALS } from '../constants/admin';
 
 // TODO: 실제 데이터베이스에서 관리자 정보 조회
 // 임시 관리자 계정 (프로덕션에서는 데이터베이스에서 조회)
-const ADMIN_CREDENTIALS = {
-  id: 'ouscaravan',
-  password: '123456789a',
-};
 
 export async function login(req: Request, res: Response) {
   try {

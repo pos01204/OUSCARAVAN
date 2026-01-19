@@ -21,7 +21,7 @@ const migration005AddNotifications = `
 -- 1. notifications 테이블
 CREATE TABLE IF NOT EXISTS notifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  admin_id VARCHAR(50) NOT NULL DEFAULT 'admin',
+  admin_id VARCHAR(50) NOT NULL DEFAULT 'ouscaravan',
   type VARCHAR(50) NOT NULL CHECK (type IN (
     'checkin',
     'checkout',
@@ -58,7 +58,7 @@ CREATE INDEX IF NOT EXISTS idx_notifications_admin_read ON notifications(admin_i
 -- 2. notification_settings 테이블
 CREATE TABLE IF NOT EXISTS notification_settings (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  admin_id VARCHAR(50) NOT NULL UNIQUE DEFAULT 'admin',
+  admin_id VARCHAR(50) NOT NULL UNIQUE DEFAULT 'ouscaravan',
   
   -- 알림 타입별 수신 여부
   checkin_enabled BOOLEAN NOT NULL DEFAULT TRUE,
@@ -80,7 +80,7 @@ CREATE TABLE IF NOT EXISTS notification_settings (
 
 -- 기본 설정 데이터 삽입
 INSERT INTO notification_settings (admin_id) 
-VALUES ('admin')
+VALUES ('ouscaravan')
 ON CONFLICT (admin_id) DO NOTHING;
 
 -- updated_at 자동 업데이트 트리거
@@ -132,6 +132,28 @@ BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'update_announcements_updated_at') THEN
     CREATE TRIGGER update_announcements_updated_at BEFORE UPDATE ON announcements
       FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+  END IF;
+END $$;
+`;
+
+/**
+ * 알림 admin_id 표준화 마이그레이션
+ */
+const migration009NormalizeNotificationAdminId = `
+DO $$
+BEGIN
+  UPDATE notifications
+  SET admin_id = 'ouscaravan'
+  WHERE admin_id = 'admin';
+
+  IF EXISTS (SELECT 1 FROM notification_settings WHERE admin_id = 'admin') THEN
+    IF EXISTS (SELECT 1 FROM notification_settings WHERE admin_id = 'ouscaravan') THEN
+      DELETE FROM notification_settings WHERE admin_id = 'admin';
+    ELSE
+      UPDATE notification_settings
+      SET admin_id = 'ouscaravan'
+      WHERE admin_id = 'admin';
+    END IF;
   END IF;
 END $$;
 `;
@@ -262,6 +284,9 @@ export async function runMigrations(): Promise<void> {
     
     // 주문 타입 확장 마이그레이션 실행 (kiosk 추가)
     await runMigration('008_allow_kiosk_orders', migration008AllowKioskOrders);
+
+    // 알림 admin_id 표준화 마이그레이션 실행
+    await runMigration('009_normalize_notification_admin_id', migration009NormalizeNotificationAdminId);
     
     // 방 이름을 1호~10호로 변경하는 마이그레이션 실행
     // 마이그레이션 SQL을 직접 포함 (파일 읽기 대신)

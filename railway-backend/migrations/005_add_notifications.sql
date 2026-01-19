@@ -3,7 +3,7 @@
 -- 1. notifications 테이블
 CREATE TABLE IF NOT EXISTS notifications (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  admin_id VARCHAR(50) NOT NULL DEFAULT 'admin',
+  admin_id VARCHAR(50) NOT NULL DEFAULT 'ouscaravan',
   type VARCHAR(50) NOT NULL CHECK (type IN (
     'checkin',
     'checkout',
@@ -40,7 +40,7 @@ CREATE INDEX IF NOT EXISTS idx_notifications_admin_read ON notifications(admin_i
 -- 2. notification_settings 테이블
 CREATE TABLE IF NOT EXISTS notification_settings (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  admin_id VARCHAR(50) NOT NULL UNIQUE DEFAULT 'admin',
+  admin_id VARCHAR(50) NOT NULL UNIQUE DEFAULT 'ouscaravan',
   
   -- 알림 타입별 수신 여부
   checkin_enabled BOOLEAN NOT NULL DEFAULT TRUE,
@@ -62,7 +62,7 @@ CREATE TABLE IF NOT EXISTS notification_settings (
 
 -- 기본 설정 데이터 삽입
 INSERT INTO notification_settings (admin_id) 
-VALUES ('admin')
+VALUES ('ouscaravan')
 ON CONFLICT (admin_id) DO NOTHING;
 
 -- updated_at 자동 업데이트 트리거
