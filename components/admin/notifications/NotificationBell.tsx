@@ -6,13 +6,34 @@ import { Button } from '@/components/ui/button';
 import { useNotificationStore } from '@/lib/store/notifications';
 import { NotificationDropdown } from './NotificationDropdown';
 import { useNotificationStream } from '@/lib/hooks/useNotificationStream';
+import { getNotifications } from '@/lib/api';
 
 export function NotificationBell() {
   const [isOpen, setIsOpen] = useState(false);
-  const { unreadCount } = useNotificationStore();
+  const { unreadCount, setNotifications, updateUnreadCount } = useNotificationStore();
   
   // SSE 연결
   useNotificationStream();
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadNotifications = async () => {
+      try {
+        const response = await getNotifications({ limit: 10 });
+        if (cancelled) return;
+        setNotifications(response.notifications);
+        updateUnreadCount(response.unreadCount);
+      } catch (error) {
+        console.error('Failed to load notifications:', error);
+      }
+    };
+
+    loadNotifications();
+    return () => {
+      cancelled = true;
+    };
+  }, [setNotifications, updateUnreadCount]);
 
   return (
     <div className="relative">
