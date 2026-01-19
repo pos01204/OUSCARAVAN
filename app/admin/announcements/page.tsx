@@ -23,7 +23,6 @@ import {
   updateAnnouncement,
   type Announcement,
   type AnnouncementLevel,
-  type AnnouncementStatus,
 } from '@/lib/api';
 import { logError } from '@/lib/logger';
 import { Loader2, RefreshCw, Edit, Trash2, EyeOff, Eye, Copy } from 'lucide-react';
@@ -36,14 +35,6 @@ interface AnnouncementFormState {
   endsAt: string;
   isActive: boolean;
 }
-
-const STATUS_OPTIONS: Array<{ value: AnnouncementStatus; label: string }> = [
-  { value: 'all', label: '전체' },
-  { value: 'active', label: '진행중' },
-  { value: 'scheduled', label: '예약' },
-  { value: 'expired', label: '종료' },
-  { value: 'inactive', label: '비활성' },
-];
 
 const LEVEL_OPTIONS: Array<{ value: AnnouncementLevel; label: string }> = [
   { value: 'info', label: '일반' },
@@ -134,11 +125,6 @@ export default function AnnouncementsPage() {
   const { toast } = useToast();
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [filters, setFilters] = useState<{ status: AnnouncementStatus; level?: AnnouncementLevel; search: string }>({
-    status: 'all',
-    level: undefined,
-    search: '',
-  });
   const [form, setForm] = useState<AnnouncementFormState>({ ...defaultFormState });
   const [editing, setEditing] = useState<Announcement | null>(null);
   const [editForm, setEditForm] = useState<AnnouncementFormState>({ ...defaultFormState });
@@ -148,16 +134,13 @@ export default function AnnouncementsPage() {
     try {
       setIsLoading(true);
       const data = await getAdminAnnouncements({
-        status: filters.status,
-        level: filters.level,
-        search: filters.search || undefined,
+        status: 'active',
         limit: 50,
       });
       setAnnouncements(data.announcements || []);
     } catch (error) {
       logError('Failed to fetch announcements', error, {
         component: 'AnnouncementsPage',
-        filters,
       });
       toast({
         title: '오류',
@@ -172,7 +155,7 @@ export default function AnnouncementsPage() {
   useEffect(() => {
     fetchAnnouncements();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filters]);
+  }, []);
 
   const handleCreate = async () => {
     if (!form.title.trim() || !form.content.trim()) {
@@ -462,62 +445,9 @@ export default function AnnouncementsPage() {
       <Card>
         <CardHeader>
           <CardTitle>공지 목록</CardTitle>
-          <CardDescription>현재 등록된 공지를 필터링해서 확인하세요.</CardDescription>
+          <CardDescription>현재 진행 중인 공지 사항입니다.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid gap-3 md:grid-cols-3">
-            <div className="space-y-2">
-              <Label>상태</Label>
-              <Select
-                value={filters.status}
-                onValueChange={(value: AnnouncementStatus) =>
-                  setFilters((prev) => ({ ...prev, status: value }))
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="상태 선택" />
-                </SelectTrigger>
-                <SelectContent>
-                  {STATUS_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label>중요도</Label>
-              <Select
-                value={filters.level || 'all'}
-                onValueChange={(value: string) =>
-                  setFilters((prev) => ({ ...prev, level: value === 'all' ? undefined : (value as AnnouncementLevel) }))
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="중요도 선택" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">전체</SelectItem>
-                  {LEVEL_OPTIONS.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="announcement-search">검색</Label>
-              <Input
-                id="announcement-search"
-                placeholder="제목/내용 검색"
-                value={filters.search}
-                onChange={(event) => setFilters((prev) => ({ ...prev, search: event.target.value }))}
-              />
-            </div>
-          </div>
-
           <div className="text-sm text-muted-foreground">총 {filteredCountLabel}</div>
 
           {isLoading ? (

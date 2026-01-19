@@ -126,38 +126,40 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
 
       {/* BBQ 가이드 캐러셀 토글 */}
       {bbqGuide && (
-        <Card className="border-primary/30 bg-primary/5">
-          <CardContent className="p-4">
-            {/* BBQ 미니 요약 (진입 전 기대치/준비물 안내) */}
-            <div className="mb-3 rounded-lg border border-primary/20 bg-background/60 p-3">
-              <div className="flex items-center justify-between gap-3">
-                <div className="min-w-0">
-                  <p className="text-sm font-bold">불멍/바베큐 시작 전</p>
-                  <p className="mt-1 text-xs text-muted-foreground">
-                    준비 시간과 준비물을 먼저 확인하면 더 빠르게 진행할 수 있어요.
-                  </p>
+        <div id="guide-bbq" className="scroll-mt-24">
+          <Card className="border-primary/30 bg-primary/5">
+            <CardContent className="p-4">
+              {/* BBQ 미니 요약 (진입 전 기대치/준비물 안내) */}
+              <div className="mb-3 rounded-lg border border-primary/20 bg-background/60 p-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-sm font-bold">불멍/바베큐 시작 전</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      준비 시간과 준비물을 먼저 확인하면 더 빠르게 진행할 수 있어요.
+                    </p>
+                  </div>
+                  <Badge variant="outline" className="shrink-0">
+                    약 5분
+                  </Badge>
                 </div>
-                <Badge variant="outline" className="shrink-0">
-                  약 5분
-                </Badge>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <Badge variant="secondary" className="text-xs">집게/가위</Badge>
+                  <Badge variant="secondary" className="text-xs">장갑</Badge>
+                  <Badge variant="secondary" className="text-xs">고기/식재료</Badge>
+                  <Badge variant="secondary" className="text-xs">물티슈(추천)</Badge>
+                </div>
               </div>
-              <div className="mt-3 flex flex-wrap gap-2">
-                <Badge variant="secondary" className="text-xs">집게/가위</Badge>
-                <Badge variant="secondary" className="text-xs">장갑</Badge>
-                <Badge variant="secondary" className="text-xs">고기/식재료</Badge>
-                <Badge variant="secondary" className="text-xs">물티슈(추천)</Badge>
-              </div>
-            </div>
-            <Button
-              onClick={() => setShowBBQCarousel(!showBBQCarousel)}
-              variant="default"
-              className="w-full h-12 text-base font-semibold"
-              aria-label="BBQ 가이드 캐러셀 열기/닫기"
-            >
-              {showBBQCarousel ? '일반 안내 보기' : '🔥 불멍/바베큐 가이드 보기'}
-            </Button>
-          </CardContent>
-        </Card>
+              <Button
+                onClick={() => setShowBBQCarousel(!showBBQCarousel)}
+                variant="default"
+                className="w-full h-12 text-base font-semibold"
+                aria-label="BBQ 가이드 캐러셀 열기/닫기"
+              >
+                {showBBQCarousel ? '일반 안내 보기' : '🔥 불멍/바베큐 가이드 보기'}
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       )}
 
       {showBBQCarousel ? (
@@ -175,6 +177,9 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
           ) : (
             <div className="space-y-4">
               {filteredGuideData.map((item) => {
+                // 불멍/바베큐 가이드는 상단 고정 섹션(캐러셀 진입)으로 제공하므로
+                // 목록에서는 중복 노출을 방지하기 위해 숨깁니다.
+                if (item.id === 'bbq') return null;
                 return (
                   <div key={item.id} id={`guide-${item.id}`}>
                     {/* 가이드 카드 */}
