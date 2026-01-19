@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { useGuestStore } from '@/lib/store';
 import { WifiCard } from '@/components/features/WifiCard';
@@ -23,9 +23,10 @@ import { GUEST_BRAND_MEDIA } from '@/lib/brand';
 import { QuickActionGrid } from '@/components/guest/QuickActionGrid';
 import { InfoInspector } from '@/components/guest/InfoInspector';
 import { Button } from '@/components/ui/button';
-import { useState } from 'react';
 import { RecentOrdersSummary } from '@/components/guest/RecentOrdersSummary';
 import { SunsetWidget } from '@/components/features/SunsetWidget';
+import { GuestAnnouncements } from '@/components/guest/GuestAnnouncements';
+import { useGuestAnnouncements } from '@/lib/hooks/useGuestAnnouncements';
 
 interface GuestHomeContentProps {
   reservation: Reservation;
@@ -36,6 +37,8 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
   const { setGuestInfo, isCheckedIn, isCheckedOut } = useGuestStore();
   const [openReservationDetail, setOpenReservationDetail] = useState(false);
   const [openExtraInfo, setOpenExtraInfo] = useState(false);
+  const { announcements, loading: announcementsLoading, error: announcementsError } =
+    useGuestAnnouncements(token);
 
   useEffect(() => {
     // Railway API에서 가져온 예약 정보로 게스트 정보 설정
@@ -81,6 +84,12 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
         </h1>
         {/* 호수 정보는 고객에게 노출하지 않음 (관리자 편의용) */}
       </motion.section>
+
+      <GuestAnnouncements
+        announcements={announcements}
+        loading={announcementsLoading}
+        error={announcementsError}
+      />
 
       {/* Quick Actions (1차 행동) */}
       <QuickActionGrid token={token} />

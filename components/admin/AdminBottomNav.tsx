@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Calendar, Home, ShoppingCart, LayoutDashboard } from 'lucide-react';
+import { Calendar, Home, ShoppingCart, LayoutDashboard, Megaphone } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNotificationStore } from '@/lib/store/notifications';
 import { Badge } from '@/components/ui/badge';
@@ -12,6 +12,7 @@ const navItems = [
   { href: '/admin/reservations', label: '예약/배정', icon: Calendar }, // Management
   { href: '/admin/rooms', label: '현장관리', icon: LayoutDashboard }, // Live Board
   { href: '/admin/orders', label: '주문히스토리', icon: ShoppingCart }, // History
+  { href: '/admin/announcements', label: '공지', icon: Megaphone },
 ];
 
 export function AdminBottomNav() {

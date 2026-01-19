@@ -37,6 +37,12 @@ import {
   updateSettings,
   getStats as getNotificationStats,
 } from '../controllers/notifications.controller';
+import {
+  listAnnouncements,
+  createAnnouncementHandler,
+  updateAnnouncementHandler,
+  deleteAnnouncementHandler,
+} from '../controllers/announcements.controller';
 import { setupNotificationSSE } from '../services/notifications-sse.service';
 
 const router = express.Router();
@@ -82,5 +88,11 @@ router.patch('/notifications/read-all', markAllAsRead);
 router.delete('/notifications/:id', deleteNotificationHandler);
 router.get('/notifications/settings', getSettings);
 router.patch('/notifications/settings', updateSettings);
+
+// 공지 관리
+router.get('/announcements', listAnnouncements);
+router.post('/announcements', createAnnouncementHandler);
+router.patch('/announcements/:id', updateAnnouncementHandler);
+router.delete('/announcements/:id', deleteAnnouncementHandler);
 
 export default router;

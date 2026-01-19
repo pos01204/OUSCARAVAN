@@ -102,6 +102,41 @@ END $$;
 `;
 
 /**
+ * 공지 시스템 테이블 추가 마이그레이션
+ */
+const migration007AddAnnouncements = `
+-- 공지 테이블 생성
+CREATE TABLE IF NOT EXISTS announcements (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  admin_id VARCHAR(50) NOT NULL DEFAULT 'admin',
+  title VARCHAR(255) NOT NULL,
+  content TEXT NOT NULL,
+  level VARCHAR(20) NOT NULL DEFAULT 'info' CHECK (level IN ('info', 'warning', 'critical')),
+  starts_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  ends_at TIMESTAMP,
+  is_active BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 인덱스 생성
+CREATE INDEX IF NOT EXISTS idx_announcements_admin_id ON announcements(admin_id);
+CREATE INDEX IF NOT EXISTS idx_announcements_level ON announcements(level);
+CREATE INDEX IF NOT EXISTS idx_announcements_is_active ON announcements(is_active);
+CREATE INDEX IF NOT EXISTS idx_announcements_starts_at ON announcements(starts_at);
+CREATE INDEX IF NOT EXISTS idx_announcements_ends_at ON announcements(ends_at);
+
+-- updated_at 자동 업데이트 트리거
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'update_announcements_updated_at') THEN
+    CREATE TRIGGER update_announcements_updated_at BEFORE UPDATE ON announcements
+      FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+  END IF;
+END $$;
+`;
+
+/**
  * 기본 10개 방 데이터 삽입 마이그레이션
  */
 const migration002DefaultRooms = `
@@ -191,6 +226,9 @@ export async function runMigrations(): Promise<void> {
     
     // 알림 시스템 테이블 추가 마이그레이션 실행
     await runMigration('005_add_notifications', migration005AddNotifications);
+
+    // 공지 테이블 추가 마이그레이션 실행
+    await runMigration('007_add_announcements', migration007AddAnnouncements);
     
     // 방 이름을 1호~10호로 변경하는 마이그레이션 실행
     // 마이그레이션 SQL을 직접 포함 (파일 읽기 대신)

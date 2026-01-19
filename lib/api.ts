@@ -5,7 +5,20 @@
 import { API_CONFIG, N8N_CONFIG } from './constants';
 import { extractUserFriendlyMessage } from './error-messages';
 import { getToken, clearToken, getAuthHeader } from './auth-client';
-import type { ApiErrorCode, ApiErrorResponse, Notification, NotificationType, NotificationPriority, NotificationsResponse, NotificationSettings, NotificationStats } from '@/types';
+import type {
+  ApiErrorCode,
+  ApiErrorResponse,
+  Notification,
+  NotificationType,
+  NotificationPriority,
+  NotificationsResponse,
+  NotificationSettings,
+  NotificationStats,
+  Announcement,
+  AnnouncementLevel,
+  AnnouncementStatus,
+  AnnouncementsResponse,
+} from '@/types';
 import { ApiError } from '@/types';
 
 const API_URL = API_CONFIG.baseUrl;
@@ -784,6 +797,163 @@ export async function getNotificationStats(): Promise<NotificationStats> {
 }
 
 /**
+ * 공지 API 함수들
+ */
+export async function getAdminAnnouncements(params?: {
+  status?: AnnouncementStatus;
+  level?: AnnouncementLevel;
+  search?: string;
+  page?: number;
+  limit?: number;
+}): Promise<AnnouncementsResponse> {
+  const queryParams = new URLSearchParams();
+  if (params?.status && params.status !== 'all') {
+    queryParams.append('status', params.status);
+  }
+  if (params?.level) {
+    queryParams.append('level', params.level);
+  }
+  if (params?.search) {
+    queryParams.append('search', params.search);
+  }
+  if (params?.page) {
+    queryParams.append('page', params.page.toString());
+  }
+  if (params?.limit) {
+    queryParams.append('limit', params.limit.toString());
+  }
+
+  const queryString = queryParams.toString();
+  const url = `/api/admin/announcements${queryString ? `?${queryString}` : ''}`;
+
+  try {
+    const response = await fetchWithRetry(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new ApiError('로그인이 필요합니다. 다시 로그인해주세요.', 'UNAUTHORIZED', 401);
+      }
+      const errorData: ApiErrorResponse = await response.json().catch(() => ({}));
+      throw new ApiError(
+        errorData.error || '공지를 불러오는데 실패했습니다.',
+        errorData.code,
+        response.status
+      );
+    }
+
+    return response.json() as Promise<AnnouncementsResponse>;
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    const userFriendlyMessage = extractUserFriendlyMessage(error);
+    throw new ApiError(userFriendlyMessage, 'NETWORK_ERROR', 0);
+  }
+}
+
+export async function createAnnouncement(data: {
+  title: string;
+  content: string;
+  level?: AnnouncementLevel;
+  startsAt?: string;
+  endsAt?: string | null;
+  isActive?: boolean;
+}): Promise<Announcement> {
+  const response = await fetchWithRetry('/api/admin/announcements', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new ApiError('로그인이 필요합니다. 다시 로그인해주세요.', 'UNAUTHORIZED', 401);
+    }
+    const errorData: ApiErrorResponse = await response.json().catch(() => ({}));
+    throw new ApiError(
+      errorData.error || '공지를 생성하지 못했습니다.',
+      errorData.code,
+      response.status
+    );
+  }
+
+  return response.json() as Promise<Announcement>;
+}
+
+export async function updateAnnouncement(
+  id: string,
+  data: {
+    title?: string;
+    content?: string;
+    level?: AnnouncementLevel;
+    startsAt?: string;
+    endsAt?: string | null;
+    isActive?: boolean;
+  }
+): Promise<Announcement> {
+  const response = await fetchWithRetry(`/api/admin/announcements/${id}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new ApiError('로그인이 필요합니다. 다시 로그인해주세요.', 'UNAUTHORIZED', 401);
+    }
+    const errorData: ApiErrorResponse = await response.json().catch(() => ({}));
+    throw new ApiError(
+      errorData.error || '공지를 수정하지 못했습니다.',
+      errorData.code,
+      response.status
+    );
+  }
+
+  return response.json() as Promise<Announcement>;
+}
+
+export async function deleteAnnouncement(id: string): Promise<{ success: boolean }> {
+  const response = await fetchWithRetry(`/api/admin/announcements/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new ApiError('로그인이 필요합니다. 다시 로그인해주세요.', 'UNAUTHORIZED', 401);
+    }
+    const errorData: ApiErrorResponse = await response.json().catch(() => ({}));
+    throw new ApiError(
+      errorData.error || '공지를 삭제하지 못했습니다.',
+      errorData.code,
+      response.status
+    );
+  }
+
+  return response.json() as Promise<{ success: boolean }>;
+}
+
+export async function getGuestAnnouncements(token: string): Promise<Announcement[]> {
+  const response = await guestApi(token, '/announcements');
+  return response.announcements as Announcement[];
+}
+
+/**
  * 타입 정의는 types/index.ts에서 import
  */
 import type {
@@ -817,6 +987,10 @@ export type {
   NotificationsResponse,
   NotificationSettings,
   NotificationStats,
+  Announcement,
+  AnnouncementLevel,
+  AnnouncementStatus,
+  AnnouncementsResponse,
   ApiErrorResponse,
   ApiError,
   ApiErrorCode,

@@ -51,6 +51,13 @@ export default async function AdminLayout({
                 >
                   주문 관리
                 </Link>
+                <Link
+                  href="/admin/announcements"
+                  className="text-sm font-medium text-muted-foreground transition-colors hover:text-foreground"
+                  aria-label="고객 공지 관리로 이동"
+                >
+                  공지
+                </Link>
               </div>
               {/* 모바일 네비게이션 (햄버거 메뉴 제거, 바텀 네비게이션으로 대체) */}
               <div className="md:hidden"></div>
