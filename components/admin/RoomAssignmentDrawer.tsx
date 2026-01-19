@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { Drawer, DrawerContent, DrawerHeader, DrawerTitle, DrawerFooter } from '@/components/ui/drawer';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -45,14 +45,7 @@ export function RoomAssignmentDrawer({
         }
     }, [reservation]);
 
-    // Fetch rooms when drawer opens
-    useEffect(() => {
-        if (isOpen) {
-            fetchRooms();
-        }
-    }, [isOpen]);
-
-    const fetchRooms = async () => {
+    const fetchRooms = useCallback(async () => {
         try {
             setIsLoadingRooms(true);
             const data = await getRooms();
@@ -67,7 +60,14 @@ export function RoomAssignmentDrawer({
         } finally {
             setIsLoadingRooms(false);
         }
-    };
+    }, [toast]);
+
+    // Fetch rooms when drawer opens
+    useEffect(() => {
+        if (isOpen) {
+            fetchRooms();
+        }
+    }, [isOpen, fetchRooms]);
 
     const handleSave = async () => {
         if (!reservation) return;

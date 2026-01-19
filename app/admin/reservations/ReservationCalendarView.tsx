@@ -90,7 +90,7 @@ export function ReservationCalendarView({
       window.addEventListener('resize', handleResize);
       return () => window.removeEventListener('resize', handleResize);
     }
-  }, []);
+  }, [setCalendarViewType]);
 
   // Phase 3: 스와이프 제스처로 모달 닫기
   const swipeHandlers = useSwipe({
@@ -280,7 +280,7 @@ export function ReservationCalendarView({
     });
 
     return events;
-  }, [reservations, reservationsByDate]);
+  }, [reservations]);
 
 
   // 이벤트 스타일 커스터마이징 (바 형태)
@@ -583,7 +583,7 @@ export function ReservationCalendarView({
         isExpanded,
       };
     }).filter(dayObj => dayObj.reservations.length > 0 || expandedDates.has(format(dayObj.date, 'yyyy-MM-dd')));
-  }, [viewType, currentDate, getReservationsForDate, expandedDates]);
+  }, [viewType, currentDate, getReservationsForDate, expandedDates, calendarViewType]);
 
   return (
     <>

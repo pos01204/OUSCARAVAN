@@ -59,12 +59,10 @@ export function GuideFAQ({ faqs, searchable = false }: GuideFAQProps) {
               {filteredFaqs.map((faq) => {
                 const isOpen = openFaqId === faq.id;
                 return (
-                  <div
-                    key={faq.id}
-                    className="border rounded-lg overflow-hidden transition-all"
-                    role="region"
-                    aria-expanded={isOpen}
-                  >
+                <div
+                  key={faq.id}
+                  className="border rounded-lg overflow-hidden transition-all"
+                >
                     <button
                       onClick={() => toggleFaq(faq.id)}
                       className="w-full px-4 py-3 text-left flex items-center justify-between hover:bg-muted/50 transition-colors"

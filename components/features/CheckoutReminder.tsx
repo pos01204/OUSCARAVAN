@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Bell, X, CheckCircle2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,7 @@ export function CheckoutReminder() {
   const [dismissed, setDismissed] = useState(false);
   const [serviceWorkerReady, setServiceWorkerReady] = useState(false);
   const [alarmId, setAlarmId] = useState<string | null>(null);
+  const alarmIdRef = useRef<string | null>(null);
 
   useEffect(() => {
     // 체크인되어 있고 체크아웃하지 않은 경우에만 알람 설정
@@ -71,6 +72,7 @@ export function CheckoutReminder() {
         );
 
         setAlarmId(id);
+        alarmIdRef.current = id;
         setAlarmScheduled(true);
         
         console.log(`[CheckoutReminder] 알람 설정 완료: ${reminderTime.toLocaleString()}`);
@@ -83,8 +85,8 @@ export function CheckoutReminder() {
 
     // 컴포넌트 언마운트 시 알람 취소
     return () => {
-      if (alarmId) {
-        alarmService.cancelAlarm(alarmId).catch(console.error);
+      if (alarmIdRef.current) {
+        alarmService.cancelAlarm(alarmIdRef.current).catch(console.error);
       }
     };
   }, [isCheckedIn, isCheckedOut, dismissed]);

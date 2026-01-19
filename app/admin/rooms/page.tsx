@@ -65,7 +65,7 @@ export default function RoomsPage() {
     } finally {
       setCompletingOrderId(null);
     }
-  }, [toast]);
+  }, [toast, fetchOrdersForRooms]);
 
   // 각 방의 주문 목록 조회
   const fetchOrdersForRooms = useCallback(async () => {
@@ -106,7 +106,7 @@ export default function RoomsPage() {
     }
   }, []);
 
-  const fetchRooms = async () => {
+  const fetchRooms = useCallback(async () => {
     try {
       setIsLoading(true);
       const data = await getRooms();
@@ -148,13 +148,12 @@ export default function RoomsPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [fetchOrdersForRooms, toast]);
 
   // 방 목록 조회
   useEffect(() => {
     fetchRooms();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchRooms]);
 
   // 주문 목록 주기적 새로고침 (30초마다)
   useEffect(() => {
