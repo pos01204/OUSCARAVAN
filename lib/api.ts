@@ -4,6 +4,7 @@
 
 import { API_CONFIG, N8N_CONFIG } from './constants';
 import { extractUserFriendlyMessage } from './error-messages';
+import { getToken, clearToken, getAuthHeader } from './auth-client';
 import type { ApiErrorCode, ApiErrorResponse, Notification, NotificationType, NotificationPriority, NotificationsResponse, NotificationSettings, NotificationStats } from '@/types';
 import { ApiError } from '@/types';
 
@@ -141,22 +142,50 @@ async function fetchWithRetry(
 }
 
 /**
- * 관리자 API 호출
+ * 인증이 필요한 API 호출 (웹뷰 호환)
+ * Authorization 헤더로 토큰 전송 + credentials: include로 쿠키 폴백
+ */
+export async function authenticatedFetch(
+  url: string,
+  options: RequestInit = {}
+): Promise<Response> {
+  const authHeader = getAuthHeader();
+  
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+    ...authHeader,
+    ...options.headers,
+  };
+  
+  const response = await fetchWithRetry(url, {
+    ...options,
+    headers,
+    credentials: 'include', // 쿠키도 함께 전송 (폴백용)
+  });
+  
+  // 401 에러 시 토큰 클리어 및 리다이렉트
+  if (response.status === 401) {
+    clearToken();
+    if (typeof window !== 'undefined') {
+      window.location.href = '/login?error=session_expired';
+    }
+    throw new ApiError('Session expired', 'UNAUTHORIZED', 401);
+  }
+  
+  return response;
+}
+
+/**
+ * 관리자 API 호출 (하이브리드 인증)
+ * - Authorization 헤더로 토큰 전송 (웹뷰 호환)
+ * - credentials: include로 쿠키 폴백 (일반 브라우저)
  */
 export async function adminApi(
   endpoint: string,
   options: RequestInit = {}
 ) {
-  // 인증 체크 제거 - 모든 사용자가 접근 가능
-  
   try {
-    const response = await fetchWithRetry(`${API_URL}${endpoint}`, {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
-    });
+    const response = await authenticatedFetch(`${API_URL}${endpoint}`, options);
     
     if (!response.ok) {
       // 에러 응답 파싱 시도
@@ -185,6 +214,10 @@ export async function adminApi(
     
     return response.json();
   } catch (error) {
+    // 이미 ApiError인 경우 그대로 throw
+    if (error instanceof ApiError) {
+      throw error;
+    }
     // 사용자 친화적인 에러 메시지로 변환
     const userFriendlyMessage = extractUserFriendlyMessage(error);
     throw new Error(userFriendlyMessage);
