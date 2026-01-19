@@ -16,6 +16,12 @@ export function AdminNotificationSetup() {
   const [dismissed, setDismissed] = useState(false);
 
   useEffect(() => {
+    // 인앱(WebView) 등 Notification 미지원 환경에서는 초기화 자체를 하지 않음(크래시/불필요 동작 방지)
+    if (typeof window === 'undefined' || !('Notification' in window)) {
+      setDismissed(true);
+      return;
+    }
+
     // Service Worker 초기화
     const initServiceWorker = async () => {
       const ready = await adminNotificationService.initialize();
