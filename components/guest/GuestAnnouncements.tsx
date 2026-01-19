@@ -201,7 +201,7 @@ export function GuestAnnouncements({ announcements, loading, error }: GuestAnnou
         }}
         title={selected?.title || '공지 상세'}
         description={selected ? formatDateTimeToKorean(selected.startsAt) : undefined}
-        className="max-w-lg"
+        contentClassName="max-w-lg"
       >
         {selected && (
           <div className="space-y-3 text-sm text-muted-foreground">
