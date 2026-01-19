@@ -3,7 +3,7 @@ import type { NextRequest } from 'next/server';
 
 /**
  * Next.js Route Handler에서 관리자 토큰을 추출합니다.
- * 우선순위: Authorization 헤더(Bearer) → 쿠키(admin-token)
+ * 우선순위: Authorization 헤더(Bearer) → 쿼리(token, SSE용) → 쿠키(admin-token)
  */
 export function getAdminTokenFromRequest(request?: NextRequest): string | null {
   try {
@@ -11,6 +11,13 @@ export function getAdminTokenFromRequest(request?: NextRequest): string | null {
     if (header && header.startsWith('Bearer ')) {
       return header.substring('Bearer '.length);
     }
+  } catch {
+    // ignore
+  }
+
+  try {
+    const tokenFromQuery = request?.nextUrl?.searchParams?.get('token');
+    if (tokenFromQuery) return tokenFromQuery;
   } catch {
     // ignore
   }

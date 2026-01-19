@@ -1,6 +1,8 @@
-import { Suspense } from 'react';
-import { getReservationsServer } from '@/lib/admin-api-server';
-import { type Reservation } from '@/lib/api';
+'use client';
+
+import { useEffect, useMemo, useState, Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import { getReservations, type Reservation } from '@/lib/api';
 import { logError } from '@/lib/logger';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -8,61 +10,6 @@ import { ReservationFiltersClient } from './ReservationFiltersClient';
 import { ReservationsViewClient } from './ReservationsViewClient';
 import { formatDateToISO } from '@/lib/utils/date';
 
-// 예약 데이터 조회 컴포넌트 (서버 컴포넌트)
-async function ReservationsData({
-  status,
-  checkin,
-  checkout,
-  search,
-}: {
-  status?: string;
-  checkin?: string;
-  checkout?: string;
-  search?: string;
-}) {
-  // Railway 백엔드 API에서 예약 목록 조회
-  // 캘린더 뷰에서는 필터 없이 모든 예약을 가져와야 함
-  // (필터는 리스트 뷰에서만 적용)
-  let reservations: Reservation[] = [];
-  let total = 0;
-
-  try {
-    // 캘린더를 위해 필터 없이 모든 예약 조회 (limit을 크게 설정)
-    const data = await getReservationsServer({
-      status: status && status !== 'all' ? status : undefined,
-      // checkin, checkout 필터는 리스트 뷰에서만 사용
-      // 캘린더는 모든 예약을 표시해야 하므로 필터 제거
-      search,
-      limit: 1000, // 충분히 큰 값으로 설정하여 모든 예약 가져오기
-    });
-    reservations = data.reservations || [];
-    total = data.total || 0;
-
-    console.log('[ReservationsData] Fetched reservations:', {
-      count: reservations.length,
-      total,
-      filters: { status, checkin, checkout, search },
-    });
-  } catch (error) {
-    logError('Failed to fetch reservations', error, {
-      component: 'ReservationsData',
-      filters: { status, checkin, checkout, search },
-    });
-  }
-
-  return (
-    <ReservationsViewClient
-      reservations={reservations}
-      total={total}
-      search={search}
-      status={status}
-      checkin={checkin}
-      checkout={checkout}
-    />
-  );
-}
-
-// 로딩 스켈레톤
 function ReservationsSkeleton() {
   return (
     <div className="space-y-4">
@@ -85,40 +32,88 @@ function ReservationsSkeleton() {
   );
 }
 
-// 메인 페이지 컴포넌트
-export default async function ReservationsPage({
-  searchParams,
-}: {
-  searchParams?: {
-    status?: string;
-    checkin?: string;
-    checkout?: string;
-    search?: string;
-    filter?: string;
-    view?: string;
-  };
-}) {
-  let status = searchParams?.status;
-  let checkin = searchParams?.checkin;
-  let checkout = searchParams?.checkout;
-  let search = searchParams?.search;
-  const filter = searchParams?.filter;
-  const view = searchParams?.view;
+function ReservationsPageContent() {
+  const searchParams = useSearchParams();
 
-  // ⚠️ 중요: searchParams 감지하여 자동 필터 적용 (딥 링크)
-  if (filter === 'd1-unassigned') {
-    // 내일 날짜 계산
+  const filter = searchParams.get('filter') || undefined;
+  const view = searchParams.get('view') || undefined;
+  const statusParam = searchParams.get('status') || undefined;
+  const search = searchParams.get('search') || undefined;
+  const checkinParam = searchParams.get('checkin') || undefined;
+  const checkout = searchParams.get('checkout') || undefined;
+
+  const effectiveCheckin = useMemo(() => {
+    if (filter !== 'd1-unassigned') return checkinParam;
     const tomorrow = new Date();
     tomorrow.setDate(tomorrow.getDate() + 1);
-    const tomorrowStr = formatDateToISO(tomorrow);
+    return formatDateToISO(tomorrow) || checkinParam;
+  }, [filter, checkinParam]);
 
-    if (tomorrowStr) {
-      // 즉시 필터 적용
-      checkin = tomorrowStr;
-      // 미배정 필터는 클라이언트 컴포넌트에서 처리
-      status = 'all'; // 상태 필터는 모두 표시하되, 미배정만 필터링
+  const effectiveStatus = useMemo(() => {
+    // d1-unassigned는 상태 전체를 대상으로 필터링하므로 all 유지
+    return filter === 'd1-unassigned' ? 'all' : statusParam;
+  }, [filter, statusParam]);
+
+  const [reservations, setReservations] = useState<Reservation[]>([]);
+  const [total, setTotal] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    async function load() {
+      try {
+        setIsLoading(true);
+        const data = await getReservations({
+          status: effectiveStatus && effectiveStatus !== 'all' ? effectiveStatus : undefined,
+          // 캘린더는 전체를 보기 위해 limit 크게
+          search: search || undefined,
+          limit: 1000,
+        });
+        if (!cancelled) {
+          setReservations(data.reservations || []);
+          setTotal(data.total || 0);
+        }
+      } catch (error) {
+        logError('Failed to fetch reservations (client)', error, {
+          component: 'ReservationsPage',
+          filters: { effectiveStatus, effectiveCheckin, checkout, search },
+        });
+      } finally {
+        if (!cancelled) setIsLoading(false);
+      }
     }
-  }
+    load();
+    return () => {
+      cancelled = true;
+    };
+  }, [effectiveStatus, effectiveCheckin, checkout, search]);
+
+  if (isLoading) return <ReservationsSkeleton />;
+
+  return (
+    <ReservationsViewClient
+      reservations={reservations}
+      total={total}
+      search={search || undefined}
+      status={effectiveStatus}
+      checkin={effectiveCheckin}
+      checkout={checkout}
+    />
+  );
+}
+
+export default function ReservationsPage() {
+  const searchParams = useSearchParams();
+  const filter = searchParams.get('filter') || undefined;
+  const view = searchParams.get('view') || undefined;
+  const checkinParam = searchParams.get('checkin') || undefined;
+
+  const effectiveCheckin = useMemo(() => {
+    if (filter !== 'd1-unassigned') return checkinParam;
+    const tomorrow = new Date();
+    tomorrow.setDate(tomorrow.getDate() + 1);
+    return formatDateToISO(tomorrow) || checkinParam;
+  }, [filter, checkinParam]);
 
   return (
     <div className="space-y-4 md:space-y-6 pb-0 -mb-4 md:mb-0">
@@ -130,16 +125,11 @@ export default async function ReservationsPage({
       <ReservationFiltersClient
         initialFilter={filter}
         initialView={view}
-        initialCheckin={checkin}
+        initialCheckin={effectiveCheckin}
       />
 
       <Suspense fallback={<ReservationsSkeleton />}>
-        <ReservationsData
-          status={status}
-          checkin={checkin}
-          checkout={checkout}
-          search={search}
-        />
+        <ReservationsPageContent />
       </Suspense>
     </div>
   );

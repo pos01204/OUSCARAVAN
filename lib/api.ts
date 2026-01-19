@@ -394,9 +394,8 @@ export async function getReservations(params?: {
  * 예약 상세 조회 (클라이언트 사이드 - Next.js API 라우트 사용)
  */
 export async function getReservation(id: string): Promise<Reservation> {
-  const response = await fetch(`/api/admin/reservations/${id}`, {
+  const response = await authenticatedFetch(`/api/admin/reservations/${id}`, {
     method: 'GET',
-    credentials: 'include', // 쿠키 포함
   });
 
   if (!response.ok) {
@@ -428,12 +427,8 @@ export async function updateReservation(
     status?: Reservation['status'];
   }
 ): Promise<Reservation> {
-  const response = await fetch(`/api/admin/reservations/${id}`, {
+  const response = await authenticatedFetch(`/api/admin/reservations/${id}`, {
     method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include', // 쿠키 포함
     body: JSON.stringify(data),
   });
 
@@ -459,10 +454,8 @@ export async function updateReservation(
  * 배정 정보 포함
  */
 export async function getRooms(): Promise<(Room & { reservation?: { id: string; guestName: string; checkin: string; checkout: string; status: string; } | null })[]> {
-  // Next.js API 라우트를 통해 호출 (서버에서 쿠키 읽기)
-  const response = await fetch('/api/admin/rooms', {
+  const response = await authenticatedFetch('/api/admin/rooms', {
     method: 'GET',
-    credentials: 'include', // 쿠키 포함
   });
 
   if (!response.ok) {
@@ -494,12 +487,8 @@ export async function createRoom(data: {
   status: Room['status'];
   description?: string;
 }): Promise<Room> {
-  const response = await fetch('/api/admin/rooms', {
+  const response = await authenticatedFetch('/api/admin/rooms', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include', // 쿠키 포함
     body: JSON.stringify(data),
   });
 
@@ -533,12 +522,8 @@ export async function updateRoom(
     description?: string;
   }
 ): Promise<Room> {
-  const response = await fetch(`/api/admin/rooms/${id}`, {
+  const response = await authenticatedFetch(`/api/admin/rooms/${id}`, {
     method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include', // 쿠키 포함
     body: JSON.stringify(data),
   });
 
@@ -563,9 +548,8 @@ export async function updateRoom(
  * 방 삭제 (클라이언트 사이드 - Next.js API 라우트 사용)
  */
 export async function deleteRoom(id: string): Promise<void> {
-  const response = await fetch(`/api/admin/rooms/${id}`, {
+  const response = await authenticatedFetch(`/api/admin/rooms/${id}`, {
     method: 'DELETE',
-    credentials: 'include', // 쿠키 포함
   });
 
   if (!response.ok) {
@@ -613,12 +597,8 @@ export async function getAdminOrders(params?: {
   const queryString = queryParams.toString();
   const endpoint = `/api/admin/orders${queryString ? `?${queryString}` : ''}`;
   
-  const response = await fetch(endpoint, { // Next.js API 라우트 사용
+  const response = await authenticatedFetch(endpoint, {
     method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include', // 쿠키 포함
   });
 
   if (!response.ok) {
@@ -645,12 +625,8 @@ export async function updateOrderStatus(
   id: string,
   status: Order['status']
 ): Promise<Order> {
-  const response = await fetch(`/api/admin/orders/${id}`, {
+  const response = await authenticatedFetch(`/api/admin/orders/${id}`, {
     method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include', // 쿠키 포함
     body: JSON.stringify({ status }),
   });
 
