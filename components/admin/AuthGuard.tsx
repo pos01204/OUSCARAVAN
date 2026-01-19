@@ -5,6 +5,11 @@ import { useRouter, usePathname } from 'next/navigation';
 import { isAuthenticated, getToken } from '@/lib/auth-client';
 import { Loader2 } from 'lucide-react';
 
+function isKakaoInAppBrowser() {
+  if (typeof navigator === 'undefined') return false;
+  return /KAKAOTALK/i.test(navigator.userAgent);
+}
+
 interface AuthGuardProps {
   children: React.ReactNode;
 }
@@ -53,6 +58,15 @@ export function AuthGuard({ children }: AuthGuardProps) {
         setIsAuthed(false);
         setIsChecking(false);
         return;
+      }
+
+      // 인증은 되었지만, 카카오 인앱 브라우저에서 반복적인 화이트스크린/쿠키 정책 문제가 발생하는 경우가 있어
+      // 관리자 영역은 외부 브라우저 사용을 권장(원천 회피 옵션)
+      // 필요 시 아래 리다이렉트를 활성화할 수 있음.
+      // 현재는 오류 재현 시 추적을 위해 강제 차단 대신 안내 페이지로 선택 이동.
+      if (isKakaoInAppBrowser()) {
+        // 인앱에서 문제가 계속된다면, 아래 한 줄을 주석 해제해 강제 안내 페이지로 보낼 수 있음.
+        // window.location.replace(`/inapp?returnUrl=${encodeURIComponent(pathname)}`);
       }
       
       console.log('[AuthGuard] Authentication successful');
