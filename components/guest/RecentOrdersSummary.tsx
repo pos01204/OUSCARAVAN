@@ -1,0 +1,111 @@
+'use client';
+
+import Link from 'next/link';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Skeleton } from '@/components/ui/skeleton';
+import { useGuestOrders } from '@/lib/hooks/useGuestOrders';
+
+interface RecentOrdersSummaryProps {
+  token: string;
+  maxItems?: number;
+}
+
+export function RecentOrdersSummary({ token, maxItems = 2 }: RecentOrdersSummaryProps) {
+  const { orders, loading, error } = useGuestOrders(token);
+  const recent = [...orders].sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt)).slice(0, maxItems);
+
+  if (loading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>최근 주문</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <Skeleton className="h-5 w-32" />
+          <Skeleton className="h-4 w-full" />
+          <Skeleton className="h-4 w-5/6" />
+          <Skeleton className="h-9 w-full" />
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (error) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>최근 주문</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-muted-foreground">{error}</p>
+          <Link href={`/guest/${token}/order`} className="block">
+            <Button className="w-full" variant="outline">
+              주문 페이지로 이동
+            </Button>
+          </Link>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (orders.length === 0) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>최근 주문</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <p className="text-sm text-muted-foreground">아직 주문 내역이 없습니다.</p>
+          <Link href={`/guest/${token}/order`} className="block">
+            <Button className="w-full">주문하러 가기</Button>
+          </Link>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="flex items-center justify-between gap-3">
+          <span>최근 주문</span>
+          <Link href={`/guest/${token}/order`}>
+            <Button size="sm" variant="outline">
+              전체 보기
+            </Button>
+          </Link>
+        </CardTitle>
+      </CardHeader>
+      <CardContent className="space-y-3">
+        {recent.map((o) => (
+          <div key={o.id} className="rounded-lg border border-border/60 p-3">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0">
+                <p className="text-sm font-semibold truncate">
+                  {o.items[0]?.name ?? '주문'} {o.items.length > 1 ? `외 ${o.items.length - 1}개` : ''}
+                </p>
+                <p className="text-xs text-muted-foreground mt-1">
+                  {new Date(o.createdAt).toLocaleString('ko-KR')}
+                </p>
+              </div>
+              <div className="text-right shrink-0">
+                <p className="text-sm font-bold text-primary">{o.totalAmount.toLocaleString()}원</p>
+                <Badge variant="outline" className="mt-1 text-xs">
+                  {o.status}
+                </Badge>
+              </div>
+            </div>
+          </div>
+        ))}
+        <Link href={`/guest/${token}/order`} className="block">
+          <Button className="w-full" variant="secondary">
+            주문 내역/상태 자세히 보기
+          </Button>
+        </Link>
+      </CardContent>
+    </Card>
+  );
+}
+

@@ -1,19 +1,22 @@
 'use client';
 
-import { useEffect, useState, useMemo } from 'react';
+import { useState } from 'react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { getOrders, type Order } from '@/lib/api';
+import { type Order } from '@/lib/api';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import { Clock, Package, Truck, CheckCircle, Info } from 'lucide-react';
+import { Clock, Package, Truck, CheckCircle, Info, RotateCcw } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { InfoInspector } from '@/components/guest/InfoInspector';
 
 interface OrderHistoryProps {
   token: string;
+  orders?: Order[];
+  loading?: boolean;
+  error?: string | null;
+  onReorder?: (order: Order) => void;
 }
 
 const STATUS_CONFIG: Record<Order['status'], { label: string; variant: 'default' | 'secondary' | 'outline' | 'destructive'; icon: typeof Clock }> = {
@@ -29,49 +32,59 @@ const TYPE_LABELS: Record<Order['type'], string> = {
   kiosk: '키오스크',
 };
 
-export function OrderHistory({ token }: OrderHistoryProps) {
-  const [orders, setOrders] = useState<Order[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+const ORDER_STATUS_STEPS: Array<{ key: Order['status']; label: string }> = [
+  { key: 'pending', label: '대기' },
+  { key: 'preparing', label: '준비' },
+  { key: 'delivering', label: '배송' },
+  { key: 'completed', label: '완료' },
+];
+
+function getStatusStepIndex(status: Order['status']) {
+  return Math.max(0, ORDER_STATUS_STEPS.findIndex((s) => s.key === status));
+}
+
+function OrderStatusStepper({ status }: { status: Order['status'] }) {
+  const activeIndex = getStatusStepIndex(status);
+
+  return (
+    <div className="w-full">
+      <div className="flex items-center gap-2">
+        {ORDER_STATUS_STEPS.map((step, idx) => {
+          const isDone = idx < activeIndex;
+          const isActive = idx === activeIndex;
+          return (
+            <div key={step.key} className="flex items-center gap-2 flex-1 min-w-0">
+              <div
+                className={`h-2.5 w-2.5 rounded-full ${
+                  isDone ? 'bg-primary' : isActive ? 'bg-primary/70' : 'bg-muted'
+                }`}
+                aria-hidden="true"
+              />
+              <span
+                className={`text-[11px] font-semibold truncate ${
+                  isDone ? 'text-primary' : isActive ? 'text-foreground' : 'text-muted-foreground'
+                }`}
+              >
+                {step.label}
+              </span>
+              {idx < ORDER_STATUS_STEPS.length - 1 ? (
+                <div
+                  className={`h-px flex-1 ${
+                    isDone ? 'bg-primary/60' : 'bg-muted'
+                  }`}
+                  aria-hidden="true"
+                />
+              ) : null}
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+export function OrderHistory({ orders = [], loading = false, error = null, onReorder }: OrderHistoryProps) {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
-  const [statusFilter, setStatusFilter] = useState<Order['status'] | 'all'>('all');
-
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        setLoading(true);
-        const response = await getOrders(token);
-        setOrders(response.orders || []);
-        setError(null);
-      } catch (err) {
-        console.error('Failed to fetch orders:', err);
-        setError('주문 내역을 불러오는데 실패했습니다.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchOrders();
-  }, [token]);
-
-  // 필터링된 주문 목록
-  const filteredOrders = useMemo(() => {
-    if (statusFilter === 'all') {
-      return orders;
-    }
-    return orders.filter(order => order.status === statusFilter);
-  }, [orders, statusFilter]);
-
-  // 상태별 주문 개수
-  const statusCounts = useMemo(() => {
-    return {
-      all: orders.length,
-      pending: orders.filter(o => o.status === 'pending').length,
-      preparing: orders.filter(o => o.status === 'preparing').length,
-      delivering: orders.filter(o => o.status === 'delivering').length,
-      completed: orders.filter(o => o.status === 'completed').length,
-    };
-  }, [orders]);
 
   if (loading) {
     return (
@@ -124,58 +137,8 @@ export function OrderHistory({ token }: OrderHistoryProps) {
   return (
     <>
       <div className="space-y-4" role="region" aria-label="주문 내역">
-        {/* 상태 필터 */}
-        <Tabs value={statusFilter} onValueChange={(v) => setStatusFilter(v as Order['status'] | 'all')}>
-          <TabsList className="grid w-full grid-cols-5 h-auto p-1.5 bg-muted/40 border border-border/50 rounded-lg shadow-sm overflow-x-auto">
-            <TabsTrigger 
-              value="all" 
-              className="text-xs py-2.5 min-w-[60px] transition-all duration-200 data-[state=active]:scale-[1.02] focus-visible:ring-2 focus-visible:ring-primary"
-              aria-label="전체 주문 보기"
-            >
-              전체 ({statusCounts.all})
-            </TabsTrigger>
-            <TabsTrigger 
-              value="pending" 
-              className="text-xs py-2.5 min-w-[60px] transition-all duration-200 data-[state=active]:scale-[1.02] focus-visible:ring-2 focus-visible:ring-primary"
-              aria-label="대기 중 주문 보기"
-            >
-              대기 ({statusCounts.pending})
-            </TabsTrigger>
-            <TabsTrigger 
-              value="preparing" 
-              className="text-xs py-2.5 min-w-[60px] transition-all duration-200 data-[state=active]:scale-[1.02] focus-visible:ring-2 focus-visible:ring-primary"
-              aria-label="준비 중 주문 보기"
-            >
-              준비 ({statusCounts.preparing})
-            </TabsTrigger>
-            <TabsTrigger 
-              value="delivering" 
-              className="text-xs py-2.5 min-w-[60px] transition-all duration-200 data-[state=active]:scale-[1.02] focus-visible:ring-2 focus-visible:ring-primary"
-              aria-label="배송 중 주문 보기"
-            >
-              배송 ({statusCounts.delivering})
-            </TabsTrigger>
-            <TabsTrigger 
-              value="completed" 
-              className="text-xs py-2.5 min-w-[60px] transition-all duration-200 data-[state=active]:scale-[1.02] focus-visible:ring-2 focus-visible:ring-primary"
-              aria-label="완료된 주문 보기"
-            >
-              완료 ({statusCounts.completed})
-            </TabsTrigger>
-          </TabsList>
-        </Tabs>
-
         {/* 주문 목록 */}
-        {filteredOrders.length === 0 ? (
-          <Card>
-            <CardContent className="p-6 text-center">
-              <p className="text-sm text-muted-foreground">
-                해당 상태의 주문이 없습니다.
-              </p>
-            </CardContent>
-          </Card>
-        ) : (
-          filteredOrders.map((order) => {
+        {orders.map((order) => {
         const statusConfig = STATUS_CONFIG[order.status];
         const StatusIcon = statusConfig.icon;
         const typeLabel = TYPE_LABELS[order.type] || order.type;
@@ -242,6 +205,10 @@ export function OrderHistory({ token }: OrderHistoryProps) {
                     )}
                   </div>
 
+                  <div className="mt-3 pt-3 border-t border-border/50">
+                    <OrderStatusStepper status={order.status} />
+                  </div>
+
                   <div className="mt-3 pt-3 border-t border-border/50 flex items-center justify-between">
                     <div className="flex-1">
                       {order.deliveryTime && (
@@ -267,115 +234,140 @@ export function OrderHistory({ token }: OrderHistoryProps) {
                 </CardContent>
               </Card>
             );
-          })
-        )}
+          })}
       </div>
 
-      {/* 주문 상세 모달 */}
-      <Dialog open={!!selectedOrder} onOpenChange={(open) => !open && setSelectedOrder(null)}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          {selectedOrder && (
-            <>
-              <DialogHeader className="pb-4 border-b">
-                <DialogTitle className="text-xl">주문 상세</DialogTitle>
-                <DialogDescription className="mt-2">
-                  주문 번호: <span className="font-mono font-medium">{selectedOrder.id.substring(0, 8)}...</span>
-                </DialogDescription>
-              </DialogHeader>
-
-              <div className="space-y-6 pt-4">
-                {/* 주문 정보 */}
-                <div className="grid gap-4 md:grid-cols-2">
-                  <div className="p-3 rounded-lg bg-muted/30">
-                    <p className="text-xs text-muted-foreground mb-2 font-medium">주문 타입</p>
-                    <Badge variant="outline" className="text-sm font-semibold">
-                      {TYPE_LABELS[selectedOrder.type] || selectedOrder.type}
-                    </Badge>
-                  </div>
-                  <div className="p-3 rounded-lg bg-muted/30">
-                    <p className="text-xs text-muted-foreground mb-2 font-medium">주문 상태</p>
-                    <Badge
-                      variant={STATUS_CONFIG[selectedOrder.status].variant}
-                      className="flex items-center gap-1.5 w-fit font-semibold"
-                    >
-                      {(() => {
-                        const Icon = STATUS_CONFIG[selectedOrder.status].icon;
-                        return (
-                          <>
-                            <Icon className="h-3.5 w-3.5" />
-                            {STATUS_CONFIG[selectedOrder.status].label}
-                          </>
-                        );
-                      })()}
-                    </Badge>
-                  </div>
-                  <div className="p-3 rounded-lg bg-muted/30">
-                    <p className="text-xs text-muted-foreground mb-2 font-medium">주문 시간</p>
-                    <p className="font-semibold text-sm">
-                      {format(new Date(selectedOrder.createdAt), 'yyyy년 M월 d일 HH:mm', { locale: ko })}
-                    </p>
-                  </div>
-                  {selectedOrder.deliveryTime && (
-                    <div className="p-3 rounded-lg bg-muted/30">
-                      <p className="text-xs text-muted-foreground mb-2 font-medium">배송 시간</p>
-                      <p className="font-semibold text-sm">{selectedOrder.deliveryTime}</p>
-                    </div>
-                  )}
-                </div>
-
-                {/* 주문 항목 */}
-                <div>
-                  <p className="text-sm font-bold mb-4 flex items-center gap-2">
-                    <div className="h-1 w-1 rounded-full bg-primary"></div>
-                    주문 항목
-                  </p>
-                  <div className="space-y-2.5">
-                    {selectedOrder.items.map((item, index) => (
-                      <div
-                        key={index}
-                        className="flex items-center justify-between p-4 rounded-lg border-2 border-border/50 bg-muted/20 hover:bg-muted/40 transition-colors"
-                      >
-                        <div className="flex-1">
-                          <p className="font-semibold text-base mb-1">{item.name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {item.price.toLocaleString()}원 × {item.quantity}
-                          </p>
-                        </div>
-                        <p className="font-black text-lg text-primary ml-4">
-                          {(item.price * item.quantity).toLocaleString()}원
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 총액 */}
-                <div className="rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-primary/30 p-5 shadow-sm">
-                  <div className="flex items-center justify-between">
-                    <p className="font-bold text-base">총 결제 금액</p>
-                    <p className="text-3xl font-black text-primary">
-                      {selectedOrder.totalAmount.toLocaleString()}원
-                    </p>
-                  </div>
-                </div>
-
-                {/* 요청사항 */}
-                {selectedOrder.notes && (
-                  <div>
-                    <p className="text-sm font-bold mb-3 flex items-center gap-2">
-                      <div className="h-1 w-1 rounded-full bg-primary"></div>
-                      요청사항
-                    </p>
-                    <div className="p-4 rounded-lg border-2 border-border/50 bg-muted/20">
-                      <p className="text-sm leading-relaxed">{selectedOrder.notes}</p>
-                    </div>
-                  </div>
-                )}
+      {/* 주문 상세 인스펙터 (모바일 Drawer / 데스크톱 Sheet) */}
+      <InfoInspector
+        open={!!selectedOrder}
+        onOpenChange={(open) => {
+          if (!open) setSelectedOrder(null);
+        }}
+        title="주문 상세"
+        description={
+          selectedOrder
+            ? `주문 번호: ${selectedOrder.id.substring(0, 8)}…`
+            : undefined
+        }
+        contentClassName="md:max-w-2xl"
+      >
+        {selectedOrder ? (
+          <div className="space-y-6">
+            {onReorder ? (
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  className="flex-1"
+                  onClick={() => {
+                    onReorder(selectedOrder);
+                    setSelectedOrder(null);
+                  }}
+                  aria-label="이 주문으로 재주문하기"
+                >
+                  <RotateCcw className="h-4 w-4 mr-2" aria-hidden="true" />
+                  재주문
+                </Button>
               </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
+            ) : null}
+
+            {/* 주문 정보 */}
+            <div className="grid gap-4 md:grid-cols-2">
+              <div className="p-3 rounded-lg bg-muted/30">
+                <p className="text-xs text-muted-foreground mb-2 font-medium">주문 타입</p>
+                <Badge variant="outline" className="text-sm font-semibold">
+                  {TYPE_LABELS[selectedOrder.type] || selectedOrder.type}
+                </Badge>
+              </div>
+              <div className="p-3 rounded-lg bg-muted/30">
+                <p className="text-xs text-muted-foreground mb-2 font-medium">주문 상태</p>
+                <Badge
+                  variant={STATUS_CONFIG[selectedOrder.status].variant}
+                  className="flex items-center gap-1.5 w-fit font-semibold"
+                >
+                  {(() => {
+                    const Icon = STATUS_CONFIG[selectedOrder.status].icon;
+                    return (
+                      <>
+                        <Icon className="h-3.5 w-3.5" />
+                        {STATUS_CONFIG[selectedOrder.status].label}
+                      </>
+                    );
+                  })()}
+                </Badge>
+              </div>
+              <div className="p-3 rounded-lg bg-muted/30">
+                <p className="text-xs text-muted-foreground mb-2 font-medium">주문 시간</p>
+                <p className="font-semibold text-sm">
+                  {format(new Date(selectedOrder.createdAt), 'yyyy년 M월 d일 HH:mm', { locale: ko })}
+                </p>
+              </div>
+              {selectedOrder.deliveryTime && (
+                <div className="p-3 rounded-lg bg-muted/30">
+                  <p className="text-xs text-muted-foreground mb-2 font-medium">배송 시간</p>
+                  <p className="font-semibold text-sm">{selectedOrder.deliveryTime}</p>
+                </div>
+              )}
+            </div>
+
+            <div className="rounded-xl border bg-muted/20 p-4">
+              <p className="text-sm font-bold mb-3 flex items-center gap-2">
+                <div className="h-1 w-1 rounded-full bg-primary"></div>
+                진행 상태
+              </p>
+              <OrderStatusStepper status={selectedOrder.status} />
+            </div>
+
+            {/* 주문 항목 */}
+            <div>
+              <p className="text-sm font-bold mb-4 flex items-center gap-2">
+                <div className="h-1 w-1 rounded-full bg-primary"></div>
+                주문 항목
+              </p>
+              <div className="space-y-2.5">
+                {selectedOrder.items.map((item, index) => (
+                  <div
+                    key={index}
+                    className="flex items-center justify-between p-4 rounded-lg border-2 border-border/50 bg-muted/20 hover:bg-muted/40 transition-colors"
+                  >
+                    <div className="flex-1">
+                      <p className="font-semibold text-base mb-1">{item.name}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {item.price.toLocaleString()}원 × {item.quantity}
+                      </p>
+                    </div>
+                    <p className="font-black text-lg text-primary ml-4">
+                      {(item.price * item.quantity).toLocaleString()}원
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* 총액 */}
+            <div className="rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-primary/30 p-5 shadow-sm">
+              <div className="flex items-center justify-between">
+                <p className="font-bold text-base">총 결제 금액</p>
+                <p className="text-3xl font-black text-primary">
+                  {selectedOrder.totalAmount.toLocaleString()}원
+                </p>
+              </div>
+            </div>
+
+            {/* 요청사항 */}
+            {selectedOrder.notes ? (
+              <div>
+                <p className="text-sm font-bold mb-3 flex items-center gap-2">
+                  <div className="h-1 w-1 rounded-full bg-primary"></div>
+                  요청사항
+                </p>
+                <div className="p-4 rounded-lg border-2 border-border/50 bg-muted/20">
+                  <p className="text-sm leading-relaxed whitespace-pre-wrap">{selectedOrder.notes}</p>
+                </div>
+              </div>
+            ) : null}
+          </div>
+        ) : null}
+      </InfoInspector>
     </>
   );
 }
