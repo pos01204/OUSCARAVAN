@@ -33,7 +33,6 @@ interface CartItem {
 
 type KioskOrderStep = 'select' | 'time' | 'review';
 
-export function KioskOrderForm({ onClose, token }: KioskOrderFormProps) {
 export function KioskOrderForm({ onClose, token, initial }: KioskOrderFormProps) {
   const [selectedCategory, setSelectedCategory] = useState<string | null>(initial?.selectedCategoryId ?? null);
   const [cart, setCart] = useState<CartItem[]>(initial?.cart ?? []);
