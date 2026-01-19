@@ -117,7 +117,7 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
                 보기
               </Button>
             </CardTitle>
-            <CardDescription>일몰/체크인 카운트다운/앱 설치 안내</CardDescription>
+            <CardDescription>일몰·체크인 카운트다운·앱 설치 안내</CardDescription>
           </CardHeader>
           <CardContent className="flex flex-wrap gap-2">
             <Badge variant="secondary" className="text-xs">일몰</Badge>
@@ -130,7 +130,7 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
           open={openExtraInfo}
           onOpenChange={setOpenExtraInfo}
           title="추가 정보"
-          description="원하실 때만 확인할 수 있어요"
+          description="필요할 때만 간단히 확인하세요"
           contentClassName="md:max-w-xl"
         >
           <div className="space-y-4">

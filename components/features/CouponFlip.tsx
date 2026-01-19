@@ -129,8 +129,8 @@ export function CouponFlip({ roomNumber, backImageSrc }: CouponFlipProps) {
                 transform: 'rotateY(180deg)',
               }}
             >
-              <CardContent className="relative flex h-full flex-col items-center justify-center overflow-hidden p-6 text-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-                {/* 선택 브랜딩 이미지: 항상 카드 영역 내에서만 렌더(overflow 방지) */}
+              <CardContent className="relative h-full w-full p-0 overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
+                {/* 선택 브랜딩 이미지: 카드 전체 영역 기준으로 채움 */}
                 <BrandMediaLayer
                   imageSrc={backImageSrc}
                   alt="쿠폰 뒷면 브랜딩 이미지"
@@ -146,14 +146,14 @@ export function CouponFlip({ roomNumber, backImageSrc }: CouponFlipProps) {
                 </div>
 
                 {/* Content */}
-                <div className="relative z-10 text-white">
+                <div className="relative z-10 flex h-full w-full flex-col items-center justify-center p-6 text-center text-white">
                   <div className="mb-4">
                     <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-4">
                       <Gift className="h-8 w-8 md:h-10 md:w-10 text-white" />
                     </div>
                   </div>
                   <h3 className="mb-4 font-heading text-xl md:text-2xl font-bold text-white">
-                    이 화면을 직원에게 보여주세요
+                    직원에게 이 화면을 보여주세요
                   </h3>
                   {roomNumber && (
                     <div className="mb-4 px-4 py-2 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20">

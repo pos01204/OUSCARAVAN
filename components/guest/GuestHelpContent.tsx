@@ -66,7 +66,7 @@ export function GuestHelpContent({ token }: GuestHelpContentProps) {
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2">
               <HelpCircle className="h-5 w-5 text-primary" />
-              가장 많이 필요한 도움
+              자주 찾는 도움
             </CardTitle>
           </CardHeader>
           <CardContent className="grid grid-cols-1 gap-2">
