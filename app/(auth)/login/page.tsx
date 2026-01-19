@@ -27,6 +27,10 @@ function LoginForm() {
   
   // URL에서 에러 파라미터 읽기
   const urlError = searchParams.get('error');
+  const urlErrorMessage =
+    urlError && Object.prototype.hasOwnProperty.call(errorMessages, urlError)
+      ? errorMessages[urlError]
+      : undefined;
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -115,7 +119,7 @@ function LoginForm() {
           {(error || urlError) && (
             <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2 text-red-700 text-sm">
               <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
-              <span>{error || errorMessages[urlError] || '오류가 발생했습니다.'}</span>
+              <span>{error || urlErrorMessage || '오류가 발생했습니다.'}</span>
             </div>
           )}
           
