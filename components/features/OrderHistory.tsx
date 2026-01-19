@@ -1,13 +1,14 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { type Order } from '@/lib/api';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import { Clock, Package, CheckCircle, Info, RotateCcw } from 'lucide-react';
+import { Clock, Package, CheckCircle, Info, RotateCcw, BookOpen } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { InfoInspector } from '@/components/guest/InfoInspector';
 
@@ -84,8 +85,15 @@ function OrderStatusStepper({ status }: { status: Order['status'] }) {
   );
 }
 
-export function OrderHistory({ orders = [], loading = false, error = null, onReorder }: OrderHistoryProps) {
+export function OrderHistory({
+  token,
+  orders = [],
+  loading = false,
+  error = null,
+  onReorder,
+}: OrderHistoryProps) {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
+  const guideHref = `/guest/${token}/guide#guide-bbq`;
 
   if (loading) {
     return (
@@ -143,6 +151,7 @@ export function OrderHistory({ orders = [], loading = false, error = null, onReo
         const statusConfig = STATUS_CONFIG[order.status];
         const StatusIcon = statusConfig.icon;
         const typeLabel = TYPE_LABELS[order.type] || order.type;
+        const showGuide = order.type === 'bbq' || order.type === 'fire';
 
             return (
               <Card
@@ -210,7 +219,7 @@ export function OrderHistory({ orders = [], loading = false, error = null, onReo
                     <OrderStatusStepper status={order.status} />
                   </div>
 
-                  <div className="mt-3 pt-3 border-t border-border/50 flex items-center justify-between">
+                  <div className="mt-3 pt-3 border-t border-border/50 flex items-center justify-between gap-2">
                     <div className="flex-1">
                       {order.deliveryTime && (
                         <p className="text-xs text-muted-foreground">
@@ -218,19 +227,37 @@ export function OrderHistory({ orders = [], loading = false, error = null, onReo
                         </p>
                       )}
                     </div>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="text-xs h-8 px-3 transition-all hover:bg-primary/10 hover:text-primary focus-visible:ring-2 focus-visible:ring-primary"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedOrder(order);
-                      }}
-                      aria-label="주문 상세보기"
-                    >
-                      <Info className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
-                      상세보기
-                    </Button>
+                    <div className="flex items-center gap-2">
+                      {showGuide && (
+                        <Link
+                          href={guideHref}
+                          onClick={(event) => event.stopPropagation()}
+                        >
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            className="text-xs h-8 px-3"
+                            aria-label="불멍/바베큐 사용법 보기"
+                          >
+                            <BookOpen className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+                            사용법
+                          </Button>
+                        </Link>
+                      )}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="text-xs h-8 px-3 transition-all hover:bg-primary/10 hover:text-primary focus-visible:ring-2 focus-visible:ring-primary"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setSelectedOrder(order);
+                        }}
+                        aria-label="주문 상세보기"
+                      >
+                        <Info className="h-3.5 w-3.5 mr-1.5" aria-hidden="true" />
+                        상세보기
+                      </Button>
+                    </div>
                   </div>
                 </CardContent>
               </Card>
@@ -254,8 +281,8 @@ export function OrderHistory({ orders = [], loading = false, error = null, onReo
       >
         {selectedOrder ? (
           <div className="space-y-6">
-            {onReorder ? (
-              <div className="flex gap-2">
+            <div className="flex flex-col gap-2 sm:flex-row">
+              {onReorder ? (
                 <Button
                   type="button"
                   className="flex-1"
@@ -268,8 +295,16 @@ export function OrderHistory({ orders = [], loading = false, error = null, onReo
                   <RotateCcw className="h-4 w-4 mr-2" aria-hidden="true" />
                   재주문
                 </Button>
-              </div>
-            ) : null}
+              ) : null}
+              {(selectedOrder.type === 'bbq' || selectedOrder.type === 'fire') && (
+                <Link href={guideHref}>
+                  <Button type="button" variant="outline" className="flex-1">
+                    <BookOpen className="h-4 w-4 mr-2" aria-hidden="true" />
+                    불멍/바베큐 사용법
+                  </Button>
+                </Link>
+              )}
+            </div>
 
             {/* 주문 정보 */}
             <div className="grid gap-4 md:grid-cols-2">

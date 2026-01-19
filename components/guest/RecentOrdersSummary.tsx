@@ -5,6 +5,7 @@ import type { Order } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { BookOpen } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useGuestOrders } from '@/lib/hooks/useGuestOrders';
 
@@ -23,6 +24,8 @@ const ORDER_STATUS_LABELS: Record<Order['status'], string> = {
 export function RecentOrdersSummary({ token, maxItems = 2 }: RecentOrdersSummaryProps) {
   const { orders, loading, error } = useGuestOrders(token);
   const recent = [...orders].sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt)).slice(0, maxItems);
+  const hasBbqGuide = recent.some((order) => order.type === 'bbq' || order.type === 'fire');
+  const guideHref = `/guest/${token}/guide#guide-bbq`;
 
   if (loading) {
     return (
@@ -107,11 +110,21 @@ export function RecentOrdersSummary({ token, maxItems = 2 }: RecentOrdersSummary
             </div>
           </div>
         ))}
-        <Link href={`/guest/${token}/order`} className="block">
-          <Button className="w-full" variant="secondary">
-            주문 내역/상태 자세히 보기
-          </Button>
-        </Link>
+        <div className="space-y-2">
+          {hasBbqGuide && (
+            <Link href={guideHref} className="block">
+              <Button className="w-full" variant="outline">
+                <BookOpen className="mr-2 h-4 w-4" aria-hidden="true" />
+                불멍/바베큐 사용법 보기
+              </Button>
+            </Link>
+          )}
+          <Link href={`/guest/${token}/order`} className="block">
+            <Button className="w-full" variant="secondary">
+              주문 내역/상태 자세히 보기
+            </Button>
+          </Link>
+        </div>
       </CardContent>
     </Card>
   );
