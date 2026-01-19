@@ -4,13 +4,9 @@ import type { NextRequest } from 'next/server';
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   
-  // 로그인 페이지 접근 시 관리자 페이지로 리다이렉트
-  if (pathname === '/login') {
-    return NextResponse.redirect(new URL('/admin', request.url));
-  }
-  
-  // 관리자 페이지는 인증 없이 접근 가능 (임시)
-  // 고객 페이지는 토큰 검증을 서버 컴포넌트에서 처리
+  // 주의: /login을 /admin으로 강제 리다이렉트하면
+  // AuthGuard(미인증) → /login → middleware → /admin → AuthGuard 루프가 발생할 수 있음.
+  // 웹뷰 호환을 위해 로그인 페이지는 항상 접근 가능하게 둔다.
   
   return NextResponse.next();
 }

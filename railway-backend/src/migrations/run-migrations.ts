@@ -84,11 +84,21 @@ VALUES ('admin')
 ON CONFLICT (admin_id) DO NOTHING;
 
 -- updated_at 자동 업데이트 트리거
-CREATE TRIGGER update_notifications_updated_at BEFORE UPDATE ON notifications
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'update_notifications_updated_at') THEN
+    CREATE TRIGGER update_notifications_updated_at BEFORE UPDATE ON notifications
+      FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+  END IF;
+END $$;
 
-CREATE TRIGGER update_notification_settings_updated_at BEFORE UPDATE ON notification_settings
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+DO $$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_trigger WHERE tgname = 'update_notification_settings_updated_at') THEN
+    CREATE TRIGGER update_notification_settings_updated_at BEFORE UPDATE ON notification_settings
+      FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+  END IF;
+END $$;
 `;
 
 /**
