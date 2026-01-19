@@ -222,8 +222,11 @@ function OrdersPageContent() {
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                        <Badge variant={order.type === 'bbq' ? 'secondary' : 'default'} className="rounded-sm">
-                          {order.type === 'bbq' ? '바베큐' : '불멍'}
+                        <Badge
+                          variant={order.type === 'bbq' ? 'secondary' : order.type === 'kiosk' ? 'outline' : 'default'}
+                          className="rounded-sm"
+                        >
+                          {order.type === 'bbq' ? '바베큐' : order.type === 'kiosk' ? '키오스크' : '불멍'}
                         </Badge>
                         <span className="font-bold text-lg">{order.roomName || '방 미배정'}</span>
                         <span className="text-muted-foreground">{order.guestName}</span>
@@ -298,7 +301,7 @@ function OrdersPageContent() {
                 <div>
                   <p className="text-sm text-muted-foreground">주문 타입</p>
                   <p className="font-medium">
-                    {selectedOrder.type === 'bbq' ? '바베큐' : '불멍'}
+                    {selectedOrder.type === 'bbq' ? '바베큐' : selectedOrder.type === 'kiosk' ? '키오스크' : '불멍'}
                   </p>
                 </div>
                 <div>

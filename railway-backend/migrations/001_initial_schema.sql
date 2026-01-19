@@ -29,7 +29,7 @@ CREATE INDEX IF NOT EXISTS idx_reservations_reservation_number ON reservations(r
 CREATE TABLE IF NOT EXISTS orders (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   reservation_id UUID NOT NULL REFERENCES reservations(id) ON DELETE CASCADE,
-  type VARCHAR(10) NOT NULL CHECK (type IN ('bbq', 'fire')),
+  type VARCHAR(10) NOT NULL CHECK (type IN ('bbq', 'fire', 'kiosk')),
   items JSONB NOT NULL,
   total_amount INTEGER NOT NULL,
   status VARCHAR(20) NOT NULL DEFAULT 'pending',

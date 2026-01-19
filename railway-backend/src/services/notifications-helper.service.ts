@@ -77,7 +77,12 @@ export async function createOrderCreatedNotification(orderId: string): Promise<v
     const reservation = await getReservationById(order.reservationId);
     if (!reservation) return;
 
-    const orderTypeLabel = order.type === 'bbq' ? '바베큐' : '불멍';
+    const orderTypeLabelMap: Record<string, string> = {
+      bbq: '바베큐',
+      fire: '불멍',
+      kiosk: '키오스크',
+    };
+    const orderTypeLabel = orderTypeLabelMap[order.type] || order.type;
     const items = parseJSONBArray(order.items);
     const itemNames = items.map((item: any) => item.name).join(', ');
 

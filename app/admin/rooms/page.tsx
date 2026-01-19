@@ -346,7 +346,7 @@ export default function RoomsPage() {
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <p className="text-sm font-medium truncate">
-                                    {order.type === 'bbq' ? '바베큐' : '불멍'} 주문
+                                    {order.type === 'bbq' ? '바베큐' : order.type === 'kiosk' ? '키오스크' : '불멍'} 주문
                                   </p>
                                   <p className="text-[10px] text-muted-foreground">
                                     {formatDateTimeToKorean(order.createdAt)}

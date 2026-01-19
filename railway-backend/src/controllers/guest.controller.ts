@@ -75,7 +75,7 @@ export async function createGuestOrder(req: Request, res: Response) {
       });
     }
 
-    if (!['bbq', 'fire'].includes(type)) {
+    if (!['bbq', 'fire', 'kiosk'].includes(type)) {
       return res.status(400).json({
         error: 'Invalid order type',
         code: 'INVALID_ORDER_TYPE',

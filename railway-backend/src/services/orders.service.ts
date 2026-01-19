@@ -10,7 +10,7 @@ export interface OrderItem {
 export interface Order {
   id: string;
   reservationId: string;
-  type: 'bbq' | 'fire';
+  type: 'bbq' | 'fire' | 'kiosk';
   items: OrderItem[];
   totalAmount: number;
   status: string;
@@ -22,7 +22,7 @@ export interface Order {
 
 export interface CreateOrderData {
   reservationId: string;
-  type: 'bbq' | 'fire';
+  type: 'bbq' | 'fire' | 'kiosk';
   items: OrderItem[];
   totalAmount: number;
   deliveryTime?: string;

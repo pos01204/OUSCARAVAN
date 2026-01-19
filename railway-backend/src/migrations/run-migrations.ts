@@ -137,6 +137,36 @@ END $$;
 `;
 
 /**
+ * 주문 타입에 kiosk 추가 마이그레이션
+ */
+const migration008AllowKioskOrders = `
+DO $$
+DECLARE
+  constraint_name TEXT;
+BEGIN
+  SELECT conname INTO constraint_name
+  FROM pg_constraint
+  WHERE conrelid = 'orders'::regclass
+    AND contype = 'c'
+    AND pg_get_constraintdef(oid) LIKE '%type%'
+  LIMIT 1;
+
+  IF constraint_name IS NOT NULL THEN
+    EXECUTE format('ALTER TABLE orders DROP CONSTRAINT %I', constraint_name);
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1 FROM pg_constraint
+    WHERE conrelid = 'orders'::regclass
+      AND conname = 'orders_type_check'
+  ) THEN
+    ALTER TABLE orders
+      ADD CONSTRAINT orders_type_check CHECK (type IN ('bbq', 'fire', 'kiosk'));
+  END IF;
+END $$;
+`;
+
+/**
  * 기본 10개 방 데이터 삽입 마이그레이션
  */
 const migration002DefaultRooms = `
@@ -229,6 +259,9 @@ export async function runMigrations(): Promise<void> {
 
     // 공지 테이블 추가 마이그레이션 실행
     await runMigration('007_add_announcements', migration007AddAnnouncements);
+    
+    // 주문 타입 확장 마이그레이션 실행 (kiosk 추가)
+    await runMigration('008_allow_kiosk_orders', migration008AllowKioskOrders);
     
     // 방 이름을 1호~10호로 변경하는 마이그레이션 실행
     // 마이그레이션 SQL을 직접 포함 (파일 읽기 대신)
