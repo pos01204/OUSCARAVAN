@@ -6,7 +6,8 @@ import { OrderForm } from '@/components/features/OrderForm';
 import { KioskOrderForm } from '@/components/features/KioskOrderForm';
 import { OrderHistory } from '@/components/features/OrderHistory';
 import { CafeInfoTab } from '@/components/features/CafeInfoTab';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { ShoppingBag, Coffee, Package } from 'lucide-react';
 import { useGuestStore } from '@/lib/store';
@@ -115,58 +116,87 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
           value="order" 
           className="mt-6 space-y-6 animate-in fade-in-50 slide-in-from-bottom-4 duration-300"
         >
-        <section aria-label="주문 상태 및 내역" className="space-y-6">
-          <Card className="border-border/60">
-            <CardHeader className="pb-4">
-              <CardTitle className="text-lg font-semibold">주문 상태</CardTitle>
-              <CardDescription>주문 상태를 확인하고 원하는 서비스를 바로 선택하세요.</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-5">
-              <OrderStatusSummaryBar
-                orders={orders}
-                loading={loading}
-                error={error}
-                currentFilter={statusFilter}
-                onFilterChange={setStatusFilter}
-              />
-              <div className="flex flex-col gap-3">
+        <section aria-label="배송 주문" className="space-y-4">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="h-1 w-1 rounded-full bg-primary"></div>
+            <h2 className="text-xl md:text-2xl font-heading font-bold">배송 주문</h2>
+          </div>
+
+          <div className="grid gap-4">
+            <Card className="border-border/60">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <ShoppingBag className="h-5 w-5 text-primary" />
+                  </div>
+                  <span>불멍/바베큐 세트</span>
+                </CardTitle>
+                <CardDescription>세트를 선택하고 배송 시간을 지정할 수 있어요.</CardDescription>
+              </CardHeader>
+              <CardContent>
                 <Button
-                  variant="outline"
+                  className="w-full"
                   onClick={() => {
                     setReorderDraft(null);
                     setShowOrderForm(true);
                   }}
-                  className="w-full"
                 >
-                  배송 주문 (불멍/바베큐 세트)
+                  주문하기
                 </Button>
+              </CardContent>
+            </Card>
+
+            <Card className="border-border/60">
+              <CardHeader className="pb-3">
+                <CardTitle className="flex items-center gap-2 text-lg">
+                  <div className="p-2 rounded-lg bg-primary/10">
+                    <Package className="h-5 w-5 text-primary" />
+                  </div>
+                  <span>키오스크 판매 물품</span>
+                </CardTitle>
+                <CardDescription>음료/간식/생필품 등을 주문할 수 있어요.</CardDescription>
+              </CardHeader>
+              <CardContent>
                 <Button
-                  variant="outline"
+                  className="w-full"
                   onClick={() => {
                     setReorderDraft(null);
                     setShowKioskOrderForm(true);
                   }}
-                  className="w-full"
                 >
-                  키오스크 판매 물품 주문
+                  주문하기
                 </Button>
-              </div>
-            </CardContent>
-          </Card>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
 
-          <section aria-label="주문 내역">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="h-1 w-1 rounded-full bg-primary"></div>
-              <h2 className="text-xl font-heading font-bold">주문 내역</h2>
-            </div>
-            <OrderHistory
-              token={token}
-              orders={filteredOrders}
-              loading={loading}
-              error={error}
-              onReorder={handleReorder}
-            />
-          </section>
+        <section aria-label="주문 상태" className="space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="h-1 w-1 rounded-full bg-primary"></div>
+            <h2 className="text-xl font-heading font-bold">주문 상태</h2>
+          </div>
+          <OrderStatusSummaryBar
+            orders={orders}
+            loading={loading}
+            error={error}
+            currentFilter={statusFilter}
+            onFilterChange={setStatusFilter}
+          />
+        </section>
+
+        <section aria-label="주문 내역" className="space-y-3">
+          <div className="flex items-center gap-2">
+            <div className="h-1 w-1 rounded-full bg-primary"></div>
+            <h2 className="text-xl font-heading font-bold">주문 내역</h2>
+          </div>
+          <OrderHistory
+            token={token}
+            orders={filteredOrders}
+            loading={loading}
+            error={error}
+            onReorder={handleReorder}
+          />
         </section>
         </TabsContent>
 
