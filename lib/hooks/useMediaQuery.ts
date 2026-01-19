@@ -12,18 +12,32 @@ export function useMediaQuery(query: string, defaultValue = false) {
   useEffect(() => {
     if (typeof window === 'undefined' || !window.matchMedia) return;
 
-    const mql: MediaQueryList = window.matchMedia(query);
-    const onChange = (e: MediaQueryListEvent) => setMatches(e.matches);
+    const mql = window.matchMedia(query) as MediaQueryList & {
+      addListener?: (listener: (this: MediaQueryList, ev: MediaQueryListEvent) => void) => void;
+      removeListener?: (listener: (this: MediaQueryList, ev: MediaQueryListEvent) => void) => void;
+    };
+    const onChange = (event: MediaQueryListEvent) => setMatches(event.matches);
 
     setMatches(mql.matches);
 
-    if ('addEventListener' in mql) {
+    if (typeof mql.addEventListener === 'function') {
       mql.addEventListener('change', onChange);
-      return () => mql.removeEventListener('change', onChange);
+      return () => {
+        if (typeof mql.removeEventListener === 'function') {
+          mql.removeEventListener('change', onChange);
+        }
+      };
     }
 
-    mql.addListener(onChange);
-    return () => mql.removeListener(onChange);
+    // Legacy listener APIs
+    if (typeof mql.addListener === 'function') {
+      mql.addListener(onChange);
+      return () => {
+        if (typeof mql.removeListener === 'function') {
+          mql.removeListener(onChange);
+        }
+      };
+    }
   }, [query]);
 
   return matches;
