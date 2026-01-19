@@ -195,8 +195,10 @@ export function GuestAnnouncements({ announcements, loading, error }: GuestAnnou
       </Card>
 
       <InfoInspector
-        isOpen={!!selected}
-        onClose={() => setSelected(null)}
+        open={!!selected}
+        onOpenChange={(open) => {
+          if (!open) setSelected(null);
+        }}
         title={selected?.title || '공지 상세'}
         description={selected ? formatDateTimeToKorean(selected.startsAt) : undefined}
         className="max-w-lg"
