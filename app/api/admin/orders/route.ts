@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import { API_CONFIG } from '@/lib/constants';
+import { buildAuthHeaders, getAdminTokenFromRequest } from '../_utils';
 
 // 동적 렌더링 강제 (cookies 사용)
 export const dynamic = 'force-dynamic';
@@ -12,16 +12,17 @@ const API_URL = API_CONFIG.baseUrl;
  */
 export async function GET(request: NextRequest) {
   try {
-    // 인증 체크 제거 - 모든 사용자가 접근 가능
+    const token = getAdminTokenFromRequest(request);
+    if (!token) {
+      return NextResponse.json({ error: 'Unauthorized', code: 'UNAUTHORIZED' }, { status: 401 });
+    }
 
     const searchParams = request.nextUrl.searchParams;
     const queryString = searchParams.toString();
 
     const response = await fetch(`${API_URL}/api/admin/orders${queryString ? `?${queryString}` : ''}`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: buildAuthHeaders(token),
     });
 
     if (!response.ok) {

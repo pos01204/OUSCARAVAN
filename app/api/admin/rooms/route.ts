@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import { API_CONFIG } from '@/lib/constants';
+import { buildAuthHeaders, getAdminTokenFromRequest } from '../_utils';
 
 // 동적 렌더링 강제 (cookies 사용)
 export const dynamic = 'force-dynamic';
@@ -12,13 +12,14 @@ const API_URL = API_CONFIG.baseUrl;
  */
 export async function GET() {
   try {
-    // 인증 체크 제거 - 모든 사용자가 접근 가능
+    const token = getAdminTokenFromRequest();
+    if (!token) {
+      return NextResponse.json({ error: 'Unauthorized', code: 'UNAUTHORIZED' }, { status: 401 });
+    }
 
     const response = await fetch(`${API_URL}/api/admin/rooms`, {
       method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: buildAuthHeaders(token),
     });
 
     if (!response.ok) {
@@ -51,15 +52,16 @@ export async function GET() {
  */
 export async function POST(request: NextRequest) {
   try {
-    // 인증 체크 제거 - 모든 사용자가 접근 가능
+    const token = getAdminTokenFromRequest(request);
+    if (!token) {
+      return NextResponse.json({ error: 'Unauthorized', code: 'UNAUTHORIZED' }, { status: 401 });
+    }
 
     const body = await request.json();
 
     const response = await fetch(`${API_URL}/api/admin/rooms`, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: buildAuthHeaders(token),
       body: JSON.stringify(body),
     });
 

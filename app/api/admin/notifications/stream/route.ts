@@ -1,17 +1,20 @@
 import { NextRequest } from 'next/server';
-import { cookies } from 'next/headers';
 import { API_CONFIG } from '@/lib/constants';
+import { buildAuthHeaders, getAdminTokenFromRequest } from '../../_utils';
 
 export async function GET(request: NextRequest) {
   try {
-    // 인증 체크 제거 - 모든 사용자가 접근 가능
+    const token = getAdminTokenFromRequest(request);
+    if (!token) {
+      return new Response('Unauthorized', { status: 401 });
+    }
 
     const apiUrl = API_CONFIG.baseUrl;
     const streamUrl = `${apiUrl}/api/admin/notifications/stream`;
 
-    // Railway API로 SSE 연결 프록시 (인증 헤더 제거)
+    // Railway API로 SSE 연결 프록시 (Authorization 헤더 전달)
     const response = await fetch(streamUrl, {
-      headers: {},
+      headers: buildAuthHeaders(token),
     });
 
     if (!response.ok) {

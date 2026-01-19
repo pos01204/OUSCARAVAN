@@ -31,6 +31,8 @@ function LoginForm() {
     urlError && Object.prototype.hasOwnProperty.call(errorMessages, urlError)
       ? errorMessages[urlError]
       : undefined;
+  const returnUrlParam = searchParams.get('returnUrl');
+  const returnUrl = returnUrlParam && returnUrlParam.startsWith('/') ? returnUrlParam : '/admin';
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -80,10 +82,25 @@ function LoginForm() {
       
       // localStorage에 토큰 저장 (웹뷰 호환)
       saveToken(data.token, data.expiresIn);
+
+      // 서버가 httpOnly 쿠키로도 세팅 (웹뷰 안정성 강화)
+      try {
+        await fetch('/api/auth/session', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token: data.token, expiresIn: data.expiresIn }),
+        });
+      } catch (e) {
+        console.warn('[Login] Failed to set httpOnly cookie session (non-fatal):', e);
+      }
       
-      // 관리자 페이지로 이동
-      console.log('[Login] Redirecting to /admin');
-      router.push('/admin');
+      // 관리자 페이지로 이동 (웹뷰에서는 풀 리로드가 더 안정적)
+      console.log('[Login] Redirecting to:', returnUrl);
+      if (typeof window !== 'undefined') {
+        window.location.href = returnUrl;
+      } else {
+        router.push(returnUrl);
+      }
       
     } catch (err) {
       console.error('[Login] Error:', err);
