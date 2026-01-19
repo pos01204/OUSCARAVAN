@@ -13,18 +13,18 @@ export function QuickActionGrid({ token }: QuickActionGridProps) {
 
   const items = [
     {
+      key: 'checkinout',
+      title: '체크인/아웃하기',
+      desc: '체크인/체크아웃',
+      icon: LogIn,
+      href: `${base}/checkinout`,
+    },
+    {
       key: 'wifi',
       title: 'WiFi 연결',
       desc: '비밀번호/QR',
       icon: Wifi,
       href: `${base}#wifi`,
-    },
-    {
-      key: 'checkinout',
-      title: '체크인/아웃',
-      desc: '상태 확인',
-      icon: LogIn,
-      href: `${base}/checkinout`,
     },
     {
       key: 'order',
