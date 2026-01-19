@@ -44,7 +44,7 @@ function FloorPlanSVGComponent({
         </pattern>
       </defs>
       {/* 도로 표시 (열3 위치, 중심 유지) */}
-      <rect x="203" y="0" width="18" height="280" fill="#e5e7eb" stroke="#9ca3af" strokeWidth="0.5" opacity="0.55" />
+      <rect x="203" y="0" width="18" height="280" fill="#e5e7eb" stroke="#9ca3af" strokeWidth="0.8" opacity="0.7" />
       <text x="212" y="140" textAnchor="middle" dominantBaseline="middle"
             style={{
               fontSize: '10px',
@@ -84,10 +84,10 @@ function FloorPlanSVGComponent({
               height={facility.coordinates.height}
               fill={colors.fill}
               stroke={colors.stroke}
-              strokeWidth={0.8}
+              strokeWidth={1}
               rx="4"
               ry="4"
-              opacity="0.35"
+              opacity="0.7"
             />
             {/* 건물/창고는 텍스트 표시하지 않음 */}
             {facility.name && (
@@ -98,10 +98,10 @@ function FloorPlanSVGComponent({
                 dominantBaseline="middle"
                 style={{
                   fontSize: '11px',
-                  fontWeight: '400',
-                  fill: '#9ca3af',
+                  fontWeight: '600',
+                  fill: '#6b7280',
                   fontFamily: "'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                  opacity: 0.7,
+                  opacity: 0.9,
                 }}
               >
                 {facility.name}
@@ -141,7 +141,7 @@ function FloorPlanSVGComponent({
               } : undefined}
               style={{
                 filter: isAssigned ? 'drop-shadow(0 3px 6px rgba(239, 68, 68, 0.35))' : 'none',
-                opacity: isAssigned ? 1 : 0.8,
+                opacity: isAssigned ? 1 : 0.9,
               }}
             />
             {/* 배정된 공간 강조 레이블 */}
@@ -173,7 +173,7 @@ function FloorPlanSVGComponent({
                   fontWeight: '600',
                   fill: '#6b7280',
                   fontFamily: "'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                  opacity: 0.85,
+                  opacity: 0.95,
                 }}
               >
                 {space.displayName}
