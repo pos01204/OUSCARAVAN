@@ -583,7 +583,7 @@ export function ReservationCalendarView({
         isExpanded,
       };
     }).filter(dayObj => dayObj.reservations.length > 0 || expandedDates.has(format(dayObj.date, 'yyyy-MM-dd')));
-  }, [viewType, currentDate, getReservationsForDate, expandedDates, calendarViewType]);
+  }, [currentDate, getReservationsForDate, expandedDates, calendarViewType]);
 
   return (
     <>
