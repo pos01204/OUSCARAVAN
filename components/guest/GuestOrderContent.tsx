@@ -115,88 +115,49 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
           value="order" 
           className="mt-6 space-y-6 animate-in fade-in-50 slide-in-from-bottom-4 duration-300"
         >
-          {/* 주문 상태 요약 바 */}
-          <section aria-label="주문 상태 요약">
-            <OrderStatusSummaryBar
-              orders={orders}
-              loading={loading}
-              error={error}
-              currentFilter={statusFilter}
-              onFilterChange={setStatusFilter}
-            />
-          </section>
-
-          {/* 배송 주문 섹션 */}
-          <section aria-label="배송 주문" className="space-y-4">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="h-1 w-1 rounded-full bg-primary"></div>
-              <h2 className="text-xl md:text-2xl font-heading font-bold">
-                배송 주문
-              </h2>
-            </div>
-            
-            {/* 불멍/바베큐 세트 */}
-            <Card className="transition-all duration-200 hover:shadow-lg hover:border-primary/20 group">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                    <ShoppingBag className="h-5 w-5 text-primary" />
-                  </div>
-                  <span>불멍/바베큐 세트</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="mb-4 text-sm text-muted-foreground leading-relaxed">
-                  원하는 세트를 선택하여 주문하세요. 배송 시간을 지정할 수 있습니다.
-                </p>
-                <button
+        <section aria-label="주문 상태 및 내역" className="space-y-6">
+          <Card className="border-border/60">
+            <CardHeader className="pb-4">
+              <CardTitle className="text-lg font-semibold">주문 상태</CardTitle>
+              <CardDescription>주문 상태를 확인하고 원하는 서비스를 바로 선택하세요.</CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-5">
+              <OrderStatusSummaryBar
+                orders={orders}
+                loading={loading}
+                error={error}
+                currentFilter={statusFilter}
+                onFilterChange={setStatusFilter}
+              />
+              <div className="flex flex-col gap-3">
+                <Button
+                  variant="outline"
                   onClick={() => {
                     setReorderDraft(null);
                     setShowOrderForm(true);
                   }}
-                  className="w-full rounded-lg bg-primary px-4 py-3.5 font-semibold text-primary-foreground transition-all duration-200 hover:bg-primary/90 hover:shadow-lg active:scale-[0.97] shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  aria-label="불멍/바베큐 주문 폼 열기"
+                  className="w-full"
                 >
-                  주문하기
-                </button>
-              </CardContent>
-            </Card>
-
-            {/* 키오스크 물품 */}
-            <Card className="transition-all duration-200 hover:shadow-lg hover:border-primary/20 group">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <div className="p-2 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
-                    <Package className="h-5 w-5 text-primary" />
-                  </div>
-                  <span>키오스크 판매 물품</span>
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="mb-4 text-sm text-muted-foreground leading-relaxed">
-                  음료, 간식, 생필품 등 키오스크에서 판매하는 물품을 주문하실 수 있습니다.
-                </p>
-                <button
+                  배송 주문 (불멍/바베큐 세트)
+                </Button>
+                <Button
+                  variant="outline"
                   onClick={() => {
                     setReorderDraft(null);
                     setShowKioskOrderForm(true);
                   }}
-                  className="w-full rounded-lg bg-primary px-4 py-3.5 font-semibold text-primary-foreground transition-all duration-200 hover:bg-primary/90 hover:shadow-lg active:scale-[0.97] shadow-md focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  aria-label="키오스크 주문 폼 열기"
+                  className="w-full"
                 >
-                  주문하기
-                </button>
-              </CardContent>
-            </Card>
-          </section>
+                  키오스크 판매 물품 주문
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
 
-          {/* 주문 내역 섹션 */}
-          <section aria-label="주문 내역" className="pt-2">
+          <section aria-label="주문 내역">
             <div className="flex items-center gap-2 mb-4">
               <div className="h-1 w-1 rounded-full bg-primary"></div>
-              <h2 className="text-xl md:text-2xl font-heading font-bold">
-                주문 내역
-              </h2>
+              <h2 className="text-xl font-heading font-bold">주문 내역</h2>
             </div>
             <OrderHistory
               token={token}
@@ -206,6 +167,7 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
               onReorder={handleReorder}
             />
           </section>
+        </section>
         </TabsContent>
 
         {/* 카페 이용 탭 */}
