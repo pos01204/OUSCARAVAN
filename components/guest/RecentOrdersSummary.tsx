@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import type { Order } from '@/lib/api';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -11,6 +12,13 @@ interface RecentOrdersSummaryProps {
   token: string;
   maxItems?: number;
 }
+
+const ORDER_STATUS_LABELS: Record<Order['status'], string> = {
+  pending: '대기 중',
+  preparing: '준비 중',
+  delivering: '배송 중',
+  completed: '완료',
+};
 
 export function RecentOrdersSummary({ token, maxItems = 2 }: RecentOrdersSummaryProps) {
   const { orders, loading, error } = useGuestOrders(token);
@@ -93,7 +101,7 @@ export function RecentOrdersSummary({ token, maxItems = 2 }: RecentOrdersSummary
               <div className="text-right shrink-0">
                 <p className="text-sm font-bold text-primary">{o.totalAmount.toLocaleString()}원</p>
                 <Badge variant="outline" className="mt-1 text-xs">
-                  {o.status}
+                  {ORDER_STATUS_LABELS[o.status]}
                 </Badge>
               </div>
             </div>
