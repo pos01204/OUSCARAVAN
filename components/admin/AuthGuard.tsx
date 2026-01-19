@@ -42,7 +42,16 @@ export function AuthGuard({ children }: AuthGuardProps) {
         console.log('[AuthGuard] Not authenticated, redirecting to login');
         // 현재 경로를 쿼리 파라미터로 전달 (로그인 후 돌아오기 위해)
         const returnUrl = encodeURIComponent(pathname);
-        router.replace(`/login?returnUrl=${returnUrl}`);
+        const loginUrl = `/login?returnUrl=${returnUrl}`;
+        // 라우터 리다이렉트 시도
+        router.replace(loginUrl);
+        // 웹뷰에서 router.replace가 간헐적으로 실패/지연될 수 있어 window.location 폴백 적용
+        if (typeof window !== 'undefined') {
+          window.location.replace(loginUrl);
+        }
+        // 상태를 종료 상태로 변경하여 '인증 확인 중...'에서 고정되지 않도록 함
+        setIsAuthed(false);
+        setIsChecking(false);
         return;
       }
       

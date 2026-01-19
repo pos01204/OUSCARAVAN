@@ -10,22 +10,100 @@
 const TOKEN_KEY = 'admin-token';
 const TOKEN_EXPIRY_KEY = 'admin-token-expiry';
 
+function isBrowser() {
+  return typeof window !== 'undefined' && typeof document !== 'undefined';
+}
+
+function safeGetStorage(type: 'localStorage' | 'sessionStorage'): Storage | null {
+  if (!isBrowser()) return null;
+  try {
+    const storage = window[type];
+    // iOS Safari/일부 웹뷰에서 quota/권한 문제를 조기에 감지하기 위한 probe
+    const probeKey = '__storage_probe__';
+    storage.setItem(probeKey, '1');
+    storage.removeItem(probeKey);
+    return storage;
+  } catch {
+    return null;
+  }
+}
+
+function setCookie(name: string, value: string, maxAgeSeconds: number) {
+  if (!isBrowser()) return;
+  try {
+    const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+    // 웹뷰 호환성 우선: SameSite=Lax
+    document.cookie = `${encodeURIComponent(name)}=${encodeURIComponent(value)}; Path=/; Max-Age=${maxAgeSeconds}; SameSite=Lax${secure}`;
+  } catch (error) {
+    console.error('[AuthClient] Failed to set cookie:', error);
+  }
+}
+
+function getCookie(name: string): string | null {
+  if (!isBrowser()) return null;
+  try {
+    const encodedName = encodeURIComponent(name) + '=';
+    const parts = document.cookie.split(';').map(p => p.trim());
+    for (const part of parts) {
+      if (part.startsWith(encodedName)) {
+        return decodeURIComponent(part.substring(encodedName.length));
+      }
+    }
+    return null;
+  } catch (error) {
+    console.error('[AuthClient] Failed to get cookie:', error);
+    return null;
+  }
+}
+
+function deleteCookie(name: string) {
+  if (!isBrowser()) return;
+  try {
+    const secure = window.location.protocol === 'https:' ? '; Secure' : '';
+    document.cookie = `${encodeURIComponent(name)}=; Path=/; Max-Age=0; SameSite=Lax${secure}`;
+  } catch (error) {
+    console.error('[AuthClient] Failed to delete cookie:', error);
+  }
+}
+
 /**
  * 토큰 저장
  * @param token - JWT 토큰
  * @param expiresIn - 만료 시간 (초 단위, 기본 7일)
  */
 export function saveToken(token: string, expiresIn: number = 7 * 24 * 60 * 60): void {
-  if (typeof window === 'undefined') return;
+  if (!isBrowser()) return;
   
   try {
-    localStorage.setItem(TOKEN_KEY, token);
-    
     // 만료 시간 저장 (현재 시간 + expiresIn 초)
     const expiryTime = Date.now() + (expiresIn * 1000);
-    localStorage.setItem(TOKEN_EXPIRY_KEY, expiryTime.toString());
-    
-    console.log('[AuthClient] Token saved successfully');
+    const expiryValue = expiryTime.toString();
+
+    // 1) localStorage
+    const ls = safeGetStorage('localStorage');
+    if (ls) {
+      ls.setItem(TOKEN_KEY, token);
+      ls.setItem(TOKEN_EXPIRY_KEY, expiryValue);
+      console.log('[AuthClient] Token saved to localStorage');
+    } else {
+      console.log('[AuthClient] localStorage not available');
+    }
+
+    // 2) sessionStorage (localStorage가 막힌 웹뷰 대비)
+    const ss = safeGetStorage('sessionStorage');
+    if (ss) {
+      ss.setItem(TOKEN_KEY, token);
+      ss.setItem(TOKEN_EXPIRY_KEY, expiryValue);
+      console.log('[AuthClient] Token saved to sessionStorage');
+    } else {
+      console.log('[AuthClient] sessionStorage not available');
+    }
+
+    // 3) cookie (스토리지 둘 다 막힌 웹뷰 대비 + 서버 폴백)
+    setCookie(TOKEN_KEY, token, expiresIn);
+    setCookie(TOKEN_EXPIRY_KEY, expiryValue, expiresIn);
+    console.log('[AuthClient] Token saved to cookie');
+
     console.log('[AuthClient] Token expires at:', new Date(expiryTime).toLocaleString());
   } catch (error) {
     console.error('[AuthClient] Failed to save token:', error);
@@ -37,11 +115,22 @@ export function saveToken(token: string, expiresIn: number = 7 * 24 * 60 * 60): 
  * @returns 유효한 토큰 또는 null
  */
 export function getToken(): string | null {
-  if (typeof window === 'undefined') return null;
-  
   try {
-    const token = localStorage.getItem(TOKEN_KEY);
-    const expiry = localStorage.getItem(TOKEN_EXPIRY_KEY);
+    if (!isBrowser()) return null;
+
+    // 조회 우선순위: localStorage -> sessionStorage -> cookie
+    const ls = safeGetStorage('localStorage');
+    const ss = safeGetStorage('sessionStorage');
+
+    const token =
+      ls?.getItem(TOKEN_KEY) ??
+      ss?.getItem(TOKEN_KEY) ??
+      getCookie(TOKEN_KEY);
+
+    const expiry =
+      ls?.getItem(TOKEN_EXPIRY_KEY) ??
+      ss?.getItem(TOKEN_EXPIRY_KEY) ??
+      getCookie(TOKEN_EXPIRY_KEY);
     
     // 토큰이 없으면 null
     if (!token) {
@@ -69,11 +158,17 @@ export function getToken(): string | null {
  * 토큰 삭제
  */
 export function clearToken(): void {
-  if (typeof window === 'undefined') return;
+  if (!isBrowser()) return;
   
   try {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(TOKEN_EXPIRY_KEY);
+    const ls = safeGetStorage('localStorage');
+    const ss = safeGetStorage('sessionStorage');
+    ls?.removeItem(TOKEN_KEY);
+    ls?.removeItem(TOKEN_EXPIRY_KEY);
+    ss?.removeItem(TOKEN_KEY);
+    ss?.removeItem(TOKEN_EXPIRY_KEY);
+    deleteCookie(TOKEN_KEY);
+    deleteCookie(TOKEN_EXPIRY_KEY);
     console.log('[AuthClient] Token cleared');
   } catch (error) {
     console.error('[AuthClient] Failed to clear token:', error);
@@ -103,10 +198,15 @@ export function getAuthHeader(): { Authorization: string } | Record<string, neve
  * @returns 남은 시간 (밀리초) 또는 null (토큰 없음)
  */
 export function getTokenRemainingTime(): number | null {
-  if (typeof window === 'undefined') return null;
-  
   try {
-    const expiry = localStorage.getItem(TOKEN_EXPIRY_KEY);
+    if (!isBrowser()) return null;
+
+    const ls = safeGetStorage('localStorage');
+    const ss = safeGetStorage('sessionStorage');
+    const expiry =
+      ls?.getItem(TOKEN_EXPIRY_KEY) ??
+      ss?.getItem(TOKEN_EXPIRY_KEY) ??
+      getCookie(TOKEN_EXPIRY_KEY);
     if (!expiry) return null;
     
     const expiryTime = parseInt(expiry, 10);

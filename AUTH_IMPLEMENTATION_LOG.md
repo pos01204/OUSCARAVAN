@@ -248,7 +248,7 @@ components/
    └── JWT 토큰 반환 (7일 유효)
    
 3. 토큰 저장
-   └── localStorage에 저장 (웹뷰 호환)
+   └── localStorage → sessionStorage → cookie 폴백 저장 (웹뷰 호환)
    
 4. API 호출
    └── Authorization: Bearer <token> 헤더로 전송
@@ -258,8 +258,37 @@ components/
    └── 2순위: 쿠키 (폴백)
    
 6. 로그아웃
-   └── localStorage 토큰 삭제 → 로그인 페이지 이동
+   └── localStorage/sessionStorage/cookie 토큰 삭제 → 로그인 페이지 이동
 ```
+
+---
+
+## 🚨 운영 이슈 진단 및 후속 패치 (2026-01-19)
+
+### 증상 1: 웹뷰에서 `인증 확인 중...` 화면이 진행되지 않음
+
+- **원인**
+  - `components/admin/AuthGuard.tsx`에서 미인증 분기 시 `router.replace()`만 호출하고 `setIsChecking(false)`가 호출되지 않아, 웹뷰에서 라우팅이 지연/실패하면 화면이 **무한 로딩 상태로 고정**될 수 있음.
+  - 일부 웹뷰(iOS/Safari 계열, 앱 내 브라우저)에서 **localStorage 접근이 차단/예외**가 발생해 토큰 저장/조회가 실패할 수 있음.
+
+- **해결**
+  - `AuthGuard` 미인증 분기에서 `setIsChecking(false)`로 로딩을 종료하고, `window.location.replace()`를 **폴백 리다이렉트**로 추가.
+  - `lib/auth-client.ts`에 **다중 저장소 폴백(localStorage → sessionStorage → cookie)** 구현:
+    - 저장: localStorage/ sessionStorage 시도 + cookie 기록
+    - 조회: localStorage → sessionStorage → cookie 순서
+    - 삭제: 3곳 모두 정리
+
+### 증상 2: Railway 로그에 `rooms_name_key` 중복(예: 1호 이미 존재) 에러 발생
+
+- **원인**
+  - 기존 `run-migrations.ts`의 rooms 마이그레이션이 `A1`→`1호`로 **rename**하는 방식이라, 이미 `1호`가 존재하는 환경에서는 `UNIQUE(name)` 충돌이 발생.
+  - 충돌 시 마이그레이션이 부분 실패/스킵되며, 결과적으로 **rooms가 10개를 보장하지 못함**.
+
+- **해결**
+  - `railway-backend/src/migrations/run-migrations.ts`를 수정하여 rooms를 다음 원칙으로 **정규화**:
+    - `reservations.assigned_room`은 `A1~B2` → `1호~10호`로 매핑
+    - `rooms`는 `1호~10호`를 **upsert**로 보정
+    - `rooms`에서 `1호~10호` 외 데이터는 **삭제**하여 항상 10개만 유지
 
 ### 보안 고려사항
 - localStorage는 XSS 공격에 취약할 수 있음
