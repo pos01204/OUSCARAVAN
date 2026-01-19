@@ -3,6 +3,7 @@
 import { memo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { FloorPlanViewer } from '@/components/features/FloorPlanViewer';
+import { getSpaceByRoom } from '@/lib/constants/floorPlan';
 import { MapPin } from 'lucide-react';
 
 interface FloorPlanCardProps {
@@ -16,6 +17,18 @@ function FloorPlanCardComponent({ assignedRoom }: FloorPlanCardProps) {
     return null;
   }
 
+  const assignedSpace = getSpaceByRoom(assignedRoom);
+  const roomLabel = `카라반 ${assignedRoom.replace('호', '')}`;
+  const positionLabel = (() => {
+    if (!assignedSpace) return '';
+    const centerX = assignedSpace.coordinates.x + assignedSpace.coordinates.width / 2;
+    const centerY = assignedSpace.coordinates.y + assignedSpace.coordinates.height / 2;
+    const isLeft = centerX < 203;
+    const xLabel = isLeft ? '좌측' : '우측';
+    const yLabel = centerY < 150 ? '상단' : centerY < 210 ? '중단' : '하단';
+    return `${xLabel} ${yLabel}`;
+  })();
+
   return (
     <Card className="border-primary/10 shadow-sm overflow-hidden" role="region" aria-label="배정된 공간 약도">
       <CardHeader className="pb-3">
@@ -24,8 +37,8 @@ function FloorPlanCardComponent({ assignedRoom }: FloorPlanCardProps) {
             <MapPin className="h-4 w-4 text-primary" aria-hidden="true" />
           </div>
           <div>
-            <CardTitle className="text-xl">배정된 공간</CardTitle>
-            <CardDescription className="text-sm">지정된 카라반 위치를 확인하세요</CardDescription>
+            <CardTitle className="text-xl">배정된 카라반 위치</CardTitle>
+            <CardDescription className="text-sm">현재 배정된 카라반 위치를 지도에서 바로 확인하세요</CardDescription>
           </div>
         </div>
       </CardHeader>
@@ -39,7 +52,7 @@ function FloorPlanCardComponent({ assignedRoom }: FloorPlanCardProps) {
             aria-label="배정된 공간 표시"
           ></div>
           <p className="font-medium text-primary">
-            당신의 공간
+            고객님의 공간: {roomLabel}{positionLabel ? ` (${positionLabel})` : ''}
           </p>
         </div>
       </CardContent>

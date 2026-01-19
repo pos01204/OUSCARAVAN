@@ -83,14 +83,14 @@ export const FLOOR_PLAN_CONFIG: FloorPlanConfig = {
     {
       id: '2',
       name: '2호',
-      displayName: '2호',
+      displayName: '카라반 2',
       coordinates: { x: 10, y: 120, width: 96, height: 50 },
       capacity: 4,
     },
     {
       id: '1',
       name: '1호',
-      displayName: '1호',
+      displayName: '카라반 1',
       coordinates: { x: 110, y: 120, width: 96, height: 50 },
       capacity: 4,
     },
@@ -98,35 +98,35 @@ export const FLOOR_PLAN_CONFIG: FloorPlanConfig = {
     {
       id: '4',
       name: '4호',
-      displayName: '4호',
+      displayName: '카라반 4',
       coordinates: { x: 10, y: 174, width: 96, height: 50 },
       capacity: 4,
     },
     {
       id: '3',
       name: '3호',
-      displayName: '3호',
+      displayName: '카라반 3',
       coordinates: { x: 110, y: 174, width: 96, height: 50 },
       capacity: 4,
     },
     {
       id: '7',
       name: '7호',
-      displayName: '7호',
+      displayName: '카라반 7',
       coordinates: { x: 418, y: 174, width: 96, height: 50 }, // 열6
       capacity: 4,
     },
     {
       id: '8',
       name: '8호',
-      displayName: '8호',
+      displayName: '카라반 8',
       coordinates: { x: 518, y: 174, width: 96, height: 50 }, // 열7
       capacity: 4,
     },
     {
       id: '9',
       name: '9호',
-      displayName: '9호',
+      displayName: '카라반 9',
       coordinates: { x: 618, y: 174, width: 96, height: 50 }, // 열8
       capacity: 4,
     },
@@ -134,21 +134,21 @@ export const FLOOR_PLAN_CONFIG: FloorPlanConfig = {
     {
       id: '6',
       name: '6호',
-      displayName: '6호',
+      displayName: '카라반 6',
       coordinates: { x: 10, y: 228, width: 96, height: 50 },
       capacity: 2,
     },
     {
       id: '5',
       name: '5호',
-      displayName: '5호',
+      displayName: '카라반 5',
       coordinates: { x: 110, y: 228, width: 96, height: 50 },
       capacity: 4,
     },
     {
       id: '10',
       name: '10호',
-      displayName: '10호',
+      displayName: '카라반 10',
       coordinates: { x: 518, y: 228, width: 96, height: 50 }, // 열7
       capacity: 2,
     },

@@ -44,7 +44,7 @@ function FloorPlanSVGComponent({
         </pattern>
       </defs>
       {/* 도로 표시 (열3 위치, 중심 유지) */}
-      <rect x="206" y="0" width="12" height="280" fill="#e5e7eb" stroke="#9ca3af" strokeWidth="0.5" opacity="0.55" />
+      <rect x="203" y="0" width="18" height="280" fill="#e5e7eb" stroke="#9ca3af" strokeWidth="0.5" opacity="0.55" />
       <text x="212" y="140" textAnchor="middle" dominantBaseline="middle"
             style={{
               fontSize: '10px',
@@ -61,13 +61,13 @@ function FloorPlanSVGComponent({
         const getFacilityColor = () => {
           switch (facility.type) {
             case 'parking':
-              return { fill: '#dbeafe', stroke: '#3b82f6' }; // 파란색 계열로 주차공간 구분
+              return { fill: '#f3f4f6', stroke: '#cbd5e1' };
             case 'building':
-              return { fill: '#e5e7eb', stroke: '#6b7280' };
+              return { fill: '#e5e7eb', stroke: '#94a3b8' };
             case 'cafe':
-              return { fill: '#fef3c7', stroke: '#f59e0b' };
+              return { fill: '#e5e7eb', stroke: '#94a3b8' };
             case 'warehouse':
-              return { fill: '#e5e7eb', stroke: '#6b7280' };
+              return { fill: '#e5e7eb', stroke: '#94a3b8' };
             default:
               return { fill: '#f9fafb', stroke: '#d1d5db' };
           }
@@ -84,10 +84,10 @@ function FloorPlanSVGComponent({
               height={facility.coordinates.height}
               fill={colors.fill}
               stroke={colors.stroke}
-              strokeWidth={1.2}
+              strokeWidth={0.8}
               rx="4"
               ry="4"
-              opacity="0.6"
+              opacity="0.35"
             />
             {/* 건물/창고는 텍스트 표시하지 않음 */}
             {facility.name && (
@@ -97,10 +97,11 @@ function FloorPlanSVGComponent({
                 textAnchor="middle"
                 dominantBaseline="middle"
                 style={{
-                  fontSize: '13px',
-                  fontWeight: '500',
-                  fill: '#6b7280',
+                  fontSize: '11px',
+                  fontWeight: '400',
+                  fill: '#9ca3af',
                   fontFamily: "'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+                  opacity: 0.7,
                 }}
               >
                 {facility.name}
@@ -122,9 +123,9 @@ function FloorPlanSVGComponent({
               y={space.coordinates.y}
               width={space.coordinates.width}
               height={space.coordinates.height}
-              fill={isAssigned ? 'rgba(239, 68, 68, 0.2)' : '#ffffff'}
-              stroke={isAssigned ? '#ef4444' : '#d1d5db'}
-              strokeWidth={isAssigned ? 4 : 1.5}
+              fill={isAssigned ? 'rgba(239, 68, 68, 0.2)' : '#f8fafc'}
+              stroke={isAssigned ? '#ef4444' : '#e5e7eb'}
+              strokeWidth={isAssigned ? 4 : 1.2}
               rx="4"
               ry="4"
               className={onSpaceClick ? 'cursor-pointer hover:opacity-90 transition-all duration-200' : ''}
@@ -140,9 +141,10 @@ function FloorPlanSVGComponent({
               } : undefined}
               style={{
                 filter: isAssigned ? 'drop-shadow(0 3px 6px rgba(239, 68, 68, 0.35))' : 'none',
+                opacity: isAssigned ? 1 : 0.55,
               }}
             />
-            {/* 배정된 공간에만 "당신의 공간" 레이블 표시 (호수 정보는 표시하지 않음) */}
+            {/* 배정된 공간 강조 레이블 */}
             {isAssigned && (
               <text
                 x={space.coordinates.x + space.coordinates.width / 2}
@@ -150,13 +152,36 @@ function FloorPlanSVGComponent({
                 textAnchor="middle"
                 dominantBaseline="middle"
                 style={{
-                  fontSize: '16px',
+                  fontSize: '13px',
                   fontWeight: '700',
                   fill: '#ef4444',
                   fontFamily: "'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
                 }}
               >
-                당신의 공간
+                <tspan x={space.coordinates.x + space.coordinates.width / 2} dy="-2">
+                  {space.displayName}
+                </tspan>
+                <tspan x={space.coordinates.x + space.coordinates.width / 2} dy="14" style={{ fontSize: '11px', fontWeight: 600 }}>
+                  고객님의 공간
+                </tspan>
+              </text>
+            )}
+            {/* 나머지 공간은 최소 라벨 표시 */}
+            {!isAssigned && showLabels && (
+              <text
+                x={space.coordinates.x + space.coordinates.width / 2}
+                y={space.coordinates.y + space.coordinates.height / 2}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                style={{
+                  fontSize: '10px',
+                  fontWeight: '500',
+                  fill: '#9ca3af',
+                  fontFamily: "'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
+                  opacity: 0.75,
+                }}
+              >
+                {space.displayName}
               </text>
             )}
           </g>
