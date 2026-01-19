@@ -46,6 +46,9 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
   const { orders, loading, error } = useGuestOrders(token);
   const filteredOrders = useMemo(() => {
     if (statusFilter === 'all') return orders;
+    if (statusFilter === 'preparing') {
+      return orders.filter((o) => o.status === 'preparing' || o.status === 'delivering');
+    }
     return orders.filter((o) => o.status === statusFilter);
   }, [orders, statusFilter]);
 

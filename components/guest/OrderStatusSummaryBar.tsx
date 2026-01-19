@@ -1,6 +1,6 @@
 'use client';
 
-import { Clock, Package, Truck, CheckCircle } from 'lucide-react';
+import { Clock, Package, CheckCircle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
@@ -22,7 +22,6 @@ const STATUS_CHIPS: Array<{
   { key: 'all', label: '전체' },
   { key: 'pending', label: '대기', icon: Clock },
   { key: 'preparing', label: '준비', icon: Package },
-  { key: 'delivering', label: '배송', icon: Truck },
   { key: 'completed', label: '완료', icon: CheckCircle },
 ];
 
@@ -36,8 +35,7 @@ export function OrderStatusSummaryBar({
   const statusCounts = {
     all: orders.length,
     pending: orders.filter((o) => o.status === 'pending').length,
-    preparing: orders.filter((o) => o.status === 'preparing').length,
-    delivering: orders.filter((o) => o.status === 'delivering').length,
+    preparing: orders.filter((o) => o.status === 'preparing' || o.status === 'delivering').length,
     completed: orders.filter((o) => o.status === 'completed').length,
   };
 

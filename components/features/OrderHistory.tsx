@@ -7,7 +7,7 @@ import { Button } from '@/components/ui/button';
 import { type Order } from '@/lib/api';
 import { format } from 'date-fns';
 import { ko } from 'date-fns/locale';
-import { Clock, Package, Truck, CheckCircle, Info, RotateCcw } from 'lucide-react';
+import { Clock, Package, CheckCircle, Info, RotateCcw } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { InfoInspector } from '@/components/guest/InfoInspector';
 
@@ -22,7 +22,7 @@ interface OrderHistoryProps {
 const STATUS_CONFIG: Record<Order['status'], { label: string; variant: 'default' | 'secondary' | 'outline' | 'destructive'; icon: typeof Clock }> = {
   pending: { label: '대기 중', variant: 'outline', icon: Clock },
   preparing: { label: '준비 중', variant: 'secondary', icon: Package },
-  delivering: { label: '배송 중', variant: 'default', icon: Truck },
+  delivering: { label: '준비 중', variant: 'secondary', icon: Package },
   completed: { label: '완료', variant: 'default', icon: CheckCircle },
 };
 
@@ -32,15 +32,16 @@ const TYPE_LABELS: Record<Order['type'], string> = {
   kiosk: '키오스크',
 };
 
-const ORDER_STATUS_STEPS: Array<{ key: Order['status']; label: string }> = [
+const ORDER_STATUS_STEPS: Array<{ key: 'pending' | 'preparing' | 'completed'; label: string }> = [
   { key: 'pending', label: '대기' },
   { key: 'preparing', label: '준비' },
-  { key: 'delivering', label: '배송' },
   { key: 'completed', label: '완료' },
 ];
 
 function getStatusStepIndex(status: Order['status']) {
-  return Math.max(0, ORDER_STATUS_STEPS.findIndex((s) => s.key === status));
+  const normalized: 'pending' | 'preparing' | 'completed' =
+    status === 'completed' ? 'completed' : status === 'pending' ? 'pending' : 'preparing';
+  return Math.max(0, ORDER_STATUS_STEPS.findIndex((s) => s.key === normalized));
 }
 
 function OrderStatusStepper({ status }: { status: Order['status'] }) {

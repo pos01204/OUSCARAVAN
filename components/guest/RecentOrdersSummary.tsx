@@ -16,7 +16,7 @@ interface RecentOrdersSummaryProps {
 const ORDER_STATUS_LABELS: Record<Order['status'], string> = {
   pending: '대기 중',
   preparing: '준비 중',
-  delivering: '배송 중',
+  delivering: '준비 중',
   completed: '완료',
 };
 

@@ -78,22 +78,22 @@ export function OrderFiltersClient() {
             });
           }}
         >
-          준비중
+          확인
         </Button>
         <Button
-          variant={status === 'delivering' ? 'default' : 'outline'}
+          variant={status === 'completed' ? 'default' : 'outline'}
           size="sm"
           className="min-h-[36px] whitespace-nowrap flex-shrink-0"
           onClick={() => {
-            setStatus('delivering');
+            setStatus('completed');
             startTransition(() => {
               const params = new URLSearchParams(searchParams.toString());
-              params.set('status', 'delivering');
+              params.set('status', 'completed');
               router.push(`/admin/orders?${params.toString()}`);
             });
           }}
         >
-          배송중
+          완료
         </Button>
         <Button
           variant={date === new Date().toISOString().split('T')[0] ? 'default' : 'outline'}
