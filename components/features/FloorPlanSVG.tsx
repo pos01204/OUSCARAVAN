@@ -141,7 +141,7 @@ function FloorPlanSVGComponent({
               } : undefined}
               style={{
                 filter: isAssigned ? 'drop-shadow(0 3px 6px rgba(239, 68, 68, 0.35))' : 'none',
-                opacity: isAssigned ? 1 : 0.55,
+                opacity: isAssigned ? 1 : 0.8,
               }}
             />
             {/* 배정된 공간 강조 레이블 */}
@@ -158,12 +158,7 @@ function FloorPlanSVGComponent({
                   fontFamily: "'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
                 }}
               >
-                <tspan x={space.coordinates.x + space.coordinates.width / 2} dy="-2">
-                  {space.displayName}
-                </tspan>
-                <tspan x={space.coordinates.x + space.coordinates.width / 2} dy="14" style={{ fontSize: '11px', fontWeight: 600 }}>
-                  고객님의 공간
-                </tspan>
+                {space.displayName}
               </text>
             )}
             {/* 나머지 공간은 최소 라벨 표시 */}
@@ -175,10 +170,10 @@ function FloorPlanSVGComponent({
                 dominantBaseline="middle"
                 style={{
                   fontSize: '10px',
-                  fontWeight: '500',
-                  fill: '#9ca3af',
+                  fontWeight: '600',
+                  fill: '#6b7280',
                   fontFamily: "'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                  opacity: 0.75,
+                  opacity: 0.85,
                 }}
               >
                 {space.displayName}
