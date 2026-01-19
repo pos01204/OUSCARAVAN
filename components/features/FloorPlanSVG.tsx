@@ -43,14 +43,14 @@ function FloorPlanSVGComponent({
           <path d="M 20 0 L 0 0 0 20" fill="none" stroke="#e5e7eb" strokeWidth="0.5" opacity="0.2" />
         </pattern>
       </defs>
-      {/* 도로 표시 (열3 위치, x=210) - CSV 그리드 구조에 맞춰 조정 */}
-      <rect x="210" y="0" width="4" height="280" fill="#d1d5db" opacity="0.3" />
-      <text x="212" y="140" textAnchor="middle" dominantBaseline="middle" 
-            style={{ 
-              fontSize: '7px', 
-              fill: '#6b7280', 
+      {/* 도로 표시 (열3 위치, 중심 유지) */}
+      <rect x="206" y="0" width="12" height="280" fill="#e5e7eb" stroke="#9ca3af" strokeWidth="0.5" opacity="0.55" />
+      <text x="212" y="140" textAnchor="middle" dominantBaseline="middle"
+            style={{
+              fontSize: '10px',
+              fill: '#4b5563',
               fontFamily: "'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-              fontWeight: '400'
+              fontWeight: '600'
             }}
             transform="rotate(-90 212 140)">
         도로
@@ -84,10 +84,10 @@ function FloorPlanSVGComponent({
               height={facility.coordinates.height}
               fill={colors.fill}
               stroke={colors.stroke}
-              strokeWidth={1.5}
+              strokeWidth={1.2}
               rx="4"
               ry="4"
-              opacity="0.8"
+              opacity="0.6"
             />
             {/* 건물/창고는 텍스트 표시하지 않음 */}
             {facility.name && (
@@ -97,9 +97,9 @@ function FloorPlanSVGComponent({
                 textAnchor="middle"
                 dominantBaseline="middle"
                 style={{
-                  fontSize: '12px',
+                  fontSize: '13px',
                   fontWeight: '500',
-                  fill: '#374151',
+                  fill: '#6b7280',
                   fontFamily: "'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
                 }}
               >
@@ -122,9 +122,9 @@ function FloorPlanSVGComponent({
               y={space.coordinates.y}
               width={space.coordinates.width}
               height={space.coordinates.height}
-              fill={isAssigned ? 'rgba(239, 68, 68, 0.15)' : '#ffffff'}
+              fill={isAssigned ? 'rgba(239, 68, 68, 0.2)' : '#ffffff'}
               stroke={isAssigned ? '#ef4444' : '#d1d5db'}
-              strokeWidth={isAssigned ? 3 : 1.5}
+              strokeWidth={isAssigned ? 4 : 1.5}
               rx="4"
               ry="4"
               className={onSpaceClick ? 'cursor-pointer hover:opacity-90 transition-all duration-200' : ''}
@@ -139,7 +139,7 @@ function FloorPlanSVGComponent({
                 }
               } : undefined}
               style={{
-                filter: isAssigned ? 'drop-shadow(0 2px 4px rgba(239, 68, 68, 0.3))' : 'none',
+                filter: isAssigned ? 'drop-shadow(0 3px 6px rgba(239, 68, 68, 0.35))' : 'none',
               }}
             />
             {/* 배정된 공간에만 "당신의 공간" 레이블 표시 (호수 정보는 표시하지 않음) */}
@@ -150,8 +150,8 @@ function FloorPlanSVGComponent({
                 textAnchor="middle"
                 dominantBaseline="middle"
                 style={{
-                  fontSize: '14px',
-                  fontWeight: '600',
+                  fontSize: '16px',
+                  fontWeight: '700',
                   fill: '#ef4444',
                   fontFamily: "'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
                 }}

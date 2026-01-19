@@ -24,8 +24,8 @@ function FloorPlanCardComponent({ assignedRoom }: FloorPlanCardProps) {
             <MapPin className="h-4 w-4 text-primary" aria-hidden="true" />
           </div>
           <div>
-            <CardTitle className="text-lg">배정된 공간</CardTitle>
-            <CardDescription>지정된 카라반 위치를 확인하세요</CardDescription>
+            <CardTitle className="text-xl">배정된 공간</CardTitle>
+            <CardDescription className="text-sm">지정된 카라반 위치를 확인하세요</CardDescription>
           </div>
         </div>
       </CardHeader>
