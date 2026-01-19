@@ -2,13 +2,11 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { getOrders, type Order } from '@/lib/api';
-import { useGuestStore } from '@/lib/store';
 
 export function useGuestOrders(token: string) {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const localOrders = useGuestStore((state) => state.orders);
 
   useEffect(() => {
     let cancelled = false;
@@ -18,13 +16,7 @@ export function useGuestOrders(token: string) {
         setLoading(true);
         const response = await getOrders(token);
         if (cancelled) return;
-        const fetched = response.orders || [];
-        if (cancelled) return;
-        const merged = [
-          ...fetched,
-          ...localOrders.filter((local) => !fetched.some((o) => o.id === local.id)),
-        ];
-        setOrders(merged);
+        setOrders(response.orders || []);
         setError(null);
       } catch (err) {
         console.error('Failed to fetch orders:', err);
@@ -39,7 +31,7 @@ export function useGuestOrders(token: string) {
     return () => {
       cancelled = true;
     };
-  }, [token, localOrders]);
+    }, [token]);
 
   const statusCounts = useMemo(() => {
     return {
