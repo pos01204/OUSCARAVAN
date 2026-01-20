@@ -30,7 +30,7 @@ export default async function GuestLayout({
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <GuestHeader token={params.token} />
-      <main className="flex-1 pb-20 pt-14 md:pb-0 md:pt-0">
+      <main className="flex-1 pb-16 pt-14 md:pb-0 md:pt-0">
         <div className="container mx-auto max-w-md px-4 py-6 md:max-w-2xl">
           {children}
         </div>
