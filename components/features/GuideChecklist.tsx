@@ -27,6 +27,9 @@ export function GuideChecklist({
 }: GuideChecklistProps) {
   const storageKey = `guide-checklist-${checklistId}`;
 
+  // pager 모드 페이지 상태 (hooks는 조건 없이 항상 호출되어야 함)
+  const [page, setPage] = useState(0);
+
   // 로컬 스토리지에서 완료 상태 불러오기
   const [completedItems, setCompletedItems] = useState<string[]>(() => {
     if (typeof window === 'undefined') return [];
@@ -69,7 +72,6 @@ export function GuideChecklist({
   }
 
   // pager 모드: 한 화면에 pageSize개만 표시
-  const [page, setPage] = useState(0);
   const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
   const safePage = Math.min(Math.max(page, 0), totalPages - 1);
   const pagedItems =
