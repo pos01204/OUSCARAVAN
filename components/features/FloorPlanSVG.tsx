@@ -87,7 +87,7 @@ function FloorPlanSVGComponent({
               strokeWidth={1}
               rx="4"
               ry="4"
-              opacity="0.7"
+              opacity="0.55"
             />
             {/* 건물/창고는 텍스트 표시하지 않음 */}
             {facility.name && (
@@ -141,7 +141,7 @@ function FloorPlanSVGComponent({
               } : undefined}
               style={{
                 filter: isAssigned ? 'drop-shadow(0 3px 6px rgba(239, 68, 68, 0.35))' : 'none',
-                opacity: isAssigned ? 1 : 0.9,
+                opacity: isAssigned ? 1 : 0.65,
               }}
             />
             {/* 배정된 공간 강조 레이블 */}
@@ -153,7 +153,7 @@ function FloorPlanSVGComponent({
                 dominantBaseline="middle"
                 style={{
                   fontSize: '13px',
-                  fontWeight: '700',
+                  fontWeight: '800',
                   fill: '#ef4444',
                   fontFamily: "'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
                 }}
@@ -170,10 +170,10 @@ function FloorPlanSVGComponent({
                 dominantBaseline="middle"
                 style={{
                   fontSize: '10px',
-                  fontWeight: '600',
+                  fontWeight: '400',
                   fill: '#6b7280',
                   fontFamily: "'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                  opacity: 0.95,
+                  opacity: 0.55,
                 }}
               >
                 {space.displayName}
