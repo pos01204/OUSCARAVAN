@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Card, CardContent } from '@/components/ui/card';
 import Confetti from 'react-confetti';
-import { Sparkles, Gift } from 'lucide-react';
+import { Gift, Percent } from 'lucide-react';
 import { BrandMediaLayer } from '@/components/guest/BrandMediaLayer';
 
 interface CouponFlipProps {
@@ -28,7 +28,6 @@ export function CouponFlip({ roomNumber, backImageSrc }: CouponFlipProps) {
       window.sessionStorage.setItem(key, '1');
       return true;
     } catch {
-      // sessionStorage 제한 환경에서는 1회성 보장 불가 → 그래도 저감 모드만은 준수
       return true;
     }
   };
@@ -50,15 +49,15 @@ export function CouponFlip({ roomNumber, backImageSrc }: CouponFlipProps) {
           width={typeof window !== 'undefined' ? window.innerWidth : 0}
           height={typeof window !== 'undefined' ? window.innerHeight : 0}
           recycle={false}
-          numberOfPieces={200}
+          numberOfPieces={150}
+          colors={['#1A1714', '#E8DCC8', '#C4B896', '#F5F2ED']}
         />
       )}
       <div className="perspective-1000">
-        {/* 회전 컨테이너: 라운드 + overflow 클리핑으로 어떤 이미지가 들어와도 카드 밖으로 새지 않게 강제 */}
-        <div className="relative h-56 md:h-64 rounded-2xl overflow-hidden">
+        <div className="relative h-48 md:h-52 rounded-2xl overflow-hidden">
           <motion.div
             animate={{ rotateY: isFlipped ? 180 : 0 }}
-            transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
+            transition={{ duration: 0.5, ease: [0.4, 0, 0.2, 1] }}
             style={{ transformStyle: 'preserve-3d' }}
             className="absolute inset-0 cursor-pointer"
             onClick={handleFlip}
@@ -72,100 +71,103 @@ export function CouponFlip({ roomNumber, backImageSrc }: CouponFlipProps) {
               }
             }}
           >
-            {/* Front Side */}
+            {/* Front Side - 세련된 크림/베이지 디자인 */}
             <Card
-              className={`absolute inset-0 h-full w-full cursor-pointer rounded-2xl overflow-hidden shadow-xl ${
+              className={`absolute inset-0 h-full w-full cursor-pointer rounded-2xl overflow-hidden border-0 ${
                 isFlipped ? 'opacity-0' : 'opacity-100'
               }`}
               style={{
                 backfaceVisibility: 'hidden',
                 transform: 'rotateY(0deg)',
+                background: 'linear-gradient(135deg, #FAF8F5 0%, #F5F2ED 50%, #EDE8DF 100%)',
+                boxShadow: '0 4px 20px rgba(26, 23, 20, 0.08)',
               }}
             >
-              <CardContent className="relative flex h-full flex-col items-center justify-center overflow-hidden p-6 text-center bg-gradient-to-br from-amber-50 via-orange-50 to-amber-100 dark:from-amber-900/20 dark:via-orange-900/20 dark:to-amber-800/20">
-                {/* Decorative Pattern */}
-                <div className="absolute inset-0 opacity-10">
-                  <div className="absolute top-4 left-4 w-20 h-20 border-2 border-amber-400 rounded-full"></div>
-                  <div className="absolute bottom-4 right-4 w-16 h-16 border-2 border-orange-400 rounded-full"></div>
-                  <div className="absolute top-1/2 left-1/4 w-12 h-12 border-2 border-amber-300 rounded-full"></div>
-                </div>
+              <CardContent className="relative flex h-full flex-col items-center justify-center p-5">
+                {/* 미니멀 장식 - 좌우 세로선 */}
+                <div className="absolute left-4 top-1/2 -translate-y-1/2 w-px h-16 bg-gradient-to-b from-transparent via-[#C4B896] to-transparent opacity-40" />
+                <div className="absolute right-4 top-1/2 -translate-y-1/2 w-px h-16 bg-gradient-to-b from-transparent via-[#C4B896] to-transparent opacity-40" />
 
                 {/* Content */}
-                <div className="relative z-10">
-                  <motion.div
-                    animate={reduceMotion ? undefined : { scale: [1, 1.08, 1] }}
-                    transition={reduceMotion ? undefined : { duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-                    className="mb-4"
-                  >
-                    <Gift className="h-12 w-12 md:h-16 md:w-16 mx-auto text-amber-600 dark:text-amber-400" />
-                  </motion.div>
-                  <h3 className="mb-2 font-heading text-2xl md:text-3xl font-black text-amber-900 dark:text-amber-100 tracking-tight">
-                    OUS 게스트 전용
-                  </h3>
-                  <div className="mb-4">
-                    <p className="text-3xl md:text-4xl font-black text-orange-600 dark:text-orange-400">
-                      10% 할인
-                    </p>
-                    <p className="text-xs md:text-sm text-amber-700 dark:text-amber-300 mt-1 font-medium">
-                      숙박객 특별 혜택
-                    </p>
+                <div className="relative z-10 text-center">
+                  {/* 아이콘 */}
+                  <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-[#1A1714] mb-3">
+                    <Gift className="h-5 w-5 text-[#F5F2ED]" strokeWidth={1.5} />
                   </div>
-                  <div className="flex items-center justify-center gap-1 text-xs text-amber-600 dark:text-amber-400 mt-4">
-                    <Sparkles className="h-3 w-3" />
-                    <span className="font-medium">카드를 탭하여 뒤집기</span>
-                    <Sparkles className="h-3 w-3" />
+                  
+                  {/* 타이틀 */}
+                  <p className="text-xs font-medium text-[#6B6358] tracking-wide mb-1">
+                    OUS 게스트 전용
+                  </p>
+                  
+                  {/* 할인율 */}
+                  <div className="flex items-center justify-center gap-1 mb-1">
+                    <span className="text-4xl md:text-5xl font-bold text-[#1A1714] tracking-tight">10</span>
+                    <div className="flex flex-col items-start">
+                      <Percent className="h-5 w-5 text-[#1A1714]" strokeWidth={2.5} />
+                      <span className="text-xs font-semibold text-[#1A1714] -mt-0.5">OFF</span>
+                    </div>
+                  </div>
+                  
+                  <p className="text-[11px] text-[#9C9488] font-medium">
+                    카페 이용 시 할인
+                  </p>
+                  
+                  {/* 탭 안내 */}
+                  <div className="mt-3 pt-3 border-t border-[#E0DCD3]">
+                    <p className="text-[10px] text-[#9C9488]">
+                      탭하여 쿠폰 확인
+                    </p>
                   </div>
                 </div>
               </CardContent>
             </Card>
 
-            {/* Back Side */}
+            {/* Back Side - 다크 브랜드 디자인 */}
             <Card
-              className={`absolute inset-0 h-full w-full cursor-pointer rounded-2xl overflow-hidden shadow-xl ${
+              className={`absolute inset-0 h-full w-full cursor-pointer rounded-2xl overflow-hidden border-0 ${
                 isFlipped ? 'opacity-100' : 'opacity-0'
               }`}
               style={{
                 backfaceVisibility: 'hidden',
                 transform: 'rotateY(180deg)',
+                background: '#1A1714',
+                boxShadow: '0 4px 20px rgba(26, 23, 20, 0.15)',
               }}
             >
-              <CardContent className="relative h-full w-full p-0 overflow-hidden bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-                {/* 선택 브랜딩 이미지: 카드 전체 영역 기준으로 채움 */}
+              <CardContent className="relative h-full w-full p-0 overflow-hidden">
+                {/* 브랜딩 이미지 */}
                 <BrandMediaLayer
                   imageSrc={backImageSrc}
                   alt="쿠폰 뒷면 브랜딩 이미지"
                   fit="cover"
-                  overlayClassName="bg-gradient-to-b from-black/10 via-black/35 to-black/60"
+                  overlayClassName="bg-gradient-to-b from-[#1A1714]/60 via-[#1A1714]/80 to-[#1A1714]/95"
                 />
 
-                {/* Decorative Pattern */}
-                <div className="absolute inset-0 opacity-10">
-                  <div className="absolute top-4 right-4 w-24 h-24 border-2 border-slate-600 rounded-full"></div>
-                  <div className="absolute bottom-4 left-4 w-20 h-20 border-2 border-slate-500 rounded-full"></div>
-                  <div className="absolute top-1/2 right-1/4 w-16 h-16 border-2 border-slate-400 rounded-full"></div>
-                </div>
-
                 {/* Content */}
-                <div className="relative z-10 flex h-full w-full flex-col items-center justify-center p-6 text-center text-white">
-                  <div className="mb-4">
-                    <div className="inline-flex items-center justify-center w-16 h-16 md:w-20 md:h-20 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 mb-4">
-                      <Gift className="h-8 w-8 md:h-10 md:w-10 text-white" />
-                    </div>
+                <div className="relative z-10 flex h-full w-full flex-col items-center justify-center p-5 text-center">
+                  {/* 아이콘 */}
+                  <div className="inline-flex items-center justify-center w-10 h-10 rounded-full bg-[#E8DCC8]/20 border border-[#E8DCC8]/30 mb-3">
+                    <Gift className="h-5 w-5 text-[#E8DCC8]" strokeWidth={1.5} />
                   </div>
-                  <h3 className="mb-4 font-heading text-xl md:text-2xl font-bold text-white">
+                  
+                  {/* 안내 텍스트 */}
+                  <h3 className="text-base md:text-lg font-semibold text-[#F5F2ED] mb-3">
                     직원에게 이 화면을 보여주세요
                   </h3>
+                  
+                  {/* 객실 번호 */}
                   {roomNumber && (
-                    <div className="mb-4 px-4 py-2 rounded-lg bg-white/10 backdrop-blur-sm border border-white/20">
-                      <p className="text-sm text-white/80 mb-1">객실 번호</p>
-                      <p className="text-2xl md:text-3xl font-black text-white">{roomNumber}</p>
+                    <div className="px-5 py-2 rounded-xl bg-[#E8DCC8]/15 border border-[#E8DCC8]/25">
+                      <p className="text-[10px] text-[#E8DCC8]/70 mb-0.5">객실 확인</p>
+                      <p className="text-2xl md:text-3xl font-bold text-[#F5F2ED] tracking-wide">{roomNumber}</p>
                     </div>
                   )}
-                  <div className="flex items-center justify-center gap-1 text-xs text-white/60 mt-4">
-                    <Sparkles className="h-3 w-3" />
-                    <span>카드를 탭하여 뒤집기</span>
-                    <Sparkles className="h-3 w-3" />
-                  </div>
+                  
+                  {/* 탭 안내 */}
+                  <p className="text-[10px] text-[#E8DCC8]/50 mt-3">
+                    탭하여 앞면 보기
+                  </p>
                 </div>
               </CardContent>
             </Card>
