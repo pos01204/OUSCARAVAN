@@ -44,7 +44,7 @@ function FloorPlanSVGComponent({
         </pattern>
       </defs>
       {/* 도로 표시 (열3 위치, 중심 유지) */}
-      <rect x="203" y="0" width="18" height="280" fill="#e5e7eb" stroke="#9ca3af" strokeWidth="0.8" opacity="0.7" />
+      <rect x="203" y="0" width="18" height="280" fill="#d4d4d8" stroke="#6b7280" strokeWidth="0.8" opacity="0.95" />
       <text x="212" y="140" textAnchor="middle" dominantBaseline="middle"
             style={{
               fontSize: '10px',
@@ -61,15 +61,15 @@ function FloorPlanSVGComponent({
         const getFacilityColor = () => {
           switch (facility.type) {
             case 'parking':
-              return { fill: '#f3f4f6', stroke: '#cbd5e1' };
+              return { fill: '#dbeafe', stroke: '#0284c7' };
             case 'building':
-              return { fill: '#e5e7eb', stroke: '#94a3b8' };
+              return { fill: '#fdf4ff', stroke: '#a855f7' };
             case 'cafe':
-              return { fill: '#e5e7eb', stroke: '#94a3b8' };
+              return { fill: '#fefce8', stroke: '#f97316' };
             case 'warehouse':
-              return { fill: '#e5e7eb', stroke: '#94a3b8' };
+              return { fill: '#e2e8f0', stroke: '#475569' };
             default:
-              return { fill: '#f9fafb', stroke: '#d1d5db' };
+              return { fill: '#fafafc', stroke: '#cbd5e1' };
           }
         };
         
@@ -97,11 +97,11 @@ function FloorPlanSVGComponent({
                 textAnchor="middle"
                 dominantBaseline="middle"
                 style={{
-                  fontSize: '11px',
+                  fontSize: '12px',
                   fontWeight: '600',
-                  fill: '#6b7280',
+                  fill: '#1f2937',
                   fontFamily: "'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif",
-                  opacity: 0.9,
+                  opacity: 1,
                 }}
               >
                 {facility.name}
