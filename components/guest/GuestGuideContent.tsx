@@ -335,35 +335,6 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
               </Tabs>
             )}
 
-            {/* 관련 가이드 */}
-            {selectedGuide.relatedGuides && selectedGuide.relatedGuides.length > 0 && (
-              <Card className="border-primary/20">
-                <CardHeader>
-                  <CardTitle className="text-base">관련 가이드</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedGuide.relatedGuides.slice(0, 4).map((relatedId) => {
-                      const relatedGuide = GUIDE_DATA.items.find((g) => g.id === relatedId);
-                      if (!relatedGuide) return null;
-                      return (
-                        <Button
-                          key={relatedId}
-                          variant="outline"
-                          size="sm"
-                          onClick={() => {
-                            setSelectedGuideId(relatedId);
-                          }}
-                        >
-                          {relatedGuide.title}
-                          <ExternalLink className="h-3 w-3 ml-1" />
-                        </Button>
-                      );
-                    })}
-                  </div>
-                </CardContent>
-              </Card>
-            )}
           </div>
         ) : null}
       </InfoInspector>
