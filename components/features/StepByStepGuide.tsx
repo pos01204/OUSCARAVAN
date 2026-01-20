@@ -10,9 +10,11 @@ import type { GuideStep } from '@/types';
 
 interface StepByStepGuideProps {
   steps: GuideStep[];
+  /** 모바일/인스펙터 용: 한 화면에 들어오도록 밀도 조정 */
+  compact?: boolean;
 }
 
-export function StepByStepGuide({ steps }: StepByStepGuideProps) {
+export function StepByStepGuide({ steps, compact = false }: StepByStepGuideProps) {
   const [currentStep, setCurrentStep] = useState(0);
 
   const handlePrevious = () => {
@@ -38,16 +40,16 @@ export function StepByStepGuide({ steps }: StepByStepGuideProps) {
   const canGoPrevious = currentStep > 0;
 
   return (
-    <div className="space-y-4" role="region" aria-label="단계별 가이드">
+    <div className={compact ? 'space-y-3' : 'space-y-4'} role="region" aria-label="단계별 가이드">
       {/* 진행률 표시 */}
-      <div className="space-y-2">
+      <div className={compact ? 'space-y-1.5' : 'space-y-2'}>
         <div className="flex items-center justify-between text-sm">
           <span className="font-medium text-foreground">
             단계 {currentStep + 1} / {steps.length}
           </span>
           <span className="text-muted-foreground">{Math.round(progress)}% 진행</span>
         </div>
-        <div className="h-2 w-full overflow-hidden rounded-full bg-muted">
+        <div className={compact ? 'h-1.5 w-full overflow-hidden rounded-full bg-muted' : 'h-2 w-full overflow-hidden rounded-full bg-muted'}>
           <div
             className="h-full bg-primary transition-all duration-300"
             style={{ width: `${progress}%` }}
@@ -62,8 +64,8 @@ export function StepByStepGuide({ steps }: StepByStepGuideProps) {
 
       {/* 현재 단계 카드 */}
       <Card className="overflow-hidden">
-        <CardContent className="p-6">
-          <div className="space-y-4">
+        <CardContent className={compact ? 'p-4' : 'p-6'}>
+          <div className={compact ? 'space-y-3' : 'space-y-4'}>
             {/* 단계 헤더 */}
             <div className="flex items-start justify-between">
               <div className="flex-1">
@@ -72,13 +74,15 @@ export function StepByStepGuide({ steps }: StepByStepGuideProps) {
                     STEP {step.number}
                   </Badge>
                 </div>
-                <h3 className="text-xl font-bold text-foreground">{step.title}</h3>
+                <h3 className={compact ? 'text-lg font-bold text-foreground' : 'text-xl font-bold text-foreground'}>
+                  {step.title}
+                </h3>
               </div>
             </div>
 
             {/* 이미지 */}
             {step.image && (
-              <div className="relative h-48 w-full overflow-hidden rounded-lg bg-muted">
+              <div className={compact ? 'relative h-32 w-full overflow-hidden rounded-lg bg-muted' : 'relative h-48 w-full overflow-hidden rounded-lg bg-muted'}>
                 <Image
                   src={step.image}
                   alt={step.title}
@@ -101,7 +105,9 @@ export function StepByStepGuide({ steps }: StepByStepGuideProps) {
             )}
 
             {/* 설명 */}
-            <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">{step.description}</p>
+            <p className={compact ? 'text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap' : 'text-muted-foreground leading-relaxed whitespace-pre-wrap'}>
+              {step.description}
+            </p>
 
             {/* 경고 */}
             {step.warning && (
@@ -113,7 +119,7 @@ export function StepByStepGuide({ steps }: StepByStepGuideProps) {
 
             {/* 예상 소요 시간 */}
             {step.estimatedTime && (
-              <div className="text-xs text-muted-foreground">
+              <div className={compact ? 'text-[11px] text-muted-foreground' : 'text-xs text-muted-foreground'}>
                 ⏱️ 예상 소요 시간: {step.estimatedTime}
               </div>
             )}

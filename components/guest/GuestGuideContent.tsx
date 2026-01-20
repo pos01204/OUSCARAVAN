@@ -235,79 +235,41 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
         }}
         title={selectedGuide?.title ?? '상세 안내'}
         description={selectedGuide?.overview}
-        contentClassName="md:max-w-xl"
+        // 모바일에서 내용이 길어지면 Drawer가 화면을 넘기며 스크롤/드래그 충돌이 발생할 수 있어
+        // 가이드 상세는 한 화면 구성(페이지네이션)으로 설계하고 Drawer 높이도 제한합니다.
+        contentClassName="max-h-[92dvh] overflow-hidden md:max-w-xl"
       >
         {selectedGuide ? (
-          <div className="space-y-4">
-            {/* 기본 정보 */}
-            <Card>
-              <CardHeader>
-                <CardTitle>상세 안내</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                  {selectedGuide.content}
-                </p>
+          <div className="space-y-3">
+            {/* 상단: 핵심만 한 화면에 들어오도록 요약/주의/팁을 압축 */}
+            {(selectedGuide.warning || (selectedGuide.tips && selectedGuide.tips.length > 0)) && (
+              <Card className="border-border/60">
+                <CardContent className="p-4 space-y-3">
+                  {selectedGuide.warning && selectedGuide.warningText ? (
+                    <div className="flex items-start gap-2 rounded-lg border border-yellow-200 bg-yellow-50 p-3">
+                      <AlertCircle className="h-5 w-5 text-yellow-700 shrink-0 mt-0.5" />
+                      <p className="text-sm text-yellow-900">{selectedGuide.warningText}</p>
+                    </div>
+                  ) : null}
 
-                {/* 경고 */}
-                {selectedGuide.warning && selectedGuide.warningText && (
-                  <div className="flex items-start gap-2 p-3 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800">
-                    <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 shrink-0 mt-0.5" />
-                    <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                      {selectedGuide.warningText}
-                    </p>
-                  </div>
-                )}
-
-                {/* 이미지 */}
-                {selectedGuide.images && selectedGuide.images.length > 0 && (
-                  <div className="space-y-2">
-                    {selectedGuide.images.map((image, index) => (
-                      <div
-                        key={index}
-                        className="relative h-48 w-full overflow-hidden rounded-lg bg-muted"
-                      >
-                        <Image
-                          src={image}
-                          alt={`${selectedGuide.title} 이미지 ${index + 1}`}
-                          fill
-                          className="object-cover"
-                          sizes="(max-width: 768px) 100vw, 672px"
-                          onError={(e) => {
-                            const target = e.target as HTMLImageElement;
-                            target.style.display = 'none';
-                            if (target.parentElement) {
-                              target.parentElement.innerHTML = `
-                                <div class="flex h-full items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
-                                  <span class="text-muted-foreground text-sm font-medium">${selectedGuide.title}</span>
-                                </div>
-                              `;
-                            }
-                          }}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )}
-
-                {/* 유용한 팁 */}
-                {selectedGuide.tips && selectedGuide.tips.length > 0 && (
-                  <div className="space-y-2">
-                    <h4 className="font-semibold text-foreground flex items-center gap-2">
-                      <Lightbulb className="h-4 w-4 text-primary" />
-                      유용한 팁
-                    </h4>
-                    <ul className="space-y-1 pl-4">
-                      {selectedGuide.tips.map((tip, index) => (
-                        <li key={index} className="text-sm text-muted-foreground list-disc">
-                          {tip}
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
+                  {selectedGuide.tips && selectedGuide.tips.length > 0 ? (
+                    <div className="space-y-2">
+                      <p className="text-sm font-semibold text-foreground flex items-center gap-2">
+                        <Lightbulb className="h-4 w-4 text-primary" />
+                        유용한 팁
+                      </p>
+                      <ul className="space-y-1 pl-4">
+                        {selectedGuide.tips.slice(0, 3).map((tip, index) => (
+                          <li key={index} className="text-sm text-muted-foreground list-disc">
+                            {tip}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+                </CardContent>
+              </Card>
+            )}
 
             {/* 탭으로 구성된 상세 정보 */}
             {selectedGuide.id === 'trash' && selectedGuide.trashCategories ? (
@@ -344,41 +306,30 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
 
                 {selectedGuide.steps && selectedGuide.steps.length > 0 && (
                   <TabsContent value="steps" className="mt-4">
-                    <Card className="border-border/60">
-                      <CardContent className="p-4">
-                        <StepByStepGuide steps={selectedGuide.steps} />
-                      </CardContent>
-                    </Card>
+                    <StepByStepGuide steps={selectedGuide.steps} compact />
                   </TabsContent>
                 )}
 
                 {selectedGuide.checklist && selectedGuide.checklist.length > 0 && (
                   <TabsContent value="checklist" className="mt-4">
-                    <Card className="border-border/60">
-                      <CardContent className="p-4">
-                        <GuideChecklist items={selectedGuide.checklist} checklistId={selectedGuide.id} />
-                      </CardContent>
-                    </Card>
+                    <GuideChecklist
+                      items={selectedGuide.checklist}
+                      checklistId={selectedGuide.id}
+                      mode="pager"
+                      pageSize={4}
+                    />
                   </TabsContent>
                 )}
 
                 {selectedGuide.faq && selectedGuide.faq.length > 0 && (
                   <TabsContent value="faq" className="mt-4">
-                    <Card className="border-border/60">
-                      <CardContent className="p-4">
-                        <GuideFAQ faqs={selectedGuide.faq} searchable={true} />
-                      </CardContent>
-                    </Card>
+                    <GuideFAQ faqs={selectedGuide.faq} searchable={false} mode="pager" />
                   </TabsContent>
                 )}
 
                 {selectedGuide.troubleshooting && selectedGuide.troubleshooting.length > 0 && (
                   <TabsContent value="troubleshooting" className="mt-4">
-                    <Card className="border-border/60">
-                      <CardContent className="p-4">
-                        <GuideTroubleshooting items={selectedGuide.troubleshooting} />
-                      </CardContent>
-                    </Card>
+                    <GuideTroubleshooting items={selectedGuide.troubleshooting} mode="pager" />
                   </TabsContent>
                 )}
               </Tabs>
@@ -392,7 +343,7 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
                 </CardHeader>
                 <CardContent>
                   <div className="flex flex-wrap gap-2">
-                    {selectedGuide.relatedGuides.map((relatedId) => {
+                    {selectedGuide.relatedGuides.slice(0, 4).map((relatedId) => {
                       const relatedGuide = GUIDE_DATA.items.find((g) => g.id === relatedId);
                       if (!relatedGuide) return null;
                       return (
