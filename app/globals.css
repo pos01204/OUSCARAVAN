@@ -9,11 +9,11 @@
        ═══════════════════════════════════════════════════ */
     color-scheme: light;
     
-    /* 배경 — 카드와 대비 강화 */
-    --background: 240 235 227;           /* #F0EBE3 (베이지 배경) */
+    /* 배경 — 무채색 회색 계열 */
+    --background: 247 247 247;           /* #F7F7F7 (깔끔한 연한 회색) */
     --background-elevated: 255 255 255;  /* #FFFFFF */
-    --background-muted: 232 227 218;     /* #E8E3DA (진한 베이지) */
-    --background-accent: 221 215 204;    /* #DDD7CC (더 진한 크림) */
+    --background-muted: 240 240 240;     /* #F0F0F0 (약간 진한 회색) */
+    --background-accent: 232 232 232;    /* #E8E8E8 (중간 회색) */
     
     /* 텍스트 */
     --foreground: 26 23 20;              /* #1A1714 */
@@ -72,7 +72,7 @@
   body {
     @apply bg-background text-foreground;
     font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
-    background-color: #F0EBE3;
+    background-color: #F7F7F7;
     color: #1A1714;
   }
 
