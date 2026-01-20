@@ -3,51 +3,62 @@ import { Card, CardContent, CardHeader } from "@/components/ui/card";
 
 export function GuestHomeSkeleton() {
     return (
-        <div className="space-y-6 animate-pulse">
-            {/* Hero Section Skeleton */}
-            <div className="relative overflow-hidden rounded-lg bg-muted p-8 text-center h-[120px] flex items-center justify-center">
-                <Skeleton className="h-8 w-3/4 bg-muted-foreground/20" />
+        <div className="space-y-6">
+            {/* Hero Section Skeleton — 브랜드 라이트 테마 */}
+            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-background-accent to-background p-8 text-center h-[120px] flex items-center justify-center border border-brand-cream-dark/30">
+                <Skeleton className="h-8 w-3/4" />
             </div>
+
+            {/* Quick Actions Skeleton */}
+            <section className="grid grid-cols-2 gap-3">
+                {[1, 2, 3, 4].map((i) => (
+                    <Card key={i}>
+                        <div className="p-4">
+                            <div className="flex items-start gap-3">
+                                <Skeleton className="h-10 w-10 rounded-xl" />
+                                <div className="flex-1 space-y-2">
+                                    <Skeleton className="h-4 w-20" />
+                                    <Skeleton className="h-3 w-16" />
+                                </div>
+                            </div>
+                        </div>
+                    </Card>
+                ))}
+            </section>
 
             {/* Status Cards Grid Skeleton */}
             <section className="grid gap-4 md:grid-cols-2">
                 {/* Wifi Card Skeleton */}
                 <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <Skeleton className="h-4 w-20" />
-                        <Skeleton className="h-4 w-4 rounded-full" />
+                    <CardHeader className="pb-3">
+                        <div className="flex items-center gap-2">
+                            <Skeleton className="h-8 w-8 rounded-lg" />
+                            <Skeleton className="h-5 w-24" />
+                        </div>
                     </CardHeader>
-                    <CardContent>
-                        <Skeleton className="h-8 w-32 mb-1" />
-                        <Skeleton className="h-3 w-40" />
+                    <CardContent className="space-y-3">
+                        <Skeleton className="h-16 w-full rounded-xl" />
+                        <div className="flex gap-2">
+                            <Skeleton className="h-11 flex-1 rounded-xl" />
+                            <Skeleton className="h-11 flex-1 rounded-xl" />
+                        </div>
                     </CardContent>
                 </Card>
 
                 {/* Time Card Skeleton */}
                 <Card>
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                        <Skeleton className="h-4 w-20" />
-                        <Skeleton className="h-4 w-4 rounded-full" />
+                    <CardHeader className="pb-3">
+                        <div className="flex items-center gap-2">
+                            <Skeleton className="h-8 w-8 rounded-lg" />
+                            <Skeleton className="h-5 w-28" />
+                        </div>
                     </CardHeader>
-                    <CardContent>
-                        <Skeleton className="h-8 w-24 mb-1" />
-                        <Skeleton className="h-3 w-32" />
+                    <CardContent className="space-y-3">
+                        <Skeleton className="h-16 w-full rounded-xl" />
+                        <Skeleton className="h-16 w-full rounded-xl" />
                     </CardContent>
                 </Card>
             </section>
-
-            {/* Reservation Info Skeleton */}
-            <Card>
-                <CardHeader>
-                    <Skeleton className="h-6 w-32" />
-                </CardHeader>
-                <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                        <Skeleton className="h-4 w-full" />
-                        <Skeleton className="h-4 w-3/4" />
-                    </div>
-                </CardContent>
-            </Card>
         </div>
     );
 }

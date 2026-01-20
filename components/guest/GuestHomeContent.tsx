@@ -50,12 +50,12 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
 
   return (
     <main className="space-y-6" role="main" aria-label="고객 홈 페이지">
-      {/* Hero Section */}
+      {/* Hero Section — 브랜드 라이트 테마 */}
       <motion.section
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="relative overflow-hidden rounded-lg bg-gradient-to-br from-orange-100 to-amber-50 p-8 text-center border border-orange-100/50 shadow-sm"
+        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-background-accent to-background p-8 text-center border border-brand-cream-dark/30 shadow-card"
         aria-label="환영 메시지"
       >
         {/* 향후 실사진/영상 브랜딩 레이어(에셋 없으면 렌더되지 않음) */}
@@ -64,10 +64,10 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
           videoSrc={GUEST_BRAND_MEDIA.heroVideoSrc}
           alt="OUS 브랜드 히어로"
           fit="cover"
-          overlayClassName="bg-gradient-to-b from-black/0 via-black/10 to-black/25"
+          overlayClassName="bg-gradient-to-b from-white/0 via-white/10 to-white/30"
           priority
         />
-        <h1 className="font-heading text-2xl font-semibold text-foreground">
+        <h1 className="font-heading text-2xl font-bold text-brand-dark relative z-10">
           {WELCOME_MESSAGE.korean.replace('{name}', reservation.guestName)}
         </h1>
         {/* 호수 정보는 고객에게 노출하지 않음 (관리자 편의용) */}

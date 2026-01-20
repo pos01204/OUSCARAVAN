@@ -9,12 +9,27 @@ const badgeVariants = cva(
     variants: {
       variant: {
         default:
-          "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
+          "border-transparent bg-brand-dark text-white",
         secondary:
-          "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
+          "border-transparent bg-brand-cream text-brand-dark",
         destructive:
-          "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
-        outline: "text-foreground",
+          "border-transparent bg-destructive text-destructive-foreground",
+        outline: "text-brand-dark border-brand-cream-dark",
+        // 상태 뱃지
+        pending:
+          "bg-amber-50 text-amber-700 border-amber-200",
+        preparing:
+          "bg-blue-50 text-blue-700 border-blue-200",
+        completed:
+          "bg-green-50 text-green-700 border-green-200",
+        success:
+          "bg-green-50 text-green-700 border-green-200",
+        warning:
+          "bg-amber-50 text-amber-700 border-amber-200",
+        error:
+          "bg-red-50 text-red-700 border-red-200",
+        info:
+          "bg-blue-50 text-blue-700 border-blue-200",
       },
     },
     defaultVariants: {
