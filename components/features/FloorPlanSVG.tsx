@@ -30,7 +30,7 @@ function FloorPlanSVGComponent({
 
   // 브랜드 색상
   const COLORS = {
-    background: '#FAF8F5',
+    background: '#FFFFFF',
     assigned: {
       fill: '#1A1714',
       stroke: '#1A1714',

@@ -21,11 +21,11 @@ const config: Config = {
         // 브랜드 색상 시스템 — 라이트 테마
         // ═══════════════════════════════════════════════════
         
-        // 배경 (라이트)
-        background: "#FAF8F5",           // 따뜻한 오프화이트
+        // 배경 (라이트) — 카드와 대비 강화
+        background: "#F0EBE3",           // 따뜻한 베이지 (카드와 대비)
         "background-elevated": "#FFFFFF", // 카드 배경 (순백)
-        "background-muted": "#F5F2ED",    // 보조 배경 (베이지 틴트)
-        "background-accent": "#EDE8DF",   // 강조 배경 (진한 크림)
+        "background-muted": "#E8E3DA",    // 보조 배경 (진한 베이지)
+        "background-accent": "#DDD7CC",   // 강조 배경 (더 진한 크림)
         
         // 브랜드 다크 (텍스트용)
         "brand-dark": "#1A1714",          // 주요 텍스트 (따뜻한 검정)

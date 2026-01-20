@@ -55,7 +55,7 @@ export function CouponFlip({ roomNumber, backImageSrc }: CouponFlipProps) {
       )}
       <div className="perspective-1000">
         {/* 쿠폰 외곽 - 명확한 쿠폰 형태 */}
-        <div className="relative h-40 md:h-44 rounded-2xl overflow-hidden border-2 border-dashed border-[#C4B896] bg-gradient-to-br from-[#FFFDF9] via-[#FAF8F5] to-[#F5F2ED] shadow-[0_2px_12px_rgba(26,23,20,0.06)]">
+        <div className="relative h-40 md:h-44 rounded-2xl overflow-hidden border-2 border-dashed border-[#C4B896] bg-white shadow-[0_2px_12px_rgba(26,23,20,0.08)]">
           {/* 쿠폰 좌우 펀치홀 */}
           <div className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 w-5 h-5 rounded-full bg-background border-2 border-dashed border-[#C4B896]" />
           <div className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-1/2 w-5 h-5 rounded-full bg-background border-2 border-dashed border-[#C4B896]" />
