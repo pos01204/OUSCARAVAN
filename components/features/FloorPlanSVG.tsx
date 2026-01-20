@@ -38,17 +38,28 @@ function FloorPlanSVGComponent({
     },
     unassigned: {
       fill: '#F5F2ED',
-      stroke: '#E8DCC8',
-      text: '#9C9488',
+      stroke: '#D4CFC4',
+      text: 'transparent', // 번호 숨김
     },
-    facility: {
-      fill: '#F5F2ED',
-      stroke: '#C4B896',
-      text: '#9C9488',
+    // 시설별 구분 색상
+    parking: {
+      fill: '#E8F4FD',
+      stroke: '#93C5FD',
+      text: '#3B82F6',
+    },
+    cafe: {
+      fill: '#FEF3E2',
+      stroke: '#FDBA74',
+      text: '#EA580C',
+    },
+    building: {
+      fill: '#F3E8FF',
+      stroke: '#C4B5FD',
+      text: '#7C3AED',
     },
     road: {
-      fill: '#EDE8DF',
-      stroke: '#C4B896',
+      fill: '#F5F2ED',
+      stroke: '#D4CFC4',
       text: '#9C9488',
     },
   };
@@ -89,39 +100,57 @@ function FloorPlanSVGComponent({
         도로
       </text>
       
-      {/* 시설 렌더링 - 미니멀 스타일 */}
-      {facilities.map((facility) => (
-        <g key={facility.id}>
-          <rect
-            x={facility.coordinates.x}
-            y={facility.coordinates.y}
-            width={facility.coordinates.width}
-            height={facility.coordinates.height}
-            fill={COLORS.facility.fill}
-            stroke={COLORS.facility.stroke}
-            strokeWidth={1}
-            rx="6"
-          />
-          {facility.name && (
-            <text
-              x={facility.coordinates.x + facility.coordinates.width / 2}
-              y={facility.coordinates.y + facility.coordinates.height / 2}
-              textAnchor="middle"
-              dominantBaseline="middle"
-              style={{
-                fontSize: '10px',
-                fontWeight: '500',
-                fill: COLORS.facility.text,
-                fontFamily: "'Pretendard', sans-serif",
-              }}
-            >
-              {facility.name}
-            </text>
-          )}
-        </g>
-      ))}
+      {/* 시설 렌더링 - 타입별 구분 색상 */}
+      {facilities.map((facility) => {
+        // 시설 타입에 따른 색상 선택
+        const getFacilityColors = () => {
+          switch (facility.type) {
+            case 'parking':
+              return COLORS.parking;
+            case 'cafe':
+              return COLORS.cafe;
+            case 'building':
+            case 'warehouse':
+              return COLORS.building;
+            default:
+              return COLORS.building;
+          }
+        };
+        const colors = getFacilityColors();
+        
+        return (
+          <g key={facility.id}>
+            <rect
+              x={facility.coordinates.x}
+              y={facility.coordinates.y}
+              width={facility.coordinates.width}
+              height={facility.coordinates.height}
+              fill={colors.fill}
+              stroke={colors.stroke}
+              strokeWidth={1.5}
+              rx="6"
+            />
+            {facility.name && (
+              <text
+                x={facility.coordinates.x + facility.coordinates.width / 2}
+                y={facility.coordinates.y + facility.coordinates.height / 2}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                style={{
+                  fontSize: '10px',
+                  fontWeight: '600',
+                  fill: colors.text,
+                  fontFamily: "'Pretendard', sans-serif",
+                }}
+              >
+                {facility.name}
+              </text>
+            )}
+          </g>
+        );
+      })}
       
-      {/* 공간 렌더링 */}
+      {/* 공간 렌더링 - 번호 미노출 (특정 방지) */}
       {spaces.map((space) => {
         const isAssigned = space.id === assignedSpaceId;
         
@@ -130,15 +159,15 @@ function FloorPlanSVGComponent({
             {/* 배정된 공간 - 글로우 효과 */}
             {isAssigned && (
               <rect
-                x={space.coordinates.x - 2}
-                y={space.coordinates.y - 2}
-                width={space.coordinates.width + 4}
-                height={space.coordinates.height + 4}
+                x={space.coordinates.x - 3}
+                y={space.coordinates.y - 3}
+                width={space.coordinates.width + 6}
+                height={space.coordinates.height + 6}
                 fill="none"
                 stroke={COLORS.assigned.stroke}
-                strokeWidth={1}
+                strokeWidth={2}
                 rx="10"
-                opacity={0.3}
+                opacity={0.25}
               />
             )}
             
@@ -154,7 +183,7 @@ function FloorPlanSVGComponent({
               rx="6"
               className={onSpaceClick ? 'cursor-pointer hover:opacity-90 transition-all duration-200' : ''}
               onClick={() => handleSpaceClick(space.id)}
-              aria-label={`공간 ${space.displayName}${isAssigned ? ', 당신의 공간' : ''}`}
+              aria-label={isAssigned ? '내 공간' : '다른 공간'}
               role={onSpaceClick ? 'button' : undefined}
               tabIndex={onSpaceClick ? 0 : undefined}
               onKeyDown={onSpaceClick ? (e) => {
@@ -165,21 +194,23 @@ function FloorPlanSVGComponent({
               } : undefined}
             />
             
-            {/* 공간 라벨 */}
-            <text
-              x={space.coordinates.x + space.coordinates.width / 2}
-              y={space.coordinates.y + space.coordinates.height / 2}
-              textAnchor="middle"
-              dominantBaseline="middle"
-              style={{
-                fontSize: isAssigned ? '12px' : '10px',
-                fontWeight: isAssigned ? '700' : '500',
-                fill: isAssigned ? COLORS.assigned.text : COLORS.unassigned.text,
-                fontFamily: "'Pretendard', sans-serif",
-              }}
-            >
-              {space.displayName}
-            </text>
+            {/* 배정된 공간만 "내 공간" 텍스트 표시 */}
+            {isAssigned && (
+              <text
+                x={space.coordinates.x + space.coordinates.width / 2}
+                y={space.coordinates.y + space.coordinates.height / 2}
+                textAnchor="middle"
+                dominantBaseline="middle"
+                style={{
+                  fontSize: '11px',
+                  fontWeight: '700',
+                  fill: COLORS.assigned.text,
+                  fontFamily: "'Pretendard', sans-serif",
+                }}
+              >
+                내 공간
+              </text>
+            )}
           </g>
         );
       })}

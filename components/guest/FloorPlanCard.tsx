@@ -18,9 +18,9 @@ function FloorPlanCardComponent({ assignedRoom }: FloorPlanCardProps) {
   }
 
   const assignedSpace = getSpaceByRoom(assignedRoom);
-  const roomNumber = assignedRoom.replace('호', '');
+  // 위치 정보만 표시 (카라반 번호는 고객에게 노출하지 않음)
   const positionLabel = (() => {
-    if (!assignedSpace) return '';
+    if (!assignedSpace) return '배정 완료';
     const centerX = assignedSpace.coordinates.x + assignedSpace.coordinates.width / 2;
     const centerY = assignedSpace.coordinates.y + assignedSpace.coordinates.height / 2;
     const isLeft = centerX < 203;
@@ -45,9 +45,9 @@ function FloorPlanCardComponent({ assignedRoom }: FloorPlanCardProps) {
           <FloorPlanViewer assignedRoom={assignedRoom} showLabels={true} />
         </div>
         
-        {/* 배정 정보 - 깔끔한 카드 스타일 */}
+        {/* 배정 정보 - 위치만 표시 (번호 미노출) */}
         <div 
-          className="flex items-center gap-4 rounded-xl bg-brand-dark p-4"
+          className="flex items-center gap-4 rounded-xl bg-primary p-4"
           role="status" 
           aria-live="polite"
         >
@@ -57,12 +57,7 @@ function FloorPlanCardComponent({ assignedRoom }: FloorPlanCardProps) {
           <div>
             <p className="text-xs text-white/70 font-medium">고객님의 공간</p>
             <p className="text-lg font-bold text-white">
-              카라반 {roomNumber}
-              {positionLabel && (
-                <span className="ml-2 text-sm font-normal text-white/70">
-                  {positionLabel}
-                </span>
-              )}
+              {positionLabel} 카라반
             </p>
           </div>
         </div>
