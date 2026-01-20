@@ -60,7 +60,8 @@ export function InfoInspector({
           <DrawerTitle>{title}</DrawerTitle>
           {description ? <DrawerDescription>{description}</DrawerDescription> : null}
         </DrawerHeader>
-        <div className="px-4 pb-6">{children}</div>
+        {/* 본문은 스크롤 영역 */}
+        <div className="flex-1 overflow-y-auto px-4 pb-6">{children}</div>
       </DrawerContent>
     </Drawer>
   );
