@@ -76,26 +76,26 @@ function FloorPlanSVGComponent({
       {/* 배경 */}
       <rect x="0" y="0" width="100%" height="100%" fill={COLORS.background} />
       
-      {/* 도로 표시 - 미니멀 */}
+      {/* 도로 표시 - 미니멀 (너비 확대: 206~234, 28px) */}
       <rect 
-        x="203" y="5" width="16" height="270" 
+        x="206" y="5" width="34" height="270" 
         fill={COLORS.road.fill} 
         stroke={COLORS.road.stroke} 
         strokeWidth="1" 
         rx="3"
       />
       <text 
-        x="211" y="140" 
+        x="223" y="140" 
         textAnchor="middle" 
         dominantBaseline="middle"
         style={{
-          fontSize: '9px',
+          fontSize: '10px',
           fill: COLORS.road.text,
           fontFamily: "'Pretendard', sans-serif",
           fontWeight: '500',
-          letterSpacing: '0.5px',
+          letterSpacing: '1px',
         }}
-        transform="rotate(-90 211 140)"
+        transform="rotate(-90 223 140)"
       >
         도로
       </text>
