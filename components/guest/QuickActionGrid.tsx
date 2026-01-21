@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Wifi, LogIn, ShoppingBag, HelpCircle } from 'lucide-react';
+import { Wifi, LogIn, Flame, HelpCircle } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 
 interface QuickActionGridProps {
@@ -32,12 +32,12 @@ export function QuickActionGrid({ token }: QuickActionGridProps) {
     },
     {
       key: 'order',
-      title: '주문하기',
-      desc: '불멍/키오스크',
-      icon: ShoppingBag,
+      title: '불멍/바베큐',
+      desc: '세트 주문하기',
+      icon: Flame,
       href: `${base}/order`,
-      iconBg: 'bg-amber-50',
-      iconColor: 'text-amber-600',
+      iconBg: 'bg-orange-50',
+      iconColor: 'text-orange-500',
     },
     {
       key: 'help',

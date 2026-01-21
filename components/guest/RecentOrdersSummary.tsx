@@ -23,8 +23,10 @@ const ORDER_STATUS_LABELS: Record<Order['status'], string> = {
 
 export function RecentOrdersSummary({ token, maxItems = 2 }: RecentOrdersSummaryProps) {
   const { orders, loading, error } = useGuestOrders(token);
-  const recent = [...orders].sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt)).slice(0, maxItems);
-  const hasBbqGuide = recent.some((order) => order.type === 'bbq' || order.type === 'fire');
+  // 키오스크 주문은 현장 수령이므로 불멍/바베큐 주문만 표시
+  const bbqFireOrders = orders.filter((o) => o.type === 'bbq' || o.type === 'fire');
+  const recent = [...bbqFireOrders].sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt)).slice(0, maxItems);
+  const hasBbqGuide = recent.length > 0;
   const guideHref = `/guest/${token}/guide#guide-bbq`;
 
   if (loading) {
@@ -61,16 +63,16 @@ export function RecentOrdersSummary({ token, maxItems = 2 }: RecentOrdersSummary
     );
   }
 
-  if (orders.length === 0) {
+  if (bbqFireOrders.length === 0) {
     return (
       <Card>
         <CardHeader>
           <CardTitle>최근 주문</CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          <p className="text-sm text-muted-foreground">아직 주문 내역이 없습니다.</p>
+          <p className="text-sm text-muted-foreground">아직 불멍/바베큐 주문 내역이 없습니다.</p>
           <Link href={`/guest/${token}/order`} className="block">
-            <Button className="w-full">주문하러 가기</Button>
+            <Button className="w-full">불멍/바베큐 주문하러 가기</Button>
           </Link>
         </CardContent>
       </Card>

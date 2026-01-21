@@ -282,7 +282,8 @@ export function OrderHistory({
         {selectedOrder ? (
           <div className="space-y-6">
             <div className="flex flex-col gap-2 sm:flex-row">
-              {onReorder ? (
+              {/* 키오스크 주문은 현장 수령이므로 재주문 불가 */}
+              {onReorder && selectedOrder.type !== 'kiosk' ? (
                 <Button
                   type="button"
                   className="flex-1"
