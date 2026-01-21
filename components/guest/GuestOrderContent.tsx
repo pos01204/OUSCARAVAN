@@ -79,10 +79,10 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
           <TabsTrigger
             value="order"
             className="flex items-center justify-center gap-2 px-4 py-3.5 rounded-lg data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-md transition-all duration-200 text-sm font-bold data-[state=active]:scale-[1.02] hover:bg-muted/60 focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
-            aria-label="주문 탭"
+            aria-label="불멍/바베큐 주문 탭"
           >
-            <ShoppingBag className="h-4 w-4 transition-transform data-[state=active]:scale-110" aria-hidden="true" />
-            <span>주문</span>
+            <Flame className="h-4 w-4 transition-transform data-[state=active]:scale-110" aria-hidden="true" />
+            <span>불멍/바베큐</span>
           </TabsTrigger>
           <TabsTrigger
             value="cafe"
