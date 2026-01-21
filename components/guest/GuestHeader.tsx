@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Home, BookOpen, ShoppingBag, HelpCircle } from 'lucide-react';
+import { Home, BookOpen, Flame, Coffee, HelpCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface GuestHeaderProps {
@@ -14,8 +14,9 @@ export function GuestHeader({ token }: GuestHeaderProps) {
   
   const navItems = [
     { href: `/guest/${token}`, label: '홈', icon: Home },
-    { href: `/guest/${token}/guide`, label: '가이드', icon: BookOpen },
-    { href: `/guest/${token}/order`, label: '마켓', icon: ShoppingBag },
+    { href: `/guest/${token}/guide`, label: '안내', icon: BookOpen },
+    { href: `/guest/${token}/order`, label: '불멍/BBQ', icon: Flame },
+    { href: `/guest/${token}/cafe`, label: '카페', icon: Coffee },
     { href: `/guest/${token}/help`, label: '도움말', icon: HelpCircle },
   ];
 
