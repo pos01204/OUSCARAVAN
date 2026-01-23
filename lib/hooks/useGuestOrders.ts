@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { getOrders, type Order } from '@/lib/api';
+import { API_CONFIG } from '@/lib/constants';
 
 export function useGuestOrders(token: string) {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -14,6 +15,7 @@ export function useGuestOrders(token: string) {
   const failureCountRef = useRef(0);
   const pollTimeoutRef = useRef<number | null>(null);
   const runFetchRef = useRef<(mode: 'initial' | 'soft', reason: string) => void>(() => {});
+  const eventSourceRef = useRef<EventSource | null>(null);
 
   const clearPollTimeout = () => {
     if (pollTimeoutRef.current) {
@@ -99,12 +101,44 @@ export function useGuestOrders(token: string) {
     window.addEventListener('online', handleOnline);
     document.addEventListener('visibilitychange', handleVisibility);
 
+    // SSE(가능하면): 주문 변경이 발생하면 즉시 soft refresh
+    try {
+      if (typeof window !== 'undefined' && typeof EventSource !== 'undefined') {
+        const url = `${API_CONFIG.baseUrl}/api/guest/${token}/orders/stream`;
+        const es = new EventSource(url);
+        eventSourceRef.current = es;
+
+        es.onmessage = () => {
+          scheduleNextPoll({ immediate: true });
+        };
+        es.onerror = () => {
+          // SSE 실패 시에도 폴링으로 계속 동작 (조용히 닫고 폴링 유지)
+          try {
+            es.close();
+          } catch {
+            // ignore
+          }
+          eventSourceRef.current = null;
+        };
+      }
+    } catch {
+      // ignore
+    }
+
     return () => {
       isMountedRef.current = false;
       clearPollTimeout();
       window.removeEventListener('focus', handleFocus);
       window.removeEventListener('online', handleOnline);
       document.removeEventListener('visibilitychange', handleVisibility);
+      if (eventSourceRef.current) {
+        try {
+          eventSourceRef.current.close();
+        } catch {
+          // ignore
+        }
+        eventSourceRef.current = null;
+      }
     };
   }, [fetchOrders]);
 

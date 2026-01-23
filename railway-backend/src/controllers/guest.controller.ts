@@ -8,6 +8,7 @@ import {
   createCheckInOutLog,
   updateReservationStatus,
 } from '../services/checkinout.service';
+import { setupGuestOrdersSSE, sendGuestOrdersEvent } from '../services/guest-orders-sse.service';
 
 export async function getGuestInfo(req: Request, res: Response) {
   try {
@@ -102,6 +103,16 @@ export async function createGuestOrder(req: Request, res: Response) {
       notes,
     });
 
+    // 게스트 주문 SSE 알림(비동기): 해당 예약(reservationId)의 연결된 클라이언트에게 “변경됨” 신호
+    try {
+      sendGuestOrdersEvent(reservation.id, {
+        type: 'order_created',
+        data: { orderId: order.id, status: order.status, createdAt: order.createdAt },
+      });
+    } catch {
+      // ignore
+    }
+
     // 알림 생성 (비동기, 실패해도 주문은 완료)
     import('../services/notifications-helper.service').then(({ createOrderCreatedNotification }) => {
       createOrderCreatedNotification(order.id).catch((error) => {
@@ -112,6 +123,32 @@ export async function createGuestOrder(req: Request, res: Response) {
     res.status(201).json(order);
   } catch (error) {
     console.error('Create guest order error:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      code: 'INTERNAL_ERROR',
+    });
+  }
+}
+
+export async function streamGuestOrders(req: Request, res: Response) {
+  try {
+    const { token } = req.params;
+
+    // 토큰으로 예약 조회
+    const reservation = await getReservationByToken(token);
+    if (!reservation) {
+      return res.status(404).json({
+        error: 'Invalid token',
+        code: 'INVALID_TOKEN',
+      });
+    }
+
+    // 최초 스냅샷(주문 목록)
+    const orders = await getOrdersByReservationId(reservation.id);
+    setupGuestOrdersSSE(req, res, reservation.id, { orders });
+  } catch (error) {
+    console.error('Guest orders SSE error:', error);
+    // SSE 연결 자체가 실패했을 때는 일반 JSON 에러로 응답
     res.status(500).json({
       error: 'Internal server error',
       code: 'INTERNAL_ERROR',

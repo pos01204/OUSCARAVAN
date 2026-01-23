@@ -4,6 +4,7 @@ import {
   getOrderById,
   updateOrder,
 } from '../services/orders.service';
+import { sendGuestOrdersEvent } from '../services/guest-orders-sse.service';
 
 export async function listOrders(req: Request, res: Response) {
   try {
@@ -82,6 +83,16 @@ export async function updateOrderStatus(req: Request, res: Response) {
     const oldStatus = oldOrder?.status || 'pending';
 
     const order = await updateOrder(id, { status });
+
+    // 게스트 주문 SSE 알림(비동기): 해당 예약(reservationId)의 연결된 클라이언트에게 “변경됨” 신호
+    try {
+      sendGuestOrdersEvent(order.reservationId, {
+        type: 'order_status_changed',
+        data: { orderId: order.id, oldStatus, status },
+      });
+    } catch {
+      // ignore
+    }
 
     // 주문 상태 변경 알림 생성 (비동기, 실패해도 상태 변경은 완료)
     if (oldStatus !== status) {

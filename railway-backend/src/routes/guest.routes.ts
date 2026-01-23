@@ -4,6 +4,7 @@ import {
   getGuestInfo,
   getGuestOrders,
   createGuestOrder,
+  streamGuestOrders,
   checkIn,
   checkOut,
 } from '../controllers/guest.controller';
@@ -13,6 +14,7 @@ const router = express.Router();
 
 router.get('/:token', getGuestInfo);
 router.get('/:token/orders', getGuestOrders);
+router.get('/:token/orders/stream', streamGuestOrders);
 router.get('/:token/announcements', getGuestAnnouncements);
 router.post('/:token/orders', validateCreateOrder, createGuestOrder);
 router.post('/:token/checkin', checkIn);
