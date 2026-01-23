@@ -31,6 +31,7 @@ function getLevelBadge(level: Announcement['level']) {
 }
 
 export function GuestAnnouncements({ announcements, loading, error }: GuestAnnouncementsProps) {
+export function GuestAnnouncements({ token, announcements, loading, error }: GuestAnnouncementsProps) {
   const [selected, setSelected] = useState<Announcement | null>(null);
   const [readIds, setReadIds] = useState<string[]>([]);
   const [showUnreadOnly, setShowUnreadOnly] = useState(false);

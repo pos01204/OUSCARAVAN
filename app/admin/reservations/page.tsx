@@ -106,7 +106,7 @@ function ReservationsPageContent({
     return () => {
       cancelled = true;
     };
-  }, [effectiveStatus, effectiveCheckin, checkout, search, refreshNonce, retryNonce]);
+  }, [effectiveStatus, effectiveCheckin, checkout, search, refreshNonce, retryNonce, onRefreshed]);
 
   // 초기 로딩(첫 성공 전)만 스켈레톤으로 화면 전환
   if (isLoading && !lastUpdatedAt) return <ReservationsSkeleton />;
