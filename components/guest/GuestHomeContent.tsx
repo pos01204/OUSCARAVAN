@@ -7,7 +7,6 @@ import { WifiCard } from '@/components/features/WifiCard';
 import { TimeCard } from '@/components/features/TimeCard';
 import { CheckInOut } from '@/components/features/CheckInOut';
 import { CheckoutReminder } from '@/components/features/CheckoutReminder';
-import { GuestOrderSync } from '@/components/guest/GuestOrderSync';
 import { FloorPlanCard } from '@/components/guest/FloorPlanCard';
 import { WELCOME_MESSAGE } from '@/lib/constants';
 import type { Reservation } from '@/lib/api';
@@ -86,9 +85,6 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
       {reservation.assignedRoom && (
         <FloorPlanCard assignedRoom={reservation.assignedRoom} />
       )}
-
-      {/* 주문 동기화 컴포넌트 (백그라운드에서 주기적으로 주문 목록 동기화) */}
-      <GuestOrderSync token={token} />
 
       {/* Status Cards Grid */}
       <section className="grid gap-4 md:grid-cols-2" aria-label="서비스 정보 카드">

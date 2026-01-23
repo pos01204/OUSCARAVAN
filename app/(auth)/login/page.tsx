@@ -9,6 +9,14 @@ import { Input } from '@/components/ui/input';
 import { Card, CardHeader, CardTitle, CardContent, CardFooter } from '@/components/ui/card';
 import { Loader2, AlertCircle, Eye, EyeOff } from 'lucide-react';
 
+const IS_DEV = process.env.NODE_ENV !== 'production';
+const debugLog = (...args: unknown[]) => {
+  if (IS_DEV) console.log(...args);
+};
+const debugWarn = (...args: unknown[]) => {
+  if (IS_DEV) console.warn(...args);
+};
+
 // 에러 메시지 매핑
 const errorMessages: Record<string, string> = {
   invalid_credentials: '아이디 또는 비밀번호가 올바르지 않습니다.',
@@ -51,7 +59,7 @@ function LoginForm() {
     }
     
     try {
-      console.log('[Login] Attempting login...');
+      debugLog('[Login] Attempting login...');
       
       // API 서버로 직접 로그인 요청 (웹뷰 호환)
       const response = await fetch(
@@ -63,7 +71,7 @@ function LoginForm() {
         }
       );
       
-      console.log('[Login] Response status:', response.status);
+      debugLog('[Login] Response status:', response.status);
       
       if (!response.ok) {
         if (response.status === 401) {
@@ -78,7 +86,7 @@ function LoginForm() {
       }
       
       const data = await response.json();
-      console.log('[Login] Login successful, token received');
+      debugLog('[Login] Login successful, token received');
       
       // localStorage에 토큰 저장 (웹뷰 호환)
       saveToken(data.token, data.expiresIn);
@@ -91,11 +99,11 @@ function LoginForm() {
           body: JSON.stringify({ token: data.token, expiresIn: data.expiresIn }),
         });
       } catch (e) {
-        console.warn('[Login] Failed to set httpOnly cookie session (non-fatal):', e);
+        debugWarn('[Login] Failed to set httpOnly cookie session (non-fatal):', e);
       }
       
       // 관리자 페이지로 이동 (웹뷰에서는 풀 리로드가 더 안정적)
-      console.log('[Login] Redirecting to:', returnUrl);
+      debugLog('[Login] Redirecting to:', returnUrl);
       if (typeof window !== 'undefined') {
         window.location.href = returnUrl;
       } else {
@@ -176,7 +184,8 @@ function LoginForm() {
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                  tabIndex={-1}
+                  aria-label={showPassword ? '비밀번호 숨기기' : '비밀번호 표시'}
+                  aria-pressed={showPassword}
                 >
                   {showPassword ? (
                     <EyeOff className="w-5 h-5" />

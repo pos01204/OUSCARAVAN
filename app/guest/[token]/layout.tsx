@@ -6,6 +6,7 @@ import { GuestBottomNav } from '@/components/guest/GuestBottomNav';
 import { GuestReservationInfo } from '@/components/guest/GuestReservationInfo';
 import { RetryablePageError } from '@/components/shared/RetryablePageError';
 import { ApiError } from '@/types';
+import { NetworkStatusBanner } from '@/components/shared/NetworkStatusBanner';
 
 export default async function GuestLayout({
   children,
@@ -49,6 +50,7 @@ export default async function GuestLayout({
       <GuestHeader token={params.token} />
       <main className="flex-1 pb-[calc(4.5rem+env(safe-area-inset-bottom))] pt-14 md:pb-0 md:pt-0">
         <div className="container mx-auto max-w-md px-4 py-6 md:max-w-2xl">
+          <NetworkStatusBanner />
           {children}
         </div>
       </main>

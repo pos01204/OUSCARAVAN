@@ -1,37 +1,101 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { getGuestAnnouncements, type Announcement } from '@/lib/api';
 
 export function useGuestAnnouncements(token: string) {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(null);
+  const isMountedRef = useRef(true);
+  const inFlightRef = useRef(false);
+  const pollTimeoutRef = useRef<number | null>(null);
 
-  useEffect(() => {
-    let cancelled = false;
+  const clearPollTimeout = () => {
+    if (pollTimeoutRef.current) {
+      window.clearTimeout(pollTimeoutRef.current);
+      pollTimeoutRef.current = null;
+    }
+  };
 
-    const fetchAnnouncements = async () => {
+  const fetchAnnouncements = useCallback(
+    async (opts?: { mode?: 'initial' | 'soft'; reason?: string }) => {
+      const mode = opts?.mode ?? (lastUpdatedAt ? 'soft' : 'initial');
       try {
-        setLoading(true);
+        if (!isMountedRef.current) return;
+        if (inFlightRef.current) return;
+        inFlightRef.current = true;
+        if (mode === 'initial') setLoading(true);
+        else setIsRefreshing(true);
+
         const data = await getGuestAnnouncements(token);
-        if (cancelled) return;
+        if (!isMountedRef.current) return;
         setAnnouncements(data || []);
         setError(null);
+        setLastUpdatedAt(new Date());
       } catch (err) {
         console.error('Failed to fetch announcements:', err);
-        if (cancelled) return;
+        if (!isMountedRef.current) return;
         setError('공지 정보를 불러오는데 실패했습니다.');
       } finally {
-        if (!cancelled) setLoading(false);
+        if (!isMountedRef.current) return;
+        inFlightRef.current = false;
+        setLoading(false);
+        setIsRefreshing(false);
       }
+    },
+    [token, lastUpdatedAt]
+  );
+
+  useEffect(() => {
+    isMountedRef.current = true;
+    clearPollTimeout();
+    inFlightRef.current = false;
+
+    const scheduleNext = (opts?: { immediate?: boolean }) => {
+      if (!isMountedRef.current) return;
+      if (typeof window === 'undefined') return;
+      clearPollTimeout();
+
+      const immediate = Boolean(opts?.immediate);
+      if (immediate) {
+        pollTimeoutRef.current = window.setTimeout(() => {
+          void fetchAnnouncements({ mode: 'soft', reason: 'poll-immediate' }).finally(() => scheduleNext());
+        }, 0);
+        return;
+      }
+
+      const isVisible = typeof document !== 'undefined' ? document.visibilityState === 'visible' : true;
+      const nextMs = isVisible ? 60_000 : 300_000; // visible: 60s, background: 5min
+      pollTimeoutRef.current = window.setTimeout(() => {
+        void fetchAnnouncements({ mode: 'soft', reason: 'poll' }).finally(() => scheduleNext());
+      }, nextMs);
     };
 
-    fetchAnnouncements();
+    void fetchAnnouncements({ mode: 'initial', reason: 'mount' }).finally(() => scheduleNext());
+
+    const handleFocus = () => scheduleNext({ immediate: true });
+    const handleOnline = () => scheduleNext({ immediate: true });
+    const handleVisibility = () => scheduleNext({ immediate: true });
+
+    window.addEventListener('focus', handleFocus);
+    window.addEventListener('online', handleOnline);
+    document.addEventListener('visibilitychange', handleVisibility);
+
     return () => {
-      cancelled = true;
+      isMountedRef.current = false;
+      clearPollTimeout();
+      window.removeEventListener('focus', handleFocus);
+      window.removeEventListener('online', handleOnline);
+      document.removeEventListener('visibilitychange', handleVisibility);
     };
-  }, [token]);
+  }, [fetchAnnouncements]);
 
-  return { announcements, loading, error };
+  const refresh = useCallback(() => {
+    void fetchAnnouncements({ mode: 'soft', reason: 'manual' });
+  }, [fetchAnnouncements]);
+
+  return { announcements, loading, isRefreshing, error, lastUpdatedAt, refresh };
 }

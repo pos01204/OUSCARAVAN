@@ -1,12 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { CheckCircle2, XCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { useGuestStore } from '@/lib/store';
 import { useToast } from '@/components/ui/use-toast';
-import { checkIn as apiCheckIn, checkOut as apiCheckOut, sendCheckInToN8N, sendCheckOutToN8N } from '@/lib/api';
+import { checkIn as apiCheckIn, checkOut as apiCheckOut, guestApi, sendCheckInToN8N, sendCheckOutToN8N } from '@/lib/api';
 import {
   Dialog,
   DialogContent,
@@ -25,11 +25,50 @@ export function CheckInOut({ token }: CheckInOutProps = {}) {
     useGuestStore();
   const [showCheckoutDialog, setShowCheckoutDialog] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [lastSyncedAt, setLastSyncedAt] = useState<Date | null>(null);
   const [checklist, setChecklist] = useState({
     gasLocked: false,
     trashCleaned: false,
   });
   const { toast } = useToast();
+
+  const checklistTotal = 2;
+  const checklistDone = useMemo(() => {
+    return [checklist.gasLocked, checklist.trashCleaned].filter(Boolean).length;
+  }, [checklist.gasLocked, checklist.trashCleaned]);
+  const checklistPercent = Math.round((checklistDone / checklistTotal) * 100);
+  const isChecklistComplete = checklistDone === checklistTotal;
+
+  // 서버 상태와 주기적으로 동기화(새로고침/다른 기기/관리자 변경 등)
+  useEffect(() => {
+    if (!token) return;
+    let cancelled = false;
+
+    const sync = async () => {
+      try {
+        const reservation = await guestApi(token);
+        if (cancelled) return;
+        const status = reservation?.status;
+        if (status === 'checked_in') {
+          if (!useGuestStore.getState().isCheckedIn) useGuestStore.getState().checkIn();
+        } else if (status === 'checked_out') {
+          if (!useGuestStore.getState().isCheckedIn) useGuestStore.getState().checkIn();
+          if (!useGuestStore.getState().isCheckedOut) useGuestStore.getState().checkOut();
+        }
+        setLastSyncedAt(new Date());
+      } catch {
+        // 동기화 실패는 조용히(오프라인/일시 장애 가능)
+      }
+    };
+
+    sync();
+    const id = window.setInterval(sync, 30_000);
+    return () => {
+      cancelled = true;
+      window.clearInterval(id);
+    };
+  }, [token]);
 
   const handleCheckIn = async () => {
     if (!token) {
@@ -42,6 +81,7 @@ export function CheckInOut({ token }: CheckInOutProps = {}) {
     }
 
     setIsProcessing(true);
+    setActionError(null);
     
     try {
       // 1. Railway 백엔드에 체크인 상태 저장
@@ -67,6 +107,7 @@ export function CheckInOut({ token }: CheckInOutProps = {}) {
       });
     } catch (error) {
       console.error('Failed to check in:', error);
+      setActionError('체크인 처리에 실패했습니다. 네트워크 상태를 확인하고 다시 시도해주세요.');
       toast({
         title: '체크인 실패',
         description: '체크인 처리에 실패했습니다. 다시 시도해주세요.',
@@ -87,16 +128,10 @@ export function CheckInOut({ token }: CheckInOutProps = {}) {
       return;
     }
 
-    if (!checklist.gasLocked || !checklist.trashCleaned) {
-      toast({
-        title: '확인 필요',
-        description: '모든 체크리스트를 확인해주세요.',
-        variant: 'destructive',
-      });
-      return;
-    }
+    if (!isChecklistComplete) return;
 
     setIsProcessing(true);
+    setActionError(null);
     
     try {
       // 1. Railway 백엔드에 체크아웃 상태 저장
@@ -123,6 +158,7 @@ export function CheckInOut({ token }: CheckInOutProps = {}) {
       });
     } catch (error) {
       console.error('Failed to check out:', error);
+      setActionError('체크아웃 처리에 실패했습니다. 네트워크 상태를 확인하고 다시 시도해주세요.');
       toast({
         title: '체크아웃 실패',
         description: '체크아웃 처리에 실패했습니다. 다시 시도해주세요.',
@@ -180,6 +216,32 @@ export function CheckInOut({ token }: CheckInOutProps = {}) {
               )}
             </div>
           )}
+
+          {actionError ? (
+            <div className="rounded-xl border border-red-200 bg-red-50 p-3">
+              <p className="text-xs font-semibold text-red-800">처리에 실패했어요</p>
+              <p className="mt-1 text-xs text-red-700">{actionError}</p>
+              <Button
+                type="button"
+                size="sm"
+                variant="outline"
+                className="mt-3 h-8"
+                disabled={isProcessing}
+                onClick={() => {
+                  if (!isCheckedIn) return void handleCheckIn();
+                  if (!isCheckedOut) return void handleCheckout();
+                }}
+              >
+                다시 시도
+              </Button>
+            </div>
+          ) : null}
+
+          {lastSyncedAt ? (
+            <p className="text-[11px] text-muted-foreground">
+              마지막 동기화: {lastSyncedAt.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
+            </p>
+          ) : null}
         </CardContent>
       </Card>
 
@@ -192,7 +254,29 @@ export function CheckInOut({ token }: CheckInOutProps = {}) {
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-3 py-4">
-            <label className="flex items-center gap-3 rounded-xl bg-background-muted p-4 cursor-pointer hover:bg-background-accent transition-colors">
+            <div className="rounded-xl border bg-background-muted/30 p-4">
+              <div className="flex items-center justify-between">
+                <p className="text-sm font-semibold text-brand-dark">체크리스트 진행률</p>
+                <p className="text-xs text-muted-foreground">
+                  {checklistDone}/{checklistTotal} 완료
+                </p>
+              </div>
+              <div className="mt-3 h-2 w-full rounded-full bg-muted overflow-hidden">
+                <div
+                  className="h-full bg-primary transition-all"
+                  style={{ width: `${checklistPercent}%` }}
+                  aria-hidden="true"
+                />
+              </div>
+            </div>
+
+            <label
+              className={`flex items-center gap-3 rounded-xl p-4 cursor-pointer transition-colors border ${
+                checklist.gasLocked
+                  ? 'bg-background-muted border-border/60 hover:bg-background-accent'
+                  : 'bg-red-50/50 border-red-200 hover:bg-red-50'
+              }`}
+            >
               <input
                 type="checkbox"
                 checked={checklist.gasLocked}
@@ -203,7 +287,13 @@ export function CheckInOut({ token }: CheckInOutProps = {}) {
               />
               <span className="text-brand-dark font-medium">가스 레버 잠금 확인</span>
             </label>
-            <label className="flex items-center gap-3 rounded-xl bg-background-muted p-4 cursor-pointer hover:bg-background-accent transition-colors">
+            <label
+              className={`flex items-center gap-3 rounded-xl p-4 cursor-pointer transition-colors border ${
+                checklist.trashCleaned
+                  ? 'bg-background-muted border-border/60 hover:bg-background-accent'
+                  : 'bg-red-50/50 border-red-200 hover:bg-red-50'
+              }`}
+            >
               <input
                 type="checkbox"
                 checked={checklist.trashCleaned}
@@ -224,9 +314,9 @@ export function CheckInOut({ token }: CheckInOutProps = {}) {
             </Button>
             <Button 
               onClick={handleCheckout}
-              disabled={isProcessing}
+              disabled={isProcessing || !isChecklistComplete}
             >
-              {isProcessing ? '처리 중...' : '체크아웃 완료하기'}
+              {isProcessing ? '처리 중...' : isChecklistComplete ? '체크아웃 완료하기' : '체크리스트 확인 필요'}
             </Button>
           </DialogFooter>
         </DialogContent>

@@ -19,6 +19,14 @@ import { RoomAssignmentDrawer } from '@/components/admin/RoomAssignmentDrawer';
 import { Calendar as CalendarIcon, List, BedDouble } from 'lucide-react';
 import 'react-big-calendar/lib/css/react-big-calendar.css';
 
+const IS_DEV = process.env.NODE_ENV !== 'production';
+const debugLog = (...args: unknown[]) => {
+  if (IS_DEV) console.log(...args);
+};
+const debugWarn = (...args: unknown[]) => {
+  if (IS_DEV) console.warn(...args);
+};
+
 // 상태별 색상 시스템 (강화)
 const STATUS_COLORS: Record<Reservation['status'], { bg: string; text: string; label: string }> = {
   pending: { bg: '#6B7280', text: 'white', label: '대기' },
@@ -98,12 +106,18 @@ export function ReservationCalendarView({
     setOnlyUnassignedInInspector(false);
   }, [selectedDate]);
 
+  // 인스펙터 닫기 (모든 닫힘 경로에서 동일하게 사용)
+  const handleCloseInspector = useCallback(() => {
+    setIsInspectorOpen(false);
+    setSelectedDate(null);
+  }, []);
+
   // Phase 3: 스와이프 제스처로 모달 닫기
   const swipeHandlers = useSwipe({
     onSwipeDown: () => {
       // 모바일에서만 아래로 스와이프하여 모달 닫기
       if (isMobile) {
-        setIsInspectorOpen(false);
+        handleCloseInspector();
       }
     },
   });
@@ -118,7 +132,7 @@ export function ReservationCalendarView({
         const checkout = new Date(reservation.checkout);
 
         if (isNaN(checkin.getTime()) || isNaN(checkout.getTime())) {
-          console.warn('[Calendar] Skipping reservation with invalid dates:', {
+          debugWarn('[Calendar] Skipping reservation with invalid dates:', {
             id: reservation.id,
             checkin: reservation.checkin,
             checkout: reservation.checkout,
@@ -134,7 +148,7 @@ export function ReservationCalendarView({
 
         // 날짜 범위가 유효한지 확인
         if (currentDate > endDate) {
-          console.warn('[Calendar] Checkin after checkout, skipping:', {
+          debugWarn('[Calendar] Checkin after checkout, skipping:', {
             id: reservation.id,
             checkin: reservation.checkin,
             checkout: reservation.checkout,
@@ -166,7 +180,7 @@ export function ReservationCalendarView({
     // 그룹화 결과 로깅
     const dateKeys = Object.keys(grouped);
     const maxReservations = Math.max(...Object.values(grouped).map(arr => arr.length), 0);
-    console.log('[Calendar] Reservations grouped by date:', {
+    debugLog('[Calendar] Reservations grouped by date:', {
       totalDates: dateKeys.length,
       maxReservationsPerDate: maxReservations,
       sampleDates: dateKeys.slice(0, 5).map(key => ({
@@ -206,7 +220,7 @@ export function ReservationCalendarView({
         const isValid = !isNaN(checkin.getTime()) && !isNaN(checkout.getTime());
 
         if (!isValid) {
-          console.warn('[Calendar] Invalid date reservation:', {
+          debugWarn('[Calendar] Invalid date reservation:', {
             id: reservation.id,
             reservationNumber: reservation.reservationNumber,
             checkin: reservation.checkin,
@@ -429,7 +443,7 @@ export function ReservationCalendarView({
   const handleSelectEvent = useCallback((event: ReservationEvent) => {
     // 타입 안전성 체크
     if (!event.start || !(event.start instanceof Date)) {
-      console.warn('[Calendar] Event has invalid start date:', event);
+      debugWarn('[Calendar] Event has invalid start date:', event);
       return;
     }
 
@@ -443,12 +457,6 @@ export function ReservationCalendarView({
       router.push(`/admin/reservations/${event.resource.id}`);
     }
   }, [router]);
-
-  // 인스펙터 닫기
-  const handleCloseInspector = useCallback(() => {
-    setIsInspectorOpen(false);
-    setSelectedDate(null);
-  }, []);
 
   // 예약 상세 페이지로 이동
   const handleViewDetail = useCallback((reservationId: string) => {
@@ -477,14 +485,14 @@ export function ReservationCalendarView({
     showMore: (total: number) => `+${total}개`,
   };
 
-  // 선택된 날짜의 예약 목록 (중요도 순서로 정렬: 미배정 → 체크인 → 체크아웃)
-  const selectedDateReservations = useMemo(() => {
+  // 선택된 날짜의 예약 목록(정렬된 전체)
+  const selectedDateAllReservations = useMemo(() => {
     if (!selectedDate) return [];
 
     const dateReservations = getReservationsForDate(selectedDate, false);
 
     // 중요도 순서로 정렬
-    const sorted = [...dateReservations].sort((a, b) => {
+    return [...dateReservations].sort((a, b) => {
       // 1순위: 미배정
       const aUnassigned = !a.assignedRoom;
       const bUnassigned = !b.assignedRoom;
@@ -510,9 +518,14 @@ export function ReservationCalendarView({
       // 나머지는 이름순
       return a.guestName.localeCompare(b.guestName);
     });
+  }, [selectedDate, getReservationsForDate]);
 
-    return onlyUnassignedInInspector ? sorted.filter((r) => !r.assignedRoom) : sorted;
-  }, [selectedDate, getReservationsForDate, onlyUnassignedInInspector]);
+  // 선택된 날짜의 예약 목록(인스펙터 표시용: 토글 반영)
+  const selectedDateReservations = useMemo(() => {
+    return onlyUnassignedInInspector
+      ? selectedDateAllReservations.filter((r) => !r.assignedRoom)
+      : selectedDateAllReservations;
+  }, [selectedDateAllReservations, onlyUnassignedInInspector]);
 
   // 예약 정렬 함수 (중요도 순서: 미배정 → 체크인 → 체크아웃)
   const sortReservationsByPriority = useCallback((reservations: Reservation[]) => {
@@ -811,16 +824,18 @@ export function ReservationCalendarView({
       {isMobile ? (
         <Drawer open={isInspectorOpen} onOpenChange={(open) => !open && handleCloseInspector()}>
           <DrawerContent className="max-h-[90vh]" {...swipeHandlers}>
-            <div className="mx-auto w-full max-w-lg">
+            <div className="mx-auto w-full max-w-lg flex min-h-0 flex-1 flex-col overflow-hidden">
               <DrawerHeader className="px-4 py-3 border-b bg-background">
                 <DrawerTitle className="text-lg font-semibold">
                   {selectedDate && format(selectedDate, 'yyyy년 M월 d일 (EEE)', { locale: ko })} 예약
                 </DrawerTitle>
                 <div className="mt-2 flex items-center justify-between gap-3">
                   <p className="text-sm text-muted-foreground">
-                    {selectedDateReservations.length > 0
-                      ? `총 ${selectedDateReservations.length}건`
-                      : '이 날짜에는 예약이 없습니다.'}
+                    {selectedDateAllReservations.length === 0
+                      ? '이 날짜에는 예약이 없습니다.'
+                      : onlyUnassignedInInspector
+                        ? `미배정 ${selectedDateReservations.length}건 / 전체 ${selectedDateAllReservations.length}건`
+                        : `총 ${selectedDateAllReservations.length}건`}
                   </p>
                   <Button
                     type="button"
@@ -835,24 +850,28 @@ export function ReservationCalendarView({
                 </div>
               </DrawerHeader>
 
-              <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-4 min-h-0 -webkit-overflow-scrolling-touch">
+              <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-4 min-h-0 overscroll-contain [-webkit-overflow-scrolling:touch]">
                 {selectedDateReservations.length > 0 ? (
                   <div className="space-y-3">
-                    <Tabs defaultValue="all" className="w-full">
+                    <Tabs
+                      key={onlyUnassignedInInspector ? 'unassigned' : 'all'}
+                      defaultValue="all"
+                      className="w-full"
+                    >
                       <TabsList className="grid w-full grid-cols-5 h-auto p-1 gap-1">
                         <TabsTrigger value="all" className="text-base min-h-[36px] px-1">
                           전체
                         </TabsTrigger>
-                        <TabsTrigger value="assigned" className="text-base min-h-[36px] px-1">
+                        <TabsTrigger value="assigned" className="text-base min-h-[36px] px-1" disabled={onlyUnassignedInInspector}>
                           배정
                         </TabsTrigger>
-                        <TabsTrigger value="pending" className="text-base min-h-[36px] px-1">
+                        <TabsTrigger value="pending" className="text-base min-h-[36px] px-1" disabled={onlyUnassignedInInspector}>
                           대기
                         </TabsTrigger>
-                        <TabsTrigger value="checked_in" className="text-base min-h-[36px] px-1">
+                        <TabsTrigger value="checked_in" className="text-base min-h-[36px] px-1" disabled={onlyUnassignedInInspector}>
                           체크인
                         </TabsTrigger>
-                        <TabsTrigger value="checked_out" className="text-base min-h-[36px] px-1">
+                        <TabsTrigger value="checked_out" className="text-base min-h-[36px] px-1" disabled={onlyUnassignedInInspector}>
                           체크아웃
                         </TabsTrigger>
                       </TabsList>
@@ -952,7 +971,21 @@ export function ReservationCalendarView({
                 ) : (
                   <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
                     <BedDouble className="h-12 w-12 mb-4 opacity-20" />
-                    <p>이 날짜에는 예약이 없습니다.</p>
+                    {selectedDateAllReservations.length > 0 && onlyUnassignedInInspector ? (
+                      <>
+                        <p className="font-medium">미배정 예약이 없습니다.</p>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          className="mt-4 h-10"
+                          onClick={() => setOnlyUnassignedInInspector(false)}
+                        >
+                          전체 보기
+                        </Button>
+                      </>
+                    ) : (
+                      <p>이 날짜에는 예약이 없습니다.</p>
+                    )}
                   </div>
                 )}
               </div>
@@ -967,16 +1000,18 @@ export function ReservationCalendarView({
         </Drawer>
       ) : (
         <Sheet open={isInspectorOpen} onOpenChange={(open) => !open && handleCloseInspector()}>
-          <SheetContent side="right" className="w-[420px] sm:w-[520px] p-0">
+          <SheetContent side="right" className="w-[420px] sm:w-[520px] p-0 flex flex-col overflow-hidden">
             <SheetHeader className="p-4 border-b">
               <SheetTitle className="text-lg font-semibold">
                 {selectedDate && format(selectedDate, 'yyyy년 M월 d일 (EEE)', { locale: ko })} 예약
               </SheetTitle>
               <div className="mt-2 flex items-center justify-between gap-3">
                 <p className="text-sm text-muted-foreground">
-                  {selectedDateReservations.length > 0
-                    ? `총 ${selectedDateReservations.length}건`
-                    : '이 날짜에는 예약이 없습니다.'}
+                  {selectedDateAllReservations.length === 0
+                    ? '이 날짜에는 예약이 없습니다.'
+                    : onlyUnassignedInInspector
+                      ? `미배정 ${selectedDateReservations.length}건 / 전체 ${selectedDateAllReservations.length}건`
+                      : `총 ${selectedDateAllReservations.length}건`}
                 </p>
                 <Button
                   type="button"
@@ -991,24 +1026,28 @@ export function ReservationCalendarView({
               </div>
             </SheetHeader>
 
-            <div className="p-4 overflow-y-auto h-[calc(100vh-140px)]">
+            <div className="p-4 min-h-0 flex-1 overflow-y-auto overscroll-contain">
               {selectedDateReservations.length > 0 ? (
                 <div className="space-y-3">
-                  <Tabs defaultValue="all" className="w-full">
+                  <Tabs
+                    key={onlyUnassignedInInspector ? 'unassigned' : 'all'}
+                    defaultValue="all"
+                    className="w-full"
+                  >
                     <TabsList className="grid w-full grid-cols-5 h-auto p-1 gap-1">
                       <TabsTrigger value="all" className="text-sm min-h-[36px] px-1 md:px-3">
                         전체
                       </TabsTrigger>
-                      <TabsTrigger value="assigned" className="text-sm min-h-[36px] px-1 md:px-3">
+                      <TabsTrigger value="assigned" className="text-sm min-h-[36px] px-1 md:px-3" disabled={onlyUnassignedInInspector}>
                         배정
                       </TabsTrigger>
-                      <TabsTrigger value="pending" className="text-sm min-h-[36px] px-1 md:px-3">
+                      <TabsTrigger value="pending" className="text-sm min-h-[36px] px-1 md:px-3" disabled={onlyUnassignedInInspector}>
                         대기
                       </TabsTrigger>
-                      <TabsTrigger value="checked_in" className="text-sm min-h-[36px] px-1 md:px-3">
+                      <TabsTrigger value="checked_in" className="text-sm min-h-[36px] px-1 md:px-3" disabled={onlyUnassignedInInspector}>
                         체크인
                       </TabsTrigger>
-                      <TabsTrigger value="checked_out" className="text-sm min-h-[36px] px-1 md:px-3">
+                      <TabsTrigger value="checked_out" className="text-sm min-h-[36px] px-1 md:px-3" disabled={onlyUnassignedInInspector}>
                         체크아웃
                       </TabsTrigger>
                     </TabsList>
@@ -1108,15 +1147,29 @@ export function ReservationCalendarView({
               ) : (
                 <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
                   <BedDouble className="h-12 w-12 mb-4 opacity-20" />
-                  <p>이 날짜에는 예약이 없습니다.</p>
+                  {selectedDateAllReservations.length > 0 && onlyUnassignedInInspector ? (
+                    <>
+                      <p className="font-medium">미배정 예약이 없습니다.</p>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        className="mt-4 h-10"
+                        onClick={() => setOnlyUnassignedInInspector(false)}
+                      >
+                        전체 보기
+                      </Button>
+                    </>
+                  ) : (
+                    <p>이 날짜에는 예약이 없습니다.</p>
+                  )}
                 </div>
               )}
+            </div>
 
-              <div className="pt-4">
-                <Button variant="outline" className="w-full" onClick={handleCloseInspector}>
-                  닫기
-                </Button>
-              </div>
+            <div className="p-4 border-t bg-background">
+              <Button variant="outline" className="w-full h-12" onClick={handleCloseInspector}>
+                닫기
+              </Button>
             </div>
           </SheetContent>
         </Sheet>

@@ -5,7 +5,7 @@ import { OrderForm } from '@/components/features/OrderForm';
 import { OrderHistory } from '@/components/features/OrderHistory';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Flame } from 'lucide-react';
+import { Flame, RotateCcw } from 'lucide-react';
 import { GuestPageHeader } from '@/components/guest/GuestPageHeader';
 import { OrderStatusSummaryBar } from '@/components/guest/OrderStatusSummaryBar';
 import { useGuestOrders } from '@/lib/hooks/useGuestOrders';
@@ -26,7 +26,7 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
     notes?: string;
   } | null>(null);
 
-  const { orders, loading, error, refresh, lastUpdatedAt } = useGuestOrders(token);
+  const { orders, loading, isRefreshing, error, refresh, lastUpdatedAt } = useGuestOrders(token);
 
   // 키오스크 주문은 현장 수령이므로 bbq/fire 주문만 표시
   const bbqFireOrders = useMemo(() => {
@@ -104,7 +104,20 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
                 <div className="h-1 w-1 rounded-full bg-primary"></div>
                 <h2 className="text-xl font-heading font-bold">주문 상태</h2>
               </div>
-              <LastUpdatedAt value={lastUpdatedAt} className="text-right" />
+              <div className="flex items-center gap-2">
+                <LastUpdatedAt value={lastUpdatedAt} className="text-right" />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 px-2"
+                  onClick={refresh}
+                  disabled={isRefreshing}
+                  aria-label="주문 상태 새로고침"
+                >
+                  <RotateCcw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} aria-hidden="true" />
+                </Button>
+              </div>
             </div>
             <OrderStatusSummaryBar
               orders={bbqFireOrders}
@@ -122,7 +135,20 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
                 <div className="h-1 w-1 rounded-full bg-primary"></div>
                 <h2 className="text-xl font-heading font-bold">주문 내역</h2>
               </div>
-              <LastUpdatedAt value={lastUpdatedAt} className="text-right" />
+              <div className="flex items-center gap-2">
+                <LastUpdatedAt value={lastUpdatedAt} className="text-right" />
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="sm"
+                  className="h-8 px-2"
+                  onClick={refresh}
+                  disabled={isRefreshing}
+                  aria-label="주문 내역 새로고침"
+                >
+                  <RotateCcw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} aria-hidden="true" />
+                </Button>
+              </div>
             </div>
             <OrderHistory
               token={token}
