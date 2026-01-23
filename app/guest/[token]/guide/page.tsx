@@ -2,6 +2,8 @@ import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import { guestApi } from '@/lib/api';
 import { GuestGuideContent } from '@/components/guest/GuestGuideContent';
+import { RetryablePageError } from '@/components/shared/RetryablePageError';
+import { ApiError } from '@/types';
 
 export default async function GuestGuidePage({
   params,
@@ -13,7 +15,11 @@ export default async function GuestGuidePage({
     await guestApi(params.token);
   } catch (error) {
     // 토큰이 유효하지 않으면 404 페이지
-    notFound();
+    if (error instanceof ApiError && (error.status === 401 || error.status === 404)) {
+      notFound();
+    }
+    const message = error instanceof Error ? error.message : '예약 정보를 불러오지 못했어요. 다시 시도해주세요.';
+    return <RetryablePageError title="이용 안내서를 불러오지 못했어요" description={message} />;
   }
   
   return (

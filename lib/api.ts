@@ -281,6 +281,10 @@ export async function guestApi(
     
     return response.json();
   } catch (error) {
+    // ApiError는 상태/코드 보존 (토큰 무효 vs 네트워크 장애 구분을 위해)
+    if (error instanceof ApiError) {
+      throw error;
+    }
     // 사용자 친화적인 에러 메시지로 변환
     const userFriendlyMessage = extractUserFriendlyMessage(error);
     throw new Error(userFriendlyMessage);

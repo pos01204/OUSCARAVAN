@@ -19,6 +19,7 @@ export function NotificationFeed() {
   const { notifications, markAsRead, deleteNotification, setNotifications, updateUnreadCount } =
     useNotificationStore();
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(null);
   
   // SSE 연결 (실시간 알림 수신)
   useNotificationStream();
@@ -33,6 +34,7 @@ export function NotificationFeed() {
         setNotifications(response.notifications);
         updateUnreadCount(response.unreadCount);
         setLoadError(null);
+        setLastUpdatedAt(new Date());
       } catch (error) {
         console.error('Failed to load notifications:', error);
         setLoadError('알림을 불러오지 못했어요. 다시 시도해주세요.');
@@ -131,6 +133,11 @@ export function NotificationFeed() {
   
   return (
     <div className="space-y-3">
+      {lastUpdatedAt ? (
+        <p className="text-xs text-muted-foreground">
+          마지막 업데이트: {formatDateTimeToKorean(lastUpdatedAt)}
+        </p>
+      ) : null}
       {sortedNotifications.map((notification) => {
         const meta = getNotificationTypeMeta(notification.type);
         const Icon = meta.icon;

@@ -10,6 +10,7 @@ import { GuestPageHeader } from '@/components/guest/GuestPageHeader';
 import { OrderStatusSummaryBar } from '@/components/guest/OrderStatusSummaryBar';
 import { useGuestOrders } from '@/lib/hooks/useGuestOrders';
 import type { Order } from '@/lib/api';
+import { LastUpdatedAt } from '@/components/shared/LastUpdatedAt';
 
 interface GuestOrderContentProps {
   token: string;
@@ -25,7 +26,7 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
     notes?: string;
   } | null>(null);
 
-  const { orders, loading, error, refresh } = useGuestOrders(token);
+  const { orders, loading, error, refresh, lastUpdatedAt } = useGuestOrders(token);
 
   // 키오스크 주문은 현장 수령이므로 bbq/fire 주문만 표시
   const bbqFireOrders = useMemo(() => {
@@ -98,9 +99,12 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
       {bbqFireOrders.length > 0 && (
         <>
           <section aria-label="주문 상태" className="space-y-3">
-            <div className="flex items-center gap-2">
-              <div className="h-1 w-1 rounded-full bg-primary"></div>
-              <h2 className="text-xl font-heading font-bold">주문 상태</h2>
+            <div className="flex items-end justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <div className="h-1 w-1 rounded-full bg-primary"></div>
+                <h2 className="text-xl font-heading font-bold">주문 상태</h2>
+              </div>
+              <LastUpdatedAt value={lastUpdatedAt} className="text-right" />
             </div>
             <OrderStatusSummaryBar
               orders={bbqFireOrders}
@@ -113,9 +117,12 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
           </section>
 
           <section aria-label="주문 내역" className="space-y-3">
-            <div className="flex items-center gap-2">
-              <div className="h-1 w-1 rounded-full bg-primary"></div>
-              <h2 className="text-xl font-heading font-bold">주문 내역</h2>
+            <div className="flex items-end justify-between gap-3">
+              <div className="flex items-center gap-2">
+                <div className="h-1 w-1 rounded-full bg-primary"></div>
+                <h2 className="text-xl font-heading font-bold">주문 내역</h2>
+              </div>
+              <LastUpdatedAt value={lastUpdatedAt} className="text-right" />
             </div>
             <OrderHistory
               token={token}

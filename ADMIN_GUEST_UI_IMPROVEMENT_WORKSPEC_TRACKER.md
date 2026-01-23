@@ -95,8 +95,8 @@
 |---|---|---|---|---|---|
 | C-01 | P0 | DONE | 공통 `ErrorState`/`RetryCard` 컴포넌트 도입 | `components/shared/ErrorState.tsx`(신규) | 한 줄 안내 + 재시도 버튼 + 접근성(aria-live) |
 | C-02 | P0 | DONE | 관리자 주문/알림 목록 로드 실패 시 Retry UI 적용 | `app/admin/orders/page.tsx`, `NotificationFeed.tsx` | 실패 시 토스트만이 아니라 화면 내 재시도 제공 |
-| C-03 | P1 | IN_PROGRESS | 고객 주문/가이드/도움말 로드 실패 시 Retry UI 적용 | `components/guest/*` | 일회성 사용자가 “막힘” 없이 복구 가능 |
-| C-04 | P1 | TODO | 데이터 최신성 표기(“마지막 업데이트”) 기본 패턴 추가 | 관리자/고객 공통 | 새로고침/자동 갱신이 실제로 동작하는지 신뢰 제공 |
+| C-03 | P1 | DONE | 고객 주문/가이드/도움말 로드 실패 시 Retry UI 적용 | `app/guest/[token]/*/page.tsx`, `components/shared/RetryablePageError.tsx`, `lib/api.ts` | 네트워크 장애/서버 오류에서 “다시 시도” 가능(토큰 무효는 404 유지) |
+| C-04 | P1 | DONE | 데이터 최신성 표기(“마지막 업데이트”) 기본 패턴 추가 | `components/shared/LastUpdatedAt.tsx` + 적용처 | 새로고침/자동 갱신이 실제로 동작하는지 신뢰 제공 |
 
 ---
 
@@ -115,7 +115,7 @@
 | ID | P | 상태 | 작업 | 변경 범위(예상 파일) | 완료 기준(AC) |
 |---|---|---|---|---|---|
 | E-01 | P1 | DONE | Guest 레이아웃 하단 패딩/푸터 마진 재조정 | `components/shared/Footer.tsx` | 하단 네비와 겹침 없이 “과한 여백” 제거 |
-| E-02 | P1 | TODO | 바텀 네비 safe-area 처리 점검 | `components/guest/GuestBottomNav.tsx` | iOS safe-area에서도 터치/가독성 문제 없음 |
+| E-02 | P1 | DONE | 바텀 네비 safe-area 처리 점검 | `components/guest/GuestBottomNav.tsx`, `app/guest/[token]/layout.tsx`, `components/guest/GuestHelpContent.tsx` | iOS safe-area에서도 터치/가독성 문제 없음 |
 | E-03 | P2 | TODO | 관리자 모바일에서도 footer/하단 네비 겹침 점검(필요 시) | `app/admin/layout.tsx`, `AdminBottomNav.tsx` | 화면 하단 콘텐츠가 가려지지 않음 |
 
 ---
@@ -172,6 +172,7 @@
 | 2026-01-23 |  | A-01~A-04, B-01~B-03, C-01~C-02 | DONE | 검색 하이라이트/상태 배지 단일화/에러 재시도 패턴 적용 |
 | 2026-01-23 |  | B-06, C-03(부분) | IN_PROGRESS | 고객 주문 상태 배지 통일 + 주문 내역 Retry 적용 |
 | 2026-01-23 |  | B-04, B-05, D-01, E-01 | DONE | 관리자 알림 메타 단일화 + 현장관리 배지 정리 + 오버레이 정책 문서화 + Footer 여백 방식 변경 |
+| 2026-01-23 |  | C-03, C-04, E-02 | DONE | 가이드/도움말 토큰 검증 실패 시 Retry UI + “마지막 업데이트” 패턴 추가 + safe-area 보정 |
 
 ---
 
@@ -183,4 +184,5 @@
 | v1.1 | 2026-01-23 | P0 작업(A/B/C 일부) 적용 및 트래킹 업데이트 |
 | v1.2 | 2026-01-23 | A-04 완료, B-06 완료, C-03 진행(주문 영역) |
 | v1.3 | 2026-01-23 | B-04/B-05/D-01/E-01 적용 및 트래킹 업데이트 |
+| v1.4 | 2026-01-23 | C-03/C-04/E-02 적용 및 트래킹 업데이트 |
 
