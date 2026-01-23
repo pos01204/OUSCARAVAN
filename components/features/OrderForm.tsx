@@ -13,6 +13,13 @@ import { sendOrderToN8N, createOrder } from '@/lib/api';
 interface OrderFormProps {
   onClose: () => void;
   token: string;
+  onSubmitted?: (data: {
+    type: 'bbq' | 'fire';
+    setName: string;
+    quantity: number;
+    deliveryTime: string;
+    totalAmount: number;
+  }) => void;
   initial?: {
     selectedSetId?: string | null;
     quantity?: number;
@@ -24,13 +31,14 @@ interface OrderFormProps {
 
 type OrderStep = 'select' | 'quantity' | 'time' | 'review';
 
-export function OrderForm({ onClose, token, initial }: OrderFormProps) {
+export function OrderForm({ onClose, token, onSubmitted, initial }: OrderFormProps) {
   const [selectedSet, setSelectedSet] = useState<string | null>(initial?.selectedSetId ?? null);
   const [quantity, setQuantity] = useState(initial?.quantity ?? 1);
   const [deliveryTime, setDeliveryTime] = useState(initial?.deliveryTime ?? '18:00');
   const [notes, setNotes] = useState(initial?.notes ?? '');
   const [step, setStep] = useState<OrderStep>(initial?.step ?? 'select');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
   const { addOrder, guestInfo } = useGuestStore();
   const { toast } = useToast();
 
@@ -65,6 +73,7 @@ export function OrderForm({ onClose, token, initial }: OrderFormProps) {
 
     try {
       setIsSubmitting(true);
+      setSubmitError(null);
       // 1. Railway 백엔드에 주문 저장
       await createOrder(token, {
         type: order.type,
@@ -96,9 +105,18 @@ export function OrderForm({ onClose, token, initial }: OrderFormProps) {
         description: '주문이 접수되었습니다. 곧 준비해드리겠습니다!',
       });
 
+      onSubmitted?.({
+        type: orderType,
+        setName: selectedSetData.name,
+        quantity,
+        deliveryTime,
+        totalAmount: order.totalAmount,
+      });
+
       onClose();
     } catch (error) {
       console.error('Failed to create order:', error);
+      setSubmitError('주문 접수에 실패했습니다. 네트워크 상태를 확인한 뒤 다시 시도해주세요.');
       toast({
         title: '주문 실패',
         description: '주문 접수에 실패했습니다. 다시 시도해주세요.',
@@ -319,6 +337,22 @@ export function OrderForm({ onClose, token, initial }: OrderFormProps) {
           </div>
 
           <DrawerFooter className="px-4 pb-8 pt-4 border-t">
+            {submitError ? (
+              <div className="mb-3 rounded-xl border border-red-200 bg-red-50 p-3">
+                <p className="text-xs font-semibold text-red-800">주문이 접수되지 않았어요</p>
+                <p className="mt-1 text-xs text-red-700">{submitError}</p>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  className="mt-3 h-8"
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                >
+                  다시 시도
+                </Button>
+              </div>
+            ) : null}
             <div className="flex gap-3 w-full">
               <Button
                 variant="outline"

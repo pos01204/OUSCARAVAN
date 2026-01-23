@@ -8,7 +8,12 @@ import {
   checkIn,
   checkOut,
 } from '../controllers/guest.controller';
-import { getGuestAnnouncements, getGuestAnnouncementReads, markGuestAnnouncementRead } from '../controllers/announcements.controller';
+import {
+  getGuestAnnouncements,
+  getGuestAnnouncementReads,
+  markGuestAnnouncementRead,
+  streamGuestAnnouncements,
+} from '../controllers/announcements.controller';
 
 const router = express.Router();
 
@@ -16,6 +21,7 @@ router.get('/:token', getGuestInfo);
 router.get('/:token/orders', getGuestOrders);
 router.get('/:token/orders/stream', streamGuestOrders);
 router.get('/:token/announcements', getGuestAnnouncements);
+router.get('/:token/announcements/stream', streamGuestAnnouncements);
 router.get('/:token/announcements/read', getGuestAnnouncementReads);
 router.post('/:token/announcements/read', markGuestAnnouncementRead);
 router.post('/:token/orders', validateCreateOrder, createGuestOrder);

@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Bell, X, CheckCircle2 } from 'lucide-react';
+import { Bell, X, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CHECK_IN_OUT } from '@/lib/constants';
@@ -13,6 +13,7 @@ export function CheckoutReminder() {
   const [alarmScheduled, setAlarmScheduled] = useState(false);
   const [dismissed, setDismissed] = useState(false);
   const [serviceWorkerReady, setServiceWorkerReady] = useState(false);
+  const [setupFailed, setSetupFailed] = useState(false);
   const [alarmId, setAlarmId] = useState<string | null>(null);
   const alarmIdRef = useRef<string | null>(null);
 
@@ -29,6 +30,7 @@ export function CheckoutReminder() {
         const initialized = await alarmService.initialize();
         if (!initialized) {
           console.warn('[CheckoutReminder] Service Worker 초기화 실패');
+          setSetupFailed(true);
           return;
         }
 
@@ -78,6 +80,7 @@ export function CheckoutReminder() {
         console.log(`[CheckoutReminder] 알람 설정 완료: ${reminderTime.toLocaleString()}`);
       } catch (error) {
         console.error('[CheckoutReminder] 알람 설정 실패:', error);
+        setSetupFailed(true);
       }
     };
 
@@ -99,10 +102,41 @@ export function CheckoutReminder() {
     setDismissed(true);
   };
 
-  // 알람 배너 표시 (체크인 후 체크아웃 전, 알람이 설정된 경우)
-  if (!isCheckedIn || isCheckedOut || dismissed || !alarmScheduled) {
+  // 배너 표시 조건
+  if (!isCheckedIn || isCheckedOut || dismissed) {
     return null;
   }
+
+  // 알림 설정 실패 시 대체 안내(환경/권한 이슈)
+  if (setupFailed && !alarmScheduled) {
+    return (
+      <Card className="border-amber-200 bg-amber-50">
+        <CardContent className="flex items-start justify-between gap-3 p-4">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="mt-0.5 h-5 w-5 text-amber-700" aria-hidden="true" />
+            <div>
+              <p className="text-sm font-medium text-amber-900">체크아웃 알림을 설정할 수 없어요</p>
+              <p className="mt-1 text-xs text-amber-800/90">
+                브라우저/권한 설정에 따라 알림이 제한될 수 있어요. 체크아웃 시간({CHECK_IN_OUT.checkOut}) 전에 한 번 더 확인해주세요.
+              </p>
+            </div>
+          </div>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleDismiss}
+            className="h-8 w-8"
+            aria-label="알림 닫기"
+          >
+            <X className="h-4 w-4" />
+          </Button>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  // 알람 배너 표시 (알람이 설정된 경우)
+  if (!alarmScheduled) return null;
 
   return (
     <Card className="border-primary/50 bg-primary/5">

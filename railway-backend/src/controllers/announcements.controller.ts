@@ -11,6 +11,7 @@ import {
   type AnnouncementLevel,
 } from '../services/announcements.service';
 import { listAnnouncementReads, markAnnouncementRead } from '../services/announcement-reads.service';
+import { broadcastGuestAnnouncementsEvent, setupGuestAnnouncementsSSE } from '../services/guest-announcements-sse.service';
 
 const ANNOUNCEMENT_LEVELS: AnnouncementLevel[] = ['info', 'warning', 'critical'];
 
@@ -66,6 +67,13 @@ export async function createAnnouncementHandler(req: AuthRequest, res: Response)
       isActive,
     });
 
+    // 게스트 공지 SSE 브로드캐스트 (비동기, 실패해도 생성은 완료)
+    try {
+      broadcastGuestAnnouncementsEvent({ type: 'announcements_changed' });
+    } catch {
+      // ignore
+    }
+
     res.status(201).json(announcement);
   } catch (error) {
     console.error('Create announcement error:', error);
@@ -98,6 +106,12 @@ export async function updateAnnouncementHandler(req: AuthRequest, res: Response)
       isActive,
     });
 
+    try {
+      broadcastGuestAnnouncementsEvent({ type: 'announcements_changed' });
+    } catch {
+      // ignore
+    }
+
     res.json(announcement);
   } catch (error) {
     console.error('Update announcement error:', error);
@@ -126,6 +140,13 @@ export async function deleteAnnouncementHandler(req: AuthRequest, res: Response)
     const { id } = req.params;
 
     await deleteAnnouncement(id, adminId);
+
+    try {
+      broadcastGuestAnnouncementsEvent({ type: 'announcements_changed' });
+    } catch {
+      // ignore
+    }
+
     res.json({ success: true });
   } catch (error) {
     console.error('Delete announcement error:', error);
@@ -159,6 +180,29 @@ export async function getGuestAnnouncements(req: Request, res: Response) {
     res.json({ announcements });
   } catch (error) {
     console.error('Get guest announcements error:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      code: 'INTERNAL_ERROR',
+    });
+  }
+}
+
+export async function streamGuestAnnouncements(req: Request, res: Response) {
+  try {
+    const { token } = req.params;
+    const reservation = await getReservationByToken(token);
+
+    if (!reservation) {
+      return res.status(404).json({
+        error: 'Invalid token',
+        code: 'INVALID_TOKEN',
+      });
+    }
+
+    const announcements = await getActiveAnnouncements();
+    setupGuestAnnouncementsSSE(req, res, { announcements });
+  } catch (error) {
+    console.error('Guest announcements SSE error:', error);
     res.status(500).json({
       error: 'Internal server error',
       code: 'INTERNAL_ERROR',

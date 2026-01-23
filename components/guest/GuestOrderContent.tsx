@@ -1,11 +1,11 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { OrderForm } from '@/components/features/OrderForm';
 import { OrderHistory } from '@/components/features/OrderHistory';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Flame, RotateCcw } from 'lucide-react';
+import { CheckCircle2, Flame, RotateCcw, X } from 'lucide-react';
 import { GuestPageHeader } from '@/components/guest/GuestPageHeader';
 import { OrderStatusSummaryBar } from '@/components/guest/OrderStatusSummaryBar';
 import { useGuestOrders } from '@/lib/hooks/useGuestOrders';
@@ -19,6 +19,13 @@ interface GuestOrderContentProps {
 export function GuestOrderContent({ token }: GuestOrderContentProps) {
   const [showOrderForm, setShowOrderForm] = useState(false);
   const [statusFilter, setStatusFilter] = useState<Order['status'] | 'all'>('all');
+  const [submittedToast, setSubmittedToast] = useState<{
+    at: Date;
+    setName: string;
+    quantity: number;
+    deliveryTime: string;
+    totalAmount: number;
+  } | null>(null);
   const [reorderDraft, setReorderDraft] = useState<{
     selectedSetId: string;
     quantity: number;
@@ -56,12 +63,45 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
     setShowOrderForm(true);
   };
 
+  useEffect(() => {
+    if (!submittedToast) return;
+    const id = window.setTimeout(() => setSubmittedToast(null), 12_000);
+    return () => window.clearTimeout(id);
+  }, [submittedToast]);
+
   return (
     <main className="space-y-6" role="main" aria-label="불멍/바베큐 주문 페이지">
       <GuestPageHeader
         title="불멍/바베큐 주문"
         description="세트를 선택하고 원하는 시간에 배송받으세요"
       />
+
+      {submittedToast ? (
+        <Card className="border-emerald-200 bg-emerald-50">
+          <CardContent className="flex items-start justify-between gap-3 p-4">
+            <div className="flex items-start gap-3">
+              <CheckCircle2 className="mt-0.5 h-5 w-5 text-emerald-600" aria-hidden="true" />
+              <div>
+                <p className="text-sm font-semibold text-emerald-900">주문이 접수되었어요</p>
+                <p className="mt-1 text-xs text-emerald-800/90">
+                  {submittedToast.setName} · {submittedToast.quantity}개 · {submittedToast.deliveryTime} ·{' '}
+                  {submittedToast.totalAmount.toLocaleString()}원
+                </p>
+              </div>
+            </div>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+              className="h-8 w-8"
+              onClick={() => setSubmittedToast(null)}
+              aria-label="주문 접수 안내 닫기"
+            >
+              <X className="h-4 w-4" />
+            </Button>
+          </CardContent>
+        </Card>
+      ) : null}
 
       {/* 불멍/바베큐 주문 카드 */}
       <section aria-label="불멍/바베큐 주문">
@@ -182,6 +222,17 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
         <OrderForm
           onClose={() => setShowOrderForm(false)}
           token={token}
+          onSubmitted={(data) => {
+            setSubmittedToast({
+              at: new Date(),
+              setName: data.setName,
+              quantity: data.quantity,
+              deliveryTime: data.deliveryTime,
+              totalAmount: data.totalAmount,
+            });
+            // 주문 접수 직후에는 상태가 바뀌었는지 바로 보이도록 한 번 즉시 갱신
+            refresh();
+          }}
           initial={
             reorderDraft
               ? {

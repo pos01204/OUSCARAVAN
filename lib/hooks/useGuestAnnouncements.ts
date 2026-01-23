@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { getGuestAnnouncements, type Announcement } from '@/lib/api';
+import { API_CONFIG } from '@/lib/constants';
 
 export function useGuestAnnouncements(token: string) {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
@@ -12,6 +13,7 @@ export function useGuestAnnouncements(token: string) {
   const isMountedRef = useRef(true);
   const inFlightRef = useRef(false);
   const pollTimeoutRef = useRef<number | null>(null);
+  const eventSourceRef = useRef<EventSource | null>(null);
 
   const clearPollTimeout = () => {
     if (pollTimeoutRef.current) {
@@ -84,12 +86,41 @@ export function useGuestAnnouncements(token: string) {
     window.addEventListener('online', handleOnline);
     document.addEventListener('visibilitychange', handleVisibility);
 
+    // SSE(가능하면): 공지 변경이 발생하면 즉시 soft refresh
+    try {
+      if (typeof window !== 'undefined' && typeof EventSource !== 'undefined') {
+        const url = `${API_CONFIG.baseUrl}/api/guest/${token}/announcements/stream`;
+        const es = new EventSource(url);
+        eventSourceRef.current = es;
+
+        es.onmessage = () => scheduleNext({ immediate: true });
+        es.onerror = () => {
+          try {
+            es.close();
+          } catch {
+            // ignore
+          }
+          eventSourceRef.current = null;
+        };
+      }
+    } catch {
+      // ignore
+    }
+
     return () => {
       isMountedRef.current = false;
       clearPollTimeout();
       window.removeEventListener('focus', handleFocus);
       window.removeEventListener('online', handleOnline);
       document.removeEventListener('visibilitychange', handleVisibility);
+      if (eventSourceRef.current) {
+        try {
+          eventSourceRef.current.close();
+        } catch {
+          // ignore
+        }
+        eventSourceRef.current = null;
+      }
     };
   }, [fetchAnnouncements]);
 
