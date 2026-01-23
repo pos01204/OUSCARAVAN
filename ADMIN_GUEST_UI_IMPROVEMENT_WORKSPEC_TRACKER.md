@@ -134,6 +134,7 @@
 | F-08 | P2 | DONE | 관리자 예약/주문 “Soft Refresh”(리스트 유지) + 예약 로드 실패 ErrorState 추가 | `app/admin/reservations/page.tsx`, `app/admin/orders/page.tsx` | 새로고침/필터 변경 시 화면이 통째로 깜빡이지 않고, 실패 시 재시도 가능 |
 | F-09 | P2 | DONE | 관리자 현장관리 Soft Refresh(스켈레톤 전환 최소화) | `app/admin/rooms/page.tsx` | 새로고침 시 기존 카드 유지 + “갱신 중…” 표기로 피로감 감소 |
 | F-10 | P2 | DONE | 관리자 현장관리 로드 실패 시 화면 내 ErrorState/Retry 추가 | `app/admin/rooms/page.tsx` | 토스트만으로 끝나지 않고 화면에서 복구 가능 |
+| F-11 | P2 | DONE | 예약/배정 캘린더 이벤트 제목 축약(미/입/퇴 + 이름) + 인스펙터 “미배정만” 토글 | `app/admin/reservations/ReservationCalendarView.tsx` | 월간 스캔이 빨라지고, 배정 업무를 더 빠르게 수행 가능 |
 
 ---
 
@@ -193,6 +194,7 @@
 | 2026-01-23 |  | F-08 | DONE | 관리자 예약/주문 Soft Refresh + 예약 로드 실패 ErrorState/Retry 추가 |
 | 2026-01-23 |  | F-09 | DONE | 관리자 현장관리 Soft Refresh 적용(새로고침 시 화면 유지) |
 | 2026-01-23 |  | F-10 | DONE | 관리자 현장관리 ErrorState/Retry 추가 |
+| 2026-01-23 |  | F-11 | DONE | 예약/배정 캘린더 이벤트 축약 표기 + 인스펙터 미배정 토글 추가 |
 
 ---
 
@@ -216,4 +218,5 @@
 | v1.13 | 2026-01-23 | F-08(예약/주문 Soft Refresh + 예약 ErrorState) 적용 및 트래킹 업데이트 |
 | v1.14 | 2026-01-23 | F-09(현장관리 Soft Refresh) 적용 및 트래킹 업데이트 |
 | v1.15 | 2026-01-23 | F-10(현장관리 ErrorState/Retry) 적용 및 트래킹 업데이트 |
+| v1.16 | 2026-01-23 | F-11(예약 캘린더 축약 표기/미배정 토글) 적용 및 트래킹 업데이트 |
 

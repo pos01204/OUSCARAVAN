@@ -66,6 +66,7 @@ export function ReservationCalendarView({
   const [view, setView] = useState<View>('month');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [isInspectorOpen, setIsInspectorOpen] = useState(false);
+  const [onlyUnassignedInInspector, setOnlyUnassignedInInspector] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [expandedDates, setExpandedDates] = useState<Set<string>>(new Set());
 
@@ -91,6 +92,11 @@ export function ReservationCalendarView({
       return () => window.removeEventListener('resize', handleResize);
     }
   }, [setCalendarViewType]);
+
+  // 인스펙터 날짜가 바뀌면 "미배정만" 토글은 기본 해제
+  useEffect(() => {
+    setOnlyUnassignedInInspector(false);
+  }, [selectedDate]);
 
   // Phase 3: 스와이프 제스처로 모달 닫기
   const swipeHandlers = useSwipe({
@@ -172,20 +178,26 @@ export function ReservationCalendarView({
     return grouped;
   }, [reservations]);
 
+  const getWorkPrefix = useCallback((reservation: Reservation) => {
+    if (!reservation.assignedRoom) return '미';
+    if (reservation.status === 'checked_in') return '입';
+    if (reservation.status === 'checked_out') return '퇴';
+    if (reservation.status === 'assigned') return '배';
+    if (reservation.status === 'pending') return '대';
+    if (reservation.status === 'cancelled') return '취';
+    return '예약';
+  }, []);
+
+  const getEventShortTitle = useCallback(
+    (reservation: Reservation) => {
+      const prefix = getWorkPrefix(reservation);
+      return `${prefix} ${reservation.guestName}`;
+    },
+    [getWorkPrefix]
+  );
+
   // 예약 데이터를 캘린더 이벤트로 변환 (하이브리드 방식 적용)
   const events: ReservationEvent[] = useMemo(() => {
-    console.log('[Calendar] Processing reservations:', {
-      total: reservations.length,
-      sample: reservations.slice(0, 3).map(r => ({
-        id: r.id,
-        guestName: r.guestName,
-        checkin: r.checkin,
-        checkout: r.checkout,
-        status: r.status,
-        assignedRoom: r.assignedRoom,
-      })),
-    });
-
     const validReservations = reservations.filter((reservation) => {
       try {
         // 체크인/체크아웃 날짜가 유효한지 확인
@@ -212,11 +224,6 @@ export function ReservationCalendarView({
       }
     });
 
-    console.log('[Calendar] Valid reservations:', {
-      valid: validReservations.length,
-      invalid: reservations.length - validReservations.length,
-    });
-
     // 개별 예약 이벤트를 생성 (바 형태의 월간 뷰)
     const events = validReservations.map((reservation) => {
       const start = new Date(reservation.checkin);
@@ -224,18 +231,27 @@ export function ReservationCalendarView({
       const end = new Date(reservation.checkout);
       end.setHours(23, 59, 59, 999); // 당일 끝까지
 
-      // 타이틀 포맷: "객실명 예약자"
-      const roomName = reservation.assignedRoom || '미배정';
-      const truncatedRoom = roomName.startsWith('A') || roomName.startsWith('B') ? roomName : roomName; // 레거시 필터링은 Drawer에서 했지만 표시는 그대로
-
       return {
         id: reservation.id,
-        title: `${reservation.assignedRoom || '미배정'} ${reservation.guestName}`,
+        // 월간 셀 이벤트 제목: 업무형 축약 표기(미/입/퇴 + 이름)
+        title: getEventShortTitle(reservation),
         start,
         end,
         resource: reservation,
         allDay: true, // 하루 종일 이벤트로 표시
       };
+    });
+
+    // 월간 셀에서 “미배정”이 먼저 보이도록 동일 start 기준 우선순위 정렬
+    events.sort((a, b) => {
+      const aStart = a.start instanceof Date ? a.start.getTime() : 0;
+      const bStart = b.start instanceof Date ? b.start.getTime() : 0;
+      if (aStart !== bStart) return aStart - bStart;
+      const aUnassigned = !a.resource.assignedRoom;
+      const bUnassigned = !b.resource.assignedRoom;
+      if (aUnassigned && !bUnassigned) return -1;
+      if (!aUnassigned && bUnassigned) return 1;
+      return a.resource.guestName.localeCompare(b.resource.guestName);
     });
 
     // const events = Array.from(eventMap.values()); // Removed
@@ -257,30 +273,8 @@ export function ReservationCalendarView({
       };
     }
 
-    // 이벤트 타입별 개수 계산
-    const unassignedEvents = events.filter(e => {
-      const title = typeof e.title === 'string' ? e.title : String(e.title || '');
-      return title.includes('미배정');
-    }).length;
-    const checkinEvents = events.filter(e => {
-      const title = typeof e.title === 'string' ? e.title : String(e.title || '');
-      return title.includes('체크인');
-    }).length;
-    const checkoutEvents = events.filter(e => {
-      const title = typeof e.title === 'string' ? e.title : String(e.title || '');
-      return title.includes('체크아웃');
-    }).length;
-
-    console.log('[Calendar] Generated events:', {
-      total: events.length,
-      unassigned: unassignedEvents,
-      checkin: checkinEvents,
-      checkout: checkoutEvents,
-      dateRange,
-    });
-
     return events;
-  }, [reservations]);
+  }, [getEventShortTitle, reservations]);
 
 
   // 이벤트 스타일 커스터마이징 (바 형태)
@@ -310,9 +304,11 @@ export function ReservationCalendarView({
 
   // 커스텀 이벤트 컴포넌트
   const EventComponent = useCallback(({ event }: { event: ReservationEvent }) => {
+    const r = event.resource;
+    const fullTitle = `${r.assignedRoom || '미배정'} · ${STATUS_COLORS[r.status]?.label ?? '예약'} · ${r.guestName}`;
     return (
       <div
-        title={event.title as string}
+        title={fullTitle}
         className={`${isMobile ? 'text-[9px]' : 'text-[11px]'} font-semibold truncate leading-tight py-0.5`}
       >
         {event.title}
@@ -488,7 +484,7 @@ export function ReservationCalendarView({
     const dateReservations = getReservationsForDate(selectedDate, false);
 
     // 중요도 순서로 정렬
-    return [...dateReservations].sort((a, b) => {
+    const sorted = [...dateReservations].sort((a, b) => {
       // 1순위: 미배정
       const aUnassigned = !a.assignedRoom;
       const bUnassigned = !b.assignedRoom;
@@ -514,7 +510,9 @@ export function ReservationCalendarView({
       // 나머지는 이름순
       return a.guestName.localeCompare(b.guestName);
     });
-  }, [selectedDate, getReservationsForDate]);
+
+    return onlyUnassignedInInspector ? sorted.filter((r) => !r.assignedRoom) : sorted;
+  }, [selectedDate, getReservationsForDate, onlyUnassignedInInspector]);
 
   // 예약 정렬 함수 (중요도 순서: 미배정 → 체크인 → 체크아웃)
   const sortReservationsByPriority = useCallback((reservations: Reservation[]) => {
@@ -818,11 +816,23 @@ export function ReservationCalendarView({
                 <DrawerTitle className="text-lg font-semibold">
                   {selectedDate && format(selectedDate, 'yyyy년 M월 d일 (EEE)', { locale: ko })} 예약
                 </DrawerTitle>
-                <p className="mt-1 text-sm text-muted-foreground">
-                  {selectedDateReservations.length > 0
-                    ? `총 ${selectedDateReservations.length}건`
-                    : '이 날짜에는 예약이 없습니다.'}
-                </p>
+                <div className="mt-2 flex items-center justify-between gap-3">
+                  <p className="text-sm text-muted-foreground">
+                    {selectedDateReservations.length > 0
+                      ? `총 ${selectedDateReservations.length}건`
+                      : '이 날짜에는 예약이 없습니다.'}
+                  </p>
+                  <Button
+                    type="button"
+                    variant={onlyUnassignedInInspector ? 'default' : 'outline'}
+                    size="sm"
+                    className="h-8 px-3 text-xs font-bold"
+                    onClick={() => setOnlyUnassignedInInspector((v) => !v)}
+                    aria-pressed={onlyUnassignedInInspector}
+                  >
+                    미배정만
+                  </Button>
+                </div>
               </DrawerHeader>
 
               <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-4 min-h-0 -webkit-overflow-scrolling-touch">
@@ -962,11 +972,23 @@ export function ReservationCalendarView({
               <SheetTitle className="text-lg font-semibold">
                 {selectedDate && format(selectedDate, 'yyyy년 M월 d일 (EEE)', { locale: ko })} 예약
               </SheetTitle>
-              <p className="mt-1 text-sm text-muted-foreground">
-                {selectedDateReservations.length > 0
-                  ? `총 ${selectedDateReservations.length}건`
-                  : '이 날짜에는 예약이 없습니다.'}
-              </p>
+              <div className="mt-2 flex items-center justify-between gap-3">
+                <p className="text-sm text-muted-foreground">
+                  {selectedDateReservations.length > 0
+                    ? `총 ${selectedDateReservations.length}건`
+                    : '이 날짜에는 예약이 없습니다.'}
+                </p>
+                <Button
+                  type="button"
+                  variant={onlyUnassignedInInspector ? 'default' : 'outline'}
+                  size="sm"
+                  className="h-8 px-3 text-xs font-bold"
+                  onClick={() => setOnlyUnassignedInInspector((v) => !v)}
+                  aria-pressed={onlyUnassignedInInspector}
+                >
+                  미배정만
+                </Button>
+              </div>
             </SheetHeader>
 
             <div className="p-4 overflow-y-auto h-[calc(100vh-140px)]">
