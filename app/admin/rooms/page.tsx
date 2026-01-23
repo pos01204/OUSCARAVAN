@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { useRouter } from 'next/navigation';
 import { getRooms, getAdminOrders, updateOrderStatus, type Room, type Order } from '@/lib/api';
 import { logError } from '@/lib/logger';
 import { extractUserFriendlyMessage } from '@/lib/error-messages';
@@ -15,6 +14,7 @@ import { useNotificationStore } from '@/lib/store/notifications';
 import { useNotificationStream } from '@/lib/hooks/useNotificationStream';
 import { AdminRoomsSkeleton } from '@/components/admin/AdminRoomsSkeleton';
 import { LastUpdatedAt } from '@/components/shared/LastUpdatedAt';
+import { ErrorState } from '@/components/shared/ErrorState';
 
 interface RoomWithReservation extends Room {
   reservation?: {
@@ -48,11 +48,11 @@ function getReservationOccupancyBadge(status?: string) {
 
 export default function RoomsPage() {
   const { toast } = useToast();
-  const router = useRouter();
   const [rooms, setRooms] = useState<RoomWithReservation[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(null);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [completingOrderId, setCompletingOrderId] = useState<string | null>(null);
   const [blinkingRoomIds, setBlinkingRoomIds] = useState<Set<string>>(new Set());
   const { notifications } = useNotificationStore();
@@ -94,10 +94,12 @@ export default function RoomsPage() {
         })
       );
       setLastUpdatedAt(new Date());
+      setLoadError(null);
     } catch (error) {
       logError('Failed to fetch orders', error, {
         component: 'RoomsPage',
       });
+      setLoadError('주문 현황을 갱신하지 못했어요. 다시 시도해주세요.');
     }
   }, []);
 
@@ -131,10 +133,10 @@ export default function RoomsPage() {
     [toast, fetchOrdersForRooms]
   );
 
-  const fetchRooms = useCallback(async () => {
+  const fetchRooms = useCallback(async (mode: 'initial' | 'soft' = 'soft') => {
     try {
-      setIsRefreshing(true);
-      setIsLoading(true);
+      if (mode === 'initial') setIsInitialLoading(true);
+      else setIsRefreshing(true);
       const data = await getRooms();
       // getRooms()는 배열을 반환
       const roomsArray = Array.isArray(data) ? data : [];
@@ -151,6 +153,7 @@ export default function RoomsPage() {
 
       // 주문 목록 조회
       await fetchOrdersForRooms();
+      setLoadError(null);
     } catch (error) {
       logError('Failed to fetch rooms', error, {
         component: 'RoomsPage',
@@ -160,24 +163,27 @@ export default function RoomsPage() {
       if (error instanceof Error && error.message.includes('Unauthorized')) {
         // 쿠키 삭제
         document.cookie = 'admin-token=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT';
+        setIsInitialLoading(false);
+        setIsRefreshing(false);
         window.location.href = '/login';
         return;
       }
 
+      setLoadError('현장관리 데이터를 불러오지 못했어요. 다시 시도해주세요.');
       toast({
         title: '오류',
         description: extractUserFriendlyMessage(error),
         variant: 'destructive',
       });
     } finally {
-      setIsLoading(false);
+      setIsInitialLoading(false);
       setIsRefreshing(false);
     }
   }, [fetchOrdersForRooms, toast]);
 
   // 방 목록 조회
   useEffect(() => {
-    fetchRooms();
+    fetchRooms('initial');
   }, [fetchRooms]);
 
   // 주문 목록 주기적 새로고침 (30초마다)
@@ -226,28 +232,7 @@ export default function RoomsPage() {
     previousNotificationsRef.current = currentNotificationIds;
   }, [notifications, rooms]);
 
-  const getStatusBadge = (room: RoomWithReservation) => {
-    // 배정 정보가 있으면 "사용 중"으로 표시
-    if (room.reservation) {
-      return <Badge variant="secondary">사용 중</Badge>;
-    }
-
-    // 배정 정보가 없으면 방의 실제 상태 표시
-    const variants: Record<Room['status'], { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
-      available: { label: '사용 가능', variant: 'default' },
-      occupied: { label: '사용 중', variant: 'secondary' },
-      maintenance: { label: '점검 중', variant: 'destructive' },
-    };
-
-    const { label, variant } = variants[room.status];
-    return <Badge variant={variant}>{label}</Badge>;
-  };
-
-  // ... import moved to top
-
-  // ... (inside component)
-
-  if (isLoading) {
+  if (isInitialLoading && rooms.length === 0) {
     return <AdminRoomsSkeleton />;
   }
 
@@ -261,12 +246,15 @@ export default function RoomsPage() {
               객실별 실시간 상태(체크인 여부, 주문 현황) 모니터링
             </p>
             <LastUpdatedAt value={lastUpdatedAt} />
+            {isRefreshing && lastUpdatedAt ? (
+              <p className="mt-1 text-xs text-muted-foreground">갱신 중...</p>
+            ) : null}
           </div>
           <Button
             variant="outline"
             size="sm"
             className="h-8 md:h-9"
-            onClick={fetchRooms}
+            onClick={() => fetchRooms('soft')}
             aria-label="현장관리 새로고침"
             disabled={isRefreshing}
           >
@@ -280,11 +268,19 @@ export default function RoomsPage() {
         </div>
       </div>
 
+      {loadError ? (
+        <ErrorState
+          title="현장관리 데이터를 불러오지 못했어요"
+          description={loadError}
+          onRetry={() => fetchRooms(lastUpdatedAt ? 'soft' : 'initial')}
+        />
+      ) : null}
+
       {rooms.length === 0 ? (
         <Card>
           <CardContent className="py-8 text-center">
             <p className="text-muted-foreground">
-              방 데이터를 불러오는 중...
+              표시할 방이 없습니다.
             </p>
           </CardContent>
         </Card>

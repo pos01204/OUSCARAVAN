@@ -132,6 +132,8 @@
 | F-06 | P2 | DONE | 예약/배정 새로고침 버튼 로딩 상태 보강 | `app/admin/reservations/page.tsx` | 새로고침 중 버튼 disabled + 스피너 표시로 확신 강화 |
 | F-07 | P2 | DONE | 예약/배정 새로고침 트리거 안정화(라우터/URL 의존 제거) + 현장관리 로딩 스피너 추가 | `app/admin/reservations/page.tsx`, `app/admin/rooms/page.tsx` | 새로고침이 “항상” 재조회로 이어지고 로딩이 명확 |
 | F-08 | P2 | DONE | 관리자 예약/주문 “Soft Refresh”(리스트 유지) + 예약 로드 실패 ErrorState 추가 | `app/admin/reservations/page.tsx`, `app/admin/orders/page.tsx` | 새로고침/필터 변경 시 화면이 통째로 깜빡이지 않고, 실패 시 재시도 가능 |
+| F-09 | P2 | DONE | 관리자 현장관리 Soft Refresh(스켈레톤 전환 최소화) | `app/admin/rooms/page.tsx` | 새로고침 시 기존 카드 유지 + “갱신 중…” 표기로 피로감 감소 |
+| F-10 | P2 | DONE | 관리자 현장관리 로드 실패 시 화면 내 ErrorState/Retry 추가 | `app/admin/rooms/page.tsx` | 토스트만으로 끝나지 않고 화면에서 복구 가능 |
 
 ---
 
@@ -189,6 +191,8 @@
 | 2026-01-23 |  | F-06 | DONE | 관리자 예약/배정 새로고침 버튼 로딩/disable 처리 |
 | 2026-01-23 |  | F-07 | DONE | 예약/배정 새로고침 트리거를 상태 기반으로 안정화 + 현장관리 새로고침 스피너/disable 처리 |
 | 2026-01-23 |  | F-08 | DONE | 관리자 예약/주문 Soft Refresh + 예약 로드 실패 ErrorState/Retry 추가 |
+| 2026-01-23 |  | F-09 | DONE | 관리자 현장관리 Soft Refresh 적용(새로고침 시 화면 유지) |
+| 2026-01-23 |  | F-10 | DONE | 관리자 현장관리 ErrorState/Retry 추가 |
 
 ---
 
@@ -210,4 +214,6 @@
 | v1.11 | 2026-01-23 | F-06(예약 새로고침 버튼 로딩 상태) 적용 및 트래킹 업데이트 |
 | v1.12 | 2026-01-23 | F-07(새로고침 트리거 안정화/현장관리 스피너) 적용 및 트래킹 업데이트 |
 | v1.13 | 2026-01-23 | F-08(예약/주문 Soft Refresh + 예약 ErrorState) 적용 및 트래킹 업데이트 |
+| v1.14 | 2026-01-23 | F-09(현장관리 Soft Refresh) 적용 및 트래킹 업데이트 |
+| v1.15 | 2026-01-23 | F-10(현장관리 ErrorState/Retry) 적용 및 트래킹 업데이트 |
 
