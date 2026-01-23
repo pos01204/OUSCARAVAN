@@ -12,7 +12,7 @@ export default async function AdminLayout({
 }) {
   return (
     <AuthGuard>
-      <div className="min-h-screen bg-background pb-16 md:pb-0">
+      <div className="min-h-screen bg-background pb-[calc(4rem+env(safe-area-inset-bottom))] md:pb-0">
         {/* 모바일: 간소화된 헤더 (로고와 로그아웃만) */}
         <nav className="border-b bg-card md:border-b" aria-label="주요 네비게이션">
           <div className="container mx-auto flex h-14 md:h-16 items-center justify-between px-4">

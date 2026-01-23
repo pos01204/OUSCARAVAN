@@ -116,7 +116,7 @@
 |---|---|---|---|---|---|
 | E-01 | P1 | DONE | Guest 레이아웃 하단 패딩/푸터 마진 재조정 | `components/shared/Footer.tsx` | 하단 네비와 겹침 없이 “과한 여백” 제거 |
 | E-02 | P1 | DONE | 바텀 네비 safe-area 처리 점검 | `components/guest/GuestBottomNav.tsx`, `app/guest/[token]/layout.tsx`, `components/guest/GuestHelpContent.tsx` | iOS safe-area에서도 터치/가독성 문제 없음 |
-| E-03 | P2 | TODO | 관리자 모바일에서도 footer/하단 네비 겹침 점검(필요 시) | `app/admin/layout.tsx`, `AdminBottomNav.tsx` | 화면 하단 콘텐츠가 가려지지 않음 |
+| E-03 | P2 | DONE | 관리자 모바일에서도 footer/하단 네비 겹침 점검(필요 시) | `app/admin/layout.tsx`, `components/admin/AdminBottomNav.tsx` | safe-area 포함 하단 패딩으로 화면 하단 콘텐츠가 가려지지 않음 |
 
 ---
 
@@ -124,7 +124,7 @@
 
 | ID | P | 상태 | 작업 | 변경 범위(예상 파일) | 완료 기준(AC) |
 |---|---|---|---|---|---|
-| F-01 | P2 | TODO | 홈 KPI 카드(오늘 체크인/체크아웃/미배정/대기 주문) 설계/추가 | `app/admin/page.tsx` + 컴포넌트(신규) | 알림이 없어도 업무량/우선순위가 즉시 보임 |
+| F-01 | P2 | DONE | 홈 KPI 카드(오늘 체크인/체크아웃/미배정/대기 주문) 설계/추가 | `app/admin/page.tsx`, `components/admin/AdminKpiCards.tsx` | 알림이 없어도 업무량/우선순위가 즉시 보임 |
 
 ---
 
@@ -174,6 +174,7 @@
 | 2026-01-23 |  | B-04, B-05, D-01, E-01 | DONE | 관리자 알림 메타 단일화 + 현장관리 배지 정리 + 오버레이 정책 문서화 + Footer 여백 방식 변경 |
 | 2026-01-23 |  | C-03, C-04, E-02 | DONE | 가이드/도움말 토큰 검증 실패 시 Retry UI + “마지막 업데이트” 패턴 추가 + safe-area 보정 |
 | 2026-01-23 |  | D-02, D-03 | DONE | Select z-index 정책을 문서와 1:1로 정리 + InfoInspector(Sheet/Drawer) 내부 스크롤 구조 통일 및 가이드 문서 추가 |
+| 2026-01-23 |  | E-03, F-01 | DONE | 관리자 하단 네비 safe-area/겹침 방지 패딩 적용 + 관리자 홈 KPI(4종) 카드 추가 |
 
 ---
 
@@ -187,4 +188,5 @@
 | v1.3 | 2026-01-23 | B-04/B-05/D-01/E-01 적용 및 트래킹 업데이트 |
 | v1.4 | 2026-01-23 | C-03/C-04/E-02 적용 및 트래킹 업데이트 |
 | v1.5 | 2026-01-23 | D-02/D-03 적용 및 트래킹 업데이트 |
+| v1.6 | 2026-01-23 | E-03/F-01 적용 및 트래킹 업데이트 |
 

@@ -1,0 +1,82 @@
+'use client';
+
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
+import { ErrorState } from '@/components/shared/ErrorState';
+import { LastUpdatedAt } from '@/components/shared/LastUpdatedAt';
+
+interface AdminKpiCardsProps {
+  loading: boolean;
+  error: string | null;
+  lastUpdatedAt: Date | null;
+  todayCheckins: number;
+  todayCheckouts: number;
+  d1Unassigned: number;
+  pendingOrders: number;
+  onRetry: () => void;
+}
+
+function KpiCard({ title, value, hint }: { title: string; value: number; hint: string }) {
+  return (
+    <Card className="border-border/60">
+      <CardHeader className="pb-2">
+        <CardTitle className="text-sm font-semibold text-muted-foreground">{title}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <div className="text-2xl font-black tracking-tight text-foreground">{value}</div>
+        <p className="mt-1 text-xs text-muted-foreground">{hint}</p>
+      </CardContent>
+    </Card>
+  );
+}
+
+export function AdminKpiCards(props: AdminKpiCardsProps) {
+  const {
+    loading,
+    error,
+    lastUpdatedAt,
+    todayCheckins,
+    todayCheckouts,
+    d1Unassigned,
+    pendingOrders,
+    onRetry,
+  } = props;
+
+  if (loading) {
+    return (
+      <div className="space-y-2">
+        <Skeleton className="h-4 w-48" />
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+          {[0, 1, 2, 3].map((i) => (
+            <Card key={i} className="border-border/60">
+              <CardHeader className="pb-2">
+                <Skeleton className="h-4 w-24" />
+              </CardHeader>
+              <CardContent>
+                <Skeleton className="h-7 w-12" />
+                <Skeleton className="mt-2 h-3 w-28" />
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return <ErrorState title="요약 정보를 불러오지 못했어요" description={error} onRetry={onRetry} />;
+  }
+
+  return (
+    <div className="space-y-2">
+      <LastUpdatedAt value={lastUpdatedAt} />
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        <KpiCard title="오늘 체크인" value={todayCheckins} hint="오늘 입실 예정" />
+        <KpiCard title="오늘 체크아웃" value={todayCheckouts} hint="오늘 퇴실 예정" />
+        <KpiCard title="미배정" value={d1Unassigned} hint="내일 체크인 미배정" />
+        <KpiCard title="대기 주문" value={pendingOrders} hint="오늘 처리 대기" />
+      </div>
+    </div>
+  );
+}
+

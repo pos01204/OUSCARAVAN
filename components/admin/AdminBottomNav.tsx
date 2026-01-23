@@ -20,9 +20,8 @@ export function AdminBottomNav() {
   const { unreadCount } = useNotificationStore();
 
   return (
-    <nav 
-      className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card md:hidden" 
-      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+    <nav
+      className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-card pb-[env(safe-area-inset-bottom)] md:hidden"
       aria-label="관리자 하단 네비게이션"
     >
       <div className="flex h-16 items-center justify-around">
