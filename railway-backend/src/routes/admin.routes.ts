@@ -1,7 +1,5 @@
 import express from 'express';
-import { Request, Response, NextFunction } from 'express';
-// 인증 미들웨어 제거 - 모든 사용자가 접근 가능
-// import { authenticate, AuthRequest } from '../middleware/auth.middleware';
+import { authenticateOrApiKey } from '../middleware/auth.middleware';
 import {
   validateCreateReservation,
   validateUpdateReservation,
@@ -39,13 +37,23 @@ import {
   updateSettings,
   getStats as getNotificationStats,
 } from '../controllers/notifications.controller';
+import {
+  listAnnouncements,
+  createAnnouncementHandler,
+  updateAnnouncementHandler,
+  deleteAnnouncementHandler,
+} from '../controllers/announcements.controller';
 import { setupNotificationSSE } from '../services/notifications-sse.service';
 
 const router = express.Router();
 
-// 인증 체크 제거 - 모든 사용자가 접근 가능
-// n8n API Key 체크도 제거 (필요시 나중에 추가 가능)
-// router.use(authenticateOrApiKey); // 주석 처리 - 인증 없이 접근 가능
+/**
+ * 인증 미들웨어 활성화 (하이브리드 인증)
+ * - Authorization 헤더 (Bearer 토큰) - 웹뷰 호환
+ * - 쿠키 (admin-token) - 일반 브라우저 폴백
+ * - X-API-Key 헤더 - n8n 자동화용
+ */
+router.use(authenticateOrApiKey);
 
 // 예약 관리
 router.get('/reservations', listReservations);
@@ -80,5 +88,11 @@ router.patch('/notifications/read-all', markAllAsRead);
 router.delete('/notifications/:id', deleteNotificationHandler);
 router.get('/notifications/settings', getSettings);
 router.patch('/notifications/settings', updateSettings);
+
+// 공지 관리
+router.get('/announcements', listAnnouncements);
+router.post('/announcements', createAnnouncementHandler);
+router.patch('/announcements/:id', updateAnnouncementHandler);
+router.delete('/announcements/:id', deleteAnnouncementHandler);
 
 export default router;

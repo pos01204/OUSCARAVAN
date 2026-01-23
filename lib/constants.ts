@@ -301,8 +301,8 @@ export const GUIDE_DATA: { categories: string[]; items: GuideItem[] } = {
       id: 'wifi',
       category: '편의시설',
       title: 'WiFi 연결',
-      overview: 'SSID: OUS_Guest로 연결하세요. 비밀번호는 홈 화면에서 확인할 수 있습니다.',
-      content: 'WiFi 네트워크 이름(SSID)은 OUS_Guest입니다. 비밀번호는 홈 화면의 WiFi 카드에서 확인하거나 복사할 수 있습니다.',
+      overview: 'WiFi 목록에서 “OUS_Guest”를 선택하고, 비밀번호는 홈 화면에서 확인해 주세요.',
+      content: 'WiFi 목록에서 “OUS_Guest”를 선택해 연결해 주세요. 비밀번호는 홈 화면의 WiFi 카드에서 확인하거나 복사할 수 있습니다.',
       images: [],
       warning: false,
       steps: [
@@ -314,12 +314,12 @@ export const GUIDE_DATA: { categories: string[]; items: GuideItem[] } = {
         {
           number: 2,
           title: '네트워크 선택',
-          description: 'WiFi 목록에서 "OUS_Guest"를 찾아 선택하세요.',
+          description: 'WiFi 목록에서 “OUS_Guest”를 찾아 선택해 주세요.',
         },
         {
           number: 3,
           title: '비밀번호 입력',
-          description: '홈 화면의 WiFi 카드에서 비밀번호를 확인하고 입력하세요.',
+          description: '홈 화면의 WiFi 카드에서 비밀번호를 확인해 입력해 주세요.',
         },
         {
           number: 4,
@@ -380,15 +380,15 @@ export const GUIDE_DATA: { categories: string[]; items: GuideItem[] } = {
       id: 'parking',
       category: '규칙',
       title: '주차 안내',
-      overview: '지정된 주차장에 주차해주세요. 차량 1대당 1대만 주차 가능합니다.',
-      content: '지정된 주차장에 주차해주세요. 차량 1대당 1대만 주차 가능하며, 다른 고객을 위해 주차 공간을 침범하지 않도록 주의해주세요.',
+      overview: '지정된 주차 구역에 주차해 주세요. 예약 1건당 차량 1대까지 이용 가능합니다.',
+      content: '지정된 주차 구역에 주차해 주세요. 예약 1건당 차량 1대까지 이용 가능하며, 다른 고객을 위해 주차선 안에 맞춰 주차해 주세요. 추가 주차가 필요하면 관리자에게 문의해 주세요.',
       images: ['/images/guide/parking/parking-area.jpg'],
       warning: false,
       faq: [
         {
           id: 'faq-1',
           question: '주차 공간이 부족해요.',
-          answer: '차량 1대당 1대만 주차 가능합니다. 추가 주차가 필요한 경우 관리자에게 문의해주세요.',
+          answer: '예약 1건당 차량 1대까지 이용 가능합니다. 추가 주차가 필요하면 관리자에게 문의해 주세요.',
         },
         {
           id: 'faq-2',

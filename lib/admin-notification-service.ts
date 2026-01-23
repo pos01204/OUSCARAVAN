@@ -19,8 +19,9 @@ export class AdminNotificationService {
   private notificationPermission: NotificationPermission = 'default';
 
   private constructor() {
-    if (typeof window !== 'undefined') {
-      this.notificationPermission = Notification.permission;
+    // 일부 인앱 브라우저(WebView)에서는 Notification API가 아예 없을 수 있음
+    if (typeof window !== 'undefined' && 'Notification' in window) {
+      this.notificationPermission = window.Notification.permission;
     }
   }
 
@@ -55,7 +56,7 @@ export class AdminNotificationService {
    * 알림 권한 요청
    */
   async requestPermission(): Promise<boolean> {
-    if (!('Notification' in window)) {
+    if (typeof window === 'undefined' || !('Notification' in window)) {
       console.warn('[AdminNotificationService] Notifications are not supported');
       return false;
     }
@@ -65,7 +66,7 @@ export class AdminNotificationService {
     }
 
     if (this.notificationPermission !== 'denied') {
-      const permission = await Notification.requestPermission();
+      const permission = await window.Notification.requestPermission();
       this.notificationPermission = permission;
       return permission === 'granted';
     }
@@ -78,7 +79,7 @@ export class AdminNotificationService {
    */
   getPermissionStatus(): NotificationPermission {
     if (typeof window !== 'undefined' && 'Notification' in window) {
-      return Notification.permission;
+      return window.Notification.permission;
     }
     return 'default';
   }

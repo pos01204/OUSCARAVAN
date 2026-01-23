@@ -6,7 +6,8 @@ import { format, parse, startOfWeek, getDay, isSameDay, startOfDay, endOfDay, ea
 import { ko } from 'date-fns/locale';
 import { useRouter } from 'next/navigation';
 import { type Reservation } from '@/lib/api';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/ui/drawer';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent } from '@/components/ui/card';
@@ -64,7 +65,7 @@ export function ReservationCalendarView({
   const [currentDate, setCurrentDate] = useState(new Date());
   const [view, setView] = useState<View>('month');
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isInspectorOpen, setIsInspectorOpen] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
   const [expandedDates, setExpandedDates] = useState<Set<string>>(new Set());
 
@@ -89,14 +90,14 @@ export function ReservationCalendarView({
       window.addEventListener('resize', handleResize);
       return () => window.removeEventListener('resize', handleResize);
     }
-  }, []);
+  }, [setCalendarViewType]);
 
   // Phase 3: 스와이프 제스처로 모달 닫기
   const swipeHandlers = useSwipe({
     onSwipeDown: () => {
       // 모바일에서만 아래로 스와이프하여 모달 닫기
       if (isMobile) {
-        setIsModalOpen(false);
+        setIsInspectorOpen(false);
       }
     },
   });
@@ -279,7 +280,7 @@ export function ReservationCalendarView({
     });
 
     return events;
-  }, [reservations, reservationsByDate]);
+  }, [reservations]);
 
 
   // 이벤트 스타일 커스터마이징 (바 형태)
@@ -331,13 +332,13 @@ export function ReservationCalendarView({
 
           if (date) {
             setSelectedDate(new Date(date));
-            setIsModalOpen(true);
+            setIsInspectorOpen(true);
           } else {
             console.error('[Calendar] Failed to determine date for "Show More"');
           }
         }}
       >
-        +{count}건 더 보기
+        +{count}개
       </div>
     );
   }, []);
@@ -370,11 +371,62 @@ export function ReservationCalendarView({
     });
   }, [reservations]);
 
+  // 월간 스캔을 위한 날짜 헤더(요약 칩) - 날짜 클릭 시 인스펙터 오픈
+  const DateHeaderComponent = useCallback(({ date, label }: { date: Date; label: string }) => {
+    const dayStart = startOfDay(date);
+    const checkins = getReservationsForDate(dayStart, false);
+    const unassigned = checkins.filter(r => !r.assignedRoom).length;
+    const checkouts = reservations.filter(r => {
+      try {
+        return isSameDay(startOfDay(new Date(r.checkout)), dayStart);
+      } catch {
+        return false;
+      }
+    }).length;
+
+    const showSummary = unassigned > 0 || checkins.length > 0 || checkouts > 0;
+
+    return (
+      <div
+        className="flex flex-col gap-1 cursor-pointer select-none"
+        onClick={(e) => {
+          e.stopPropagation();
+          setSelectedDate(dayStart);
+          setIsInspectorOpen(true);
+        }}
+        title={`${label} (미배정 ${unassigned} / 체크인 ${checkins.length} / 체크아웃 ${checkouts})`}
+      >
+        <div className="flex items-center justify-between">
+          <span className="font-semibold">{label}</span>
+        </div>
+        {showSummary && (
+          <div className="flex items-center gap-1 flex-wrap">
+            {unassigned > 0 && (
+              <span className="rounded bg-red-50 text-red-700 border border-red-200 px-1 py-0.5 text-[10px] leading-none">
+                미 {unassigned}
+              </span>
+            )}
+            {checkins.length > 0 && (
+              <span className="rounded bg-blue-50 text-blue-700 border border-blue-200 px-1 py-0.5 text-[10px] leading-none">
+                입 {checkins.length}
+              </span>
+            )}
+            {checkouts > 0 && (
+              <span className="rounded bg-purple-50 text-purple-700 border border-purple-200 px-1 py-0.5 text-[10px] leading-none">
+                퇴 {checkouts}
+              </span>
+            )}
+          </div>
+        )}
+      </div>
+    );
+  }, [getReservationsForDate, reservations]);
+
   // 날짜 클릭 핸들러 (모달로 해당 날짜의 예약 표시)
   const handleSelectSlot = useCallback((slotInfo: SlotInfo) => {
     const clickedDate = slotInfo.start;
     setSelectedDate(clickedDate);
-    setIsModalOpen(true);
+    setIsInspectorOpen(true);
   }, []);
 
   // 이벤트 클릭 핸들러 (하이브리드 방식)
@@ -389,24 +441,24 @@ export function ReservationCalendarView({
     if (event.id.startsWith('checkin-') || event.id.startsWith('group-')) {
       const date = new Date(event.start);
       setSelectedDate(date);
-      setIsModalOpen(true);
+      setIsInspectorOpen(true);
     } else {
       // 개별 이벤트인 경우 상세 페이지로 이동
       router.push(`/admin/reservations/${event.resource.id}`);
     }
   }, [router]);
 
-  // 모달 닫기
-  const handleCloseModal = useCallback(() => {
-    setIsModalOpen(false);
+  // 인스펙터 닫기
+  const handleCloseInspector = useCallback(() => {
+    setIsInspectorOpen(false);
     setSelectedDate(null);
   }, []);
 
   // 예약 상세 페이지로 이동
   const handleViewDetail = useCallback((reservationId: string) => {
     router.push(`/admin/reservations/${reservationId}`);
-    handleCloseModal();
-  }, [router, handleCloseModal]);
+    handleCloseInspector();
+  }, [router, handleCloseInspector]);
 
   const handleQuickAssign = useCallback((reservation: Reservation) => {
     setAssigningReservation(reservation);
@@ -426,7 +478,7 @@ export function ReservationCalendarView({
     time: '시간',
     event: '예약',
     noEventsInRange: '이 기간에 예약이 없습니다.',
-    showMore: (total: number) => `+${total}개 더 보기`,
+    showMore: (total: number) => `+${total}개`,
   };
 
   // 선택된 날짜의 예약 목록 (중요도 순서로 정렬: 미배정 → 체크인 → 체크아웃)
@@ -531,7 +583,7 @@ export function ReservationCalendarView({
         isExpanded,
       };
     }).filter(dayObj => dayObj.reservations.length > 0 || expandedDates.has(format(dayObj.date, 'yyyy-MM-dd')));
-  }, [viewType, currentDate, getReservationsForDate, expandedDates]);
+  }, [currentDate, getReservationsForDate, expandedDates, calendarViewType]);
 
   return (
     <>
@@ -556,10 +608,15 @@ export function ReservationCalendarView({
                 onShowMore={(events, date) => {
                   // "+N개 더 보기" 클릭 시 해당 날짜의 예약 리스트 정보를 담은 모달을 열어 "확장"된 느낌 제공
                   setSelectedDate(date);
-                  setIsModalOpen(true);
+                  setIsInspectorOpen(true);
                 }}
                 eventPropGetter={eventStyleGetter}
-                components={components}
+                components={{
+                  ...components,
+                  month: {
+                    dateHeader: DateHeaderComponent as any,
+                  },
+                }}
                 messages={messages}
                 culture="ko"
                 selectable
@@ -752,44 +809,184 @@ export function ReservationCalendarView({
         )
       }
 
-      {/* 날짜별 예약 목록 모달 */}
-      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
-        <DialogContent
-          className="md:max-w-2xl h-[90vh] md:h-auto md:max-h-[80vh] p-0 md:p-6 flex flex-col !left-0 !top-0 !right-0 !bottom-0 md:!left-[50%] md:!top-[50%] md:!translate-x-[-50%] md:!translate-y-[-50%] md:!right-auto md:!bottom-auto !translate-x-0 !translate-y-0 md:rounded-lg rounded-none w-full md:w-auto max-w-full md:max-w-2xl"
-          aria-labelledby="reservation-modal-title"
-          aria-describedby="reservation-modal-description"
-          {...swipeHandlers}
-        >
-          <div className="flex flex-col h-full md:h-auto min-h-0">
-            <DialogHeader className="px-4 py-3 md:px-0 md:py-0 border-b md:border-0 flex-shrink-0 bg-background">
-              <DialogTitle id="reservation-modal-title" className="text-lg md:text-xl font-semibold">
-                {selectedDate && format(selectedDate, 'yyyy년 M월 d일 (EEE)', { locale: ko })} 예약 목록
-              </DialogTitle>
-              <DialogDescription id="reservation-modal-description" className="mt-1 md:mt-2 text-sm">
-                {selectedDateReservations.length > 0
-                  ? `총 ${selectedDateReservations.length}건의 예약이 있습니다.`
-                  : '이 날짜에는 예약이 없습니다.'}
-              </DialogDescription>
-            </DialogHeader>
+      {/* 날짜 인스펙터: 캘린더 컨텍스트를 유지한 채로 해당 날짜의 예약을 확인 */}
+      {isMobile ? (
+        <Drawer open={isInspectorOpen} onOpenChange={(open) => !open && handleCloseInspector()}>
+          <DrawerContent className="max-h-[90vh]" {...swipeHandlers}>
+            <div className="mx-auto w-full max-w-lg">
+              <DrawerHeader className="px-4 py-3 border-b bg-background">
+                <DrawerTitle className="text-lg font-semibold">
+                  {selectedDate && format(selectedDate, 'yyyy년 M월 d일 (EEE)', { locale: ko })} 예약
+                </DrawerTitle>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {selectedDateReservations.length > 0
+                    ? `총 ${selectedDateReservations.length}건`
+                    : '이 날짜에는 예약이 없습니다.'}
+                </p>
+              </DrawerHeader>
 
-            <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-4 md:px-0 md:py-4 min-h-0 -webkit-overflow-scrolling-touch">
+              <div className="flex-1 overflow-y-auto overflow-x-hidden px-4 py-4 min-h-0 -webkit-overflow-scrolling-touch">
+                {selectedDateReservations.length > 0 ? (
+                  <div className="space-y-3">
+                    <Tabs defaultValue="all" className="w-full">
+                      <TabsList className="grid w-full grid-cols-5 h-auto p-1 gap-1">
+                        <TabsTrigger value="all" className="text-base min-h-[36px] px-1">
+                          전체
+                        </TabsTrigger>
+                        <TabsTrigger value="assigned" className="text-base min-h-[36px] px-1">
+                          배정
+                        </TabsTrigger>
+                        <TabsTrigger value="pending" className="text-base min-h-[36px] px-1">
+                          대기
+                        </TabsTrigger>
+                        <TabsTrigger value="checked_in" className="text-base min-h-[36px] px-1">
+                          체크인
+                        </TabsTrigger>
+                        <TabsTrigger value="checked_out" className="text-base min-h-[36px] px-1">
+                          체크아웃
+                        </TabsTrigger>
+                      </TabsList>
+
+                      <TabsContent value="all" className="mt-4 space-y-2">
+                        {selectedDateReservations.map((reservation, index) => (
+                          <div
+                            key={reservation.id}
+                            className={`flex items-center justify-between p-3 rounded-md transition-all cursor-pointer border ${index % 2 === 0 ? 'bg-background' : 'bg-muted/20'
+                              } border-border/60 hover:bg-primary/5 hover:border-primary/30 shadow-sm`}
+                            onClick={() => handleViewDetail(reservation.id)}
+                          >
+                            <div className="flex items-center gap-3 flex-1 min-w-0 overflow-hidden">
+                              <div className="shrink-0">{getStatusBadge(reservation.status)}</div>
+                              <div className="font-bold text-base shrink-0">{reservation.guestName}</div>
+                              <div className="text-sm text-muted-foreground truncate flex items-center gap-2">
+                                <span className="font-semibold text-primary/70">{reservation.roomType.split('(')[0]}</span>
+                                <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-muted/50 border border-border/50">
+                                  {calculateTotalAmount(reservation).totalAmount.toLocaleString()}원
+                                </span>
+                              </div>
+                            </div>
+                            <div className="ml-2 shrink-0">
+                              {!reservation.assignedRoom ? (
+                                <Button
+                                  size="sm"
+                                  variant="default"
+                                  className="h-8 px-4 text-xs font-bold bg-primary hover:bg-primary/90 shadow-md transform active:scale-95 transition-all"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleQuickAssign(reservation);
+                                  }}
+                                >
+                                  배정
+                                </Button>
+                              ) : (
+                                <Badge variant="outline" className="text-xs font-bold py-1 px-2.5 text-primary border-primary/50 bg-primary/5">
+                                  {reservation.assignedRoom}
+                                </Badge>
+                              )}
+                            </div>
+                          </div>
+                        ))}
+                      </TabsContent>
+
+                      {['assigned', 'pending', 'checked_in', 'checked_out'].map((status) => (
+                        <TabsContent key={status} value={status} className="mt-4 space-y-2">
+                          {sortReservationsByPriority(selectedDateReservations)
+                            .filter(r => r.status === status)
+                            .map((reservation, index) => (
+                              <div
+                                key={reservation.id}
+                                className={`flex items-center justify-between p-3 rounded-md transition-all cursor-pointer border ${index % 2 === 0 ? 'bg-background' : 'bg-muted/20'
+                                  } border-border/60 hover:bg-primary/5 hover:border-primary/30 shadow-sm`}
+                                onClick={() => handleViewDetail(reservation.id)}
+                              >
+                                <div className="flex items-center gap-3 flex-1 min-w-0 overflow-hidden">
+                                  <div className="shrink-0">{getStatusBadge(reservation.status)}</div>
+                                  <div className="font-bold text-base shrink-0">{reservation.guestName}</div>
+                                  <div className="text-sm text-muted-foreground truncate flex items-center gap-2">
+                                    <span className="font-semibold text-primary/70">{reservation.roomType.split('(')[0]}</span>
+                                    <span className="text-xs font-medium px-2 py-0.5 rounded-full bg-muted/50 border border-border/50">
+                                      {calculateTotalAmount(reservation).totalAmount.toLocaleString()}원
+                                    </span>
+                                  </div>
+                                </div>
+                                <div className="ml-2 shrink-0">
+                                  {!reservation.assignedRoom ? (
+                                    <Button
+                                      size="sm"
+                                      variant="default"
+                                      className="h-8 px-4 text-xs font-bold bg-primary hover:bg-primary/90 shadow-md transform active:scale-95 transition-all"
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleQuickAssign(reservation);
+                                      }}
+                                    >
+                                      배정
+                                    </Button>
+                                  ) : (
+                                    <Badge variant="outline" className="text-xs font-bold py-1 px-2.5 text-primary border-primary/50 bg-primary/5">
+                                      {reservation.assignedRoom}
+                                    </Badge>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          {selectedDateReservations.filter(r => r.status === status).length === 0 && (
+                            <div className="text-center py-12 text-muted-foreground border rounded-lg border-dashed">
+                              해당 상태의 예약이 없습니다.
+                            </div>
+                          )}
+                        </TabsContent>
+                      ))}
+                    </Tabs>
+                  </div>
+                ) : (
+                  <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+                    <BedDouble className="h-12 w-12 mb-4 opacity-20" />
+                    <p>이 날짜에는 예약이 없습니다.</p>
+                  </div>
+                )}
+              </div>
+
+              <div className="p-4 border-t bg-background">
+                <Button variant="outline" className="w-full h-12" onClick={handleCloseInspector}>
+                  닫기
+                </Button>
+              </div>
+            </div>
+          </DrawerContent>
+        </Drawer>
+      ) : (
+        <Sheet open={isInspectorOpen} onOpenChange={(open) => !open && handleCloseInspector()}>
+          <SheetContent side="right" className="w-[420px] sm:w-[520px] p-0">
+            <SheetHeader className="p-4 border-b">
+              <SheetTitle className="text-lg font-semibold">
+                {selectedDate && format(selectedDate, 'yyyy년 M월 d일 (EEE)', { locale: ko })} 예약
+              </SheetTitle>
+              <p className="mt-1 text-sm text-muted-foreground">
+                {selectedDateReservations.length > 0
+                  ? `총 ${selectedDateReservations.length}건`
+                  : '이 날짜에는 예약이 없습니다.'}
+              </p>
+            </SheetHeader>
+
+            <div className="p-4 overflow-y-auto h-[calc(100vh-140px)]">
               {selectedDateReservations.length > 0 ? (
                 <div className="space-y-3">
                   <Tabs defaultValue="all" className="w-full">
                     <TabsList className="grid w-full grid-cols-5 h-auto p-1 gap-1">
-                      <TabsTrigger value="all" className="text-base md:text-sm min-h-[36px] px-1 md:px-3">
+                      <TabsTrigger value="all" className="text-sm min-h-[36px] px-1 md:px-3">
                         전체
                       </TabsTrigger>
-                      <TabsTrigger value="assigned" className="text-base md:text-sm min-h-[36px] px-1 md:px-3">
+                      <TabsTrigger value="assigned" className="text-sm min-h-[36px] px-1 md:px-3">
                         배정
                       </TabsTrigger>
-                      <TabsTrigger value="pending" className="text-base md:text-sm min-h-[36px] px-1 md:px-3">
+                      <TabsTrigger value="pending" className="text-sm min-h-[36px] px-1 md:px-3">
                         대기
                       </TabsTrigger>
-                      <TabsTrigger value="checked_in" className="text-base md:text-sm min-h-[36px] px-1 md:px-3">
+                      <TabsTrigger value="checked_in" className="text-sm min-h-[36px] px-1 md:px-3">
                         체크인
                       </TabsTrigger>
-                      <TabsTrigger value="checked_out" className="text-base md:text-sm min-h-[36px] px-1 md:px-3">
+                      <TabsTrigger value="checked_out" className="text-sm min-h-[36px] px-1 md:px-3">
                         체크아웃
                       </TabsTrigger>
                     </TabsList>
@@ -892,16 +1089,16 @@ export function ReservationCalendarView({
                   <p>이 날짜에는 예약이 없습니다.</p>
                 </div>
               )}
-            </div>
 
-            <div className="p-4 border-t md:hidden bg-background">
-              <Button variant="outline" className="w-full h-12" onClick={handleCloseModal}>
-                닫기
-              </Button>
+              <div className="pt-4">
+                <Button variant="outline" className="w-full" onClick={handleCloseInspector}>
+                  닫기
+                </Button>
+              </div>
             </div>
-          </div>
-        </DialogContent>
-      </Dialog>
+          </SheetContent>
+        </Sheet>
+      )}
 
       <RoomAssignmentDrawer
         isOpen={isDrawerOpen}

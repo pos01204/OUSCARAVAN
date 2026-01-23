@@ -1,4 +1,5 @@
 import pool from '../config/database';
+import { DEFAULT_ADMIN_ID } from '../constants/admin';
 
 export type NotificationType =
   | 'checkin'
@@ -71,7 +72,7 @@ export interface NotificationSettings {
  * 알림 생성
  */
 export async function createNotification(data: CreateNotificationData): Promise<Notification> {
-  const adminId = data.adminId || 'admin';
+  const adminId = data.adminId || DEFAULT_ADMIN_ID;
   const priority = data.priority || 'medium';
 
   // 알림 설정 확인 (해당 타입의 알림이 활성화되어 있는지)
@@ -126,7 +127,7 @@ export async function createNotification(data: CreateNotificationData): Promise<
  * 알림 목록 조회
  */
 export async function getNotifications(
-  adminId: string = 'admin',
+  adminId: string = DEFAULT_ADMIN_ID,
   filters: NotificationFilters = {}
 ): Promise<{ notifications: Notification[]; total: number; unreadCount: number }> {
   const page = filters.page || 1;
@@ -227,7 +228,7 @@ export async function getNotifications(
  */
 export async function markNotificationAsRead(
   id: string,
-  adminId: string = 'admin'
+  adminId: string = DEFAULT_ADMIN_ID
 ): Promise<Notification> {
   const query = `
     UPDATE notifications
@@ -261,7 +262,7 @@ export async function markNotificationAsRead(
 /**
  * 모든 알림 읽음 처리
  */
-export async function markAllNotificationsAsRead(adminId: string = 'admin'): Promise<number> {
+export async function markAllNotificationsAsRead(adminId: string = DEFAULT_ADMIN_ID): Promise<number> {
   const query = `
     UPDATE notifications
     SET is_read = TRUE, read_at = CURRENT_TIMESTAMP
@@ -276,7 +277,7 @@ export async function markAllNotificationsAsRead(adminId: string = 'admin'): Pro
 /**
  * 알림 삭제
  */
-export async function deleteNotification(id: string, adminId: string = 'admin'): Promise<void> {
+export async function deleteNotification(id: string, adminId: string = DEFAULT_ADMIN_ID): Promise<void> {
   const query = `
     DELETE FROM notifications
     WHERE id = $1 AND admin_id = $2
@@ -292,7 +293,7 @@ export async function deleteNotification(id: string, adminId: string = 'admin'):
 /**
  * 알림 설정 조회
  */
-export async function getNotificationSettings(adminId: string = 'admin'): Promise<NotificationSettings> {
+export async function getNotificationSettings(adminId: string = DEFAULT_ADMIN_ID): Promise<NotificationSettings> {
   const query = `
     SELECT 
       id,
@@ -343,7 +344,7 @@ export async function getNotificationSettings(adminId: string = 'admin'): Promis
  * 알림 설정 업데이트
  */
 export async function updateNotificationSettings(
-  adminId: string = 'admin',
+  adminId: string = DEFAULT_ADMIN_ID,
   data: Partial<NotificationSettings>
 ): Promise<NotificationSettings> {
   const updateFields: string[] = [];
@@ -465,7 +466,7 @@ export async function updateNotificationSettings(
 /**
  * 알림 통계 조회
  */
-export async function getNotificationStats(adminId: string = 'admin') {
+export async function getNotificationStats(adminId: string = DEFAULT_ADMIN_ID) {
   const totalQuery = `
     SELECT COUNT(*) as count
     FROM notifications

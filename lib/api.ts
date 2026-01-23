@@ -4,7 +4,21 @@
 
 import { API_CONFIG, N8N_CONFIG } from './constants';
 import { extractUserFriendlyMessage } from './error-messages';
-import type { ApiErrorCode, ApiErrorResponse, Notification, NotificationType, NotificationPriority, NotificationsResponse, NotificationSettings, NotificationStats } from '@/types';
+import { getToken, clearToken, getAuthHeader } from './auth-client';
+import type {
+  ApiErrorCode,
+  ApiErrorResponse,
+  Notification,
+  NotificationType,
+  NotificationPriority,
+  NotificationsResponse,
+  NotificationSettings,
+  NotificationStats,
+  Announcement,
+  AnnouncementLevel,
+  AnnouncementStatus,
+  AnnouncementsResponse,
+} from '@/types';
 import { ApiError } from '@/types';
 
 const API_URL = API_CONFIG.baseUrl;
@@ -141,22 +155,50 @@ async function fetchWithRetry(
 }
 
 /**
- * 관리자 API 호출
+ * 인증이 필요한 API 호출 (웹뷰 호환)
+ * Authorization 헤더로 토큰 전송 + credentials: include로 쿠키 폴백
+ */
+export async function authenticatedFetch(
+  url: string,
+  options: RequestInit = {}
+): Promise<Response> {
+  const authHeader = getAuthHeader();
+  
+  const headers: HeadersInit = {
+    'Content-Type': 'application/json',
+    ...authHeader,
+    ...options.headers,
+  };
+  
+  const response = await fetchWithRetry(url, {
+    ...options,
+    headers,
+    credentials: 'include', // 쿠키도 함께 전송 (폴백용)
+  });
+  
+  // 401 에러 시 토큰 클리어 및 리다이렉트
+  if (response.status === 401) {
+    clearToken();
+    if (typeof window !== 'undefined') {
+      window.location.href = '/login?error=session_expired';
+    }
+    throw new ApiError('Session expired', 'UNAUTHORIZED', 401);
+  }
+  
+  return response;
+}
+
+/**
+ * 관리자 API 호출 (하이브리드 인증)
+ * - Authorization 헤더로 토큰 전송 (웹뷰 호환)
+ * - credentials: include로 쿠키 폴백 (일반 브라우저)
  */
 export async function adminApi(
   endpoint: string,
   options: RequestInit = {}
 ) {
-  // 인증 체크 제거 - 모든 사용자가 접근 가능
-  
   try {
-    const response = await fetchWithRetry(`${API_URL}${endpoint}`, {
-      ...options,
-      headers: {
-        'Content-Type': 'application/json',
-        ...options.headers,
-      },
-    });
+    const response = await authenticatedFetch(`${API_URL}${endpoint}`, options);
     
     if (!response.ok) {
       // 에러 응답 파싱 시도
@@ -185,6 +227,10 @@ export async function adminApi(
     
     return response.json();
   } catch (error) {
+    // 이미 ApiError인 경우 그대로 throw
+    if (error instanceof ApiError) {
+      throw error;
+    }
     // 사용자 친화적인 에러 메시지로 변환
     const userFriendlyMessage = extractUserFriendlyMessage(error);
     throw new Error(userFriendlyMessage);
@@ -361,9 +407,8 @@ export async function getReservations(params?: {
  * 예약 상세 조회 (클라이언트 사이드 - Next.js API 라우트 사용)
  */
 export async function getReservation(id: string): Promise<Reservation> {
-  const response = await fetch(`/api/admin/reservations/${id}`, {
+  const response = await authenticatedFetch(`/api/admin/reservations/${id}`, {
     method: 'GET',
-    credentials: 'include', // 쿠키 포함
   });
 
   if (!response.ok) {
@@ -395,12 +440,8 @@ export async function updateReservation(
     status?: Reservation['status'];
   }
 ): Promise<Reservation> {
-  const response = await fetch(`/api/admin/reservations/${id}`, {
+  const response = await authenticatedFetch(`/api/admin/reservations/${id}`, {
     method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include', // 쿠키 포함
     body: JSON.stringify(data),
   });
 
@@ -426,10 +467,8 @@ export async function updateReservation(
  * 배정 정보 포함
  */
 export async function getRooms(): Promise<(Room & { reservation?: { id: string; guestName: string; checkin: string; checkout: string; status: string; } | null })[]> {
-  // Next.js API 라우트를 통해 호출 (서버에서 쿠키 읽기)
-  const response = await fetch('/api/admin/rooms', {
+  const response = await authenticatedFetch('/api/admin/rooms', {
     method: 'GET',
-    credentials: 'include', // 쿠키 포함
   });
 
   if (!response.ok) {
@@ -461,12 +500,8 @@ export async function createRoom(data: {
   status: Room['status'];
   description?: string;
 }): Promise<Room> {
-  const response = await fetch('/api/admin/rooms', {
+  const response = await authenticatedFetch('/api/admin/rooms', {
     method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include', // 쿠키 포함
     body: JSON.stringify(data),
   });
 
@@ -500,12 +535,8 @@ export async function updateRoom(
     description?: string;
   }
 ): Promise<Room> {
-  const response = await fetch(`/api/admin/rooms/${id}`, {
+  const response = await authenticatedFetch(`/api/admin/rooms/${id}`, {
     method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include', // 쿠키 포함
     body: JSON.stringify(data),
   });
 
@@ -530,9 +561,8 @@ export async function updateRoom(
  * 방 삭제 (클라이언트 사이드 - Next.js API 라우트 사용)
  */
 export async function deleteRoom(id: string): Promise<void> {
-  const response = await fetch(`/api/admin/rooms/${id}`, {
+  const response = await authenticatedFetch(`/api/admin/rooms/${id}`, {
     method: 'DELETE',
-    credentials: 'include', // 쿠키 포함
   });
 
   if (!response.ok) {
@@ -580,12 +610,8 @@ export async function getAdminOrders(params?: {
   const queryString = queryParams.toString();
   const endpoint = `/api/admin/orders${queryString ? `?${queryString}` : ''}`;
   
-  const response = await fetch(endpoint, { // Next.js API 라우트 사용
+  const response = await authenticatedFetch(endpoint, {
     method: 'GET',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include', // 쿠키 포함
   });
 
   if (!response.ok) {
@@ -612,12 +638,8 @@ export async function updateOrderStatus(
   id: string,
   status: Order['status']
 ): Promise<Order> {
-  const response = await fetch(`/api/admin/orders/${id}`, {
+  const response = await authenticatedFetch(`/api/admin/orders/${id}`, {
     method: 'PATCH',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    credentials: 'include', // 쿠키 포함
     body: JSON.stringify({ status }),
   });
 
@@ -775,6 +797,163 @@ export async function getNotificationStats(): Promise<NotificationStats> {
 }
 
 /**
+ * 공지 API 함수들
+ */
+export async function getAdminAnnouncements(params?: {
+  status?: AnnouncementStatus;
+  level?: AnnouncementLevel;
+  search?: string;
+  page?: number;
+  limit?: number;
+}): Promise<AnnouncementsResponse> {
+  const queryParams = new URLSearchParams();
+  if (params?.status && params.status !== 'all') {
+    queryParams.append('status', params.status);
+  }
+  if (params?.level) {
+    queryParams.append('level', params.level);
+  }
+  if (params?.search) {
+    queryParams.append('search', params.search);
+  }
+  if (params?.page) {
+    queryParams.append('page', params.page.toString());
+  }
+  if (params?.limit) {
+    queryParams.append('limit', params.limit.toString());
+  }
+
+  const queryString = queryParams.toString();
+  const url = `/api/admin/announcements${queryString ? `?${queryString}` : ''}`;
+
+  try {
+    const response = await fetchWithRetry(url, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      credentials: 'include',
+    });
+
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new ApiError('로그인이 필요합니다. 다시 로그인해주세요.', 'UNAUTHORIZED', 401);
+      }
+      const errorData: ApiErrorResponse = await response.json().catch(() => ({}));
+      throw new ApiError(
+        errorData.error || '공지를 불러오는데 실패했습니다.',
+        errorData.code,
+        response.status
+      );
+    }
+
+    return response.json() as Promise<AnnouncementsResponse>;
+  } catch (error) {
+    if (error instanceof ApiError) {
+      throw error;
+    }
+    const userFriendlyMessage = extractUserFriendlyMessage(error);
+    throw new ApiError(userFriendlyMessage, 'NETWORK_ERROR', 0);
+  }
+}
+
+export async function createAnnouncement(data: {
+  title: string;
+  content: string;
+  level?: AnnouncementLevel;
+  startsAt?: string;
+  endsAt?: string | null;
+  isActive?: boolean;
+}): Promise<Announcement> {
+  const response = await fetchWithRetry('/api/admin/announcements', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new ApiError('로그인이 필요합니다. 다시 로그인해주세요.', 'UNAUTHORIZED', 401);
+    }
+    const errorData: ApiErrorResponse = await response.json().catch(() => ({}));
+    throw new ApiError(
+      errorData.error || '공지를 생성하지 못했습니다.',
+      errorData.code,
+      response.status
+    );
+  }
+
+  return response.json() as Promise<Announcement>;
+}
+
+export async function updateAnnouncement(
+  id: string,
+  data: {
+    title?: string;
+    content?: string;
+    level?: AnnouncementLevel;
+    startsAt?: string;
+    endsAt?: string | null;
+    isActive?: boolean;
+  }
+): Promise<Announcement> {
+  const response = await fetchWithRetry(`/api/admin/announcements/${id}`, {
+    method: 'PATCH',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+    body: JSON.stringify(data),
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new ApiError('로그인이 필요합니다. 다시 로그인해주세요.', 'UNAUTHORIZED', 401);
+    }
+    const errorData: ApiErrorResponse = await response.json().catch(() => ({}));
+    throw new ApiError(
+      errorData.error || '공지를 수정하지 못했습니다.',
+      errorData.code,
+      response.status
+    );
+  }
+
+  return response.json() as Promise<Announcement>;
+}
+
+export async function deleteAnnouncement(id: string): Promise<{ success: boolean }> {
+  const response = await fetchWithRetry(`/api/admin/announcements/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    credentials: 'include',
+  });
+
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new ApiError('로그인이 필요합니다. 다시 로그인해주세요.', 'UNAUTHORIZED', 401);
+    }
+    const errorData: ApiErrorResponse = await response.json().catch(() => ({}));
+    throw new ApiError(
+      errorData.error || '공지를 삭제하지 못했습니다.',
+      errorData.code,
+      response.status
+    );
+  }
+
+  return response.json() as Promise<{ success: boolean }>;
+}
+
+export async function getGuestAnnouncements(token: string): Promise<Announcement[]> {
+  const response = await guestApi(token, '/announcements');
+  return response.announcements as Announcement[];
+}
+
+/**
  * 타입 정의는 types/index.ts에서 import
  */
 import type {
@@ -808,6 +987,10 @@ export type {
   NotificationsResponse,
   NotificationSettings,
   NotificationStats,
+  Announcement,
+  AnnouncementLevel,
+  AnnouncementStatus,
+  AnnouncementsResponse,
   ApiErrorResponse,
   ApiError,
   ApiErrorCode,

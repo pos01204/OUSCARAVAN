@@ -211,6 +211,30 @@ export interface NotificationStats {
 }
 
 /**
+ * 공지 타입 정의
+ */
+export type AnnouncementLevel = 'info' | 'warning' | 'critical';
+export type AnnouncementStatus = 'all' | 'active' | 'inactive' | 'expired' | 'scheduled';
+
+export interface Announcement {
+  id: string;
+  adminId: string;
+  title: string;
+  content: string;
+  level: AnnouncementLevel;
+  startsAt: string;
+  endsAt?: string | null;
+  isActive: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface AnnouncementsResponse {
+  announcements: Announcement[];
+  total: number;
+}
+
+/**
  * 가이드 관련 타입 정의
  */
 export interface GuideStep {

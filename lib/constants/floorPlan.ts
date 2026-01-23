@@ -68,7 +68,7 @@ export interface FloorPlanConfig {
  * - 행 위치: 행1=10, 행2=64, 행3=120, 행4=174, 행5=228
  */
 export const FLOOR_PLAN_CONFIG: FloorPlanConfig = {
-  viewBox: "0 0 730 280",  // SVG 뷰포트 크기 (우측 여백 제거)
+  viewBox: "0 0 750 280",  // SVG 뷰포트 크기 (도로 너비 확대로 조정)
   grid: {
     columns: 8,            // CSV 그리드 8열
     rows: 5,               // CSV 그리드 5행
@@ -76,21 +76,21 @@ export const FLOOR_PLAN_CONFIG: FloorPlanConfig = {
   },
   spaces: [
     // CSV 그리드 구조에 맞춰 배치 (8열 구조)
-    // 각 열 너비: (800 - 7*4 간격) / 8 = 96.5 → 96
-    // 열 위치: 열1=10, 열2=110, 열3=210(도로), 열4=218, 열5=318, 열6=418, 열7=518, 열8=618
+    // 도로 너비 확대: 기존 218 → 240 (22px 증가)
+    // 열 위치: 열1=10, 열2=110, 도로=206~234, 열4=240, 열5=340, 열6=440, 열7=540, 열8=640
 
     // 행 3: 2호(열1), 1호(열2)
     {
       id: '2',
       name: '2호',
-      displayName: '2호',
+      displayName: '카라반 2',
       coordinates: { x: 10, y: 120, width: 96, height: 50 },
       capacity: 4,
     },
     {
       id: '1',
       name: '1호',
-      displayName: '1호',
+      displayName: '카라반 1',
       coordinates: { x: 110, y: 120, width: 96, height: 50 },
       capacity: 4,
     },
@@ -98,65 +98,65 @@ export const FLOOR_PLAN_CONFIG: FloorPlanConfig = {
     {
       id: '4',
       name: '4호',
-      displayName: '4호',
+      displayName: '카라반 4',
       coordinates: { x: 10, y: 174, width: 96, height: 50 },
       capacity: 4,
     },
     {
       id: '3',
       name: '3호',
-      displayName: '3호',
+      displayName: '카라반 3',
       coordinates: { x: 110, y: 174, width: 96, height: 50 },
       capacity: 4,
     },
     {
       id: '7',
       name: '7호',
-      displayName: '7호',
-      coordinates: { x: 418, y: 174, width: 96, height: 50 }, // 열6
+      displayName: '카라반 7',
+      coordinates: { x: 440, y: 174, width: 96, height: 50 }, // 열6 (도로 확대로 +22)
       capacity: 4,
     },
     {
       id: '8',
       name: '8호',
-      displayName: '8호',
-      coordinates: { x: 518, y: 174, width: 96, height: 50 }, // 열7
+      displayName: '카라반 8',
+      coordinates: { x: 540, y: 174, width: 96, height: 50 }, // 열7 (도로 확대로 +22)
       capacity: 4,
     },
     {
       id: '9',
       name: '9호',
-      displayName: '9호',
-      coordinates: { x: 618, y: 174, width: 96, height: 50 }, // 열8
+      displayName: '카라반 9',
+      coordinates: { x: 640, y: 174, width: 96, height: 50 }, // 열8 (도로 확대로 +22)
       capacity: 4,
     },
     // 행 5: 6호(열1), 5호(열2), 주차공간3(열4), 10호(열7)
     {
       id: '6',
       name: '6호',
-      displayName: '6호',
+      displayName: '카라반 6',
       coordinates: { x: 10, y: 228, width: 96, height: 50 },
       capacity: 2,
     },
     {
       id: '5',
       name: '5호',
-      displayName: '5호',
+      displayName: '카라반 5',
       coordinates: { x: 110, y: 228, width: 96, height: 50 },
       capacity: 4,
     },
     {
       id: '10',
       name: '10호',
-      displayName: '10호',
-      coordinates: { x: 518, y: 228, width: 96, height: 50 }, // 열7
+      displayName: '카라반 10',
+      coordinates: { x: 540, y: 228, width: 96, height: 50 }, // 열7 (도로 확대로 +22)
       capacity: 2,
     },
   ],
   facilities: [
     // CSV 그리드 구조에 맞춰 배치 (8열 구조)
-    // 각 열 너비: 96, 간격: 4
-    // 열 위치: 열1=10, 열2=110, 열3=210(도로), 열4=218, 열5=318, 열6=418, 열7=518, 열8=618
+    // 도로 너비 확대: 기존 218 → 240 (22px 증가)
+    // 열 위치: 열1=10, 열2=110, 도로=206~234, 열4=240
 
     // 행 1: 주차공간1(열1-2), 주차공간2(열4-8)
     {
@@ -168,7 +168,7 @@ export const FLOOR_PLAN_CONFIG: FloorPlanConfig = {
     {
       id: 'parking-2',
       name: '주차공간 2',
-      coordinates: { x: 218, y: 10, width: 492, height: 50 }, // 열4-8 (96*5 + 4*4 간격)
+      coordinates: { x: 240, y: 10, width: 492, height: 50 }, // 열4-8 (도로 확대로 +22)
       type: 'parking',
     },
     // 행 2: 관리동(열1-2), 카페(열4-8)
@@ -181,21 +181,21 @@ export const FLOOR_PLAN_CONFIG: FloorPlanConfig = {
     {
       id: 'cafe',
       name: '카페(오우스마켓)',
-      coordinates: { x: 218, y: 64, width: 492, height: 50 }, // 열4-8
+      coordinates: { x: 240, y: 64, width: 492, height: 50 }, // 열4-8 (도로 확대로 +22)
       type: 'cafe',
     },
     // 행 4: 건물/창고(열4-5) - CSV에서 2개 열 차지
     {
       id: 'warehouse',
       name: '', // 텍스트 노출하지 않음
-      coordinates: { x: 218, y: 174, width: 196, height: 50 }, // 열4-5 (96*2 + 4 간격)
+      coordinates: { x: 240, y: 174, width: 196, height: 50 }, // 열4-5 (도로 확대로 +22)
       type: 'warehouse',
     },
     // 행 5: 주차공간3(열4-5) - CSV에서 2개 열 차지
     {
       id: 'parking-3',
       name: '주차공간 3',
-      coordinates: { x: 218, y: 228, width: 196, height: 50 }, // 열4-5 (96*2 + 4 간격)
+      coordinates: { x: 240, y: 228, width: 196, height: 50 }, // 열4-5 (도로 확대로 +22)
       type: 'parking',
     },
   ],

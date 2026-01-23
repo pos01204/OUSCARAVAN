@@ -5,6 +5,7 @@ import { ConditionalHeader } from './ConditionalHeader';
 import { ConditionalFooter } from './ConditionalFooter';
 import { ConditionalBottomNav } from './ConditionalBottomNav';
 import { ServiceWorkerInitializer } from './ServiceWorkerInitializer';
+import { ClientErrorReporter } from './ClientErrorReporter';
 
 interface RootLayoutWrapperProps {
   children: React.ReactNode;
@@ -19,6 +20,7 @@ export function RootLayoutWrapper({ children }: RootLayoutWrapperProps) {
   // Service Worker는 모든 페이지에서 초기화
   return (
     <>
+      <ClientErrorReporter />
       <ServiceWorkerInitializer />
       {isAdminPage || isGuestPage ? (
         <>{children}</>

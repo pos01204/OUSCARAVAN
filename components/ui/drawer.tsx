@@ -43,7 +43,9 @@ const DrawerContent = React.forwardRef<
         <DrawerPrimitive.Content
             ref={ref}
             className={cn(
-                "fixed inset-x-0 bottom-0 z-50 mt-24 flex h-auto flex-col rounded-t-[10px] border bg-background",
+                // 모바일에서 콘텐츠가 길어질 때 하단이 잘리는 문제 방지:
+                // Drawer 자체 높이를 제한하고 내부 영역을 스크롤 컨테이너로 사용하도록 함.
+                "fixed inset-x-0 bottom-0 z-50 mt-24 flex max-h-[92dvh] flex-col overflow-hidden rounded-t-[10px] border bg-background",
                 className
             )}
             {...props}

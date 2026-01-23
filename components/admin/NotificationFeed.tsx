@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useNotificationStore } from '@/lib/store/notifications';
 import { useNotificationStream } from '@/lib/hooks/useNotificationStream';
@@ -15,14 +16,38 @@ import {
 } from 'lucide-react';
 import { formatDateTimeToKorean } from '@/lib/utils/date';
 import type { Notification } from '@/types';
-import { markNotificationAsRead, deleteNotification as deleteNotificationApi } from '@/lib/api';
+import { getNotifications, markNotificationAsRead, deleteNotification as deleteNotificationApi } from '@/lib/api';
 
 export function NotificationFeed() {
   const router = useRouter();
-  const { notifications, markAsRead, deleteNotification } = useNotificationStore();
+  const { notifications, markAsRead, deleteNotification, setNotifications, updateUnreadCount } =
+    useNotificationStore();
   
   // SSE 연결 (실시간 알림 수신)
   useNotificationStream();
+
+  useEffect(() => {
+    let cancelled = false;
+
+    const loadNotifications = async () => {
+      try {
+        const response = await getNotifications({ limit: 50 });
+        if (cancelled) return;
+        setNotifications(response.notifications);
+        updateUnreadCount(response.unreadCount);
+      } catch (error) {
+        console.error('Failed to load notifications:', error);
+      }
+    };
+
+    loadNotifications();
+    const interval = setInterval(loadNotifications, 30000);
+
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
+  }, [setNotifications, updateUnreadCount]);
   
   // 최신 알림을 상단에 표시 (시간순 정렬)
   const sortedNotifications = [...notifications].sort((a, b) => {

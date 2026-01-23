@@ -10,20 +10,47 @@ import {
 } from '@/components/ui/accordion';
 import { FAQ_DATA, EMERGENCY_CONTACTS } from '@/lib/constants';
 import { Button } from '@/components/ui/button';
-import { useMemo } from 'react';
+import { useMemo, useState } from 'react';
+import Link from 'next/link';
+import { Input } from '@/components/ui/input';
+import { GuestPageHeader } from '@/components/guest/GuestPageHeader';
 
 interface GuestHelpContentProps {
   token?: string;
 }
 
 export function GuestHelpContent({ token }: GuestHelpContentProps) {
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('전체');
+
   // FAQ를 중요도 순으로 정렬
   const sortedFAQs = useMemo(() => {
     return [...FAQ_DATA].sort((a, b) => (b.priority || 0) - (a.priority || 0));
   }, []);
 
+  const categories = useMemo(() => {
+    return ['전체', ...Array.from(new Set(FAQ_DATA.map((f) => f.category)))];
+  }, []);
+
+  const filteredFAQs = useMemo(() => {
+    const q = searchQuery.trim().toLowerCase();
+    return sortedFAQs.filter((faq) => {
+      const matchCategory = selectedCategory === '전체' || faq.category === selectedCategory;
+      const matchQuery =
+        !q ||
+        faq.question.toLowerCase().includes(q) ||
+        faq.answer.toLowerCase().includes(q) ||
+        faq.category.toLowerCase().includes(q);
+      return matchCategory && matchQuery;
+    });
+  }, [sortedFAQs, searchQuery, selectedCategory]);
+
+  const homeWifiHref = token ? `/guest/${token}#wifi` : '#';
+
   return (
     <main className="space-y-6" role="main" aria-label="도움말 페이지">
+      <GuestPageHeader title="도움말" description="응급 연락처와 자주 묻는 질문을 확인하세요" />
+
       {/* Emergency FAB (Mobile only) */}
       <a
         href={`tel:${EMERGENCY_CONTACTS.manager.number}`}
@@ -32,6 +59,57 @@ export function GuestHelpContent({ token }: GuestHelpContentProps) {
       >
         <Phone className="h-6 w-6" aria-hidden="true" />
       </a>
+
+      {/* 빠른 도움(상위 3개) */}
+      <section aria-label="빠른 도움">
+        <Card className="border-primary/20 bg-primary/5">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2">
+              <HelpCircle className="h-5 w-5 text-primary" />
+              자주 찾는 도움
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="grid grid-cols-1 gap-2">
+            <a
+              href={`tel:${EMERGENCY_CONTACTS.manager.number}`}
+              className="flex items-center justify-between rounded-lg border bg-background px-4 py-3 hover:bg-muted/50 transition-colors"
+              aria-label="관리자에게 전화하기"
+            >
+              <div>
+                <p className="font-semibold">관리자 전화</p>
+                <p className="text-xs text-muted-foreground">{EMERGENCY_CONTACTS.manager.number}</p>
+              </div>
+              <Phone className="h-4 w-4" aria-hidden="true" />
+            </a>
+
+            <a
+              href={EMERGENCY_CONTACTS.hospital.mapLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-center justify-between rounded-lg border bg-background px-4 py-3 hover:bg-muted/50 transition-colors"
+              aria-label="응급실 지도 보기"
+            >
+              <div>
+                <p className="font-semibold">응급실</p>
+                <p className="text-xs text-muted-foreground">가장 가까운 병원</p>
+              </div>
+              <MapPin className="h-4 w-4" aria-hidden="true" />
+            </a>
+
+            <Link
+              href={homeWifiHref}
+              className="flex items-center justify-between rounded-lg border bg-background px-4 py-3 hover:bg-muted/50 transition-colors"
+              aria-label="WiFi 비밀번호 확인하기"
+            >
+              <div>
+                <p className="font-semibold">WiFi 비밀번호 찾기</p>
+                <p className="text-xs text-muted-foreground">홈 화면에서 확인</p>
+              </div>
+              <ExternalLink className="h-4 w-4" aria-hidden="true" />
+            </Link>
+          </CardContent>
+        </Card>
+      </section>
 
       {/* 응급 연락처 */}
       <section aria-label="응급 연락처">
@@ -96,8 +174,41 @@ export function GuestHelpContent({ token }: GuestHelpContentProps) {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <Accordion type="single" collapsible className="w-full">
-              {sortedFAQs.map((faq) => (
+            {/* 검색/카테고리 */}
+            <div className="space-y-3 mb-4">
+              <div className="relative">
+                <Input
+                  type="text"
+                  placeholder="FAQ 검색..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  aria-label="FAQ 검색"
+                />
+              </div>
+              <div className="flex gap-2 overflow-x-auto whitespace-nowrap pb-1 [-webkit-overflow-scrolling:touch]">
+                {categories.map((c) => (
+                  <Button
+                    key={c}
+                    type="button"
+                    size="sm"
+                    variant={selectedCategory === c ? 'default' : 'outline'}
+                    className="shrink-0"
+                    onClick={() => setSelectedCategory(c)}
+                    aria-label={`카테고리 ${c}`}
+                  >
+                    {c}
+                  </Button>
+                ))}
+              </div>
+            </div>
+
+            {filteredFAQs.length === 0 ? (
+              <div className="rounded-lg border bg-muted/30 p-6 text-center">
+                <p className="text-sm text-muted-foreground">검색 결과가 없습니다.</p>
+              </div>
+            ) : (
+              <Accordion type="single" collapsible className="w-full">
+                {filteredFAQs.map((faq) => (
                 <AccordionItem key={faq.id} value={faq.id}>
                   <AccordionTrigger className="text-left">
                     {faq.question}
@@ -120,8 +231,9 @@ export function GuestHelpContent({ token }: GuestHelpContentProps) {
                     )}
                   </AccordionContent>
                 </AccordionItem>
-              ))}
-            </Accordion>
+                ))}
+              </Accordion>
+            )}
           </CardContent>
         </Card>
       </section>

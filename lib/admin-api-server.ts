@@ -45,13 +45,19 @@ export async function adminApiServer(
   endpoint: string,
   options: RequestInit = {}
 ) {
-  // 인증 체크 제거 - 모든 사용자가 접근 가능
+  // 서버 사이드 인증: admin-token 쿠키를 읽어 Railway로 Authorization 헤더 전달
+  // (서버 컴포넌트는 localStorage에 접근할 수 없으므로 쿠키 기반이 필수)
+  const token = cookies().get('admin-token')?.value;
+  if (!token) {
+    throw new ApiError('Unauthorized', 'UNAUTHORIZED', 401);
+  }
 
   try {
     const response = await fetchWithTimeout(`${API_URL}${endpoint}`, {
       ...options,
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
         ...options.headers,
       },
     });

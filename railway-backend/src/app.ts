@@ -1,5 +1,6 @@
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import authRoutes from './routes/auth.routes';
 import adminRoutes from './routes/admin.routes';
@@ -15,6 +16,9 @@ const app = express();
 const PORT = parseInt(process.env.PORT || '3000', 10);
 
 // 미들웨어
+// 쿠키 파서 (하이브리드 인증용)
+app.use(cookieParser());
+
 // CORS 설정 - Vercel 도메인 허용
 const allowedOrigins = [
   'https://ouscaravan.vercel.app',

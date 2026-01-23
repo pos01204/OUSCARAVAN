@@ -12,6 +12,9 @@ interface GuideChecklistProps {
   checklistId: string; // 가이드 ID를 기반으로 한 고유 ID
   onComplete?: (completedItems: string[]) => void;
   showProgress?: boolean;
+  /** 기본 list. 모바일 인스펙터에서는 pager로 한 화면에 맞춤 */
+  mode?: 'list' | 'pager';
+  pageSize?: number;
 }
 
 export function GuideChecklist({
@@ -19,8 +22,13 @@ export function GuideChecklist({
   checklistId,
   onComplete,
   showProgress = true,
+  mode = 'list',
+  pageSize = 4,
 }: GuideChecklistProps) {
   const storageKey = `guide-checklist-${checklistId}`;
+
+  // pager 모드 페이지 상태 (hooks는 조건 없이 항상 호출되어야 함)
+  const [page, setPage] = useState(0);
 
   // 로컬 스토리지에서 완료 상태 불러오기
   const [completedItems, setCompletedItems] = useState<string[]>(() => {
@@ -63,6 +71,12 @@ export function GuideChecklist({
     return null;
   }
 
+  // pager 모드: 한 화면에 pageSize개만 표시
+  const totalPages = Math.max(1, Math.ceil(items.length / pageSize));
+  const safePage = Math.min(Math.max(page, 0), totalPages - 1);
+  const pagedItems =
+    mode === 'pager' ? items.slice(safePage * pageSize, safePage * pageSize + pageSize) : items;
+
   return (
     <Card className="border-primary/20">
       <CardHeader className="pb-3">
@@ -99,7 +113,33 @@ export function GuideChecklist({
         )}
       </CardHeader>
       <CardContent className="space-y-2">
-        {items.map((item) => {
+        {mode === 'pager' && totalPages > 1 && (
+          <div className="flex items-center justify-between gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => setPage((p) => Math.max(0, p - 1))}
+              disabled={safePage === 0}
+              className="h-8"
+            >
+              이전
+            </Button>
+            <span className="text-xs text-muted-foreground">
+              {safePage + 1} / {totalPages}
+            </span>
+            <Button
+              size="sm"
+              variant="default"
+              onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+              disabled={safePage === totalPages - 1}
+              className="h-8"
+            >
+              다음
+            </Button>
+          </div>
+        )}
+
+        {pagedItems.map((item) => {
           const isCompleted = completedItems.includes(item.id);
           return (
             <div

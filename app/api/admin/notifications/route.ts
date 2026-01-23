@@ -1,13 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { cookies } from 'next/headers';
 import { API_CONFIG } from '@/lib/constants';
+import { buildAuthHeaders, getAdminTokenFromRequest } from '../_utils';
 
 // 동적 렌더링 강제 (searchParams 사용)
 export const dynamic = 'force-dynamic';
 
 export async function GET(request: NextRequest) {
   try {
-    // 인증 체크 제거 - 모든 사용자가 접근 가능
+    const token = getAdminTokenFromRequest(request);
+    if (!token) {
+      return NextResponse.json({ error: 'Unauthorized', code: 'UNAUTHORIZED' }, { status: 401 });
+    }
 
     // 쿼리 파라미터 가져오기
     const searchParams = request.nextUrl.searchParams;
@@ -16,11 +19,9 @@ export async function GET(request: NextRequest) {
     const apiUrl = API_CONFIG.baseUrl;
     const notificationsUrl = `${apiUrl}/api/admin/notifications${queryString ? `?${queryString}` : ''}`;
 
-    // Railway API로 프록시 요청 (인증 헤더 제거)
+    // Railway API로 프록시 요청 (Authorization 헤더 전달)
     const response = await fetch(notificationsUrl, {
-      headers: {
-        'Content-Type': 'application/json',
-      },
+      headers: buildAuthHeaders(token),
       cache: 'no-store',
     });
 

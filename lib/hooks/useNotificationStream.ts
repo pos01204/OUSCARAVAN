@@ -3,6 +3,12 @@
 import { useEffect, useRef } from 'react';
 import { useNotificationStore } from '@/lib/store/notifications';
 import { adminNotificationService } from '@/lib/admin-notification-service';
+import { getToken } from '@/lib/auth-client';
+
+function isKakaoInAppBrowser() {
+  if (typeof navigator === 'undefined') return false;
+  return /KAKAOTALK/i.test(navigator.userAgent);
+}
 
 export function useNotificationStream() {
   const { addNotification, updateUnreadCount } = useNotificationStore();
@@ -14,7 +20,8 @@ export function useNotificationStream() {
 
   useEffect(() => {
     // Service Worker 초기화
-    adminNotificationService.initialize();
+    // 일부 인앱 브라우저에서 SW/Notification이 불안정할 수 있어 실패해도 앱이 깨지지 않도록 함
+    adminNotificationService.initialize().catch(() => undefined);
 
     const connect = () => {
       // 기존 연결이 있으면 정리
@@ -24,7 +31,13 @@ export function useNotificationStream() {
 
       // Next.js API 라우트를 통한 프록시 사용
       // 쿠키가 자동으로 포함되므로 인증이 자동으로 처리됨
-      const eventSource = new EventSource('/api/admin/notifications/stream');
+      const token = getToken();
+      const useQueryToken = isKakaoInAppBrowser() && !!token;
+      const url = useQueryToken
+        ? `/api/admin/notifications/stream?token=${encodeURIComponent(token!)}`
+        : '/api/admin/notifications/stream';
+
+      const eventSource = new EventSource(url);
       eventSourceRef.current = eventSource;
 
       eventSource.onopen = () => {

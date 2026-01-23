@@ -4,10 +4,65 @@
 
 @layer base {
   :root {
-    --background: 250 250 250;
-    --foreground: 34 30 29;
-    --primary: 255 126 95;
-    --accent: 44 62 80;
+    /* ═══════════════════════════════════════════════════
+       브랜드 색상 시스템 — 라이트 테마 (고정)
+       ═══════════════════════════════════════════════════ */
+    color-scheme: light;
+    
+    /* 배경 — 무채색 회색 계열 */
+    --background: 247 247 247;           /* #F7F7F7 (깔끔한 연한 회색) */
+    --background-elevated: 255 255 255;  /* #FFFFFF */
+    --background-muted: 240 240 240;     /* #F0F0F0 (약간 진한 회색) */
+    --background-accent: 232 232 232;    /* #E8E8E8 (중간 회색) */
+    
+    /* 텍스트 */
+    --foreground: 26 23 20;              /* #1A1714 */
+    --muted-foreground: 107 99 88;       /* #6B6358 */
+    
+    /* Primary */
+    --primary: 26 23 20;                 /* #1A1714 */
+    --primary-foreground: 250 248 245;   /* #FAF8F5 */
+    
+    /* Secondary */
+    --secondary: 232 220 200;            /* #E8DCC8 */
+    --secondary-foreground: 26 23 20;    /* #1A1714 */
+    
+    /* Accent */
+    --accent: 237 232 223;               /* #EDE8DF */
+    --accent-foreground: 26 23 20;       /* #1A1714 */
+    
+    /* Muted */
+    --muted: 245 242 237;                /* #F5F2ED */
+    
+    /* 테두리 */
+    --border: rgba(196, 184, 150, 0.3);
+    --border-emphasis: rgba(196, 184, 150, 0.5);
+    
+    /* 카드 */
+    --card: 255 255 255;                 /* #FFFFFF */
+    --card-foreground: 26 23 20;         /* #1A1714 */
+    
+    /* Ring (포커스) */
+    --ring: 196 184 150;                 /* #C4B896 */
+    
+    /* 그림자 */
+    --shadow-sm: 0 1px 2px rgba(26, 23, 20, 0.04), 0 1px 3px rgba(26, 23, 20, 0.06);
+    --shadow-md: 0 4px 8px rgba(26, 23, 20, 0.06), 0 2px 4px rgba(26, 23, 20, 0.04);
+    --shadow-lg: 0 12px 24px rgba(26, 23, 20, 0.08), 0 4px 8px rgba(26, 23, 20, 0.04);
+    --shadow-hover: 0 8px 20px rgba(26, 23, 20, 0.1);
+    
+    /* Destructive */
+    --destructive: 220 38 38;            /* #DC2626 */
+    --destructive-foreground: 255 255 255;
+    
+    /* 상태 색상 */
+    --status-success: 22 163 74;         /* #16A34A */
+    --status-warning: 202 138 4;         /* #CA8A04 */
+    --status-error: 220 38 38;           /* #DC2626 */
+    --status-info: 37 99 235;            /* #2563EB */
+    
+    /* 반경 */
+    --radius: 0.5rem;
   }
 
   * {
@@ -17,10 +72,13 @@
   body {
     @apply bg-background text-foreground;
     font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    background-color: #F7F7F7;
+    color: #1A1714;
   }
 
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+    color: #1A1714;
   }
 }
 
@@ -32,6 +90,126 @@
   .perspective-1000 {
     perspective: 1000px;
   }
+}
+
+/* ═══════════════════════════════════════════════════
+   브랜드 유틸리티 클래스
+   ═══════════════════════════════════════════════════ */
+
+/* 카드 호버 효과 */
+.card-hover {
+  transition: all 0.2s ease-out;
+}
+.card-hover:hover {
+  box-shadow: var(--shadow-hover);
+  border-color: rgba(196, 184, 150, 0.5);
+  transform: translateY(-2px);
+}
+
+/* 카드 lift 효과 */
+.card-lift {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+.card-lift:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 20px 40px -15px rgba(26, 23, 20, 0.15);
+}
+
+/* 버튼 프레스 효과 */
+.btn-press:active {
+  transform: scale(0.97);
+  transition: transform 0.1s;
+}
+
+/* 세련된 포커스 링 */
+.focus-ring:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(232, 220, 200, 0.5);
+}
+
+/* 스켈레톤 시머 (라이트 테마) */
+.skeleton-shimmer {
+  background: linear-gradient(90deg, #F5F2ED 25%, #EDE8DF 50%, #F5F2ED 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Premium 카드 — Gradient Border */
+.card-premium {
+  background: #FFFFFF;
+  border-radius: 12px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: var(--shadow-md);
+}
+.card-premium::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  padding: 1px;
+  border-radius: 12px;
+  background: linear-gradient(
+    135deg,
+    rgba(196, 184, 150, 0.6) 0%,
+    rgba(196, 184, 150, 0.2) 50%,
+    transparent 100%
+  );
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  -webkit-mask-composite: xor;
+  pointer-events: none;
+}
+
+/* Inner Cream Gradient */
+.card-cream-gradient {
+  background: 
+    linear-gradient(
+      135deg,
+      rgba(232, 220, 200, 0.3) 0%,
+      transparent 60%
+    ),
+    #FFFFFF;
+}
+
+/* Top Accent Line */
+.card-accent-top {
+  position: relative;
+  background: #FFFFFF;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.card-accent-top::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, #C4B896 0%, #E8DCC8 100%);
+}
+
+/* 상태 뱃지 — 라이트 테마 */
+.badge-pending {
+  background: #FEF3C7;
+  color: #92400E;
+  border: 1px solid #FCD34D;
+}
+
+.badge-preparing {
+  background: #DBEAFE;
+  color: #1E40AF;
+  border: 1px solid #93C5FD;
+}
+
+.badge-completed {
+  background: #DCFCE7;
+  color: #166534;
+  border: 1px solid #86EFAC;
 }
 
 /* 실시간 하이라이트 점멸 애니메이션 */

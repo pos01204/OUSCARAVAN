@@ -16,6 +16,8 @@ import { GuideTroubleshooting } from '@/components/features/GuideTroubleshooting
 import { TrashCategoryGuide } from '@/components/features/TrashCategoryGuide';
 import Image from 'next/image';
 import type { GuideItem } from '@/types';
+import { GuestPageHeader } from '@/components/guest/GuestPageHeader';
+import { InfoInspector } from '@/components/guest/InfoInspector';
 
 interface GuestGuideContentProps {
   token?: string;
@@ -26,6 +28,7 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
   const [selectedCategory, setSelectedCategory] = useState('전체');
   const [showBBQCarousel, setShowBBQCarousel] = useState(false);
   const [selectedGuideId, setSelectedGuideId] = useState<string | null>(null);
+  const [openInspector, setOpenInspector] = useState(false);
 
   const categories = ['전체', ...new Set(GUIDE_DATA.items.map((item) => item.category))];
 
@@ -58,37 +61,36 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
 
   // 가이드 카드 클릭 핸들러
   const handleGuideClick = (guideId: string) => {
-    if (selectedGuideId === guideId) {
-      setSelectedGuideId(null);
-    } else {
-      setSelectedGuideId(guideId);
-      // 스크롤을 해당 가이드로 이동
-      setTimeout(() => {
-        const element = document.getElementById(`guide-${guideId}`);
-        if (element) {
-          element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        }
-      }, 100);
-    }
+    setSelectedGuideId(guideId);
+    setOpenInspector(true);
   };
 
   // BBQ 가이드가 선택된 경우
   const bbqGuide = GUIDE_DATA.items.find((item) => item.id === 'bbq');
+  const inspectorDefaultTab = useMemo(() => {
+    if (!selectedGuide) return 'steps';
+    if (selectedGuide.steps && selectedGuide.steps.length > 0) return 'steps';
+    if (selectedGuide.checklist && selectedGuide.checklist.length > 0) return 'checklist';
+    if (selectedGuide.faq && selectedGuide.faq.length > 0) return 'faq';
+    if (selectedGuide.troubleshooting && selectedGuide.troubleshooting.length > 0) return 'troubleshooting';
+    return 'steps';
+  }, [selectedGuide]);
 
   return (
     <main className="space-y-6" role="main" aria-label="안내 페이지">
-      {/* 헤더 */}
-      <div className="space-y-2">
-        <h1 className="text-3xl font-bold text-foreground">이용 안내서</h1>
-        <p className="text-sm text-muted-foreground">
-          숙박 이용에 필요한 모든 정보를 확인하세요
-        </p>
-      </div>
+      <GuestPageHeader
+        title="이용 안내서"
+        description="숙박 이용에 필요한 모든 정보를 확인하세요"
+      />
 
       {/* 검색 및 필터 */}
       <section className="space-y-4" aria-label="검색 및 필터">
         {/* 카테고리 필터 */}
-        <div className="flex flex-wrap gap-2" role="tablist" aria-label="카테고리 필터">
+        <div
+          className="flex gap-2 overflow-x-auto whitespace-nowrap pb-1 [-webkit-overflow-scrolling:touch]"
+          role="tablist"
+          aria-label="카테고리 필터"
+        >
           {categories.map((category) => (
             <Button
               key={category}
@@ -98,6 +100,7 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
               role="tab"
               aria-selected={selectedCategory === category}
               aria-controls={`category-${category}`}
+              className="shrink-0"
             >
               {category}
             </Button>
@@ -123,18 +126,40 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
 
       {/* BBQ 가이드 캐러셀 토글 */}
       {bbqGuide && (
-        <Card className="border-primary/30 bg-primary/5">
-          <CardContent className="p-4">
-            <Button
-              onClick={() => setShowBBQCarousel(!showBBQCarousel)}
-              variant="default"
-              className="w-full h-12 text-base font-semibold"
-              aria-label="BBQ 가이드 캐러셀 열기/닫기"
-            >
-              {showBBQCarousel ? '일반 안내 보기' : '🔥 불멍/바베큐 가이드 보기'}
-            </Button>
-          </CardContent>
-        </Card>
+        <div id="guide-bbq" className="scroll-mt-24">
+          <Card className="border-primary/30 bg-primary/5">
+            <CardContent className="p-4">
+              {/* BBQ 미니 요약 (진입 전 기대치/준비물 안내) */}
+              <div className="mb-3 rounded-lg border border-primary/20 bg-background/60 p-3">
+                <div className="flex items-center justify-between gap-3">
+                  <div className="min-w-0">
+                    <p className="text-sm font-bold">불멍/바베큐 시작 전</p>
+                    <p className="mt-1 text-xs text-muted-foreground">
+                      준비 시간과 준비물을 먼저 확인하면 더 빠르게 진행할 수 있어요.
+                    </p>
+                  </div>
+                  <Badge variant="outline" className="shrink-0">
+                    약 5분
+                  </Badge>
+                </div>
+                <div className="mt-3 flex flex-wrap gap-2">
+                  <Badge variant="secondary" className="text-xs">집게/가위</Badge>
+                  <Badge variant="secondary" className="text-xs">장갑</Badge>
+                  <Badge variant="secondary" className="text-xs">고기/식재료</Badge>
+                  <Badge variant="secondary" className="text-xs">물티슈(추천)</Badge>
+                </div>
+              </div>
+              <Button
+                onClick={() => setShowBBQCarousel(!showBBQCarousel)}
+                variant="default"
+                className="w-full h-12 text-base font-semibold"
+                aria-label="BBQ 가이드 캐러셀 열기/닫기"
+              >
+                {showBBQCarousel ? '일반 안내 보기' : '🔥 불멍/바베큐 가이드 보기'}
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       )}
 
       {showBBQCarousel ? (
@@ -152,19 +177,18 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
           ) : (
             <div className="space-y-4">
               {filteredGuideData.map((item) => {
-                const isExpanded = selectedGuideId === item.id;
+                // 불멍/바베큐 가이드는 상단 고정 섹션(캐러셀 진입)으로 제공하므로
+                // 목록에서는 중복 노출을 방지하기 위해 숨깁니다.
+                if (item.id === 'bbq') return null;
                 return (
                   <div key={item.id} id={`guide-${item.id}`}>
                     {/* 가이드 카드 */}
                     <Card
-                      className={`transition-all cursor-pointer hover:shadow-lg ${
-                        isExpanded ? 'border-primary shadow-md' : ''
-                      }`}
+                      className="transition-all cursor-pointer hover:shadow-lg hover:border-primary/30 active:scale-[0.99]"
                       onClick={() => handleGuideClick(item.id)}
                       role="button"
                       tabIndex={0}
-                      aria-expanded={isExpanded}
-                      aria-controls={`guide-content-${item.id}`}
+                      aria-label={`${item.title} 상세 보기`}
                       onKeyDown={(e) => {
                         if (e.key === 'Enter' || e.key === ' ') {
                           e.preventDefault();
@@ -194,180 +218,6 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
                         </div>
                       </CardHeader>
                     </Card>
-
-                    {/* 확장된 가이드 내용 */}
-                    {isExpanded && (
-                      <div
-                        id={`guide-content-${item.id}`}
-                        className="mt-4 space-y-4 animate-in fade-in slide-in-from-top-4 duration-300"
-                        role="region"
-                        aria-labelledby={`guide-title-${item.id}`}
-                      >
-                        {/* 기본 정보 */}
-                        <Card>
-                          <CardHeader>
-                            <CardTitle>상세 안내</CardTitle>
-                          </CardHeader>
-                          <CardContent className="space-y-4">
-                            <p className="text-muted-foreground leading-relaxed whitespace-pre-wrap">
-                              {item.content}
-                            </p>
-
-                            {/* 경고 */}
-                            {item.warning && item.warningText && (
-                              <div className="flex items-start gap-2 p-3 rounded-lg bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800">
-                                <AlertCircle className="h-5 w-5 text-yellow-600 dark:text-yellow-400 shrink-0 mt-0.5" />
-                                <p className="text-sm text-yellow-800 dark:text-yellow-200">
-                                  {item.warningText}
-                                </p>
-                              </div>
-                            )}
-
-                            {/* 이미지 */}
-                            {item.images && item.images.length > 0 && (
-                              <div className="space-y-2">
-                                {item.images.map((image, index) => (
-                                  <div
-                                    key={index}
-                                    className="relative h-48 w-full overflow-hidden rounded-lg bg-muted"
-                                  >
-                                    <Image
-                                      src={image}
-                                      alt={`${item.title} 이미지 ${index + 1}`}
-                                      fill
-                                      className="object-cover"
-                                      sizes="(max-width: 768px) 100vw, 672px"
-                                      onError={(e) => {
-                                        const target = e.target as HTMLImageElement;
-                                        target.style.display = 'none';
-                                        if (target.parentElement) {
-                                          target.parentElement.innerHTML = `
-                                            <div class="flex h-full items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
-                                              <span class="text-muted-foreground text-sm font-medium">${item.title}</span>
-                                            </div>
-                                          `;
-                                        }
-                                      }}
-                                    />
-                                  </div>
-                                ))}
-                              </div>
-                            )}
-
-                            {/* 유용한 팁 */}
-                            {item.tips && item.tips.length > 0 && (
-                              <div className="space-y-2">
-                                <h4 className="font-semibold text-foreground flex items-center gap-2">
-                                  <Lightbulb className="h-4 w-4 text-primary" />
-                                  유용한 팁
-                                </h4>
-                                <ul className="space-y-1 pl-4">
-                                  {item.tips.map((tip, index) => (
-                                    <li key={index} className="text-sm text-muted-foreground list-disc">
-                                      {tip}
-                                    </li>
-                                  ))}
-                                </ul>
-                              </div>
-                            )}
-                          </CardContent>
-                        </Card>
-
-                        {/* 탭으로 구성된 상세 정보 */}
-                        {item.id === 'trash' && item.trashCategories ? (
-                          <div className="space-y-4">
-                            <TrashCategoryGuide categories={item.trashCategories} />
-                            {item.faq && item.faq.length > 0 && (
-                              <GuideFAQ faqs={item.faq} searchable={true} />
-                            )}
-                          </div>
-                        ) : (
-                          <Tabs defaultValue="steps" className="w-full">
-                            <TabsList className="grid w-full grid-cols-4">
-                              {item.steps && item.steps.length > 0 && (
-                                <TabsTrigger value="steps">단계별 가이드</TabsTrigger>
-                              )}
-                              {item.checklist && item.checklist.length > 0 && (
-                                <TabsTrigger value="checklist">체크리스트</TabsTrigger>
-                              )}
-                              {item.faq && item.faq.length > 0 && (
-                                <TabsTrigger value="faq">FAQ</TabsTrigger>
-                              )}
-                              {item.troubleshooting && item.troubleshooting.length > 0 && (
-                                <TabsTrigger value="troubleshooting">문제 해결</TabsTrigger>
-                              )}
-                            </TabsList>
-
-                            {item.steps && item.steps.length > 0 && (
-                              <TabsContent value="steps" className="mt-4">
-                                <StepByStepGuide steps={item.steps} />
-                              </TabsContent>
-                            )}
-
-                            {item.checklist && item.checklist.length > 0 && (
-                              <TabsContent value="checklist" className="mt-4">
-                                <GuideChecklist items={item.checklist} checklistId={item.id} />
-                              </TabsContent>
-                            )}
-
-                            {item.faq && item.faq.length > 0 && (
-                              <TabsContent value="faq" className="mt-4">
-                                <GuideFAQ faqs={item.faq} searchable={true} />
-                              </TabsContent>
-                            )}
-
-                            {item.troubleshooting && item.troubleshooting.length > 0 && (
-                              <TabsContent value="troubleshooting" className="mt-4">
-                                <GuideTroubleshooting items={item.troubleshooting} />
-                              </TabsContent>
-                            )}
-                          </Tabs>
-                        )}
-
-                        {/* 관련 가이드 */}
-                        {item.relatedGuides && item.relatedGuides.length > 0 && (
-                          <Card className="border-primary/20">
-                            <CardHeader>
-                              <CardTitle className="text-base">관련 가이드</CardTitle>
-                            </CardHeader>
-                            <CardContent>
-                              <div className="flex flex-wrap gap-2">
-                                {item.relatedGuides.map((relatedId) => {
-                                  const relatedGuide = GUIDE_DATA.items.find(
-                                    (g) => g.id === relatedId
-                                  );
-                                  if (!relatedGuide) return null;
-                                  return (
-                                    <Button
-                                      key={relatedId}
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => {
-                                        setSelectedGuideId(relatedId);
-                                        setTimeout(() => {
-                                          const element = document.getElementById(
-                                            `guide-${relatedId}`
-                                          );
-                                          if (element) {
-                                            element.scrollIntoView({
-                                              behavior: 'smooth',
-                                              block: 'start',
-                                            });
-                                          }
-                                        }, 100);
-                                      }}
-                                    >
-                                      {relatedGuide.title}
-                                      <ExternalLink className="h-3 w-3 ml-1" />
-                                    </Button>
-                                  );
-                                })}
-                              </div>
-                            </CardContent>
-                          </Card>
-                        )}
-                      </div>
-                    )}
                   </div>
                 );
               })}
@@ -375,6 +225,119 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
           )}
         </section>
       )}
+
+      {/* 상세 인스펙터 (모바일 Drawer / 데스크톱 Sheet) */}
+      <InfoInspector
+        open={openInspector}
+        onOpenChange={(o) => {
+          setOpenInspector(o);
+          if (!o) setSelectedGuideId(null);
+        }}
+        title={selectedGuide?.title ?? '상세 안내'}
+        description={selectedGuide?.overview}
+        // 모바일에서 내용이 길어지면 Drawer가 화면을 넘기며 스크롤/드래그 충돌이 발생할 수 있어
+        // 가이드 상세는 한 화면 구성(페이지네이션)으로 설계하고 Drawer 높이도 제한합니다.
+        contentClassName="max-h-[92dvh] overflow-hidden md:max-w-xl"
+      >
+        {selectedGuide ? (
+          <div className="space-y-3">
+            {/* 상단: 핵심만 한 화면에 들어오도록 요약/주의/팁을 압축 */}
+            {(selectedGuide.warning || (selectedGuide.tips && selectedGuide.tips.length > 0)) && (
+              <Card className="border-border/60">
+                <CardContent className="p-4 space-y-3">
+                  {selectedGuide.warning && selectedGuide.warningText ? (
+                    <div className="flex items-start gap-2 rounded-lg border border-yellow-200 bg-yellow-50 p-3">
+                      <AlertCircle className="h-5 w-5 text-yellow-700 shrink-0 mt-0.5" />
+                      <p className="text-sm text-yellow-900">{selectedGuide.warningText}</p>
+                    </div>
+                  ) : null}
+
+                  {selectedGuide.tips && selectedGuide.tips.length > 0 ? (
+                    <div className="space-y-2">
+                      <p className="text-sm font-semibold text-foreground flex items-center gap-2">
+                        <Lightbulb className="h-4 w-4 text-primary" />
+                        유용한 팁
+                      </p>
+                      <ul className="space-y-1 pl-4">
+                        {selectedGuide.tips.slice(0, 3).map((tip, index) => (
+                          <li key={index} className="text-sm text-muted-foreground list-disc">
+                            {tip}
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
+                </CardContent>
+              </Card>
+            )}
+
+            {/* 탭으로 구성된 상세 정보 */}
+            {selectedGuide.id === 'trash' && selectedGuide.trashCategories ? (
+              <div className="space-y-4">
+                <TrashCategoryGuide categories={selectedGuide.trashCategories} />
+                {selectedGuide.faq && selectedGuide.faq.length > 0 && (
+                  <GuideFAQ faqs={selectedGuide.faq} searchable={true} />
+                )}
+              </div>
+            ) : (
+              <Tabs defaultValue={inspectorDefaultTab} className="w-full">
+                <TabsList className="grid w-full grid-flow-col auto-cols-fr h-auto p-1.5 bg-muted/40 border border-border/50 rounded-xl shadow-sm">
+                  {selectedGuide.steps && selectedGuide.steps.length > 0 && (
+                    <TabsTrigger value="steps" className="text-xs py-2.5 font-bold">
+                      단계별
+                    </TabsTrigger>
+                  )}
+                  {selectedGuide.checklist && selectedGuide.checklist.length > 0 && (
+                    <TabsTrigger value="checklist" className="text-xs py-2.5 font-bold">
+                      체크
+                    </TabsTrigger>
+                  )}
+                  {selectedGuide.faq && selectedGuide.faq.length > 0 && (
+                    <TabsTrigger value="faq" className="text-xs py-2.5 font-bold">
+                      FAQ
+                    </TabsTrigger>
+                  )}
+                  {selectedGuide.troubleshooting && selectedGuide.troubleshooting.length > 0 && (
+                    <TabsTrigger value="troubleshooting" className="text-xs py-2.5 font-bold">
+                      해결
+                    </TabsTrigger>
+                  )}
+                </TabsList>
+
+                {selectedGuide.steps && selectedGuide.steps.length > 0 && (
+                  <TabsContent value="steps" className="mt-4">
+                    <StepByStepGuide steps={selectedGuide.steps} compact />
+                  </TabsContent>
+                )}
+
+                {selectedGuide.checklist && selectedGuide.checklist.length > 0 && (
+                  <TabsContent value="checklist" className="mt-4">
+                    <GuideChecklist
+                      items={selectedGuide.checklist}
+                      checklistId={selectedGuide.id}
+                      mode="pager"
+                      pageSize={4}
+                    />
+                  </TabsContent>
+                )}
+
+                {selectedGuide.faq && selectedGuide.faq.length > 0 && (
+                  <TabsContent value="faq" className="mt-4">
+                    <GuideFAQ faqs={selectedGuide.faq} searchable={false} mode="pager" />
+                  </TabsContent>
+                )}
+
+                {selectedGuide.troubleshooting && selectedGuide.troubleshooting.length > 0 && (
+                  <TabsContent value="troubleshooting" className="mt-4">
+                    <GuideTroubleshooting items={selectedGuide.troubleshooting} mode="pager" />
+                  </TabsContent>
+                )}
+              </Tabs>
+            )}
+
+          </div>
+        ) : null}
+      </InfoInspector>
     </main>
   );
 }

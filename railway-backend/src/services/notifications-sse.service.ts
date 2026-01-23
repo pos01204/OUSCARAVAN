@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { AuthRequest } from '../middleware/auth.middleware';
 import { Notification } from './notifications.service';
+import { DEFAULT_ADMIN_ID } from '../constants/admin';
 
 // SSE 클라이언트 관리
 const clients = new Map<string, Response>();
@@ -9,7 +10,7 @@ const clients = new Map<string, Response>();
  * SSE 연결 설정
  */
 export function setupNotificationSSE(req: AuthRequest, res: Response) {
-  const adminId = req.user?.id || 'admin';
+  const adminId = req.user?.id || DEFAULT_ADMIN_ID;
 
   // SSE 헤더 설정
   res.setHeader('Content-Type', 'text/event-stream');

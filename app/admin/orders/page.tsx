@@ -36,7 +36,7 @@ function OrdersPageContent() {
       const search = searchParams.get('search') || undefined;
 
       const data = await getAdminOrders({
-        status,
+        status: status === 'pending' ? undefined : status,
         date,
         search,
       });
@@ -67,7 +67,14 @@ function OrdersPageContent() {
         fetchedOrders = enrichedOrders;
       }
 
-      setOrders(fetchedOrders);
+      let normalizedOrders = fetchedOrders;
+      if (status === 'pending') {
+        normalizedOrders = fetchedOrders.filter((order) => order.status !== 'completed');
+      } else if (status === 'completed') {
+        normalizedOrders = fetchedOrders.filter((order) => order.status === 'completed');
+      }
+
+      setOrders(normalizedOrders);
     } catch (error) {
       const status = searchParams.get('status') || undefined;
       const date = searchParams.get('date') || undefined;
@@ -135,15 +142,12 @@ function OrdersPageContent() {
   };
 
   const getStatusBadge = (status: Order['status']) => {
-    // ⚠️ 상태 배지 세분화: 주황/초록/회색
-    const variants: Record<Order['status'], { label: string; className: string }> = {
-      pending: { label: '준비중', className: 'bg-orange-100 text-orange-800 border-orange-200' },
-      preparing: { label: '준비중', className: 'bg-orange-100 text-orange-800 border-orange-200' },
-      delivering: { label: '배송중', className: 'bg-blue-100 text-blue-800 border-blue-200' },
-      completed: { label: '완료', className: 'bg-green-100 text-green-800 border-green-200' },
-    };
+    const isCompleted = status === 'completed';
+    const label = isCompleted ? '완료' : '확인';
+    const className = isCompleted
+      ? 'bg-green-100 text-green-800 border-green-200'
+      : 'bg-orange-100 text-orange-800 border-orange-200';
 
-    const { label, className } = variants[status] || variants.pending;
     return (
       <Badge variant="outline" className={className}>
         {label}
@@ -152,15 +156,8 @@ function OrdersPageContent() {
   };
 
   const getNextStatus = (currentStatus: Order['status']): Order['status'] | null => {
-    const statusFlow: Record<Order['status'], Order['status']> = {
-      pending: 'preparing',
-      preparing: 'delivering',
-      delivering: 'completed',
-      completed: 'completed',
-    };
-
-    const next = statusFlow[currentStatus];
-    return next === currentStatus ? null : next;
+    if (currentStatus === 'completed') return null;
+    return 'completed';
   };
 
   const formatDate = (dateString: string) => {
@@ -225,8 +222,11 @@ function OrdersPageContent() {
                   <div className="flex items-start justify-between">
                     <div>
                       <div className="flex flex-wrap items-center gap-2 mb-1.5">
-                        <Badge variant={order.type === 'bbq' ? 'secondary' : 'default'} className="rounded-sm">
-                          {order.type === 'bbq' ? '바베큐' : '불멍'}
+                        <Badge
+                          variant={order.type === 'bbq' ? 'secondary' : order.type === 'kiosk' ? 'outline' : 'default'}
+                          className="rounded-sm"
+                        >
+                          {order.type === 'bbq' ? '바베큐' : order.type === 'kiosk' ? '키오스크' : '불멍'}
                         </Badge>
                         <span className="font-bold text-lg">{order.roomName || '방 미배정'}</span>
                         <span className="text-muted-foreground">{order.guestName}</span>
@@ -301,7 +301,7 @@ function OrdersPageContent() {
                 <div>
                   <p className="text-sm text-muted-foreground">주문 타입</p>
                   <p className="font-medium">
-                    {selectedOrder.type === 'bbq' ? '바베큐' : '불멍'}
+                    {selectedOrder.type === 'bbq' ? '바베큐' : selectedOrder.type === 'kiosk' ? '키오스크' : '불멍'}
                   </p>
                 </div>
                 <div>
@@ -362,17 +362,22 @@ function OrdersPageContent() {
               <div className="pt-4 border-t">
                 <p className="text-sm text-muted-foreground mb-2">상태 변경</p>
                 <div className="flex gap-2 flex-wrap">
-                  {(['pending', 'preparing', 'delivering', 'completed'] as Order['status'][]).map((status) => (
-                    <Button
-                      key={status}
-                      variant={selectedOrder.status === status ? 'default' : 'outline'}
-                      size="sm"
-                      onClick={() => handleStatusUpdate(selectedOrder.id, status)}
-                      disabled={isUpdating || selectedOrder.status === status}
-                    >
-                      {getStatusBadge(status).props.children}
-                    </Button>
-                  ))}
+                  <Button
+                    variant={selectedOrder.status === 'pending' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => handleStatusUpdate(selectedOrder.id, 'preparing')}
+                    disabled={isUpdating || selectedOrder.status !== 'pending'}
+                  >
+                    확인
+                  </Button>
+                  <Button
+                    variant={selectedOrder.status === 'completed' ? 'default' : 'outline'}
+                    size="sm"
+                    onClick={() => handleStatusUpdate(selectedOrder.id, 'completed')}
+                    disabled={isUpdating || selectedOrder.status === 'completed'}
+                  >
+                    완료
+                  </Button>
                 </div>
               </div>
             </div>

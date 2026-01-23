@@ -39,66 +39,38 @@ export default function RoomsPage() {
   // SSE 연결 (실시간 알림 수신)
   useNotificationStream();
 
-  // 주문 완료 처리
-  const handleCompleteOrder = useCallback(async (orderId: string, roomId: string) => {
-    try {
-      setCompletingOrderId(orderId);
-      await updateOrderStatus(orderId, 'completed');
-
-      // 주문 목록 새로고침
-      await fetchOrdersForRooms();
-
-      toast({
-        title: '주문 완료',
-        description: '주문이 완료 처리되었습니다.',
-      });
-    } catch (error) {
-      logError('Failed to complete order', error, {
-        component: 'RoomsPage',
-        orderId,
-      });
-      toast({
-        title: '오류',
-        description: extractUserFriendlyMessage(error),
-        variant: 'destructive',
-      });
-    } finally {
-      setCompletingOrderId(null);
-    }
-  }, [toast]);
-
   // 각 방의 주문 목록 조회
   const fetchOrdersForRooms = useCallback(async () => {
     try {
-      // 모든 주문 조회 (오늘 날짜 기준)
       const today = new Date().toISOString().split('T')[0];
       const ordersData = await getAdminOrders({ date: today, limit: 1000 });
 
-      // 예약 ID별로 주문 그룹화
       const ordersByReservationId = new Map<string, Order[]>();
-      ordersData.orders.forEach(order => {
+      ordersData.orders.forEach((order) => {
         if (!ordersByReservationId.has(order.reservationId)) {
           ordersByReservationId.set(order.reservationId, []);
         }
         ordersByReservationId.get(order.reservationId)!.push(order);
       });
 
-      // 방 목록에 주문 정보 추가
-      setRooms(prevRooms => prevRooms.map(room => {
-        if (room.reservation?.id) {
-          const orders = ordersByReservationId.get(room.reservation.id) || [];
-          // createdAt이 오늘인 주문을 최우선 노출 (최신순 정렬)
-          const sortedOrders = orders.sort((a, b) => {
-            const aIsToday = new Date(a.createdAt).toDateString() === new Date().toDateString();
-            const bIsToday = new Date(b.createdAt).toDateString() === new Date().toDateString();
-            if (aIsToday && !bIsToday) return -1;
-            if (!aIsToday && bIsToday) return 1;
-            return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-          });
-          return { ...room, orders: sortedOrders };
-        }
-        return { ...room, orders: [] };
-      }));
+      setRooms((prevRooms) =>
+        prevRooms.map((room) => {
+          if (room.reservation?.id) {
+            const orders = ordersByReservationId.get(room.reservation.id) || [];
+            const sortedOrders = [...orders].sort((a, b) => {
+              const aIsToday =
+                new Date(a.createdAt).toDateString() === new Date().toDateString();
+              const bIsToday =
+                new Date(b.createdAt).toDateString() === new Date().toDateString();
+              if (aIsToday && !bIsToday) return -1;
+              if (!aIsToday && bIsToday) return 1;
+              return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+            });
+            return { ...room, orders: sortedOrders };
+          }
+          return { ...room, orders: [] };
+        })
+      );
     } catch (error) {
       logError('Failed to fetch orders', error, {
         component: 'RoomsPage',
@@ -106,7 +78,37 @@ export default function RoomsPage() {
     }
   }, []);
 
-  const fetchRooms = async () => {
+  // 주문 완료 처리
+  const handleCompleteOrder = useCallback(
+    async (orderId: string, roomId: string) => {
+      try {
+        setCompletingOrderId(orderId);
+        await updateOrderStatus(orderId, 'completed');
+
+        await fetchOrdersForRooms();
+
+        toast({
+          title: '주문 완료',
+          description: '주문이 완료 처리되었습니다.',
+        });
+      } catch (error) {
+        logError('Failed to complete order', error, {
+          component: 'RoomsPage',
+          orderId,
+        });
+        toast({
+          title: '오류',
+          description: extractUserFriendlyMessage(error),
+          variant: 'destructive',
+        });
+      } finally {
+        setCompletingOrderId(null);
+      }
+    },
+    [toast, fetchOrdersForRooms]
+  );
+
+  const fetchRooms = useCallback(async () => {
     try {
       setIsLoading(true);
       const data = await getRooms();
@@ -148,13 +150,12 @@ export default function RoomsPage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [fetchOrdersForRooms, toast]);
 
   // 방 목록 조회
   useEffect(() => {
     fetchRooms();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [fetchRooms]);
 
   // 주문 목록 주기적 새로고침 (30초마다)
   useEffect(() => {
@@ -345,7 +346,7 @@ export default function RoomsPage() {
                                 </div>
                                 <div className="flex-1 min-w-0">
                                   <p className="text-sm font-medium truncate">
-                                    {order.type === 'bbq' ? '바베큐' : '불멍'} 주문
+                                    {order.type === 'bbq' ? '바베큐' : order.type === 'kiosk' ? '키오스크' : '불멍'} 주문
                                   </p>
                                   <p className="text-[10px] text-muted-foreground">
                                     {formatDateTimeToKorean(order.createdAt)}
