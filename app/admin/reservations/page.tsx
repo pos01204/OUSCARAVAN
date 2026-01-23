@@ -176,20 +176,21 @@ export default function ReservationsPage() {
           <Button
             variant="outline"
             size="sm"
-            className="h-8 md:h-9"
+            className="h-8 px-2.5 text-xs font-semibold md:h-9 md:px-3 md:text-sm rounded-full"
             onClick={() => {
               setIsRefreshing(true);
               setRefreshNonce((n) => n + 1);
             }}
             aria-label="예약 목록 새로고침"
+            title="새로고침"
             disabled={isRefreshing}
           >
             {isRefreshing ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Loader2 className="h-4 w-4 animate-spin" />
             ) : (
-              <RefreshCw className="mr-2 h-4 w-4" />
+              <RefreshCw className="h-4 w-4" />
             )}
-            새로고침
+            <span className="hidden sm:inline sm:ml-2">새로고침</span>
           </Button>
         </div>
       </div>
