@@ -1,0 +1,236 @@
+{
+  "name": "네이버 예약 → 카카오톡 발송",
+  "nodes": [
+    {
+      "parameters": {
+        "content": "### 📰 Daily AI Summary\n\n\nThis workflow gets the latest news and asks AI to summarize it for you.\n\n⭐ Bonus: Send the summary via email by connecting your Gmail account\n\n▶ Watch the video to get started ",
+        "height": 272,
+        "width": 224,
+        "color": 5
+      },
+      "type": "n8n-nodes-base.stickyNote",
+      "typeVersion": 1,
+      "position": [
+        -624,
+        32
+      ],
+      "id": "74d80857-5e63-47a8-8e86-8ecd10fd5f9e",
+      "name": "Sticky Note2"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "filters": {
+          "q": "subject:[네이버 예약]",
+          "sender": "naverbooking_noreply@navercorp.com"
+        }
+      },
+      "type": "n8n-nodes-base.gmailTrigger",
+      "typeVersion": 1.3,
+      "position": [
+        -80,
+        688
+      ],
+      "id": "e90ff887-c31d-4617-9f9c-db43f402117d",
+      "name": "Gmail Trigger1",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "8uOCeR25M6sEtgbJ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "// 1. 데이터 가져오기\nconst inputData = $input.item.json;\nconst allInputs = $input.all();\n\n// HTML 노드로부터 데이터가 넘어왔는지 확인\nconst hasHtmlOutput = !!(inputData['예약번호'] || inputData['예약자명']);\n\nlet reservationNumber = '';\nlet guestName = '';\nlet email = '';\nlet checkin = '';\nlet checkout = '';\nlet roomType = '';\nlet amount = 0;\nlet roomAmount = 0; // 추가된 필드\nlet options = [];\n\nif (hasHtmlOutput) {\n  const data = inputData; \n\n  // 예약번호 추출\n  if (data['예약번호']) {\n    const resNoMatch = data['예약번호'].match(/(\\d+)/);\n    reservationNumber = resNoMatch ? resNoMatch[1] : '';\n  }\n\n  // 예약자명 추출\n  if (data['예약자명']) {\n    guestName = data['예약자명'].replace(/님\\s*$/, '').trim();\n  }\n\n  // 이용일시에서 체크인/체크아웃 추출\n  if (data['이용일시']) {\n    const dates = data['이용일시'].match(/\\d{4}\\.\\d{2}\\.\\d{2}/g);\n    if (dates) {\n      checkin = dates[0].replace(/\\./g, '-');\n      checkout = dates[1] ? dates[1].replace(/\\./g, '-') : '';\n    }\n  }\n\n  // 상품명 추출\n  if (data['상품명']) {\n    roomType = data['상품명'].trim();\n  }\n\n  // 결제금액에서 총액, 객실가, 옵션 추출\n  if (data['결제금액']) {\n    // 최종 합계 금액 파싱\n    const totalMatch = data['결제금액'].match(/=\\s*([\\d,]+)\\s*원/);\n    if (totalMatch) {\n      amount = parseInt(totalMatch[1].replace(/,/g, '')) || 0;\n    }\n\n    // 세부 항목 파싱 (+ 기호 기준 분리)\n    const parts = data['결제금액'].split('=')[0].split('+');\n    parts.forEach(p => {\n      const priceMatch = p.match(/([\\d,]+)\\s*원/);\n      const price = priceMatch ? parseInt(priceMatch[0].replace(/,/g, '')) : 0;\n\n      if (p.includes(\"예약\")) { \n        // 객실 가격 설정\n        roomAmount = price;\n      } else { \n        // 옵션 추출 로직\n        const nameMatch = p.match(/\\[(.*?)\\]\\s*(.*?)\\s*\\d+원/);\n        if (nameMatch) {\n          options.push({\n            optionName: nameMatch[2].trim(),\n            optionPrice: price,\n            category: nameMatch[1].trim()\n          });\n        }\n      }\n    });\n  }\n\n  // 이메일 주소 보정: 값이 없으면 기본 형식 생성\n  const foundEmail = allInputs[0]?.json?.from?.value?.[0]?.address;\n  email = foundEmail || `reservation-${reservationNumber}@ouscaravan.local`;\n}\n\n// 2. 최종 결과 반환\nreturn {\n  json: {\n    reservationNumber,\n    guestName,\n    checkin,\n    checkout,\n    amount,\n    roomType,\n    roomAmount, // 추가됨\n    category: \"ROOM\",\n    email,\n    options: options // HTTP Request에서 바로 쓸 수 있도록 배열 유지\n  }\n};"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        608,
+        688
+      ],
+      "id": "808c38b3-8277-4ffd-b4f4-68aed954a215",
+      "name": "Code in JavaScript3"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://ouscaravan-production.up.railway.app/api/admin/reservations",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "X-API-Key",
+              "value": "YjMzYTBlYzEtM2RjOS00MDBkLTgxZjEtMjc3YzQyMTg1N2M0YzNjYThlZTYtMWI2MC00MDYzLTlmNzktMDgxN2IyODIxOGQ3"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"reservationNumber\": \"{{ $json.reservationNumber }}\",\n  \"guestName\": \"{{ $json.guestName }}\",\n  \"checkin\": \"{{ $json.checkin }}\",\n  \"checkout\": \"{{ $json.checkout }}\",\n  \"amount\": {{ $json.amount }},\n  \"roomType\": \"{{ $json.roomType }}\",\n  \"roomAmount\": {{ $json.roomAmount }},\n  \"category\": \"ROOM\",\n  \"email\": \"reservation-{{ $json.reservationNumber }}@ouscaravan.local\",\n  \"options\": {{ JSON.stringify($json.options) }}\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.3,
+      "position": [
+        864,
+        688
+      ],
+      "id": "fea7fad9-80c5-4a52-b779-beeca76658c5",
+      "name": "HTTP Request2",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "P1cCOMocVbajLBcy",
+          "name": "Railway API Key"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "messageId": "={{ $json.id }}",
+        "simple": false,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.2,
+      "position": [
+        176,
+        688
+      ],
+      "id": "b3b9c26f-e1d3-4800-9bed-db11aca51cc9",
+      "name": "Get a message",
+      "webhookId": "46e19de6-b4c0-4f9b-9630-91512249fb70",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "8uOCeR25M6sEtgbJ",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "extractHtmlContent",
+        "dataPropertyName": "html",
+        "extractionValues": {
+          "values": [
+            {
+              "key": "예약번호",
+              "cssSelector": "td:contains('예약번호') + td"
+            },
+            {
+              "key": "예약자명",
+              "cssSelector": "td:contains('예약자명') + td"
+            },
+            {
+              "key": "이용일시",
+              "cssSelector": "td:contains('이용일시') + td"
+            },
+            {
+              "key": "결제금액",
+              "cssSelector": "td:contains('결제금액') + td"
+            },
+            {
+              "key": "상품명",
+              "cssSelector": "td:contains('예약상품') + td"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.html",
+      "typeVersion": 1.2,
+      "position": [
+        384,
+        688
+      ],
+      "id": "a0b11f7e-153d-42d8-96c6-697d1c09b51e",
+      "name": "HTML1"
+    }
+  ],
+  "connections": {
+    "Gmail Trigger1": {
+      "main": [
+        [
+          {
+            "node": "Get a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript3": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request2": {
+      "main": [
+        []
+      ]
+    },
+    "Get a message": {
+      "main": [
+        [
+          {
+            "node": "HTML1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "settings": {
+    "availableInMCP": false
+  },
+  "staticData": {
+    "node:Gmail Trigger": {
+      "Gmail Trigger": {
+        "lastTimeChecked": 1767684140
+      }
+    },
+    "node:Gmail Trigger1": {
+      "Gmail Trigger1": {
+        "lastTimeChecked": 1768955073,
+        "possibleDuplicates": [
+          "19bddf05fe6f9cef",
+          "19bdbc8372e44e8b"
+        ]
+      }
+    }
+  },
+  "pinData": {},
+  "triggerCount": 1,
+  "meta": {
+    "templateId": "ready-to-run-ai-workflow",
+    "templateCredsSetupCompleted": true
+  }
+}
