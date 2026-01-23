@@ -10,6 +10,7 @@ import {
   type AnnouncementFilters,
   type AnnouncementLevel,
 } from '../services/announcements.service';
+import { listAnnouncementReads, markAnnouncementRead } from '../services/announcement-reads.service';
 
 const ANNOUNCEMENT_LEVELS: AnnouncementLevel[] = ['info', 'warning', 'critical'];
 
@@ -158,6 +159,60 @@ export async function getGuestAnnouncements(req: Request, res: Response) {
     res.json({ announcements });
   } catch (error) {
     console.error('Get guest announcements error:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      code: 'INTERNAL_ERROR',
+    });
+  }
+}
+
+export async function getGuestAnnouncementReads(req: Request, res: Response) {
+  try {
+    const { token } = req.params;
+    const reservation = await getReservationByToken(token);
+
+    if (!reservation) {
+      return res.status(404).json({
+        error: 'Invalid token',
+        code: 'INVALID_TOKEN',
+      });
+    }
+
+    const readIds = await listAnnouncementReads(reservation.id);
+    res.json({ readIds });
+  } catch (error) {
+    console.error('Get guest announcement reads error:', error);
+    res.status(500).json({
+      error: 'Internal server error',
+      code: 'INTERNAL_ERROR',
+    });
+  }
+}
+
+export async function markGuestAnnouncementRead(req: Request, res: Response) {
+  try {
+    const { token } = req.params;
+    const { announcementId } = req.body as { announcementId?: string };
+
+    if (!announcementId) {
+      return res.status(400).json({
+        error: 'announcementId is required',
+        code: 'MISSING_FIELDS',
+      });
+    }
+
+    const reservation = await getReservationByToken(token);
+    if (!reservation) {
+      return res.status(404).json({
+        error: 'Invalid token',
+        code: 'INVALID_TOKEN',
+      });
+    }
+
+    await markAnnouncementRead(reservation.id, announcementId);
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Mark guest announcement read error:', error);
     res.status(500).json({
       error: 'Internal server error',
       code: 'INTERNAL_ERROR',

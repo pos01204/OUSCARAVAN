@@ -156,6 +156,9 @@
 | G-03 | P1 | DONE | 체크인/체크아웃 서버 상태 동기화(주기/포커스) + 실패 시 재시도 UI + 체크아웃 체크리스트 진행률/누락 강조 | `components/features/CheckInOut.tsx` | 새로고침/다른 기기에서도 상태가 일관되고, 실패 시 화면 내에서 복구 가능 |
 | G-04 | P2 | DONE | 공지 자동 갱신(가시성 기반 폴링 + 온라인/포커스 트리거) | `lib/hooks/useGuestAnnouncements.ts` | 공지가 “한 번만 불러오고 끝”이 아니라, 체감상 최신 상태로 유지됨 |
 | G-05 | P0 | DONE | 게스트 주문 “서버 푸시(실시간)” SSE 추가 + 프론트 즉시 갱신 연결(폴링 폴백 유지) | `railway-backend/src/services/guest-orders-sse.service.ts`, `railway-backend/src/controllers/*`, `railway-backend/src/routes/guest.routes.ts`, `lib/hooks/useGuestOrders.ts` | 관리자 상태 변경/신규 주문이 고객 화면에 즉시 반영(실패 시 폴링으로 지속 동작) |
+| G-06 | P1 | DONE | 공지 읽음 상태 서버 저장(기기/브라우저 간 유지) + 로컬스토리지 폴백 | `railway-backend/src/services/announcement-reads.service.ts`, `railway-backend/src/controllers/announcements.controller.ts`, `railway-backend/src/routes/guest.routes.ts`, `railway-backend/src/migrations/run-migrations.ts`, `lib/api.ts`, `components/guest/GuestAnnouncements.tsx` | 다른 기기에서도 “읽음” 상태가 유지되고, 서버 장애 시에도 로컬로 UX 유지 |
+| G-07 | P0 | DONE | 주문 페이지 로딩 루프/스켈레톤 고착 수정 + 섹션 헤더 반응형 정리 | `lib/hooks/useGuestOrders.ts`, `components/guest/GuestOrderContent.tsx` | 마지막 업데이트가 찍혔는데도 스켈레톤이 계속 뜨는 현상 제거 + 모바일에서 제목이 깨지지 않음 |
+| G-08 | P1 | DONE | globals.css @import 위치 규칙 준수(배포 경고 제거) | `app/globals.css` | `@import` 경고 없이 폰트 로딩 정상 |
 
 ---
 
@@ -223,6 +226,7 @@
 | 2026-01-23 |  | F-16 | DONE | 스와이프 닫기 경로에서도 selectedDate/상태가 정상적으로 정리되도록 닫기 루틴 통일 |
 | 2026-01-23 |  | G-01~G-04 | DONE | 고객 주문 자동 갱신/수동 새로고침 + 오프라인 배너 + 체크인아웃 동기화/재시도/체크리스트 진행률 + 공지 자동 갱신 |
 | 2026-01-23 |  | G-05 | DONE | 게스트 주문 SSE(서버 푸시) 추가 + 프론트 즉시 갱신 연결 |
+| 2026-01-23 |  | G-06~G-08 | DONE | 공지 읽음 서버 저장 + 주문 페이지 스켈레톤 고착/헤더 줄바꿈 수정 + globals.css @import 경고 제거 |
 
 ---
 
@@ -253,4 +257,5 @@
 | v1.20 | 2026-01-23 | F-16(스와이프 닫기 루틴 통일) 적용 및 트래킹 업데이트 |
 | v1.21 | 2026-01-23 | G-01~G-04(주문 자동 갱신/오프라인 배너/체크인아웃 동기화/공지 자동 갱신) 적용 및 트래킹 업데이트 |
 | v1.22 | 2026-01-23 | G-05(게스트 주문 SSE 실시간 갱신) 적용 및 트래킹 업데이트 |
+| v1.23 | 2026-01-23 | G-06~G-08(공지 읽음 서버 저장 + 주문 스켈레톤 고착/헤더 줄바꿈 + CSS @import 경고 제거) 적용 및 트래킹 업데이트 |
 

@@ -1,3 +1,9 @@
+/* Pretendard 폰트 임포트 (CDN) */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
+
+/* Montserrat 폰트 임포트 */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -231,12 +237,6 @@
     box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.2);
   }
 }
-
-/* Pretendard 폰트 임포트 (CDN) */
-@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css');
-
-/* Montserrat 폰트 임포트 */
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
 
 /* react-big-calendar 커스터마이징 */
 .rbc-calendar {

@@ -6,10 +6,12 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { InfoInspector } from '@/components/guest/InfoInspector';
 import { formatDateTimeToKorean } from '@/lib/utils/date';
+import { getGuestAnnouncementReadIds, markGuestAnnouncementRead } from '@/lib/api';
 import type { Announcement } from '@/types';
 import { AlertTriangle, Bell } from 'lucide-react';
 
 interface GuestAnnouncementsProps {
+  token: string;
   announcements: Announcement[];
   loading: boolean;
   error?: string | null;
@@ -46,6 +48,26 @@ export function GuestAnnouncements({ announcements, loading, error }: GuestAnnou
     }
   }, []);
 
+  // 서버에 저장된 “읽음” 상태 동기화(가능하면). 실패해도 로컬스토리지 폴백 유지.
+  useEffect(() => {
+    let cancelled = false;
+    const run = async () => {
+      try {
+        const serverReadIds = await getGuestAnnouncementReadIds(token);
+        if (cancelled) return;
+        if (serverReadIds?.length) {
+          setReadIds((prev) => Array.from(new Set([...prev, ...serverReadIds])));
+        }
+      } catch {
+        // ignore
+      }
+    };
+    run();
+    return () => {
+      cancelled = true;
+    };
+  }, [token]);
+
   const markRead = (id: string) => {
     if (readIds.includes(id)) return;
     const updated = [...readIds, id];
@@ -57,6 +79,8 @@ export function GuestAnnouncements({ announcements, loading, error }: GuestAnnou
         // ignore
       }
     }
+    // 서버에도 저장(비동기, 실패해도 UX는 유지)
+    markGuestAnnouncementRead(token, id).catch(() => {});
   };
 
   if (loading) {

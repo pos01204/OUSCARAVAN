@@ -16,6 +16,7 @@ export function useGuestOrders(token: string) {
   const pollTimeoutRef = useRef<number | null>(null);
   const runFetchRef = useRef<(mode: 'initial' | 'soft', reason: string) => void>(() => {});
   const eventSourceRef = useRef<EventSource | null>(null);
+  const hasLoadedRef = useRef(false);
 
   const clearPollTimeout = () => {
     if (pollTimeoutRef.current) {
@@ -49,7 +50,7 @@ export function useGuestOrders(token: string) {
   }, []);
 
   const fetchOrders = useCallback(async (opts?: { mode?: 'initial' | 'soft'; reason?: string }) => {
-    const mode = opts?.mode ?? (lastUpdatedAt ? 'soft' : 'initial');
+    const mode = opts?.mode ?? (hasLoadedRef.current ? 'soft' : 'initial');
     try {
       if (!isMountedRef.current) return;
       if (inFlightRef.current) return;
@@ -66,6 +67,7 @@ export function useGuestOrders(token: string) {
       setError(null);
       setLastUpdatedAt(new Date());
       failureCountRef.current = 0;
+      hasLoadedRef.current = true;
     } catch (err) {
       console.error('Failed to fetch orders:', err);
       if (!isMountedRef.current) return;
@@ -77,13 +79,14 @@ export function useGuestOrders(token: string) {
       setIsInitialLoading(false);
       setIsRefreshing(false);
     }
-  }, [token, lastUpdatedAt, scheduleNextPoll]);
+  }, [token]);
 
   useEffect(() => {
     isMountedRef.current = true;
     clearPollTimeout();
     failureCountRef.current = 0;
     inFlightRef.current = false;
+    hasLoadedRef.current = false;
 
     runFetchRef.current = (mode, reason) => {
       void fetchOrders({ mode, reason }).finally(() => {
@@ -140,7 +143,7 @@ export function useGuestOrders(token: string) {
         eventSourceRef.current = null;
       }
     };
-  }, [fetchOrders]);
+  }, [fetchOrders, scheduleNextPoll, token]);
 
   const statusCounts = useMemo(() => {
     return {

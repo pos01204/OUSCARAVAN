@@ -137,6 +137,22 @@ END $$;
 `;
 
 /**
+ * 게스트 공지 “읽음” 저장 테이블 추가 마이그레이션
+ */
+const migration010AddAnnouncementReads = `
+-- 공지 읽음 저장(예약 단위)
+CREATE TABLE IF NOT EXISTS announcement_reads (
+  reservation_id UUID NOT NULL REFERENCES reservations(id) ON DELETE CASCADE,
+  announcement_id UUID NOT NULL REFERENCES announcements(id) ON DELETE CASCADE,
+  read_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (reservation_id, announcement_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_announcement_reads_reservation_id ON announcement_reads(reservation_id);
+CREATE INDEX IF NOT EXISTS idx_announcement_reads_announcement_id ON announcement_reads(announcement_id);
+`;
+
+/**
  * 알림 admin_id 표준화 마이그레이션
  */
 const migration009NormalizeNotificationAdminId = `
@@ -281,6 +297,9 @@ export async function runMigrations(): Promise<void> {
 
     // 공지 테이블 추가 마이그레이션 실행
     await runMigration('007_add_announcements', migration007AddAnnouncements);
+
+    // 공지 읽음 저장 테이블 추가 마이그레이션 실행
+    await runMigration('010_add_announcement_reads', migration010AddAnnouncementReads);
     
     // 주문 타입 확장 마이그레이션 실행 (kiosk 추가)
     await runMigration('008_allow_kiosk_orders', migration008AllowKioskOrders);

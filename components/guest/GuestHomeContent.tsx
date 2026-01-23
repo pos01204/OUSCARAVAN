@@ -73,6 +73,7 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
       </motion.section>
 
       <GuestAnnouncements
+        token={token}
         announcements={announcements}
         loading={announcementsLoading}
         error={announcementsError}

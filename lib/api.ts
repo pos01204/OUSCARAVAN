@@ -957,6 +957,18 @@ export async function getGuestAnnouncements(token: string): Promise<Announcement
   return response.announcements as Announcement[];
 }
 
+export async function getGuestAnnouncementReadIds(token: string): Promise<string[]> {
+  const response = await guestApi(token, '/announcements/read');
+  return (response.readIds as string[]) || [];
+}
+
+export async function markGuestAnnouncementRead(token: string, announcementId: string): Promise<void> {
+  await guestApi(token, '/announcements/read', {
+    method: 'POST',
+    body: JSON.stringify({ announcementId }),
+  });
+}
+
 /**
  * 타입 정의는 types/index.ts에서 import
  */
