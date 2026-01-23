@@ -9,11 +9,12 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { useToast } from '@/components/ui/use-toast';
-import { Loader2, ShoppingCart, CheckCircle2 } from 'lucide-react';
+import { Loader2, ShoppingCart, CheckCircle2, RefreshCw } from 'lucide-react';
 import { formatDateTimeToKorean } from '@/lib/utils/date';
 import { useNotificationStore } from '@/lib/store/notifications';
 import { useNotificationStream } from '@/lib/hooks/useNotificationStream';
 import { AdminRoomsSkeleton } from '@/components/admin/AdminRoomsSkeleton';
+import { LastUpdatedAt } from '@/components/shared/LastUpdatedAt';
 
 interface RoomWithReservation extends Room {
   reservation?: {
@@ -50,6 +51,7 @@ export default function RoomsPage() {
   const router = useRouter();
   const [rooms, setRooms] = useState<RoomWithReservation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(null);
   const [completingOrderId, setCompletingOrderId] = useState<string | null>(null);
   const [blinkingRoomIds, setBlinkingRoomIds] = useState<Set<string>>(new Set());
   const { notifications } = useNotificationStore();
@@ -90,6 +92,7 @@ export default function RoomsPage() {
           return { ...room, orders: [] };
         })
       );
+      setLastUpdatedAt(new Date());
     } catch (error) {
       logError('Failed to fetch orders', error, {
         component: 'RoomsPage',
@@ -247,11 +250,26 @@ export default function RoomsPage() {
 
   return (
     <div className="space-y-4 md:space-y-6 pb-0 -mb-4 md:mb-0">
-      <div className="w-full max-w-7xl mx-auto px-4 md:px-6 flex flex-col gap-0.5 md:gap-1">
-        <h1 className="text-2xl md:text-3xl font-black tracking-tight text-foreground">현장관리</h1>
-        <p className="text-xs md:text-sm text-muted-foreground font-medium">
-          객실별 실시간 상태(체크인 여부, 주문 현황) 모니터링
-        </p>
+      <div className="w-full max-w-7xl mx-auto px-4 md:px-6">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex flex-col gap-0.5 md:gap-1">
+            <h1 className="text-2xl md:text-3xl font-black tracking-tight text-foreground">현장관리</h1>
+            <p className="text-xs md:text-sm text-muted-foreground font-medium">
+              객실별 실시간 상태(체크인 여부, 주문 현황) 모니터링
+            </p>
+            <LastUpdatedAt value={lastUpdatedAt} />
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="h-8 md:h-9"
+            onClick={fetchRooms}
+            aria-label="현장관리 새로고침"
+          >
+            <RefreshCw className="mr-2 h-4 w-4" />
+            새로고침
+          </Button>
+        </div>
       </div>
 
       {rooms.length === 0 ? (

@@ -9,8 +9,10 @@ import { CriticalStatusBanner } from '@/components/admin/CriticalStatusBanner';
 import { NotificationFeed } from '@/components/admin/NotificationFeed';
 import { formatDateToISO } from '@/lib/utils/date';
 import { AdminKpiCards } from '@/components/admin/AdminKpiCards';
+import { useRouter } from 'next/navigation';
 
 export default function AdminDashboard() {
+  const router = useRouter();
   const [isLoading, setIsLoading] = useState(true);
   const [unassignedCount, setUnassignedCount] = useState(0);
   const [todayCheckins, setTodayCheckins] = useState(0);
@@ -91,6 +93,18 @@ export default function AdminDashboard() {
           d1Unassigned={unassignedCount}
           pendingOrders={pendingOrders}
           onRetry={loadKpis}
+          onGoToTodayCheckins={() => {
+            router.push(`/admin/reservations?view=list&checkin=${todayStr}`);
+          }}
+          onGoToTodayCheckouts={() => {
+            router.push(`/admin/reservations?view=list&checkout=${todayStr}`);
+          }}
+          onGoToD1Unassigned={() => {
+            router.push('/admin/reservations?view=list&filter=d1-unassigned');
+          }}
+          onGoToPendingOrders={() => {
+            router.push(`/admin/orders?status=pending&date=${todayStr}`);
+          }}
         />
       </div>
 

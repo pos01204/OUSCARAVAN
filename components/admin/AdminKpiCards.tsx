@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { ErrorState } from '@/components/shared/ErrorState';
 import { LastUpdatedAt } from '@/components/shared/LastUpdatedAt';
+import { cn } from '@/lib/utils';
 
 interface AdminKpiCardsProps {
   loading: boolean;
@@ -14,11 +15,45 @@ interface AdminKpiCardsProps {
   d1Unassigned: number;
   pendingOrders: number;
   onRetry: () => void;
+  onGoToTodayCheckins?: () => void;
+  onGoToTodayCheckouts?: () => void;
+  onGoToD1Unassigned?: () => void;
+  onGoToPendingOrders?: () => void;
 }
 
-function KpiCard({ title, value, hint }: { title: string; value: number; hint: string }) {
+function KpiCard({
+  title,
+  value,
+  hint,
+  onClick,
+}: {
+  title: string;
+  value: number;
+  hint: string;
+  onClick?: () => void;
+}) {
+  const clickable = Boolean(onClick);
   return (
-    <Card className="border-border/60">
+    <Card
+      className={cn(
+        'border-border/60',
+        clickable && 'cursor-pointer transition-colors hover:bg-muted/30 active:bg-muted/40'
+      )}
+      onClick={onClick}
+      role={clickable ? 'button' : undefined}
+      tabIndex={clickable ? 0 : undefined}
+      onKeyDown={
+        clickable
+          ? (e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                onClick?.();
+              }
+            }
+          : undefined
+      }
+      aria-label={clickable ? `${title} 상세 보기` : undefined}
+    >
       <CardHeader className="pb-2">
         <CardTitle className="text-sm font-semibold text-muted-foreground">{title}</CardTitle>
       </CardHeader>
@@ -40,6 +75,10 @@ export function AdminKpiCards(props: AdminKpiCardsProps) {
     d1Unassigned,
     pendingOrders,
     onRetry,
+    onGoToTodayCheckins,
+    onGoToTodayCheckouts,
+    onGoToD1Unassigned,
+    onGoToPendingOrders,
   } = props;
 
   if (loading) {
@@ -71,10 +110,10 @@ export function AdminKpiCards(props: AdminKpiCardsProps) {
     <div className="space-y-2">
       <LastUpdatedAt value={lastUpdatedAt} />
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <KpiCard title="오늘 체크인" value={todayCheckins} hint="오늘 입실 예정" />
-        <KpiCard title="오늘 체크아웃" value={todayCheckouts} hint="오늘 퇴실 예정" />
-        <KpiCard title="미배정" value={d1Unassigned} hint="내일 체크인 미배정" />
-        <KpiCard title="대기 주문" value={pendingOrders} hint="오늘 처리 대기" />
+        <KpiCard title="오늘 체크인" value={todayCheckins} hint="오늘 입실 예정" onClick={onGoToTodayCheckins} />
+        <KpiCard title="오늘 체크아웃" value={todayCheckouts} hint="오늘 퇴실 예정" onClick={onGoToTodayCheckouts} />
+        <KpiCard title="미배정" value={d1Unassigned} hint="내일 체크인 미배정" onClick={onGoToD1Unassigned} />
+        <KpiCard title="대기 주문" value={pendingOrders} hint="오늘 처리 대기" onClick={onGoToPendingOrders} />
       </div>
     </div>
   );

@@ -12,6 +12,7 @@ import { useToast } from '@/components/ui/use-toast';
 import { Loader2, RefreshCw } from 'lucide-react';
 import { StatusPill } from '@/components/shared/StatusPill';
 import { ErrorState } from '@/components/shared/ErrorState';
+import { LastUpdatedAt } from '@/components/shared/LastUpdatedAt';
 import {
   Dialog,
   DialogContent,
@@ -28,6 +29,7 @@ function OrdersPageContent() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loadError, setLoadError] = useState<string | null>(null);
+  const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -80,6 +82,7 @@ function OrdersPageContent() {
 
       setOrders(normalizedOrders);
       setLoadError(null);
+      setLastUpdatedAt(new Date());
     } catch (error) {
       const status = searchParams.get('status') || undefined;
       const date = searchParams.get('date') || undefined;
@@ -181,6 +184,7 @@ function OrdersPageContent() {
         <div className="flex items-center justify-between">
           <div className="flex-1">
             <h1 className="text-2xl md:text-3xl font-black tracking-tight text-foreground">주문히스토리</h1>
+            <LastUpdatedAt value={lastUpdatedAt} />
           </div>
           <Button variant="outline" onClick={fetchOrders} size="sm" className="h-8 md:h-9">
             <RefreshCw className="mr-2 h-4 w-4" />
