@@ -83,8 +83,8 @@
 | B-01 | P0 | DONE | 상태 메타 정의(주문/알림/객실/예약 중 필요한 것부터) | `lib/utils/status-meta.ts`(신규) | `label/color/variant/priority/next` 등 단일 매핑 제공 |
 | B-02 | P0 | DONE | 공통 `StatusPill`(또는 `StatusBadge`) 컴포넌트 추가 | `components/shared/StatusPill.tsx`(신규) | 단일 props로 모든 상태 렌더 가능 |
 | B-03 | P0 | DONE | 관리자 주문 페이지 상태 표시/버튼 라벨 통일 | `app/admin/orders/page.tsx` | 상태 라벨이 실제 상태 모델과 1:1로 대응, “확인/완료” 혼선 제거 |
-| B-04 | P1 | TODO | 관리자 알림 피드 타입별 아이콘/색/라벨 단일화 | `components/admin/NotificationFeed.tsx`, `NotificationBell.tsx` | 컴포넌트 내부 switch 제거(또는 최소화), 메타 사용 |
-| B-05 | P1 | TODO | 관리자 현장관리(rooms) 배지 규칙 정리(방/예약/주문) | `app/admin/rooms/page.tsx` | 카드 상단/본문에서 상태 위계가 일관되고 과도한 색 남용 없음 |
+| B-04 | P1 | DONE | 관리자 알림 피드 타입별 아이콘/색/라벨 단일화 | `components/admin/NotificationFeed.tsx`, `lib/utils/notification-meta.ts` | 컴포넌트 내부 switch 제거(또는 최소화), 메타 사용 |
+| B-05 | P1 | DONE | 관리자 현장관리(rooms) 배지 규칙 정리(방/예약/주문) | `app/admin/rooms/page.tsx` | 카드 상단/본문에서 상태 위계가 일관되고 과도한 색 남용 없음 |
 | B-06 | P1 | DONE | 고객 주문 상태(요약/내역) 배지 스타일 통일 | `components/guest/OrderStatusSummaryBar.tsx`, `OrderHistory.tsx` | 고객이 “지금 상태”를 1초 내 인지 가능(텍스트+색) |
 
 ---
@@ -104,7 +104,7 @@
 
 | ID | P | 상태 | 작업 | 변경 범위(예상 파일) | 완료 기준(AC) |
 |---|---|---|---|---|---|
-| D-01 | P1 | TODO | 오버레이 계층 규칙 문서화(z-index map) | `OVERLAY_ZINDEX_POLICY.md`(신규) | Select/Popover/Tooltip/Sheet/Drawer/Dialog 우선순위 정의 |
+| D-01 | P1 | DONE | 오버레이 계층 규칙 문서화(z-index map) | `OVERLAY_ZINDEX_POLICY.md` | Select/Popover/Tooltip/Sheet/Drawer/Dialog 우선순위 정의 |
 | D-02 | P1 | TODO | Select z-index “무조건 최상위” 정책 검토 및 충돌 테스트 | `components/ui/select.tsx` | Drawer/Sheet 위에서 예상대로 동작(충돌 시 정책 수정) |
 | D-03 | P1 | TODO | InfoInspector(Sheet/Drawer) 스크롤 정책 통일 가이드 추가 | `components/guest/InfoInspector.tsx` + 문서 | `contentClassName` 사용 규칙 명확 |
 
@@ -114,7 +114,7 @@
 
 | ID | P | 상태 | 작업 | 변경 범위(예상 파일) | 완료 기준(AC) |
 |---|---|---|---|---|---|
-| E-01 | P1 | TODO | Guest 레이아웃 하단 패딩/푸터 마진 재조정 | `app/guest/[token]/layout.tsx`, `components/shared/Footer.tsx` | 하단 네비와 겹침 없이 “과한 여백” 제거 |
+| E-01 | P1 | DONE | Guest 레이아웃 하단 패딩/푸터 마진 재조정 | `components/shared/Footer.tsx` | 하단 네비와 겹침 없이 “과한 여백” 제거 |
 | E-02 | P1 | TODO | 바텀 네비 safe-area 처리 점검 | `components/guest/GuestBottomNav.tsx` | iOS safe-area에서도 터치/가독성 문제 없음 |
 | E-03 | P2 | TODO | 관리자 모바일에서도 footer/하단 네비 겹침 점검(필요 시) | `app/admin/layout.tsx`, `AdminBottomNav.tsx` | 화면 하단 콘텐츠가 가려지지 않음 |
 
@@ -171,6 +171,7 @@
 |---|---|---|---|---|
 | 2026-01-23 |  | A-01~A-04, B-01~B-03, C-01~C-02 | DONE | 검색 하이라이트/상태 배지 단일화/에러 재시도 패턴 적용 |
 | 2026-01-23 |  | B-06, C-03(부분) | IN_PROGRESS | 고객 주문 상태 배지 통일 + 주문 내역 Retry 적용 |
+| 2026-01-23 |  | B-04, B-05, D-01, E-01 | DONE | 관리자 알림 메타 단일화 + 현장관리 배지 정리 + 오버레이 정책 문서화 + Footer 여백 방식 변경 |
 
 ---
 
@@ -181,4 +182,5 @@
 | v1.0 | 2026-01-23 | 최초 작성 |
 | v1.1 | 2026-01-23 | P0 작업(A/B/C 일부) 적용 및 트래킹 업데이트 |
 | v1.2 | 2026-01-23 | A-04 완료, B-06 완료, C-03 진행(주문 영역) |
+| v1.3 | 2026-01-23 | B-04/B-05/D-01/E-01 적용 및 트래킹 업데이트 |
 

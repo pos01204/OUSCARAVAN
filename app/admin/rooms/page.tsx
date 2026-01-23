@@ -26,6 +26,25 @@ interface RoomWithReservation extends Room {
   orders?: Order[]; // 주문 목록 추가
 }
 
+const ROOM_AVAILABILITY_BADGE: Record<
+  Room['status'],
+  { label: string; className: string }
+> = {
+  available: { label: '사용 가능', className: 'bg-green-500 text-white hover:bg-green-600' },
+  occupied: { label: '사용 중', className: 'bg-red-500 text-white hover:bg-red-600' },
+  maintenance: { label: '점검 중', className: 'bg-gray-500 text-white hover:bg-gray-600' },
+};
+
+function getReservationOccupancyBadge(status?: string) {
+  if (status === 'checked_in') {
+    return { label: '사용 중', className: 'bg-red-500 text-white hover:bg-red-600' };
+  }
+  if (status === 'checked_out') {
+    return { label: '체크아웃', className: 'bg-gray-500 text-white hover:bg-gray-600' };
+  }
+  return { label: '배정됨', className: 'bg-slate-500 text-white hover:bg-slate-600' };
+}
+
 export default function RoomsPage() {
   const { toast } = useToast();
   const router = useRouter();
@@ -114,10 +133,8 @@ export default function RoomsPage() {
       const data = await getRooms();
       // getRooms()는 배열을 반환
       const roomsArray = Array.isArray(data) ? data : [];
-      console.log('[RoomsPage] Fetched rooms:', roomsArray.length, roomsArray);
 
       if (roomsArray.length === 0) {
-        console.warn('[RoomsPage] No rooms found. Check database migration.');
         toast({
           title: '방 데이터 없음',
           description: '데이터베이스에 방이 없습니다. 마이그레이션을 실행해주세요.',
@@ -263,18 +280,11 @@ export default function RoomsPage() {
               // 사용 가능 여부 배지 색상 결정
               const getAvailabilityBadge = () => {
                 if (room.reservation) {
-                  if (room.reservation.status === 'checked_in') {
-                    return <Badge className="bg-red-500 text-white hover:bg-red-600 h-6">사용 중</Badge>;
-                  }
-                  return <Badge variant="secondary" className="h-6">배정됨</Badge>;
+                  const meta = getReservationOccupancyBadge(room.reservation.status);
+                  return <Badge className={`${meta.className} h-6`}>{meta.label}</Badge>;
                 }
-                const variants: Record<Room['status'], { label: string; className: string }> = {
-                  available: { label: '사용 가능', className: 'bg-green-500 text-white hover:bg-green-600' },
-                  occupied: { label: '사용 중', className: 'bg-red-500 text-white hover:bg-red-600' },
-                  maintenance: { label: '점검 중', className: 'bg-gray-500 text-white hover:bg-gray-600' },
-                };
-                const { label, className } = variants[room.status];
-                return <Badge className={`${className} h-6`}>{label}</Badge>;
+                const meta = ROOM_AVAILABILITY_BADGE[room.status];
+                return <Badge className={`${meta.className} h-6`}>{meta.label}</Badge>;
               };
 
               const pendingOrders = (room.orders || []).filter(order => order.status !== 'completed');

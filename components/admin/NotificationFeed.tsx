@@ -8,16 +8,11 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ErrorState } from '@/components/shared/ErrorState';
-import { 
-  ShoppingCart, 
-  CheckCircle, 
-  Calendar, 
-  Clock,
-  X 
-} from 'lucide-react';
+import { X } from 'lucide-react';
 import { formatDateTimeToKorean } from '@/lib/utils/date';
 import type { Notification } from '@/types';
 import { getNotifications, markNotificationAsRead, deleteNotification as deleteNotificationApi } from '@/lib/api';
+import { getNotificationTypeMeta } from '@/lib/utils/notification-meta';
 
 export function NotificationFeed() {
   const router = useRouter();
@@ -101,37 +96,6 @@ export function NotificationFeed() {
     }
   };
   
-  const getNotificationIcon = (type: Notification['type']) => {
-    switch (type) {
-      case 'order_created':
-        return ShoppingCart;
-      case 'checkin':
-      case 'checkout':
-        return CheckCircle;
-      case 'reservation_assigned':
-      case 'reservation_cancelled':
-        return Calendar;
-      default:
-        return Clock;
-    }
-  };
-  
-  const getNotificationColor = (type: Notification['type']) => {
-    switch (type) {
-      case 'order_created':
-        return 'bg-blue-100 text-blue-800 border-blue-200';
-      case 'checkin':
-        return 'bg-green-100 text-green-800 border-green-200';
-      case 'checkout':
-        return 'bg-purple-100 text-purple-800 border-purple-200';
-      case 'reservation_assigned':
-      case 'reservation_cancelled':
-        return 'bg-orange-100 text-orange-800 border-orange-200';
-      default:
-        return 'bg-gray-100 text-gray-800 border-gray-200';
-    }
-  };
-  
   if (sortedNotifications.length === 0 && loadError) {
     return (
       <ErrorState
@@ -168,9 +132,9 @@ export function NotificationFeed() {
   return (
     <div className="space-y-3">
       {sortedNotifications.map((notification) => {
-        const Icon = getNotificationIcon(notification.type);
-        const colorClass = getNotificationColor(notification.type);
-        const metadata = notification.metadata as Record<string, unknown> | undefined;
+        const meta = getNotificationTypeMeta(notification.type);
+        const Icon = meta.icon;
+        const colorClass = meta.colorClassName;
         
         return (
           <Card
