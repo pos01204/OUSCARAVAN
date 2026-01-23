@@ -25,7 +25,7 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
     notes?: string;
   } | null>(null);
 
-  const { orders, loading, error } = useGuestOrders(token);
+  const { orders, loading, error, refresh } = useGuestOrders(token);
 
   // 키오스크 주문은 현장 수령이므로 bbq/fire 주문만 표시
   const bbqFireOrders = useMemo(() => {
@@ -108,6 +108,7 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
               error={error}
               currentFilter={statusFilter}
               onFilterChange={setStatusFilter}
+              onRetry={refresh}
             />
           </section>
 
@@ -122,6 +123,7 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
               loading={loading}
               error={error}
               onReorder={handleReorder}
+              onRetry={refresh}
             />
           </section>
         </>

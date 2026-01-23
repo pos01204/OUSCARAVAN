@@ -11,6 +11,9 @@ import { ko } from 'date-fns/locale';
 import { Clock, Package, CheckCircle, Info, RotateCcw, BookOpen } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { InfoInspector } from '@/components/guest/InfoInspector';
+import { StatusPill } from '@/components/shared/StatusPill';
+import { ErrorState } from '@/components/shared/ErrorState';
+import { getOrderStatusMeta } from '@/lib/utils/status-meta';
 
 interface OrderHistoryProps {
   token: string;
@@ -18,13 +21,14 @@ interface OrderHistoryProps {
   loading?: boolean;
   error?: string | null;
   onReorder?: (order: Order) => void;
+  onRetry?: () => void;
 }
 
-const STATUS_CONFIG: Record<Order['status'], { label: string; variant: 'default' | 'secondary' | 'outline' | 'destructive'; icon: typeof Clock }> = {
-  pending: { label: '대기 중', variant: 'outline', icon: Clock },
-  preparing: { label: '준비 중', variant: 'secondary', icon: Package },
-  delivering: { label: '준비 중', variant: 'secondary', icon: Package },
-  completed: { label: '완료', variant: 'default', icon: CheckCircle },
+const STATUS_ICON_MAP: Record<Order['status'], typeof Clock> = {
+  pending: Clock,
+  preparing: Package,
+  delivering: Package,
+  completed: CheckCircle,
 };
 
 const TYPE_LABELS: Record<Order['type'], string> = {
@@ -91,6 +95,7 @@ export function OrderHistory({
   loading = false,
   error = null,
   onReorder,
+  onRetry,
 }: OrderHistoryProps) {
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const guideHref = `/guest/${token}/guide#guide-bbq`;
@@ -122,13 +127,7 @@ export function OrderHistory({
   }
 
   if (error) {
-    return (
-      <Card>
-        <CardContent className="p-6 text-center">
-          <p className="text-sm text-muted-foreground">{error}</p>
-        </CardContent>
-      </Card>
-    );
+    return <ErrorState title="주문 내역을 불러오지 못했어요" description={error} onRetry={onRetry} />;
   }
 
   if (orders.length === 0) {
@@ -148,8 +147,7 @@ export function OrderHistory({
       <div className="space-y-4" role="region" aria-label="주문 내역">
         {/* 주문 목록 */}
         {orders.map((order) => {
-        const statusConfig = STATUS_CONFIG[order.status];
-        const StatusIcon = statusConfig.icon;
+        const statusMeta = getOrderStatusMeta(order.status);
         const typeLabel = TYPE_LABELS[order.type] || order.type;
         const showGuide = order.type === 'bbq' || order.type === 'fire';
 
@@ -166,19 +164,16 @@ export function OrderHistory({
                 }}
                 tabIndex={0}
                 role="button"
-                aria-label={`${typeLabel} 주문 상세보기, ${statusConfig.label}, ${order.totalAmount.toLocaleString()}원`}
+                aria-label={`${typeLabel} 주문 상세보기, ${statusMeta.label}, ${order.totalAmount.toLocaleString()}원`}
               >
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-2 flex-wrap">
-                        <Badge 
-                          variant={statusConfig.variant} 
-                          className="flex items-center gap-1 transition-transform group-hover:scale-105"
-                        >
-                          <StatusIcon className="h-3 w-3" />
-                          {statusConfig.label}
-                        </Badge>
+                        <StatusPill
+                          label={statusMeta.label}
+                          className={`flex items-center gap-1 transition-transform group-hover:scale-105 ${statusMeta.className}`}
+                        />
                         <Badge variant="outline" className="text-xs">
                           {typeLabel}
                         </Badge>

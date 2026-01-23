@@ -18,6 +18,7 @@ import Image from 'next/image';
 import type { GuideItem } from '@/types';
 import { GuestPageHeader } from '@/components/guest/GuestPageHeader';
 import { InfoInspector } from '@/components/guest/InfoInspector';
+import { highlightText } from '@/lib/utils/highlight';
 
 interface GuestGuideContentProps {
   token?: string;
@@ -29,6 +30,7 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
   const [showBBQCarousel, setShowBBQCarousel] = useState(false);
   const [selectedGuideId, setSelectedGuideId] = useState<string | null>(null);
   const [openInspector, setOpenInspector] = useState(false);
+  const highlightQuery = searchQuery.trim();
 
   const categories = ['전체', ...new Set(GUIDE_DATA.items.map((item) => item.category))];
 
@@ -200,7 +202,9 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
                         <div className="flex items-start justify-between gap-2">
                           <div className="flex-1">
                             <div className="flex items-center gap-2 mb-1">
-                              <CardTitle className="text-lg font-bold">{item.title}</CardTitle>
+                              <CardTitle className="text-lg font-bold">
+                                {highlightText(item.title, highlightQuery)}
+                              </CardTitle>
                               {item.warning && (
                                 <Badge variant="destructive" className="text-xs">
                                   <AlertCircle className="h-3 w-3 mr-1" />
@@ -209,7 +213,9 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
                               )}
                             </div>
                             {item.overview && (
-                              <p className="text-sm text-muted-foreground">{item.overview}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {highlightText(item.overview, highlightQuery)}
+                              </p>
                             )}
                           </div>
                           <Badge variant="outline" className="shrink-0">

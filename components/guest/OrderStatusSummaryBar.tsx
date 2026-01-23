@@ -5,6 +5,8 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Order } from '@/lib/api';
+import { ErrorState } from '@/components/shared/ErrorState';
+import { getOrderStatusMeta } from '@/lib/utils/status-meta';
 
 interface OrderStatusSummaryBarProps {
   orders: Order[];
@@ -12,6 +14,7 @@ interface OrderStatusSummaryBarProps {
   error: string | null;
   currentFilter: Order['status'] | 'all';
   onFilterChange: (next: Order['status'] | 'all') => void;
+  onRetry?: () => void;
 }
 
 const STATUS_CHIPS: Array<{
@@ -20,9 +23,9 @@ const STATUS_CHIPS: Array<{
   icon?: typeof Clock;
 }> = [
   { key: 'all', label: '전체' },
-  { key: 'pending', label: '대기', icon: Clock },
-  { key: 'preparing', label: '준비', icon: Package },
-  { key: 'completed', label: '완료', icon: CheckCircle },
+  { key: 'pending', label: getOrderStatusMeta('pending').label, icon: Clock },
+  { key: 'preparing', label: getOrderStatusMeta('preparing').label, icon: Package },
+  { key: 'completed', label: getOrderStatusMeta('completed').label, icon: CheckCircle },
 ];
 
 export function OrderStatusSummaryBar({
@@ -31,6 +34,7 @@ export function OrderStatusSummaryBar({
   error,
   currentFilter,
   onFilterChange,
+  onRetry,
 }: OrderStatusSummaryBarProps) {
   const statusCounts = {
     all: orders.length,
@@ -54,13 +58,7 @@ export function OrderStatusSummaryBar({
   }
 
   if (error) {
-    return (
-      <Card>
-        <CardContent className="p-4">
-          <p className="text-sm text-muted-foreground">{error}</p>
-        </CardContent>
-      </Card>
-    );
+    return <ErrorState title="주문 상태를 불러오지 못했어요" description={error} onRetry={onRetry} />;
   }
 
   return (

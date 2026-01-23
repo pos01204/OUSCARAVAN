@@ -1,12 +1,13 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useNotificationStore } from '@/lib/store/notifications';
 import { useNotificationStream } from '@/lib/hooks/useNotificationStream';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { ErrorState } from '@/components/shared/ErrorState';
 import { 
   ShoppingCart, 
   CheckCircle, 
@@ -22,6 +23,7 @@ export function NotificationFeed() {
   const router = useRouter();
   const { notifications, markAsRead, deleteNotification, setNotifications, updateUnreadCount } =
     useNotificationStore();
+  const [loadError, setLoadError] = useState<string | null>(null);
   
   // SSE 연결 (실시간 알림 수신)
   useNotificationStream();
@@ -35,8 +37,10 @@ export function NotificationFeed() {
         if (cancelled) return;
         setNotifications(response.notifications);
         updateUnreadCount(response.unreadCount);
+        setLoadError(null);
       } catch (error) {
         console.error('Failed to load notifications:', error);
+        setLoadError('알림을 불러오지 못했어요. 다시 시도해주세요.');
       }
     };
 
@@ -128,6 +132,27 @@ export function NotificationFeed() {
     }
   };
   
+  if (sortedNotifications.length === 0 && loadError) {
+    return (
+      <ErrorState
+        title="알림을 불러오지 못했어요"
+        description={loadError}
+        onRetry={() => {
+          setLoadError(null);
+          getNotifications({ limit: 50 })
+            .then((response) => {
+              setNotifications(response.notifications);
+              updateUnreadCount(response.unreadCount);
+            })
+            .catch((error) => {
+              console.error('Failed to load notifications:', error);
+              setLoadError('알림을 불러오지 못했어요. 다시 시도해주세요.');
+            });
+        }}
+      />
+    );
+  }
+
   if (sortedNotifications.length === 0) {
     return (
       <Card>

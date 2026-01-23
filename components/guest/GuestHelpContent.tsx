@@ -14,6 +14,7 @@ import { useMemo, useState } from 'react';
 import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { GuestPageHeader } from '@/components/guest/GuestPageHeader';
+import { highlightText } from '@/lib/utils/highlight';
 
 interface GuestHelpContentProps {
   token?: string;
@@ -22,6 +23,7 @@ interface GuestHelpContentProps {
 export function GuestHelpContent({ token }: GuestHelpContentProps) {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState<string>('전체');
+  const highlightQuery = searchQuery.trim();
 
   // FAQ를 중요도 순으로 정렬
   const sortedFAQs = useMemo(() => {
@@ -211,11 +213,11 @@ export function GuestHelpContent({ token }: GuestHelpContentProps) {
                 {filteredFAQs.map((faq) => (
                 <AccordionItem key={faq.id} value={faq.id}>
                   <AccordionTrigger className="text-left">
-                    {faq.question}
+                    {highlightText(faq.question, highlightQuery)}
                   </AccordionTrigger>
                   <AccordionContent>
                     <p className="whitespace-pre-wrap text-muted-foreground leading-relaxed">
-                      {faq.answer}
+                      {highlightText(faq.answer, highlightQuery)}
                     </p>
                     {faq.id === 'early-checkin' && (
                       <div className="mt-3">

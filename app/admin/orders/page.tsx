@@ -10,6 +10,8 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { useToast } from '@/components/ui/use-toast';
 import { Loader2, RefreshCw } from 'lucide-react';
+import { StatusPill } from '@/components/shared/StatusPill';
+import { ErrorState } from '@/components/shared/ErrorState';
 import {
   Dialog,
   DialogContent,
@@ -18,12 +20,14 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { OrderFiltersClient } from './OrderFiltersClient';
+import { getNextOrderStatus, getOrderStatusMeta } from '@/lib/utils/status-meta';
 
 function OrdersPageContent() {
   const { toast } = useToast();
   const searchParams = useSearchParams();
   const [orders, setOrders] = useState<Order[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
@@ -75,6 +79,7 @@ function OrdersPageContent() {
       }
 
       setOrders(normalizedOrders);
+      setLoadError(null);
     } catch (error) {
       const status = searchParams.get('status') || undefined;
       const date = searchParams.get('date') || undefined;
@@ -89,6 +94,7 @@ function OrdersPageContent() {
         description: '주문 목록을 불러오는데 실패했습니다.',
         variant: 'destructive',
       });
+      setLoadError('주문 목록을 불러오지 못했어요. 다시 시도해주세요.');
     } finally {
       setIsLoading(false);
     }
@@ -142,22 +148,8 @@ function OrdersPageContent() {
   };
 
   const getStatusBadge = (status: Order['status']) => {
-    const isCompleted = status === 'completed';
-    const label = isCompleted ? '완료' : '확인';
-    const className = isCompleted
-      ? 'bg-green-100 text-green-800 border-green-200'
-      : 'bg-orange-100 text-orange-800 border-orange-200';
-
-    return (
-      <Badge variant="outline" className={className}>
-        {label}
-      </Badge>
-    );
-  };
-
-  const getNextStatus = (currentStatus: Order['status']): Order['status'] | null => {
-    if (currentStatus === 'completed') return null;
-    return 'completed';
+    const meta = getOrderStatusMeta(status);
+    return <StatusPill label={meta.label} className={meta.className} />;
   };
 
   const formatDate = (dateString: string) => {
@@ -201,7 +193,13 @@ function OrdersPageContent() {
 
 
 
-      {orders.length === 0 ? (
+      {loadError && orders.length === 0 ? (
+        <ErrorState
+          title="주문 목록을 불러오지 못했어요"
+          description={loadError}
+          onRetry={fetchOrders}
+        />
+      ) : orders.length === 0 ? (
         <Card>
           <CardContent className="py-8 text-center">
             <p className="text-muted-foreground">
@@ -214,7 +212,8 @@ function OrdersPageContent() {
       ) : (
         <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {orders.map((order) => {
-            const nextStatus = getNextStatus(order.status);
+            const nextStatus = getNextOrderStatus(order.status);
+            const nextMeta = nextStatus ? getOrderStatusMeta(nextStatus) : null;
 
             return (
               <Card key={order.id} className="flex flex-col">
@@ -265,7 +264,7 @@ function OrdersPageContent() {
                         onClick={() => handleStatusUpdate(order.id, nextStatus)}
                         disabled={isUpdating}
                       >
-                        {isUpdating ? <Loader2 className="h-3 w-3 animate-spin" /> : getStatusBadge(nextStatus).props.children}로 변경
+                        {isUpdating ? <Loader2 className="h-3 w-3 animate-spin" /> : nextMeta?.label}로 변경
                       </Button>
                     )}
                   </div>
@@ -368,7 +367,7 @@ function OrdersPageContent() {
                     onClick={() => handleStatusUpdate(selectedOrder.id, 'preparing')}
                     disabled={isUpdating || selectedOrder.status !== 'pending'}
                   >
-                    확인
+                    {getOrderStatusMeta('preparing').label}
                   </Button>
                   <Button
                     variant={selectedOrder.status === 'completed' ? 'default' : 'outline'}
@@ -376,7 +375,7 @@ function OrdersPageContent() {
                     onClick={() => handleStatusUpdate(selectedOrder.id, 'completed')}
                     disabled={isUpdating || selectedOrder.status === 'completed'}
                   >
-                    완료
+                    {getOrderStatusMeta('completed').label}
                   </Button>
                 </div>
               </div>
