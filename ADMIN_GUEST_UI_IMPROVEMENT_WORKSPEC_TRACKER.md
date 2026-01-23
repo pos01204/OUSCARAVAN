@@ -105,8 +105,8 @@
 | ID | P | 상태 | 작업 | 변경 범위(예상 파일) | 완료 기준(AC) |
 |---|---|---|---|---|---|
 | D-01 | P1 | DONE | 오버레이 계층 규칙 문서화(z-index map) | `OVERLAY_ZINDEX_POLICY.md` | Select/Popover/Tooltip/Sheet/Drawer/Dialog 우선순위 정의 |
-| D-02 | P1 | TODO | Select z-index “무조건 최상위” 정책 검토 및 충돌 테스트 | `components/ui/select.tsx` | Drawer/Sheet 위에서 예상대로 동작(충돌 시 정책 수정) |
-| D-03 | P1 | TODO | InfoInspector(Sheet/Drawer) 스크롤 정책 통일 가이드 추가 | `components/guest/InfoInspector.tsx` + 문서 | `contentClassName` 사용 규칙 명확 |
+| D-02 | P1 | DONE | Select z-index “무조건 최상위” 정책 검토 및 충돌 테스트 | `components/ui/select.tsx` | 정책 문서와 동일한 z-index(`99999`)로 명시, Drawer/Sheet/Dialog 위에서 가려짐 방지 |
+| D-03 | P1 | DONE | InfoInspector(Sheet/Drawer) 스크롤 정책 통일 가이드 추가 | `components/guest/InfoInspector.tsx`, `INFOINSPECTOR_SCROLL_POLICY.md` | Sheet/Drawer 모두 “오버레이 내부 스크롤”로 통일, `contentClassName/bodyClassName` 규칙 문서화 |
 
 ---
 
@@ -173,6 +173,7 @@
 | 2026-01-23 |  | B-06, C-03(부분) | IN_PROGRESS | 고객 주문 상태 배지 통일 + 주문 내역 Retry 적용 |
 | 2026-01-23 |  | B-04, B-05, D-01, E-01 | DONE | 관리자 알림 메타 단일화 + 현장관리 배지 정리 + 오버레이 정책 문서화 + Footer 여백 방식 변경 |
 | 2026-01-23 |  | C-03, C-04, E-02 | DONE | 가이드/도움말 토큰 검증 실패 시 Retry UI + “마지막 업데이트” 패턴 추가 + safe-area 보정 |
+| 2026-01-23 |  | D-02, D-03 | DONE | Select z-index 정책을 문서와 1:1로 정리 + InfoInspector(Sheet/Drawer) 내부 스크롤 구조 통일 및 가이드 문서 추가 |
 
 ---
 
@@ -185,4 +186,5 @@
 | v1.2 | 2026-01-23 | A-04 완료, B-06 완료, C-03 진행(주문 영역) |
 | v1.3 | 2026-01-23 | B-04/B-05/D-01/E-01 적용 및 트래킹 업데이트 |
 | v1.4 | 2026-01-23 | C-03/C-04/E-02 적용 및 트래킹 업데이트 |
+| v1.5 | 2026-01-23 | D-02/D-03 적용 및 트래킹 업데이트 |
 
