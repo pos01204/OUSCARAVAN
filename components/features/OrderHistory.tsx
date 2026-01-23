@@ -312,20 +312,19 @@ export function OrderHistory({
               </div>
               <div className="p-3 rounded-lg bg-muted/30">
                 <p className="text-xs text-muted-foreground mb-2 font-medium">주문 상태</p>
-                <Badge
-                  variant={STATUS_CONFIG[selectedOrder.status].variant}
-                  className="flex items-center gap-1.5 w-fit font-semibold"
-                >
-                  {(() => {
-                    const Icon = STATUS_CONFIG[selectedOrder.status].icon;
-                    return (
-                      <>
-                        <Icon className="h-3.5 w-3.5" />
-                        {STATUS_CONFIG[selectedOrder.status].label}
-                      </>
-                    );
-                  })()}
-                </Badge>
+                {(() => {
+                  const meta = getOrderStatusMeta(selectedOrder.status);
+                  const Icon = STATUS_ICON_MAP[selectedOrder.status];
+                  return (
+                    <Badge
+                      variant="outline"
+                      className={`flex items-center gap-1.5 w-fit font-semibold ${meta.className}`}
+                    >
+                      <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+                      {meta.label}
+                    </Badge>
+                  );
+                })()}
               </div>
               <div className="p-3 rounded-lg bg-muted/30">
                 <p className="text-xs text-muted-foreground mb-2 font-medium">주문 시간</p>
