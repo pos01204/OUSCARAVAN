@@ -128,6 +128,10 @@
 | F-02 | P2 | DONE | KPI 카드 → 해당 리스트로 딥링크 연결(클릭 이동) | `app/admin/page.tsx`, `components/admin/AdminKpiCards.tsx` | 숫자 클릭으로 즉시 “예약/주문” 화면으로 이동 |
 | F-03 | P2 | DONE | 관리자 핵심 화면(예약/주문/현장관리) “마지막 업데이트” 표기 확대 | `app/admin/reservations/page.tsx`, `app/admin/orders/page.tsx`, `app/admin/rooms/page.tsx` | 관리자 화면에서 데이터 최신성 신뢰 제공 |
 | F-04 | P2 | DONE | 관리자 예약/현장관리 새로고침 버튼 추가(행동 유도) | `app/admin/reservations/page.tsx`, `app/admin/rooms/page.tsx` | 운영자가 “내가 갱신했다”를 즉시 확인 가능 |
+| F-05 | P2 | DONE | 관리자 알림 피드 초기 로딩/수동 새로고침 UX 개선 | `components/admin/NotificationFeed.tsx` | 로딩 중 “알림 없음” 오해 방지 + 수동 새로고침 제공 |
+| F-06 | P2 | DONE | 예약/배정 새로고침 버튼 로딩 상태 보강 | `app/admin/reservations/page.tsx` | 새로고침 중 버튼 disabled + 스피너 표시로 확신 강화 |
+| F-07 | P2 | DONE | 예약/배정 새로고침 트리거 안정화(라우터/URL 의존 제거) + 현장관리 로딩 스피너 추가 | `app/admin/reservations/page.tsx`, `app/admin/rooms/page.tsx` | 새로고침이 “항상” 재조회로 이어지고 로딩이 명확 |
+| F-08 | P2 | DONE | 관리자 예약/주문 “Soft Refresh”(리스트 유지) + 예약 로드 실패 ErrorState 추가 | `app/admin/reservations/page.tsx`, `app/admin/orders/page.tsx` | 새로고침/필터 변경 시 화면이 통째로 깜빡이지 않고, 실패 시 재시도 가능 |
 
 ---
 
@@ -181,6 +185,10 @@
 | 2026-01-23 |  | F-02 | DONE | 관리자 홈 KPI 클릭 시 해당 리스트(예약/주문)로 바로 이동(딥링크) |
 | 2026-01-23 |  | F-03 | DONE | 관리자 예약/주문/현장관리 화면에 “마지막 업데이트” 표기 추가 |
 | 2026-01-23 |  | F-04 | DONE | 관리자 예약/현장관리 화면에 “새로고침” 버튼 추가 |
+| 2026-01-23 |  | F-05 | DONE | 관리자 알림 피드 로딩/새로고침 UX 개선 |
+| 2026-01-23 |  | F-06 | DONE | 관리자 예약/배정 새로고침 버튼 로딩/disable 처리 |
+| 2026-01-23 |  | F-07 | DONE | 예약/배정 새로고침 트리거를 상태 기반으로 안정화 + 현장관리 새로고침 스피너/disable 처리 |
+| 2026-01-23 |  | F-08 | DONE | 관리자 예약/주문 Soft Refresh + 예약 로드 실패 ErrorState/Retry 추가 |
 
 ---
 
@@ -198,4 +206,8 @@
 | v1.7 | 2026-01-23 | F-02(KPI 딥링크) 적용 및 트래킹 업데이트 |
 | v1.8 | 2026-01-23 | F-03(관리자 LastUpdatedAt 확대) 적용 및 트래킹 업데이트 |
 | v1.9 | 2026-01-23 | F-04(관리자 새로고침 버튼 확장) 적용 및 트래킹 업데이트 |
+| v1.10 | 2026-01-23 | F-05(관리자 알림 피드 로딩/새로고침 UX) 적용 및 트래킹 업데이트 |
+| v1.11 | 2026-01-23 | F-06(예약 새로고침 버튼 로딩 상태) 적용 및 트래킹 업데이트 |
+| v1.12 | 2026-01-23 | F-07(새로고침 트리거 안정화/현장관리 스피너) 적용 및 트래킹 업데이트 |
+| v1.13 | 2026-01-23 | F-08(예약/주문 Soft Refresh + 예약 ErrorState) 적용 및 트래킹 업데이트 |
 

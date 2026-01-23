@@ -51,6 +51,7 @@ export default function RoomsPage() {
   const router = useRouter();
   const [rooms, setRooms] = useState<RoomWithReservation[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(null);
   const [completingOrderId, setCompletingOrderId] = useState<string | null>(null);
   const [blinkingRoomIds, setBlinkingRoomIds] = useState<Set<string>>(new Set());
@@ -132,6 +133,7 @@ export default function RoomsPage() {
 
   const fetchRooms = useCallback(async () => {
     try {
+      setIsRefreshing(true);
       setIsLoading(true);
       const data = await getRooms();
       // getRooms()는 배열을 반환
@@ -169,6 +171,7 @@ export default function RoomsPage() {
       });
     } finally {
       setIsLoading(false);
+      setIsRefreshing(false);
     }
   }, [fetchOrdersForRooms, toast]);
 
@@ -265,8 +268,13 @@ export default function RoomsPage() {
             className="h-8 md:h-9"
             onClick={fetchRooms}
             aria-label="현장관리 새로고침"
+            disabled={isRefreshing}
           >
-            <RefreshCw className="mr-2 h-4 w-4" />
+            {isRefreshing ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <RefreshCw className="mr-2 h-4 w-4" />
+            )}
             새로고침
           </Button>
         </div>

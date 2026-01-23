@@ -11,7 +11,8 @@ import { ReservationFiltersClient } from './ReservationFiltersClient';
 import { ReservationsViewClient } from './ReservationsViewClient';
 import { formatDateToISO } from '@/lib/utils/date';
 import { LastUpdatedAt } from '@/components/shared/LastUpdatedAt';
-import { RefreshCw } from 'lucide-react';
+import { ErrorState } from '@/components/shared/ErrorState';
+import { Loader2, RefreshCw } from 'lucide-react';
 
 function ReservationsSkeleton() {
   return (
@@ -35,9 +36,14 @@ function ReservationsSkeleton() {
   );
 }
 
-function ReservationsPageContent() {
+function ReservationsPageContent({
+  refreshNonce,
+  onRefreshed,
+}: {
+  refreshNonce: number;
+  onRefreshed?: () => void;
+}) {
   const searchParams = useSearchParams();
-
   const filter = searchParams.get('filter') || undefined;
   const view = searchParams.get('view') || undefined;
   const statusParam = searchParams.get('status') || undefined;
@@ -60,7 +66,9 @@ function ReservationsPageContent() {
   const [reservations, setReservations] = useState<Reservation[]>([]);
   const [total, setTotal] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(null);
+  const [retryNonce, setRetryNonce] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -77,27 +85,59 @@ function ReservationsPageContent() {
           setReservations(data.reservations || []);
           setTotal(data.total || 0);
           setLastUpdatedAt(new Date());
+          setLoadError(null);
         }
       } catch (error) {
         logError('Failed to fetch reservations (client)', error, {
           component: 'ReservationsPage',
           filters: { effectiveStatus, effectiveCheckin, checkout, search },
         });
+        if (!cancelled) {
+          setLoadError('예약 목록을 불러오지 못했어요. 다시 시도해주세요.');
+        }
       } finally {
-        if (!cancelled) setIsLoading(false);
+        if (!cancelled) {
+          setIsLoading(false);
+          onRefreshed?.();
+        }
       }
     }
     load();
     return () => {
       cancelled = true;
     };
-  }, [effectiveStatus, effectiveCheckin, checkout, search]);
+  }, [effectiveStatus, effectiveCheckin, checkout, search, refreshNonce, retryNonce]);
 
-  if (isLoading) return <ReservationsSkeleton />;
+  // 초기 로딩(첫 성공 전)만 스켈레톤으로 화면 전환
+  if (isLoading && !lastUpdatedAt) return <ReservationsSkeleton />;
+
+  if (loadError && !lastUpdatedAt) {
+    return (
+      <ErrorState
+        title="예약 목록을 불러오지 못했어요"
+        description={loadError}
+        onRetry={() => setRetryNonce((n) => n + 1)}
+      />
+    );
+  }
 
   return (
     <div className="space-y-3">
-      <LastUpdatedAt value={lastUpdatedAt} />
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <LastUpdatedAt value={lastUpdatedAt} />
+          {isLoading && lastUpdatedAt ? (
+            <p className="mt-1 text-xs text-muted-foreground">갱신 중...</p>
+          ) : null}
+        </div>
+      </div>
+      {loadError && lastUpdatedAt ? (
+        <ErrorState
+          title="예약 목록을 불러오지 못했어요"
+          description={loadError}
+          onRetry={() => setRetryNonce((n) => n + 1)}
+        />
+      ) : null}
       <ReservationsViewClient
         reservations={reservations}
         total={total}
@@ -115,7 +155,8 @@ export default function ReservationsPage() {
   const filter = searchParams.get('filter') || undefined;
   const view = searchParams.get('view') || undefined;
   const checkinParam = searchParams.get('checkin') || undefined;
-  const [refreshKey, setRefreshKey] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const [refreshNonce, setRefreshNonce] = useState(0);
 
   const effectiveCheckin = useMemo(() => {
     if (filter !== 'd1-unassigned') return checkinParam;
@@ -136,10 +177,18 @@ export default function ReservationsPage() {
             variant="outline"
             size="sm"
             className="h-8 md:h-9"
-            onClick={() => setRefreshKey((k) => k + 1)}
+            onClick={() => {
+              setIsRefreshing(true);
+              setRefreshNonce((n) => n + 1);
+            }}
             aria-label="예약 목록 새로고침"
+            disabled={isRefreshing}
           >
-            <RefreshCw className="mr-2 h-4 w-4" />
+            {isRefreshing ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <RefreshCw className="mr-2 h-4 w-4" />
+            )}
             새로고침
           </Button>
         </div>
@@ -152,7 +201,10 @@ export default function ReservationsPage() {
       />
 
       <Suspense fallback={<ReservationsSkeleton />}>
-        <ReservationsPageContent key={refreshKey} />
+        <ReservationsPageContent
+          refreshNonce={refreshNonce}
+          onRefreshed={() => setIsRefreshing(false)}
+        />
       </Suspense>
     </div>
   );

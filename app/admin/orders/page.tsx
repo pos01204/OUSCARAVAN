@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, Suspense } from 'react';
+import { useCallback, useEffect, useRef, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { getAdminOrders, updateOrderStatus, type Order } from '@/lib/api';
 import { logError } from '@/lib/logger';
@@ -27,16 +27,19 @@ function OrdersPageContent() {
   const { toast } = useToast();
   const searchParams = useSearchParams();
   const [orders, setOrders] = useState<Order[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [isRefreshing, setIsRefreshing] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(null);
   const [selectedOrder, setSelectedOrder] = useState<Order | null>(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
+  const isMountedRef = useRef(true);
 
-  const fetchOrders = async () => {
+  const fetchOrders = useCallback(async (mode: 'initial' | 'soft' = 'soft') => {
     try {
-      setIsLoading(true);
+      if (mode === 'initial') setIsInitialLoading(true);
+      else setIsRefreshing(true);
       const status = searchParams.get('status') || undefined;
       const date = searchParams.get('date') || undefined;
       const search = searchParams.get('search') || undefined;
@@ -80,10 +83,12 @@ function OrdersPageContent() {
         normalizedOrders = fetchedOrders.filter((order) => order.status === 'completed');
       }
 
+      if (!isMountedRef.current) return;
       setOrders(normalizedOrders);
       setLoadError(null);
       setLastUpdatedAt(new Date());
     } catch (error) {
+      if (!isMountedRef.current) return;
       const status = searchParams.get('status') || undefined;
       const date = searchParams.get('date') || undefined;
       const search = searchParams.get('search') || undefined;
@@ -99,15 +104,25 @@ function OrdersPageContent() {
       });
       setLoadError('주문 목록을 불러오지 못했어요. 다시 시도해주세요.');
     } finally {
-      setIsLoading(false);
+      if (!isMountedRef.current) return;
+      setIsInitialLoading(false);
+      setIsRefreshing(false);
     }
-  };
+  }, [searchParams, toast]);
 
   // 주문 목록 조회 (쿼리 파라미터 변경 시 재조회)
   useEffect(() => {
-    fetchOrders();
+    isMountedRef.current = true;
+    const mode: 'initial' | 'soft' = lastUpdatedAt ? 'soft' : 'initial';
+    fetchOrders(mode);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchParams]);
+
+  useEffect(() => {
+    return () => {
+      isMountedRef.current = false;
+    };
+  }, []);
 
   // 주문 상태 업데이트
   const handleStatusUpdate = async (orderId: string, newStatus: Order['status']) => {
@@ -121,7 +136,7 @@ function OrdersPageContent() {
         description: '주문 상태가 변경되었습니다.',
       });
 
-      fetchOrders();
+      fetchOrders('soft');
       setIsDialogOpen(false);
       setSelectedOrder(null);
     } catch (error) {
@@ -170,7 +185,7 @@ function OrdersPageContent() {
     return new Intl.NumberFormat('ko-KR').format(price) + '원';
   };
 
-  if (isLoading) {
+  if (isInitialLoading && orders.length === 0) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -185,9 +200,22 @@ function OrdersPageContent() {
           <div className="flex-1">
             <h1 className="text-2xl md:text-3xl font-black tracking-tight text-foreground">주문히스토리</h1>
             <LastUpdatedAt value={lastUpdatedAt} />
+            {isRefreshing && lastUpdatedAt ? (
+              <p className="mt-1 text-xs text-muted-foreground">갱신 중...</p>
+            ) : null}
           </div>
-          <Button variant="outline" onClick={fetchOrders} size="sm" className="h-8 md:h-9">
-            <RefreshCw className="mr-2 h-4 w-4" />
+          <Button
+            variant="outline"
+            onClick={() => fetchOrders(lastUpdatedAt ? 'soft' : 'initial')}
+            size="sm"
+            className="h-8 md:h-9"
+            disabled={isRefreshing || isInitialLoading}
+          >
+            {isRefreshing || isInitialLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <RefreshCw className="mr-2 h-4 w-4" />
+            )}
             새로고침
           </Button>
         </div>
@@ -201,7 +229,7 @@ function OrdersPageContent() {
         <ErrorState
           title="주문 목록을 불러오지 못했어요"
           description={loadError}
-          onRetry={fetchOrders}
+          onRetry={() => fetchOrders(lastUpdatedAt ? 'soft' : 'initial')}
         />
       ) : orders.length === 0 ? (
         <Card>
