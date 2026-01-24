@@ -69,7 +69,11 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
         <h1 className="font-heading text-2xl font-bold text-brand-dark relative z-10">
           {WELCOME_MESSAGE.korean.replace('{name}', reservation.guestName)}
         </h1>
-        {/* 호수 정보는 고객에게 노출하지 않음 (관리자 편의용) */}
+        {/* Ocean Wave Line */}
+        <div className="mx-auto mt-3 h-1 w-12 rounded-full bg-status-info/40 relative z-10" aria-hidden="true" />
+        <p className="mt-3 text-sm text-muted-foreground relative z-10">
+          바다가 보이는 특별한 휴식
+        </p>
       </motion.section>
 
       <GuestAnnouncements

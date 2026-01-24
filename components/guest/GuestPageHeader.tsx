@@ -18,7 +18,7 @@ export function GuestPageHeader({ title, description, rightSlot, className }: Gu
           <h1 className="text-2xl md:text-3xl font-heading font-bold text-brand-dark tracking-tight">
             {title}
           </h1>
-          <div className="mt-2 h-1 w-8 rounded-full bg-brand-cream-dark/50" aria-hidden="true" />
+          <div className="mt-2 h-1 w-10 rounded-full bg-status-info/40" aria-hidden="true" />
           {description ? (
             <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{description}</p>
           ) : null}

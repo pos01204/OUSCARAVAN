@@ -36,7 +36,7 @@ function FloorPlanCardComponent({ assignedRoom }: FloorPlanCardProps) {
       <Card variant="info" role="region" aria-label="배정된 공간 약도">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-brand-dark">
-          <CardIconBadge icon={MapPin} tone="warning" />
+          <CardIconBadge icon={MapPin} tone="info" />
           배정된 위치
         </CardTitle>
       </CardHeader>

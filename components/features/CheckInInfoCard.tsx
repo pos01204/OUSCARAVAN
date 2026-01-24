@@ -24,7 +24,7 @@ export function CheckInInfoCard({ token }: CheckInInfoCardProps) {
       <CardContent className="p-6">
         <div className="space-y-4">
         <div className="flex items-center gap-2 mb-2">
-          <CardIconBadge icon={Calendar} tone="brand" size="sm" />
+          <CardIconBadge icon={Calendar} tone="info" size="sm" />
             <h2 className="text-xl font-bold text-foreground">체크인 안내</h2>
           </div>
 

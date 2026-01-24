@@ -70,11 +70,12 @@ export function WifiCard() {
       )}
       <GuestMotionCard>
         <Card variant="info" className="overflow-hidden">
-          <CardHeader className="pb-3">
+          <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-brand-dark">
               <CardIconBadge icon={Wifi} tone="info" />
-              WiFi 연결하기
+              WiFi 연결
             </CardTitle>
+            <div className="mt-1.5 h-0.5 w-6 rounded-full bg-status-info/30" aria-hidden="true" />
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="rounded-xl bg-background-muted p-4">
@@ -85,7 +86,7 @@ export function WifiCard() {
                 </div>
                 <div className="text-right">
                   <p className="text-xs text-muted-foreground font-medium">비밀번호</p>
-                  <p className="text-base font-mono font-semibold text-brand-dark">{WIFI_INFO.password}</p>
+                  <p className="text-base font-mono font-semibold text-status-info">{WIFI_INFO.password}</p>
                 </div>
               </div>
             </div>

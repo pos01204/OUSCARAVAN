@@ -10,15 +10,16 @@ export function TimeCard() {
   return (
     <GuestMotionCard>
       <Card variant="info">
-      <CardHeader className="pb-3">
+      <CardHeader className="pb-2">
         <CardTitle className="flex items-center gap-2 text-brand-dark">
-          <CardIconBadge icon={Clock} tone="brand" />
+          <CardIconBadge icon={Clock} tone="info" />
           이용 시간 안내
         </CardTitle>
+        <div className="mt-1.5 h-0.5 w-6 rounded-full bg-status-info/30" aria-hidden="true" />
       </CardHeader>
       <CardContent className="space-y-3">
         <div className="flex items-center gap-4 rounded-xl bg-background-muted p-4 border border-border">
-          <CardIconBadge icon={LogIn} tone="success" size="sm" strokeWidth={2} />
+          <CardIconBadge icon={LogIn} tone="info" size="sm" strokeWidth={2} />
           <div>
             <p className="text-xs text-muted-foreground font-medium">체크인</p>
             <p className="text-xl font-bold text-foreground">{CHECK_IN_OUT.checkIn}</p>

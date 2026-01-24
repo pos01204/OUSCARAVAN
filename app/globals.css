@@ -500,3 +500,26 @@ button:active {
     height: 56px; /* h-14 */
   }
 }
+
+/* ═══════════════════════════════════════════════════
+   오션뷰 유틸리티 (고객 페이지 전용)
+   ═══════════════════════════════════════════════════ */
+
+/* Wave Line - 타이틀 하단 라인 */
+.wave-line {
+  @apply mt-2 h-1 w-10 rounded-full bg-status-info/40;
+}
+
+.wave-line-sm {
+  @apply mt-1.5 h-0.5 w-6 rounded-full bg-status-info/30;
+}
+
+/* Sea Mist - 인셋 박스 */
+.sea-mist-box {
+  @apply rounded-xl bg-background-muted border border-border p-4;
+}
+
+/* Ocean Point - 텍스트 포인트 */
+.ocean-point {
+  @apply text-status-info;
+}

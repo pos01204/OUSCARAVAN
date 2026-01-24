@@ -24,11 +24,11 @@ const STORAGE_KEY = 'guest-announcements-read';
 function getLevelBadge(level: Announcement['level']) {
   switch (level) {
     case 'critical':
-      return { label: '긴급', className: 'bg-background-muted text-status-error border-border' };
+      return { label: '긴급', className: 'bg-background-muted text-status-error border-status-error/30' };
     case 'warning':
-      return { label: '주의', className: 'bg-background-muted text-status-warning border-border' };
+      return { label: '주의', className: 'bg-background-muted text-status-warning border-status-warning/30' };
     default:
-      return { label: '안내', className: 'bg-background-muted text-status-info border-border' };
+      return { label: '안내', className: 'bg-background-muted text-status-info border-status-info/30' };
   }
 }
 
@@ -122,7 +122,7 @@ export function GuestAnnouncements({ token, announcements, loading, error }: Gue
             <CardIconBadge icon={AlertTriangle} tone="warning" size="sm" />
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2">
-                <Badge variant="outline" className="bg-background-muted text-status-error border-border">
+                <Badge variant="outline" className="bg-background-muted text-status-error border-status-error/30">
                   긴급 공지
                 </Badge>
                 {!readIds.includes(critical.id) && (

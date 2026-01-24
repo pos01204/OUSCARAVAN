@@ -19,20 +19,20 @@ export function QuickActionGrid({ token }: QuickActionGridProps) {
     desc: string;
     icon: typeof LogIn;
     href: string;
-    tone: 'success' | 'info' | 'warning' | 'brand';
+    tone: 'info';
   }> = [
     {
       key: 'checkinout',
-      title: '체크인/아웃하기',
-      desc: '체크인/체크아웃',
+      title: '체크인/아웃',
+      desc: '입실·퇴실',
       icon: LogIn,
       href: `${base}/checkinout`,
-      tone: 'success',
+      tone: 'info',
     },
     {
       key: 'wifi',
-      title: 'WiFi 연결하기',
-      desc: '비밀번호/QR',
+      title: 'WiFi 연결',
+      desc: '비밀번호·QR',
       icon: Wifi,
       href: `${base}#wifi`,
       tone: 'info',
@@ -40,18 +40,18 @@ export function QuickActionGrid({ token }: QuickActionGridProps) {
     {
       key: 'order',
       title: '불멍/바베큐',
-      desc: '세트 주문하기',
+      desc: '세트 주문',
       icon: Flame,
       href: `${base}/order`,
-      tone: 'warning',
+      tone: 'info',
     },
     {
       key: 'help',
       title: '도움말',
-      desc: '응급/FAQ',
+      desc: '응급·FAQ',
       icon: HelpCircle,
       href: `${base}/help`,
-      tone: 'brand',
+      tone: 'info',
     },
   ];
 
