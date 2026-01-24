@@ -5,6 +5,11 @@ import { CARD_MOTION, CARD_SPRING, CARD_LIFT, CARD_PREMIUM } from '@/lib/motion'
 
 type MotionDivProps = React.ComponentPropsWithoutRef<typeof motion.div>;
 type MotionMode = 'default' | 'spring' | 'lift' | 'premium';
+type MotionPreset = {
+  hover?: MotionDivProps['whileHover'];
+  tap?: MotionDivProps['whileTap'];
+  transition?: MotionDivProps['transition'];
+};
 
 interface GuestMotionCardProps extends MotionDivProps {
   interactive?: boolean;
@@ -14,7 +19,7 @@ interface GuestMotionCardProps extends MotionDivProps {
   motionMode?: MotionMode;
 }
 
-const motionPresets: Record<MotionMode, typeof CARD_MOTION> = {
+const motionPresets: Record<MotionMode, MotionPreset> = {
   default: CARD_MOTION,
   spring: CARD_SPRING,
   lift: CARD_LIFT,
