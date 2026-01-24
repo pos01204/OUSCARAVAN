@@ -288,7 +288,7 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
               </div>
             ) : (
               <Tabs defaultValue={inspectorDefaultTab} className="w-full">
-                <TabsList className="grid w-full grid-flow-col auto-cols-fr h-auto p-1.5 bg-muted/40 border border-border/50 rounded-xl shadow-sm">
+                <TabsList className="grid w-full grid-flow-col auto-cols-fr h-auto p-1.5 bg-muted/40 border border-border/50 rounded-xl">
                   {selectedGuide.steps && selectedGuide.steps.length > 0 && (
                     <TabsTrigger value="steps" className="text-xs py-2.5 font-bold">
                       단계별

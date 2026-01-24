@@ -1,7 +1,7 @@
 'use client';
 
-import { Phone, AlertTriangle, HelpCircle, MapPin, ExternalLink } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Phone, MapPin, ExternalLink } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   Accordion,
   AccordionContent,
@@ -15,7 +15,7 @@ import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { GuestPageHeader } from '@/components/guest/GuestPageHeader';
 import { highlightText } from '@/lib/utils/highlight';
-import { CardIconBadge } from '@/components/shared/CardIconBadge';
+import { SectionHeader } from '@/components/shared/SectionHeader';
 
 interface GuestHelpContentProps {
   token?: string;
@@ -57,7 +57,7 @@ export function GuestHelpContent({ token }: GuestHelpContentProps) {
       {/* Emergency FAB (Mobile only) */}
       <a
         href={`tel:${EMERGENCY_CONTACTS.manager.number}`}
-        className="fixed bottom-[calc(6rem+env(safe-area-inset-bottom))] right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-lg transition-transform hover:scale-110 md:hidden"
+        className="fixed bottom-[calc(6rem+env(safe-area-inset-bottom))] right-4 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-primary text-primary-foreground shadow-card transition-transform hover:scale-110 md:hidden"
         aria-label="관리자에게 전화하기"
       >
         <Phone className="h-6 w-6" aria-hidden="true" />
@@ -65,13 +65,12 @@ export function GuestHelpContent({ token }: GuestHelpContentProps) {
 
       {/* 빠른 도움(상위 3개) */}
       <section aria-label="빠른 도움">
+        <SectionHeader
+          title="빠른 도움"
+          description="자주 찾는 기능을 빠르게 이용하세요"
+          className="mb-3"
+        />
         <Card variant="info">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2">
-              <CardIconBadge icon={HelpCircle} tone="info" size="sm" />
-              자주 찾는 도움
-            </CardTitle>
-          </CardHeader>
           <CardContent className="grid grid-cols-1 gap-2">
             <a
               href={`tel:${EMERGENCY_CONTACTS.manager.number}`}
@@ -116,13 +115,12 @@ export function GuestHelpContent({ token }: GuestHelpContentProps) {
 
       {/* 응급 연락처 */}
       <section aria-label="응급 연락처">
+        <SectionHeader
+          title="응급 연락처"
+          description="긴급 상황 시 바로 연락할 수 있어요"
+          className="mb-3"
+        />
         <Card variant="cta">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CardIconBadge icon={AlertTriangle} tone="warning" size="sm" />
-              응급 연락처
-            </CardTitle>
-          </CardHeader>
           <CardContent className="space-y-3">
             {Object.entries(EMERGENCY_CONTACTS)
               .sort(([, a], [, b]) => (a.priority || 0) - (b.priority || 0))
@@ -169,13 +167,12 @@ export function GuestHelpContent({ token }: GuestHelpContentProps) {
 
       {/* FAQ */}
       <section aria-label="자주 묻는 질문">
+        <SectionHeader
+          title="자주 묻는 질문"
+          description="검색하거나 카테고리별로 확인하세요"
+          className="mb-3"
+        />
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <HelpCircle className="h-5 w-5" />
-              자주 묻는 질문
-            </CardTitle>
-          </CardHeader>
           <CardContent>
             {/* 검색/카테고리 */}
             <div className="space-y-3 mb-4">
@@ -243,10 +240,12 @@ export function GuestHelpContent({ token }: GuestHelpContentProps) {
 
       {/* 안전 정보 */}
       <section aria-label="안전 정보">
+        <SectionHeader
+          title="안전 정보"
+          description="이용 중 반드시 지켜야 할 기본 수칙입니다"
+          className="mb-3"
+        />
         <Card>
-          <CardHeader>
-            <CardTitle>안전 정보</CardTitle>
-          </CardHeader>
           <CardContent className="space-y-3">
             <div className="rounded-lg bg-muted/50 p-4">
               <p className="font-medium mb-2">화재 예방</p>

@@ -124,7 +124,7 @@ export function WifiCard() {
         contentClassName="md:max-w-md"
       >
         <div className="flex flex-col items-center justify-center gap-4">
-          <div className="rounded-2xl bg-white p-6 shadow-soft-md border border-brand-cream-dark/20">
+          <div className="rounded-2xl bg-white p-6 shadow-card border border-border">
             <QRCodeSVG value={`WIFI:T:WPA;S:${WIFI_INFO.ssid};P:${WIFI_INFO.password};;`} size={220} />
           </div>
           <div className="w-full rounded-xl bg-background-muted p-4">

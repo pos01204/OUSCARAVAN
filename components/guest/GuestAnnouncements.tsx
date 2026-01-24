@@ -5,12 +5,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/shared/EmptyState';
+import { LoadingState } from '@/components/shared/LoadingState';
+import { ErrorState } from '@/components/shared/ErrorState';
 import { InfoInspector } from '@/components/guest/InfoInspector';
 import { formatDateTimeToKorean } from '@/lib/utils/date';
 import { getGuestAnnouncementReadIds, markGuestAnnouncementRead } from '@/lib/api';
 import type { Announcement } from '@/types';
 import { AlertTriangle, Bell } from 'lucide-react';
 import { CardIconBadge } from '@/components/shared/CardIconBadge';
+import { motion } from 'framer-motion';
+import { LIST_STAGGER } from '@/lib/motion';
 
 interface GuestAnnouncementsProps {
   token: string;
@@ -86,19 +90,11 @@ export function GuestAnnouncements({ token, announcements, loading, error }: Gue
   };
 
   if (loading) {
-    return (
-      <Card variant="muted">
-        <CardContent className="py-4 text-sm text-muted-foreground">공지 불러오는 중...</CardContent>
-      </Card>
-    );
+    return <LoadingState title="공지 안내" rows={2} />;
   }
 
   if (error) {
-    return (
-      <Card variant="alert">
-        <CardContent className="py-4 text-sm text-destructive">{error}</CardContent>
-      </Card>
-    );
+    return <ErrorState title="공지 정보를 불러오지 못했어요" description={error} />;
   }
 
   if (!announcements || announcements.length === 0) {
@@ -179,36 +175,44 @@ export function GuestAnnouncements({ token, announcements, loading, error }: Gue
               description={showUnreadOnly ? '읽지 않은 공지가 없습니다.' : undefined}
             />
           ) : (
-            visibleNormal.map((announcement) => {
-            const level = getLevelBadge(announcement.level);
-            const isRead = readIds.includes(announcement.id);
-            return (
-              <button
-                key={announcement.id}
-                type="button"
-                onClick={() => {
-                  markRead(announcement.id);
-                  setSelected(announcement);
-                }}
-                className="w-full rounded-md border border-border/60 p-3 text-left transition hover:bg-muted/40"
-              >
-                <div className="flex flex-wrap items-center gap-2">
-                  <Badge variant="outline" className={level.className}>
-                    {level.label}
-                  </Badge>
-                  {!isRead && <Badge variant="secondary">새 공지</Badge>}
-                  <span className="text-sm font-semibold">{announcement.title}</span>
-                </div>
-                <p className="mt-2 text-xs text-muted-foreground line-clamp-2">
-                  {announcement.content}
-                </p>
-                <p className="mt-2 text-[11px] text-muted-foreground">
-                  {formatDateTimeToKorean(announcement.startsAt)}
-                  {announcement.endsAt ? ` ~ ${formatDateTimeToKorean(announcement.endsAt)}` : ''}
-                </p>
-              </button>
-            );
-            })
+            <motion.div
+              variants={LIST_STAGGER.container}
+              initial="hidden"
+              animate="show"
+              className="space-y-3"
+            >
+              {visibleNormal.map((announcement) => {
+                const level = getLevelBadge(announcement.level);
+                const isRead = readIds.includes(announcement.id);
+                return (
+                  <motion.div key={announcement.id} variants={LIST_STAGGER.item}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        markRead(announcement.id);
+                        setSelected(announcement);
+                      }}
+                      className="w-full rounded-md border border-border/60 p-3 text-left transition hover:bg-muted/40"
+                    >
+                      <div className="flex flex-wrap items-center gap-2">
+                        <Badge variant="outline" className={level.className}>
+                          {level.label}
+                        </Badge>
+                        {!isRead && <Badge variant="secondary">새 공지</Badge>}
+                        <span className="text-sm font-semibold">{announcement.title}</span>
+                      </div>
+                      <p className="mt-2 text-xs text-muted-foreground line-clamp-2">
+                        {announcement.content}
+                      </p>
+                      <p className="mt-2 text-[11px] text-muted-foreground">
+                        {formatDateTimeToKorean(announcement.startsAt)}
+                        {announcement.endsAt ? ` ~ ${formatDateTimeToKorean(announcement.endsAt)}` : ''}
+                      </p>
+                    </button>
+                  </motion.div>
+                );
+              })}
+            </motion.div>
           )}
           {filteredNormal.length > 3 && (
             <Button

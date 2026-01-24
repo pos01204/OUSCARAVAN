@@ -12,6 +12,7 @@ import { OrderStatusSummaryBar } from '@/components/guest/OrderStatusSummaryBar'
 import { useGuestOrders } from '@/lib/hooks/useGuestOrders';
 import type { Order } from '@/lib/api';
 import { LastUpdatedAt } from '@/components/shared/LastUpdatedAt';
+import { SectionHeader } from '@/components/shared/SectionHeader';
 
 interface GuestOrderContentProps {
   token: string;
@@ -138,26 +139,25 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
       {bbqFireOrders.length > 0 && (
         <>
           <section aria-label="주문 상태" className="space-y-3">
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-              <div className="flex items-center gap-2 min-w-0">
-                <div className="h-1 w-1 rounded-full bg-primary shrink-0"></div>
-                <h2 className="text-xl font-heading font-bold whitespace-nowrap">주문 상태</h2>
-              </div>
-              <div className="flex items-center justify-end gap-2">
-                <LastUpdatedAt value={lastUpdatedAt} className="text-right" />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 px-2"
-                  onClick={refresh}
-                  disabled={isRefreshing}
-                  aria-label="주문 상태 새로고침"
-                >
-                  <RotateCcw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} aria-hidden="true" />
-                </Button>
-              </div>
-            </div>
+            <SectionHeader
+              title="주문 상태"
+              rightSlot={
+                <div className="flex items-center justify-end gap-2">
+                  <LastUpdatedAt value={lastUpdatedAt} className="text-right" />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 px-2"
+                    onClick={refresh}
+                    disabled={isRefreshing}
+                    aria-label="주문 상태 새로고침"
+                  >
+                    <RotateCcw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} aria-hidden="true" />
+                  </Button>
+                </div>
+              }
+            />
             <OrderStatusSummaryBar
               orders={bbqFireOrders}
               loading={loading}
@@ -169,26 +169,25 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
           </section>
 
           <section aria-label="주문 내역" className="space-y-3">
-            <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
-              <div className="flex items-center gap-2 min-w-0">
-                <div className="h-1 w-1 rounded-full bg-primary shrink-0"></div>
-                <h2 className="text-xl font-heading font-bold whitespace-nowrap">주문 내역</h2>
-              </div>
-              <div className="flex items-center justify-end gap-2">
-                <LastUpdatedAt value={lastUpdatedAt} className="text-right" />
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="sm"
-                  className="h-8 px-2"
-                  onClick={refresh}
-                  disabled={isRefreshing}
-                  aria-label="주문 내역 새로고침"
-                >
-                  <RotateCcw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} aria-hidden="true" />
-                </Button>
-              </div>
-            </div>
+            <SectionHeader
+              title="주문 내역"
+              rightSlot={
+                <div className="flex items-center justify-end gap-2">
+                  <LastUpdatedAt value={lastUpdatedAt} className="text-right" />
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="h-8 px-2"
+                    onClick={refresh}
+                    disabled={isRefreshing}
+                    aria-label="주문 내역 새로고침"
+                  >
+                    <RotateCcw className={`h-4 w-4 ${isRefreshing ? 'animate-spin' : ''}`} aria-hidden="true" />
+                  </Button>
+                </div>
+              }
+            />
             <OrderHistory
               token={token}
               orders={filteredOrders}

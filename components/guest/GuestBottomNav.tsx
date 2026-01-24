@@ -21,7 +21,7 @@ export function GuestBottomNav({ token }: GuestBottomNavProps) {
   ];
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-brand-cream-dark/30 bg-white pb-[env(safe-area-inset-bottom)] shadow-[0_-2px_10px_rgba(26,23,20,0.05)] md:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 border-t border-brand-cream-dark/30 bg-white pb-[env(safe-area-inset-bottom)] shadow-card md:hidden">
       <div className="flex h-16 items-center justify-around">
         {navItems.map((item) => {
           const Icon = item.icon;

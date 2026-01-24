@@ -545,6 +545,7 @@ button:active {
 .ocean-wave-bg {
   position: relative;
   overflow: hidden;
+  --ocean-wave-opacity: 0.8;
 }
 
 .ocean-wave-bg::before {
@@ -556,6 +557,15 @@ button:active {
     radial-gradient(ellipse 60% 30% at 70% 110%, rgba(37, 99, 235, 0.02) 0%, transparent 40%);
   pointer-events: none;
   z-index: 0;
+  opacity: var(--ocean-wave-opacity);
+}
+
+.ocean-wave-bg--soft {
+  --ocean-wave-opacity: 0.5;
+}
+
+.ocean-wave-bg--medium {
+  --ocean-wave-opacity: 0.85;
 }
 
 /* Ocean Icon Glow - 아이콘 타일 오션 효과 */

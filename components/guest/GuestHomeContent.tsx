@@ -16,6 +16,8 @@ import { QuickActionGrid } from '@/components/guest/QuickActionGrid';
 import { RecentOrdersSummary } from '@/components/guest/RecentOrdersSummary';
 import { GuestAnnouncements } from '@/components/guest/GuestAnnouncements';
 import { useGuestAnnouncements } from '@/lib/hooks/useGuestAnnouncements';
+import { getGuestHeroPreset } from '@/lib/guest-hero-preset';
+import { PAGE_ENTER } from '@/lib/motion';
 
 interface GuestHomeContentProps {
   reservation: Reservation;
@@ -26,6 +28,7 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
   const { setGuestInfo, isCheckedIn, isCheckedOut } = useGuestStore();
   const { announcements, loading: announcementsLoading, error: announcementsError } =
     useGuestAnnouncements(token);
+  const heroPreset = getGuestHeroPreset(reservation.status);
 
   useEffect(() => {
     // Railway API에서 가져온 예약 정보로 게스트 정보 설정
@@ -51,10 +54,10 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
     <main className="space-y-6" role="main" aria-label="고객 홈 페이지">
       {/* Hero Section — 오션뷰 테마 */}
       <motion.section
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="ocean-wave-bg relative overflow-hidden rounded-2xl bg-background-elevated p-8 md:p-10 text-center border border-border shadow-card"
+        initial={PAGE_ENTER.initial}
+        animate={PAGE_ENTER.animate}
+        transition={PAGE_ENTER.transition}
+        className={`ocean-wave-bg ${heroPreset.patternClass} relative overflow-hidden rounded-2xl bg-background-elevated p-8 md:p-10 text-center border border-border shadow-card`}
         aria-label="환영 메시지"
       >
         {/* 향후 실사진/영상 브랜딩 레이어(에셋 없으면 렌더되지 않음) */}
@@ -68,15 +71,21 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
         />
         {/* 환영 인사 */}
         <p className="text-xs font-medium tracking-widest text-status-info/70 uppercase relative z-10 mb-2">
-          Welcome to OUSCARAVAN
+          {heroPreset.eyebrow}
         </p>
         <h1 className="font-heading text-2xl md:text-3xl font-bold text-brand-dark relative z-10 tracking-tight">
           {WELCOME_MESSAGE.korean.replace('{name}', reservation.guestName)}
         </h1>
         {/* Animated Ocean Wave Line */}
-        <div className="mx-auto wave-line-animated relative z-10" aria-hidden="true" />
+        <div className={`mx-auto ${heroPreset.waveLineClass} relative z-10`} aria-hidden="true" />
         <p className="mt-4 text-sm text-muted-foreground relative z-10 leading-relaxed">
-          파도 소리와 함께하는 <span className="text-status-info font-medium">특별한 휴식</span>
+          {heroPreset.subtitle}
+          {heroPreset.accent ? (
+            <>
+              {' '}
+              <span className="text-status-info font-medium">{heroPreset.accent}</span>
+            </>
+          ) : null}
         </p>
       </motion.section>
 

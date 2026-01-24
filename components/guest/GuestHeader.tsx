@@ -23,7 +23,7 @@ export function GuestHeader({ token }: GuestHeaderProps) {
   return (
     <>
       {/* 모바일: 간소화된 헤더 — 브랜드 라이트 테마 */}
-      <header className="fixed top-0 left-0 right-0 z-50 border-b border-brand-cream-dark/30 bg-white shadow-[0_1px_3px_rgba(26,23,20,0.05)] md:hidden">
+      <header className="fixed top-0 left-0 right-0 z-50 border-b border-brand-cream-dark/30 bg-white shadow-card md:hidden">
         <div className="flex h-14 items-center justify-center px-4">
           <Link href={`/guest/${token}`} className="text-lg font-heading font-bold text-brand-dark tracking-tight">
             OUSCARAVAN
@@ -32,7 +32,7 @@ export function GuestHeader({ token }: GuestHeaderProps) {
       </header>
       
       {/* 데스크톱: 전체 헤더 */}
-      <header className="hidden border-b border-brand-cream-dark/30 bg-white shadow-[0_1px_3px_rgba(26,23,20,0.05)] md:block">
+      <header className="hidden border-b border-brand-cream-dark/30 bg-white shadow-card md:block">
         <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <Link href={`/guest/${token}`} className="text-xl font-heading font-bold text-brand-dark tracking-tight">
             OUSCARAVAN

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { CARD_MOTION } from '@/lib/motion';
 
 type MotionDivProps = React.ComponentPropsWithoutRef<typeof motion.div>;
 
@@ -24,9 +25,9 @@ export function GuestMotionCard({
   return (
     <motion.div
       className={cn('will-change-transform', className)}
-      whileHover={allowMotion && hoverLift ? { y: -2 } : undefined}
-      whileTap={allowMotion && pressScale ? { scale: 0.99 } : undefined}
-      transition={{ duration: 0.2, ease: [0.22, 1, 0.36, 1] }}
+      whileHover={allowMotion && hoverLift ? CARD_MOTION.hover : undefined}
+      whileTap={allowMotion && pressScale ? CARD_MOTION.tap : undefined}
+      transition={CARD_MOTION.transition}
       {...props}
     >
       {children}

@@ -6,8 +6,9 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { BookOpen } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
 import { useGuestOrders } from '@/lib/hooks/useGuestOrders';
+import { LoadingState } from '@/components/shared/LoadingState';
+import { ErrorState } from '@/components/shared/ErrorState';
 
 interface RecentOrdersSummaryProps {
   token: string;
@@ -30,36 +31,19 @@ export function RecentOrdersSummary({ token, maxItems = 2 }: RecentOrdersSummary
   const guideHref = `/guest/${token}/guide#guide-bbq`;
 
   if (loading) {
-    return (
-      <Card variant="muted">
-        <CardHeader>
-          <CardTitle>최근 주문</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <Skeleton className="h-5 w-32" />
-          <Skeleton className="h-4 w-full" />
-          <Skeleton className="h-4 w-5/6" />
-          <Skeleton className="h-9 w-full" />
-        </CardContent>
-      </Card>
-    );
+    return <LoadingState title="최근 주문" rows={3} />;
   }
 
   if (error) {
     return (
-      <Card variant="alert">
-        <CardHeader>
-          <CardTitle>최근 주문</CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-3">
-          <p className="text-sm text-muted-foreground">{error}</p>
-          <Link href={`/guest/${token}/order`} className="block">
-            <Button className="w-full" variant="outline">
-              주문 페이지로 이동
-            </Button>
-          </Link>
-        </CardContent>
-      </Card>
+      <div className="space-y-3">
+        <ErrorState title="최근 주문을 불러오지 못했어요" description={error} />
+        <Link href={`/guest/${token}/order`} className="block">
+          <Button className="w-full" variant="outline">
+            주문 페이지로 이동
+          </Button>
+        </Link>
+      </div>
     );
   }
 

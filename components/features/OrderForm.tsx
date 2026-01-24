@@ -195,8 +195,8 @@ export function OrderForm({ onClose, token, onSubmitted, initial }: OrderFormPro
                       onClick={() => setSelectedSet(set.id)}
                       className={`w-full rounded-lg border p-4 text-left transition-all duration-200 ${
                         selectedSet === set.id
-                          ? 'border-primary bg-primary/10 ring-2 ring-primary shadow-md scale-[1.02]'
-                          : 'border-border hover:bg-muted/50 hover:border-primary/30 hover:shadow-sm active:scale-[0.98]'
+                          ? 'border-primary bg-primary/10 ring-2 ring-primary shadow-card scale-[1.02]'
+                          : 'border-border hover:bg-muted/50 hover:border-primary/30 hover:shadow-card-hover active:scale-[0.98]'
                       }`}
                       aria-label={`${set.name} 선택`}
                     >
@@ -366,7 +366,7 @@ export function OrderForm({ onClose, token, onSubmitted, initial }: OrderFormPro
               {step !== 'review' ? (
                 <Button
                   onClick={goNext}
-                  className="flex-[2] h-12 text-base font-bold shadow-lg hover:shadow-xl transition-all active:scale-95"
+                  className="flex-[2] h-12 text-base font-bold shadow-card hover:shadow-card-hover transition-all active:scale-95"
                   disabled={isSubmitting}
                 >
                   다음
@@ -374,7 +374,7 @@ export function OrderForm({ onClose, token, onSubmitted, initial }: OrderFormPro
               ) : (
                 <Button
                   onClick={handleSubmit}
-                  className="flex-[2] h-12 text-base font-bold shadow-lg hover:shadow-xl transition-all active:scale-95"
+                  className="flex-[2] h-12 text-base font-bold shadow-card hover:shadow-card-hover transition-all active:scale-95"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? '주문 처리 중…' : '주문 완료'}

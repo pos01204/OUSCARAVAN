@@ -493,7 +493,226 @@ const oceanGlowClass = 'bg-status-info/8 shadow-[0_0_0_1px_rgba(37,99,235,0.08),
 
 ---
 
-## 12. 결론
+## 12. 모바일 전용 운영 설계 (라이트 모드 고정)
+
+### 12.1 라이트 모드 고정 원칙
+
+- 다크모드 미지원 전제 → 대비/가독성은 라이트 기준으로만 최적화
+- `color-scheme: light` 유지, 토큰 추가 금지
+- 블루 포인트는 **아이콘/라인/숫자**에만 제한
+
+### 12.2 모바일 터치/정보 구조 규칙 (필수)
+
+- 터치 타겟: **최소 44px** (이미 globals.css 반영)
+- 카드 구조: **제목 1줄 + 보조 1줄 + 액션 1개** 기본형
+- 리스트 간격: **12~16px**, 섹션 간격 **20~24px**
+- 카드 타이틀은 **항상 1줄**, 보조 문구는 **2줄 제한**
+
+### 12.3 모바일 전용 섹션 패턴 (SSOT)
+
+#### A. 섹션 헤더
+```tsx
+<header className="space-y-2">
+  <h2 className="text-lg font-heading font-bold text-brand-dark">섹션 타이틀</h2>
+  <div className="wave-line-sm" aria-hidden="true" />
+  <p className="text-sm text-muted-foreground">보조 설명</p>
+</header>
+```
+
+#### B. 카드 기본형 (정보 카드)
+```tsx
+<Card variant="info">
+  <CardHeader className="pb-2">
+    <CardTitle className="flex items-center gap-2">
+      <CardIconBadge icon={Info} tone="info" />
+      카드 제목
+    </CardTitle>
+    <div className="wave-line-sm" />
+  </CardHeader>
+  <CardContent className="space-y-3">
+    <div className="sea-mist-box">핵심 정보</div>
+    <Button className="w-full">액션</Button>
+  </CardContent>
+</Card>
+```
+
+#### C. 리스트 아이템 (공지/FAQ)
+```tsx
+<button className="w-full rounded-md border border-border/60 p-3 text-left">
+  <div className="flex items-center gap-2">
+    <Badge variant="outline" className="bg-background-muted text-status-info border-status-info/30">
+      안내
+    </Badge>
+    <span className="text-sm font-semibold">제목</span>
+  </div>
+  <p className="mt-2 text-xs text-muted-foreground line-clamp-2">내용</p>
+</button>
+```
+
+### 12.4 모바일 모션 규칙 (최소 3종)
+
+- 페이지 진입: `opacity + y(8px)` / 200~260ms  
+- 카드 인터랙션: `hover lift 1~2px`, `press scale 0.99`
+- 리스트 스태거: 40~60ms
+
+### 12.5 가독성/심사 포인트 체크리스트
+
+- 타이틀 1줄, 설명 2줄 규칙 유지
+- CTA는 항상 **하단 1개 버튼** 형태
+- 오션 블루는 **포인트 전용**으로만 사용
+- 작은 텍스트는 **12~13px** 이상 유지
+- 숫자/상태는 **Badge or 색상 텍스트**로만 강조
+
+---
+
+### 12.6 판매/공모전용 “완성도 업스케일” (브랜드 · 시스템 · 폴리싱)
+
+> 목표: “예쁘다”보다 **제품처럼 느껴지는 일관성/표정/품질**을 만든다. (모바일 기준)
+
+#### 12.6.1 브랜드 레이어 (기억에 남는 차별점)
+
+##### A) Hero를 ‘브랜드 카드’ 프리셋으로 운영 (2~3개만)
+
+- **운영 원칙**
+  - 프리셋은 **3개 이하**로 제한 (과하면 촌스러움/산만함)
+  - 프리셋 구성요소: **문구(카피) + 포인트(라인/아이콘) + 패턴 강도**
+  - 선택 기준: **체류 상태(입실 전/체류/퇴실) 우선**, 그 다음 시간대/날씨는 “문구만” 미세 변경
+
+| 프리셋 | 트리거(우선순위) | 카피(예시) | 패턴/라인 강도 | 포인트 컬러 사용 |
+|--------|------------------|------------|----------------|------------------|
+| **Arrival** | 입실 전 | “곧 입실 안내를 시작해요” | Wave Line: 기본, 배경 패턴: 약(현재) | `status-info` 최소 |
+| **Stay** | 체류 중 | “파도 소리와 함께하는 특별한 휴식” | Wave Line: 애니메이션, 패턴: 중 | `status-info` 1~2곳 |
+| **Departure** | 퇴실 후 | “오늘의 추억을 간직해 주세요” | Wave Line: 약, 패턴: 약, 텍스트 강조 최소 | `status-info` 최소 |
+
+- **구현 형태(권장)**
+  - `lib/guest/heroPreset.ts`에 프리셋 함수(상태→프리셋) 1개로 중앙 관리
+  - `GuestHomeContent`는 “프리셋 데이터”만 받아 렌더링
+
+##### B) “비주얼 에셋 1개” 전략 (사진/영상/일러스트 중 하나만)
+
+- **추천**
+  - 공모전/판매 기준: **사진 1장(또는 4~6초 루프 영상 1개)**가 가장 즉시 체감됨
+  - 단, **오버레이는 단색 10~20%**만 허용(현재 `BrandMediaLayer`와 궁합 좋음)
+- **스펙**
+  - 1장 고정: 1440px 폭 기준 WebP(품질 70~80), 180~350KB 목표
+  - LCP 고려: Hero는 `priority` 유지, 레이지 에셋은 금지
+
+##### C) 타이포 위계 “고객 전용” 고정
+
+- **원칙**
+  - 고객 페이지에서만: `font-heading`은 타이틀, 본문은 기본 폰트(pretendard)
+  - 제목/본문의 자간/행간을 고정(화면마다 달라지면 상용감 하락)
+- **권장 스펙(모바일)**
+  - Page Title: 24~28px, 700~800, tracking-tight
+  - Card Title: 16px, 600~700, leading-tight
+  - Body: 14px, 400~500, leading-relaxed
+  - Meta: 12~13px, muted
+
+---
+
+#### 12.6.2 시스템 레이어 (완성도 = 일관성, SSOT)
+
+##### A) “5 컴포넌트 SSOT” 정의 (스펙을 고정값으로 문서/코드화)
+
+1) **Card**
+- Radius: 16px(`rounded-2xl`) 고정
+- Shadow: `shadow-card` / hover `shadow-card-hover` 2단계만
+- Variant:
+  - `info/cta`: 상단 오션 라인(현재 적용) = 브랜드 시그널
+  - `alert`: 왼쪽 스트립만
+- Padding:
+  - Header: `p-4 pb-2~3` (현재 흐름 유지)
+
+2) **Badge**
+- 배경: `bg-background-muted` (뉴트럴)
+- 텍스트/테두리: 상태별(`status-info|warning|error` + `/30`)
+- 크기: 기본(12px) 고정, 페이지마다 임의 확대 금지
+
+3) **IconTile (CardIconBadge)**
+- Size: sm(32), md(36), lg(40)만
+- Tone:
+  - 고객 페이지 기본: `info`
+  - 의미색 유지: 경고/에러는 `warning/error`
+- Surface:
+  - `tone=info`만 오션 글로우(현재 적용)
+
+4) **SectionHeader (고객 페이지 타이틀/섹션 타이틀)**
+- Wave Line: sm(24) / md(32) / lg(48) 3단계로만
+- 설명: 2줄 제한(line-clamp-2) 권장
+
+5) **InsetBox (SeaMist)**
+- `sea-mist-box`만 사용(임의 배경/테두리 금지)
+- 내부 여백: 12~16px, 콘텐츠 간격 8~12px
+
+##### B) 상태 컴포넌트 통일 (판매/심사에서 강력한 가산점)
+
+- 목표: 로딩/빈 상태/오류/권한/오프라인을 **각 1개 컴포넌트**로 고정
+- 권장 파일(예시)
+  - `components/shared/states/LoadingState.tsx`
+  - `components/shared/states/EmptyState.tsx` (기존 있으면 확장)
+  - `components/shared/states/ErrorState.tsx`
+  - `components/shared/states/OfflineState.tsx`
+  - `components/shared/states/PermissionState.tsx`
+- 적용 규칙
+  - 카드 내부 상태는 `variant="muted"` + 상태 컴포넌트 삽입
+  - “텍스트만 띄우기” 금지(화면마다 퀄리티 편차 발생)
+
+##### C) 정보 밀도 규칙(모바일 기준)
+
+- 기본형: **제목 1줄 + 보조 1줄 + 액션 1개**
+- 예외 허용: 공지(리스트), 가이드(탭/인스펙터)
+- 버튼은 1개가 원칙(보조 액션은 `ghost/outline`로 접기)
+
+---
+
+#### 12.6.3 폴리싱 레이어 (아, 잘 만들었네)
+
+##### A) 모션 3종 세트 + 토큰화
+
+- **A. 페이지 진입**: `opacity: 0→1`, `y: 8→0`, 220ms
+- **B. 카드 인터랙션**: hover y:-2, tap scale:0.99 (현재 `GuestMotionCard`)
+- **C. 리스트 스태거**: 50ms, 최대 8개까지만
+
+> 구현 권장: `lib/motion.ts`에 duration/ease/stagger를 상수로 SSOT.
+
+##### B) 리듬 통일 (Wave Line / Icon / Spacing)
+
+- Wave Line 길이 고정: 24/32/48 (sm/md/lg)
+- IconTile 크기 고정: 32/36/40 (sm/md/lg)
+- Spacing 단위 고정: 8/12/16/24만 사용(특히 카드 내부)
+
+##### C) Shadow 2단계로 축소(고급감)
+
+- 기본: `shadow-card`
+- hover/focus: `shadow-card-hover`
+- 그 외 shadow-soft-md 같은 예외는 **고객 페이지에서 제거/대체** 권장
+
+##### D) 접근성(심사 가산점) 체크
+
+- 포커스 링: 모든 버튼/링크/카드에 일관 적용(현재 `focus-visible:ring` 계열 유지)
+- 대비: `status-info`는 “포인트”로만(본문 링크/본문 강조 남발 금지)
+- 터치: 44px 유지(현재 적용됨)
+- 모션 감소: `useReducedMotion` 존중(현재 `GuestMotionCard` 기반 OK)
+
+---
+
+### 12.7 모바일 기준 적용 로드맵 (P0~P2)
+
+#### P0 (1~2일, 심사/판매 체감 최상)
+- Hero 프리셋 2종(Arrival/Stay) 도입 + 프리셋 선택 로직
+- 상태 컴포넌트 2개(Loading/Empty) 통일 적용(홈/공지/주문)
+- SectionHeader 패턴을 2~3곳에 고정 적용(Help/Guide/Order)
+
+#### P1 (2~3일, 전체 완성도 상승)
+- Error/Offline/Permission 상태 컴포넌트 추가 및 전 페이지 적용
+- 모션 토큰화(`lib/motion.ts`) + 리스트 스태거 표준화
+- Shadow/Border 예외 제거(고객 페이지 스캔)
+
+#### P2 (옵션, “제품 같은” 마감)
+- 카피 톤/문장 길이 규칙 정리(한글 기준 14~18자 권장)
+- 스토어/공모전 스크린샷 4장에 맞춘 “대표 화면” 마감(홈/공지/도움말/주문완료)
+
+## 13. 결론
 
 **"오션뷰 카라반"의 감성**은 대면적 색상이 아니라,  
 **잔잔한 Wave Line + 미세한 오션 글로우 + 통일된 블루 포인트**로 전달합니다.
