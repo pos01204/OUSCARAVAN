@@ -18,9 +18,10 @@ export function GuestPageHeader({ title, description, rightSlot, className }: Gu
           <h1 className="text-2xl md:text-3xl font-heading font-bold text-brand-dark tracking-tight">
             {title}
           </h1>
-          <div className="mt-2 h-1 w-10 rounded-full bg-status-info/40" aria-hidden="true" />
+          {/* Animated Ocean Wave Line */}
+          <div className="mt-2 h-1 w-12 rounded-full bg-gradient-to-r from-status-info/20 via-status-info/50 to-status-info/20" aria-hidden="true" />
           {description ? (
-            <p className="mt-2 text-sm text-muted-foreground leading-relaxed">{description}</p>
+            <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{description}</p>
           ) : null}
         </div>
         {rightSlot ? <div className="shrink-0">{rightSlot}</div> : null}

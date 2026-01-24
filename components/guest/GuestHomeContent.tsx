@@ -49,12 +49,12 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
 
   return (
     <main className="space-y-6" role="main" aria-label="고객 홈 페이지">
-      {/* Hero Section — 브랜드 라이트 테마 */}
+      {/* Hero Section — 오션뷰 테마 */}
       <motion.section
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="relative overflow-hidden rounded-2xl bg-background-elevated p-8 text-center border border-border shadow-card"
+        className="ocean-wave-bg relative overflow-hidden rounded-2xl bg-background-elevated p-8 md:p-10 text-center border border-border shadow-card"
         aria-label="환영 메시지"
       >
         {/* 향후 실사진/영상 브랜딩 레이어(에셋 없으면 렌더되지 않음) */}
@@ -66,13 +66,17 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
           overlayClassName="bg-white/10"
           priority
         />
-        <h1 className="font-heading text-2xl font-bold text-brand-dark relative z-10">
+        {/* 환영 인사 */}
+        <p className="text-xs font-medium tracking-widest text-status-info/70 uppercase relative z-10 mb-2">
+          Welcome to OUSCARAVAN
+        </p>
+        <h1 className="font-heading text-2xl md:text-3xl font-bold text-brand-dark relative z-10 tracking-tight">
           {WELCOME_MESSAGE.korean.replace('{name}', reservation.guestName)}
         </h1>
-        {/* Ocean Wave Line */}
-        <div className="mx-auto mt-3 h-1 w-12 rounded-full bg-status-info/40 relative z-10" aria-hidden="true" />
-        <p className="mt-3 text-sm text-muted-foreground relative z-10">
-          바다가 보이는 특별한 휴식
+        {/* Animated Ocean Wave Line */}
+        <div className="mx-auto wave-line-animated relative z-10" aria-hidden="true" />
+        <p className="mt-4 text-sm text-muted-foreground relative z-10 leading-relaxed">
+          파도 소리와 함께하는 <span className="text-status-info font-medium">특별한 휴식</span>
         </p>
       </motion.section>
 

@@ -441,26 +441,80 @@ npm run dev
 
 ---
 
-## 11. 결론
+## 11. 업스케일 적용 (최종)
 
-**"오션뷰 카라반"의 감성**은 대면적 색상이 아니라,  
-**잔잔한 Wave Line + 통일된 오션 블루 아이콘**으로 전달합니다.
+### 11.1 Hero 영역 강화
 
-### 핵심 변경 요약
+```tsx
+// GuestHomeContent.tsx
+<motion.section className="ocean-wave-bg ...">
+  <p className="text-xs tracking-widest text-status-info/70 uppercase">
+    Welcome to OUSCARAVAN
+  </p>
+  <h1>강**님, 환영합니다</h1>
+  <div className="wave-line-animated" />  {/* 애니메이션 Wave Line */}
+  <p>파도 소리와 함께하는 <span className="text-status-info">특별한 휴식</span></p>
+</motion.section>
+```
 
-| 변경 유형 | 파일 수 | 변경량 |
-|-----------|---------|--------|
-| 색상값 변경 | 7개 | 클래스 1~3개씩 |
-| 라인 추가 | 4개 | 1~2줄씩 |
-| CSS 추가 | 1개 | 15줄 |
+### 11.2 카드 상단 오션 라인
 
-### 기대 효과
+```css
+/* Card variant="info" */
+before:bg-gradient-to-r before:from-transparent before:via-status-info/30 before:to-transparent
 
-- 기존 레이아웃 **100% 유지**
-- 색상 토큰 추가 **없음**
-- **P0 작업(4개)만으로** 감성 체감 가능
-- 관리자 페이지 **영향 없음**
+/* Card variant="cta" */
+before:bg-gradient-to-r before:from-transparent before:via-status-info/40 before:to-transparent
+```
+
+### 11.3 아이콘 오션 글로우
+
+```tsx
+// CardIconBadge tone="info"
+const oceanGlowClass = 'bg-status-info/8 shadow-[0_0_0_1px_rgba(37,99,235,0.08),0_1px_3px_rgba(37,99,235,0.06)]';
+```
+
+### 11.4 CSS 애니메이션
+
+```css
+/* Wave Line 펄스 애니메이션 */
+@keyframes wave-pulse {
+  0%, 100% { opacity: 0.4; transform: scaleX(1); }
+  50% { opacity: 0.6; transform: scaleX(1.1); }
+}
+
+/* Ocean Wave 배경 패턴 */
+.ocean-wave-bg::before {
+  background: 
+    radial-gradient(ellipse 80% 50% at 50% 120%, rgba(37, 99, 235, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 30% at 70% 110%, rgba(37, 99, 235, 0.02) 0%, transparent 40%);
+}
+```
 
 ---
 
-**다음 단계:** P0 작업부터 순차 적용 → 빌드 확인 → P1 적용
+## 12. 결론
+
+**"오션뷰 카라반"의 감성**은 대면적 색상이 아니라,  
+**잔잔한 Wave Line + 미세한 오션 글로우 + 통일된 블루 포인트**로 전달합니다.
+
+### 최종 적용 요소
+
+| 요소 | 적용 위치 | 효과 |
+|------|-----------|------|
+| **Ocean Wave Background** | Hero 영역 | 미세한 웨이브 그라데이션 배경 |
+| **Animated Wave Line** | Hero, PageHeader | 미세한 펄스 애니메이션 |
+| **Ocean Card Line** | Card info/cta | 상단 오션 블루 그라데이션 라인 |
+| **Ocean Icon Glow** | CardIconBadge info | 옅은 블루 배경 + 미세 그림자 |
+| **Accent Text** | Hero 서브카피 | "특별한 휴식" 블루 강조 |
+
+### 체감 변화
+
+```
+Before: 단순 색상 변경 → 기능적
+After:  미세한 패턴 + 애니메이션 + 글로우 → 감성적
+```
+
+---
+
+**적용 완료:** P0~P2 + 업스케일 전체 반영

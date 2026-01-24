@@ -22,6 +22,9 @@ const toneClasses: Record<BadgeTone, string> = {
   error: 'text-status-error',
 };
 
+// 오션 글로우 효과 (info tone 전용)
+const oceanGlowClass = 'bg-status-info/8 shadow-[0_0_0_1px_rgba(37,99,235,0.08),0_1px_3px_rgba(37,99,235,0.06)]';
+
 const sizeClasses: Record<BadgeSize, { container: string; icon: string }> = {
   sm: { container: 'h-8 w-8', icon: 'h-4 w-4' },
   md: { container: 'h-9 w-9', icon: 'h-5 w-5' },
@@ -37,10 +40,13 @@ export function CardIconBadge({
   strokeWidth = 2.5,
 }: CardIconBadgeProps) {
   const sizing = sizeClasses[size];
+  const isOceanTone = tone === 'info';
+  
   return (
     <div
       className={cn(
-        'inline-flex items-center justify-center rounded-xl bg-muted/60',
+        'inline-flex items-center justify-center rounded-xl transition-all duration-200',
+        isOceanTone ? oceanGlowClass : 'bg-muted/60',
         sizing.container,
         toneClasses[tone],
         className

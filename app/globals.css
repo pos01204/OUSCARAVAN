@@ -514,6 +514,23 @@ button:active {
   @apply mt-1.5 h-0.5 w-6 rounded-full bg-status-info/30;
 }
 
+/* Wave Line 애니메이션 (미세한 펄스) */
+.wave-line-animated {
+  @apply mt-3 h-1 w-12 rounded-full bg-status-info/40;
+  animation: wave-pulse 3s ease-in-out infinite;
+}
+
+@keyframes wave-pulse {
+  0%, 100% {
+    opacity: 0.4;
+    transform: scaleX(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scaleX(1.1);
+  }
+}
+
 /* Sea Mist - 인셋 박스 */
 .sea-mist-box {
   @apply rounded-xl bg-background-muted border border-border p-4;
@@ -522,4 +539,32 @@ button:active {
 /* Ocean Point - 텍스트 포인트 */
 .ocean-point {
   @apply text-status-info;
+}
+
+/* Ocean Wave Pattern - Hero 배경용 */
+.ocean-wave-bg {
+  position: relative;
+  overflow: hidden;
+}
+
+.ocean-wave-bg::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: 
+    radial-gradient(ellipse 80% 50% at 50% 120%, rgba(37, 99, 235, 0.03) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 30% at 70% 110%, rgba(37, 99, 235, 0.02) 0%, transparent 40%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* Ocean Icon Glow - 아이콘 타일 오션 효과 */
+.ocean-icon-glow {
+  @apply bg-status-info/8;
+  box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.08), 0 1px 3px rgba(37, 99, 235, 0.06);
+}
+
+/* Ocean Card Top Line */
+.ocean-card-line::before {
+  background: linear-gradient(90deg, transparent 0%, rgba(37, 99, 235, 0.3) 20%, rgba(37, 99, 235, 0.4) 50%, rgba(37, 99, 235, 0.3) 80%, transparent 100%) !important;
 }

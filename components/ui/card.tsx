@@ -5,8 +5,8 @@ type CardVariant = "default" | "info" | "cta" | "alert" | "muted"
 
 const variantClasses: Record<CardVariant, string> = {
   default: "border-border bg-background-elevated",
-  info: "border-border bg-background-elevated relative before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-brand-cream-dark/35",
-  cta: "border-border-emphasis bg-background-elevated relative before:absolute before:inset-x-0 before:top-0 before:h-0.5 before:bg-brand-cream-dark/45",
+  info: "border-border bg-background-elevated relative before:absolute before:inset-x-0 before:top-0 before:h-px before:rounded-t-2xl before:bg-gradient-to-r before:from-transparent before:via-status-info/30 before:to-transparent",
+  cta: "border-border-emphasis bg-background-elevated relative before:absolute before:inset-x-0 before:top-0 before:h-0.5 before:rounded-t-2xl before:bg-gradient-to-r before:from-transparent before:via-status-info/40 before:to-transparent",
   alert: "border-border bg-background-elevated relative before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:rounded-l-2xl before:bg-status-error/50",
   muted: "border-border/40 bg-background-muted",
 }
