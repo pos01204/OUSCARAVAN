@@ -10,6 +10,7 @@ import { formatDateTimeToKorean } from '@/lib/utils/date';
 import { getGuestAnnouncementReadIds, markGuestAnnouncementRead } from '@/lib/api';
 import type { Announcement } from '@/types';
 import { AlertTriangle, Bell } from 'lucide-react';
+import { CardIconBadge } from '@/components/shared/CardIconBadge';
 
 interface GuestAnnouncementsProps {
   token: string;
@@ -23,11 +24,11 @@ const STORAGE_KEY = 'guest-announcements-read';
 function getLevelBadge(level: Announcement['level']) {
   switch (level) {
     case 'critical':
-      return { label: '긴급', className: 'bg-red-100 text-red-800 border-red-200' };
+      return { label: '긴급', className: 'bg-background-muted text-status-error border-border' };
     case 'warning':
-      return { label: '주의', className: 'bg-orange-100 text-orange-800 border-orange-200' };
+      return { label: '주의', className: 'bg-background-muted text-status-warning border-border' };
     default:
-      return { label: '안내', className: 'bg-blue-100 text-blue-800 border-blue-200' };
+      return { label: '안내', className: 'bg-background-muted text-status-info border-border' };
   }
 }
 
@@ -118,14 +119,14 @@ export function GuestAnnouncements({ token, announcements, loading, error }: Gue
       {showCritical && (
         <Card variant="alert">
           <CardContent className="flex items-start gap-3 p-4">
-            <AlertTriangle className="mt-0.5 h-5 w-5 text-red-600" />
+            <CardIconBadge icon={AlertTriangle} tone="warning" size="sm" />
             <div className="space-y-1">
               <div className="flex flex-wrap items-center gap-2">
-                <Badge variant="outline" className="bg-red-100 text-red-700 border-red-200">
+                <Badge variant="outline" className="bg-background-muted text-status-error border-border">
                   긴급 공지
                 </Badge>
                 {!readIds.includes(critical.id) && (
-                  <Badge variant="secondary" className="bg-white text-red-600 border-red-200">
+                  <Badge variant="secondary" className="bg-background-elevated text-muted-foreground border-border">
                     새 공지
                   </Badge>
                 )}
@@ -135,7 +136,7 @@ export function GuestAnnouncements({ token, announcements, loading, error }: Gue
               <Button
                 variant="ghost"
                 size="sm"
-                className="px-0 text-xs text-red-700"
+                className="px-0 text-xs text-muted-foreground hover:text-foreground"
                 onClick={() => {
                   if (critical) {
                     markRead(critical.id);
@@ -154,7 +155,8 @@ export function GuestAnnouncements({ token, announcements, loading, error }: Gue
         <CardHeader className="flex flex-col gap-3 space-y-0 pb-3 md:flex-row md:items-center md:justify-between">
           <div className="space-y-1">
             <CardTitle className="text-base font-semibold flex items-center gap-2">
-              <Bell className="h-4 w-4 text-primary" /> 전체 공지
+              <CardIconBadge icon={Bell} tone="info" size="sm" />
+              전체 공지
             </CardTitle>
             <p className="text-xs text-muted-foreground">읽지 않은 공지 {unreadCount}건</p>
           </div>

@@ -132,7 +132,7 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
           <Card variant="info">
             <CardContent className="p-4">
               {/* BBQ 미니 요약 (진입 전 기대치/준비물 안내) */}
-              <div className="mb-3 rounded-lg border border-primary/20 bg-background/60 p-3">
+              <div className="mb-3 rounded-lg border border-border bg-background p-3">
                 <div className="flex items-center justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-sm font-bold">불멍/바베큐 시작 전</p>

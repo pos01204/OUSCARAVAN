@@ -15,6 +15,7 @@ import Link from 'next/link';
 import { Input } from '@/components/ui/input';
 import { GuestPageHeader } from '@/components/guest/GuestPageHeader';
 import { highlightText } from '@/lib/utils/highlight';
+import { CardIconBadge } from '@/components/shared/CardIconBadge';
 
 interface GuestHelpContentProps {
   token?: string;
@@ -67,7 +68,7 @@ export function GuestHelpContent({ token }: GuestHelpContentProps) {
         <Card variant="info">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2">
-              <HelpCircle className="h-5 w-5 text-primary" />
+              <CardIconBadge icon={HelpCircle} tone="info" size="sm" />
               자주 찾는 도움
             </CardTitle>
           </CardHeader>
@@ -118,7 +119,7 @@ export function GuestHelpContent({ token }: GuestHelpContentProps) {
         <Card variant="cta">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-destructive" />
+              <CardIconBadge icon={AlertTriangle} tone="warning" size="sm" />
               응급 연락처
             </CardTitle>
           </CardHeader>
