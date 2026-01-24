@@ -72,12 +72,12 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
 
   return (
     <main className="space-y-6" role="main" aria-label="고객 홈 페이지">
-      {/* Hero Section — 프리미엄 호텔 스타일 */}
+      {/* Hero Section — 깔끔한 호텔 스타일 */}
       <motion.section
         initial={PAGE_ENTER.initial}
         animate={PAGE_ENTER.animate}
         transition={PAGE_ENTER.transition}
-        className="hero-card hero-card-corners relative overflow-hidden rounded-2xl p-10 md:p-12 text-center"
+        className="hero-card relative overflow-hidden rounded-2xl p-8 md:p-10 text-center"
         aria-label="환영 메시지"
       >
         {/* 향후 실사진/영상 브랜딩 레이어(에셋 없으면 렌더되지 않음) */}
@@ -90,15 +90,13 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
           priority
         />
         
-        {/* Eyebrow 배지 */}
-        <div className="relative z-10 mb-4">
-          <span className="hero-eyebrow">
-            {heroPreset.eyebrow}
-          </span>
-        </div>
+        {/* Eyebrow */}
+        <p className="text-[11px] font-medium tracking-[0.25em] text-muted-foreground uppercase relative z-10 mb-3">
+          {heroPreset.eyebrow}
+        </p>
         
         {/* 메인 타이틀 */}
-        <h1 className="hero-title font-heading text-2xl md:text-3xl font-bold relative z-10 tracking-tight">
+        <h1 className="font-heading text-2xl md:text-3xl font-bold text-brand-dark relative z-10 tracking-tight">
           {WELCOME_MESSAGE.korean.replace('{name}', reservation.guestName)}
         </h1>
         
@@ -106,11 +104,11 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
         <div className={`mx-auto ${heroPreset.waveLineClass} relative z-10`} aria-hidden="true" />
         
         {/* 서브타이틀 */}
-        <p className="mt-5 text-sm text-muted-foreground relative z-10 leading-relaxed">
+        <p className="mt-4 text-sm text-muted-foreground relative z-10 leading-relaxed">
           {heroPreset.subtitle}
         </p>
         
-        {/* 체류 기간 배지 */}
+        {/* 체류 기간 */}
         {stayRange && (
           <div className="mt-4 relative z-10">
             <span className="hero-date-badge">

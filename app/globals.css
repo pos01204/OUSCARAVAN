@@ -770,134 +770,31 @@ button:active {
 }
 
 /* ═══════════════════════════════════════════════════
-   Hero 카드 프리미엄 스타일
+   Hero 카드 프리미엄 스타일 (절제된 버전)
    ═══════════════════════════════════════════════════ */
 
-/* Hero 카드 기본 */
+/* Hero 카드 기본 - 깔끔한 흰색 배경 + 서브틀한 그림자 */
 .hero-card {
   position: relative;
-  background: linear-gradient(
-    180deg,
-    rgba(255, 255, 255, 1) 0%,
-    rgba(250, 250, 252, 1) 50%,
-    rgba(247, 249, 252, 1) 100%
-  );
+  background: #FFFFFF;
   border: 1px solid rgba(196, 184, 150, 0.25);
   box-shadow: 
     0 1px 3px rgba(26, 23, 20, 0.04),
-    0 4px 12px rgba(26, 23, 20, 0.03),
-    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    0 4px 16px rgba(26, 23, 20, 0.04);
 }
 
-/* Hero 상단 장식 라인 */
-.hero-card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 80px;
-  height: 2px;
-  background: linear-gradient(
-    90deg,
-    transparent 0%,
-    rgba(37, 99, 235, 0.2) 20%,
-    rgba(37, 99, 235, 0.4) 50%,
-    rgba(37, 99, 235, 0.2) 80%,
-    transparent 100%
-  );
-  border-radius: 0 0 2px 2px;
-}
-
-/* Hero 하단 그라데이션 오버레이 */
-.hero-card::after {
-  content: '';
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 40%;
-  background: linear-gradient(
-    to top,
-    rgba(247, 249, 252, 0.8) 0%,
-    transparent 100%
-  );
-  pointer-events: none;
-  z-index: 0;
-}
-
-/* Hero 코너 장식 */
-.hero-card-corners {
-  position: relative;
-}
-
-.hero-card-corners::before,
-.hero-card-corners::after {
-  content: '';
-  position: absolute;
-  width: 24px;
-  height: 24px;
-  border-color: rgba(37, 99, 235, 0.15);
-  pointer-events: none;
-}
-
-.hero-card-corners::before {
-  top: 12px;
-  left: 12px;
-  border-top: 1px solid;
-  border-left: 1px solid;
-  border-top-left-radius: 4px;
-}
-
-.hero-card-corners::after {
-  bottom: 12px;
-  right: 12px;
-  border-bottom: 1px solid;
-  border-right: 1px solid;
-  border-bottom-right-radius: 4px;
-}
-
-/* Hero 타이틀 강조 */
-.hero-title {
-  background: linear-gradient(
-    135deg,
-    #1A1714 0%,
-    #3D3730 50%,
-    #1A1714 100%
-  );
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-/* Hero eyebrow 스타일 */
-.hero-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 4px 12px;
-  background: rgba(37, 99, 235, 0.06);
-  border: 1px solid rgba(37, 99, 235, 0.1);
-  border-radius: 20px;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  color: rgba(37, 99, 235, 0.8);
-}
-
-/* Hero 날짜 배지 */
+/* Hero 날짜 배지 - 미니멀 스타일 */
 .hero-date-badge {
   display: inline-flex;
   align-items: center;
   padding: 6px 14px;
-  background: rgba(240, 240, 240, 0.8);
-  border: 1px solid rgba(196, 184, 150, 0.2);
-  border-radius: 8px;
+  background: rgba(247, 247, 247, 0.9);
+  border: 1px solid rgba(196, 184, 150, 0.15);
+  border-radius: 6px;
   font-size: 11px;
   font-weight: 500;
   color: #6B6358;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.01em;
 }
 
 .card-icon-wrapper-info > svg {
