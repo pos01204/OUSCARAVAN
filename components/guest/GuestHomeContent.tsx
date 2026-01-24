@@ -30,6 +30,26 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
     useGuestAnnouncements(token);
   const heroPreset = getGuestHeroPreset(reservation.status);
 
+  const formatYmd = (isoLike?: string) => {
+    if (!isoLike) return '';
+    const d = new Date(isoLike);
+    if (Number.isNaN(d.getTime())) return '';
+    const parts = new Intl.DateTimeFormat('ko-KR', {
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+    }).formatToParts(d);
+    const y = parts.find((p) => p.type === 'year')?.value ?? '';
+    const m = parts.find((p) => p.type === 'month')?.value ?? '';
+    const day = parts.find((p) => p.type === 'day')?.value ?? '';
+    return `${y}.${m}.${day}`;
+  };
+
+  const stayRange =
+    reservation.checkin && reservation.checkout
+      ? `${formatYmd(reservation.checkin)} — ${formatYmd(reservation.checkout)}`
+      : null;
+
   useEffect(() => {
     // Railway API에서 가져온 예약 정보로 게스트 정보 설정
     setGuestInfo({
@@ -70,23 +90,22 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
           priority
         />
         {/* 환영 인사 */}
-        <p className="text-xs font-medium tracking-widest text-status-info/70 uppercase relative z-10 mb-2">
+        <p className="text-[11px] font-medium tracking-[0.28em] text-muted-foreground uppercase relative z-10 mb-2">
           {heroPreset.eyebrow}
         </p>
         <h1 className="font-heading text-2xl md:text-3xl font-bold text-brand-dark relative z-10 tracking-tight">
           {WELCOME_MESSAGE.korean.replace('{name}', reservation.guestName)}
         </h1>
-        {/* Animated Ocean Wave Line */}
+        {/* Premium rule */}
         <div className={`mx-auto ${heroPreset.waveLineClass} relative z-10`} aria-hidden="true" />
         <p className="mt-4 text-sm text-muted-foreground relative z-10 leading-relaxed">
           {heroPreset.subtitle}
-          {heroPreset.accent ? (
-            <>
-              {' '}
-              <span className="text-status-info font-medium">{heroPreset.accent}</span>
-            </>
-          ) : null}
         </p>
+        {stayRange ? (
+          <p className="mt-3 text-[11px] text-muted-foreground/80 relative z-10">
+            {stayRange}
+          </p>
+        ) : null}
       </motion.section>
 
       <GuestAnnouncements

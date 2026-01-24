@@ -1,7 +1,6 @@
 export type GuestHeroPreset = {
   eyebrow: string;
   subtitle: string;
-  accent?: string;
   waveLineClass: string;
   patternClass: string;
 };
@@ -14,8 +13,8 @@ export function getGuestHeroPreset(status: GuestStatus): GuestHeroPreset {
   if (status === 'checked_out') {
     return {
       eyebrow: BASE_EYEBROW,
-      subtitle: '오늘의 추억을 간직해 주세요',
-      waveLineClass: 'wave-line',
+      subtitle: '오늘도 함께해 주셔서 감사합니다',
+      waveLineClass: 'hero-rule',
       patternClass: 'ocean-wave-bg--soft',
     };
   }
@@ -23,17 +22,16 @@ export function getGuestHeroPreset(status: GuestStatus): GuestHeroPreset {
   if (status === 'checked_in') {
     return {
       eyebrow: BASE_EYEBROW,
-      subtitle: '파도 소리와 함께하는',
-      accent: '특별한 휴식',
-      waveLineClass: 'wave-line-animated',
-      patternClass: 'ocean-wave-bg--medium',
+      subtitle: '편안한 스테이를 준비했어요',
+      waveLineClass: 'hero-rule-animated',
+      patternClass: 'ocean-wave-bg--soft',
     };
   }
 
   return {
     eyebrow: BASE_EYEBROW,
-    subtitle: '곧 입실 안내를 시작해요',
-    waveLineClass: 'wave-line',
+    subtitle: '체크인 안내를 준비하고 있어요',
+    waveLineClass: 'hero-rule',
     patternClass: 'ocean-wave-bg--soft',
   };
 }
