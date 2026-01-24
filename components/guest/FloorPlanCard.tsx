@@ -32,37 +32,38 @@ function FloorPlanCardComponent({ assignedRoom }: FloorPlanCardProps) {
   })();
 
   return (
-    <GuestMotionCard>
-      <Card variant="info" role="region" aria-label="배정된 공간 약도">
-      <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-brand-dark">
-          <CardIconBadge icon={MapPin} tone="info" />
-          배정된 위치
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* 약도 */}
-        <div className="w-full rounded-xl bg-background overflow-hidden">
-          <FloorPlanViewer assignedRoom={assignedRoom} showLabels={true} />
-        </div>
-        
-        {/* 배정 정보 - 위치만 표시 (번호 미노출) */}
-        <div 
-          className="flex items-center gap-4 rounded-xl bg-primary p-4"
-          role="status" 
-          aria-live="polite"
-        >
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10">
-            <Navigation className="h-5 w-5 text-white" />
+    <GuestMotionCard motionMode="spring">
+      <Card variant="info" className="card-hover-glow" role="region" aria-label="배정된 공간 약도">
+        <CardHeader className="pb-3">
+          <CardTitle className="flex items-center gap-2 text-brand-dark">
+            <CardIconBadge icon={MapPin} tone="info" />
+            배정된 위치
+          </CardTitle>
+          <div className="mt-1.5 h-0.5 w-6 rounded-full bg-status-info/30" aria-hidden="true" />
+        </CardHeader>
+        <CardContent className="space-y-4">
+          {/* 약도 */}
+          <div className="w-full rounded-xl bg-background overflow-hidden border border-border/30">
+            <FloorPlanViewer assignedRoom={assignedRoom} showLabels={true} />
           </div>
-          <div>
-            <p className="text-xs text-white/70 font-medium">고객님의 공간</p>
-            <p className="text-lg font-bold text-white">
-              {positionLabel} 카라반
-            </p>
+          
+          {/* 배정 정보 - 위치만 표시 (번호 미노출) */}
+          <div 
+            className="flex items-center gap-4 rounded-xl bg-primary p-4"
+            role="status" 
+            aria-live="polite"
+          >
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-white/10">
+              <Navigation className="h-5 w-5 text-white" />
+            </div>
+            <div>
+              <p className="text-xs text-white/70 font-medium tracking-wide">고객님의 공간</p>
+              <p className="text-lg font-bold text-white">
+                {positionLabel} 카라반
+              </p>
+            </div>
           </div>
-        </div>
-      </CardContent>
+        </CardContent>
       </Card>
     </GuestMotionCard>
   );

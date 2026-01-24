@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Wifi, Copy, QrCode } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardInset, CardLabelValue } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { WIFI_INFO } from '@/lib/constants';
 import { useToast } from '@/components/ui/use-toast';
@@ -68,8 +68,8 @@ export function WifiCard() {
           numberOfPieces={200}
         />
       )}
-      <GuestMotionCard>
-        <Card variant="info" className="overflow-hidden">
+      <GuestMotionCard motionMode="spring">
+        <Card variant="info" className="overflow-hidden card-hover-glow">
           <CardHeader className="pb-2">
             <CardTitle className="flex items-center gap-2 text-brand-dark">
               <CardIconBadge icon={Wifi} tone="info" />
@@ -78,18 +78,16 @@ export function WifiCard() {
             <div className="mt-1.5 h-0.5 w-6 rounded-full bg-status-info/30" aria-hidden="true" />
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="rounded-xl bg-background-muted p-4">
+            <CardInset>
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-xs text-muted-foreground font-medium">네트워크</p>
-                  <p className="text-base font-semibold text-brand-dark">{WIFI_INFO.ssid}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-xs text-muted-foreground font-medium">비밀번호</p>
-                  <p className="text-base font-mono font-semibold text-status-info">{WIFI_INFO.password}</p>
-                </div>
+                <CardLabelValue label="네트워크" value={WIFI_INFO.ssid} />
+                <CardLabelValue 
+                  label="비밀번호" 
+                  value={WIFI_INFO.password} 
+                  valueClassName="font-mono text-status-info"
+                />
               </div>
-            </div>
+            </CardInset>
             {showPasswordFallback && (
               <div className="rounded-xl border border-border bg-background-muted p-3">
                 <p className="text-xs text-muted-foreground font-medium">비밀번호(직접 복사)</p>

@@ -624,3 +624,150 @@ button:active {
 .ocean-card-line::before {
   background: linear-gradient(90deg, transparent 0%, rgba(37, 99, 235, 0.3) 20%, rgba(37, 99, 235, 0.4) 50%, rgba(37, 99, 235, 0.3) 80%, transparent 100%) !important;
 }
+
+/* ═══════════════════════════════════════════════════
+   카드 프리미엄 스타일 시스템
+   ═══════════════════════════════════════════════════ */
+
+/* 카드 내부 하이라이트 - 상단 가장자리에 서브틀한 밝은 선 */
+.card-inner-highlight {
+  position: relative;
+}
+
+.card-inner-highlight::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    rgba(255, 255, 255, 0.8) 0%,
+    rgba(255, 255, 255, 0) 3%,
+    transparent 100%
+  );
+  opacity: 0.6;
+}
+
+/* 프리미엄 카드 - 더 섬세한 레이어드 느낌 */
+.card-premium {
+  position: relative;
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(250, 250, 250, 1) 100%
+  );
+}
+
+.card-premium::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  box-shadow: 
+    inset 0 1px 0 rgba(255, 255, 255, 0.9),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.02);
+}
+
+/* 강화된 인셋 영역 - 더 명확한 깊이감 */
+.card-inset {
+  @apply rounded-xl bg-background-muted border border-border/50 p-4;
+  box-shadow: 
+    inset 0 1px 2px rgba(0, 0, 0, 0.03),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.5);
+}
+
+.card-inset-sm {
+  @apply rounded-lg bg-background-muted border border-border/40 p-3;
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.02);
+}
+
+/* 인셋 영역 내부 아이템 (리스트 아이템 등) */
+.card-inset-item {
+  @apply rounded-lg bg-background-elevated/80 border border-border/30 p-3;
+  transition: all 0.15s ease;
+}
+
+.card-inset-item:hover {
+  @apply bg-background-elevated border-border/50;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+/* 카드 섹션 구분선 */
+.card-divider {
+  @apply h-px w-full bg-gradient-to-r from-transparent via-border to-transparent;
+}
+
+/* 카드 라벨 스타일 통일 */
+.card-label {
+  @apply text-xs font-medium text-muted-foreground tracking-wide uppercase;
+  letter-spacing: 0.03em;
+}
+
+.card-value {
+  @apply text-base font-semibold text-brand-dark;
+}
+
+.card-value-lg {
+  @apply text-xl font-bold text-brand-dark;
+}
+
+/* 카드 액션 영역 */
+.card-actions {
+  @apply flex gap-2 pt-3 border-t border-border/50;
+}
+
+/* 카드 호버 글로우 (info 계열) */
+.card-hover-glow {
+  transition: box-shadow 0.2s ease;
+}
+
+.card-hover-glow:hover {
+  box-shadow: 
+    0 8px 16px rgba(26, 23, 20, 0.08),
+    0 0 0 1px rgba(37, 99, 235, 0.08);
+}
+
+/* 카드 포커스 스타일 강화 */
+.card-focus-ring:focus-visible {
+  outline: none;
+  box-shadow: 
+    0 0 0 2px var(--background),
+    0 0 0 4px rgba(37, 99, 235, 0.3);
+}
+
+/* 인터랙티브 카드 프레스 피드백 */
+.card-press {
+  transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.card-press:active {
+  transform: scale(0.99);
+  box-shadow: 0 1px 2px rgba(26, 23, 20, 0.05);
+}
+
+/* 카드 배지/태그 영역 */
+.card-tag {
+  @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-xs font-medium;
+  @apply bg-background-muted text-muted-foreground border border-border/40;
+}
+
+.card-tag-info {
+  @apply bg-status-info/10 text-status-info border-status-info/20;
+}
+
+/* 카드 아이콘 영역 통일 */
+.card-icon-wrapper {
+  @apply flex items-center justify-center rounded-xl p-2.5;
+  @apply bg-background-muted border border-border/30;
+  transition: all 0.15s ease;
+}
+
+.card-icon-wrapper-info {
+  @apply bg-status-info/8 border-status-info/15;
+}
+
+.card-icon-wrapper-info > svg {
+  @apply text-status-info;
+}

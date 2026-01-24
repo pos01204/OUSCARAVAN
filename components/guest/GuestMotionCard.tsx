@@ -1,15 +1,25 @@
 import * as React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { cn } from '@/lib/utils';
-import { CARD_MOTION } from '@/lib/motion';
+import { CARD_MOTION, CARD_SPRING, CARD_LIFT, CARD_PREMIUM } from '@/lib/motion';
 
 type MotionDivProps = React.ComponentPropsWithoutRef<typeof motion.div>;
+type MotionMode = 'default' | 'spring' | 'lift' | 'premium';
 
 interface GuestMotionCardProps extends MotionDivProps {
   interactive?: boolean;
   hoverLift?: boolean;
   pressScale?: boolean;
+  /** 모션 모드: default(기본), spring(탄성), lift(리프트+그림자), premium(섬세) */
+  motionMode?: MotionMode;
 }
+
+const motionPresets: Record<MotionMode, typeof CARD_MOTION> = {
+  default: CARD_MOTION,
+  spring: CARD_SPRING,
+  lift: CARD_LIFT,
+  premium: CARD_PREMIUM,
+};
 
 export function GuestMotionCard({
   children,
@@ -17,17 +27,19 @@ export function GuestMotionCard({
   interactive = true,
   hoverLift = true,
   pressScale = true,
+  motionMode = 'default',
   ...props
 }: GuestMotionCardProps) {
   const reduceMotion = useReducedMotion();
   const allowMotion = interactive && !reduceMotion;
+  const preset = motionPresets[motionMode];
 
   return (
     <motion.div
       className={cn('will-change-transform', className)}
-      whileHover={allowMotion && hoverLift ? CARD_MOTION.hover : undefined}
-      whileTap={allowMotion && pressScale ? CARD_MOTION.tap : undefined}
-      transition={CARD_MOTION.transition}
+      whileHover={allowMotion && hoverLift ? preset.hover : undefined}
+      whileTap={allowMotion && pressScale ? preset.tap : undefined}
+      transition={'transition' in preset ? preset.transition : CARD_MOTION.transition}
       {...props}
     >
       {children}

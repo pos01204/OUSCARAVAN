@@ -60,17 +60,17 @@ export function QuickActionGrid({ token }: QuickActionGridProps) {
       {items.map((item) => {
         const Icon = item.icon;
         return (
-          <Link key={item.key} href={item.href} className="block group">
-            <GuestMotionCard className="h-full">
+          <Link key={item.key} href={item.href} className="block group focus-visible:outline-none">
+            <GuestMotionCard className="h-full" motionMode="lift">
               <Card
                 interactive
                 variant="cta"
-                className="h-full p-4 rounded-xl"
+                className="h-full p-4 rounded-xl card-hover-glow"
               >
                 <div className="flex items-start gap-3">
-                <div className="mt-0.5 transition-transform group-hover:scale-105">
-                  <CardIconBadge icon={Icon} tone={item.tone} size="md" />
-                </div>
+                  <div className="mt-0.5 transition-transform duration-200 group-hover:scale-105">
+                    <CardIconBadge icon={Icon} tone={item.tone} size="md" />
+                  </div>
                   <div className="min-w-0">
                     <p className="font-semibold text-sm md:text-base leading-tight text-brand-dark">{item.title}</p>
                     <p className="text-xs text-brand-dark-muted mt-1">{item.desc}</p>
