@@ -2,7 +2,9 @@ import * as React from 'react';
 import { motion, useReducedMotion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 
-interface GuestMotionCardProps extends React.HTMLAttributes<HTMLDivElement> {
+type MotionDivProps = React.ComponentPropsWithoutRef<typeof motion.div>;
+
+interface GuestMotionCardProps extends MotionDivProps {
   interactive?: boolean;
   hoverLift?: boolean;
   pressScale?: boolean;
