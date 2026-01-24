@@ -171,7 +171,7 @@ export function CheckInOut({ token }: CheckInOutProps = {}) {
 
   return (
     <>
-      <Card>
+      <Card variant="cta">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-brand-dark">
             <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-green-50 text-green-600">

@@ -9,6 +9,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ErrorState } from '@/components/shared/ErrorState';
 import { LastUpdatedAt } from '@/components/shared/LastUpdatedAt';
+import { EmptyState } from '@/components/shared/EmptyState';
 import { Loader2, RefreshCw, X } from 'lucide-react';
 import { formatDateTimeToKorean } from '@/lib/utils/date';
 import type { Notification } from '@/types';
@@ -139,7 +140,7 @@ export function NotificationFeed() {
       </div>
 
       {isLoading && sortedNotifications.length === 0 ? (
-        <Card>
+        <Card variant="muted">
           <CardContent className="p-6 text-center">
             <div className="mx-auto mb-2 flex w-fit items-center gap-2 text-muted-foreground">
               <Loader2 className="h-4 w-4 animate-spin" />
@@ -148,11 +149,7 @@ export function NotificationFeed() {
           </CardContent>
         </Card>
       ) : sortedNotifications.length === 0 ? (
-        <Card>
-          <CardContent className="p-6 text-center">
-            <p className="text-sm text-muted-foreground">알림이 없습니다.</p>
-          </CardContent>
-        </Card>
+        <EmptyState variant="compact" title="알림이 없습니다." />
       ) : (
         sortedNotifications.map((notification) => {
           const meta = getNotificationTypeMeta(notification.type);

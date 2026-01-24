@@ -7,11 +7,14 @@ import { type Reservation } from '@/lib/api';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { StatusPill } from '@/components/shared/StatusPill';
 import { ChevronDown, RefreshCw } from 'lucide-react';
 import { calculateTotalAmount } from '@/lib/utils/reservation';
+import { getReservationStatusMeta } from '@/lib/utils/status-meta';
 import { cn } from '@/lib/utils';
 import { usePullToRefresh } from '@/lib/hooks/usePullToRefresh';
 import { RoomAssignmentDrawer } from '@/components/admin/RoomAssignmentDrawer';
+import { EmptyState } from '@/components/shared/EmptyState';
 
 interface ReservationListViewProps {
   reservations: Reservation[];
@@ -54,16 +57,8 @@ export function ReservationListView({
   });
 
   const getStatusBadge = (status: Reservation['status']) => {
-    const variants: Record<Reservation['status'], { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
-      pending: { label: '대기', variant: 'outline' },
-      assigned: { label: '배정 완료', variant: 'secondary' },
-      checked_in: { label: '체크인', variant: 'default' },
-      checked_out: { label: '체크아웃', variant: 'secondary' },
-      cancelled: { label: '취소', variant: 'destructive' },
-    };
-
-    const { label, variant } = variants[status];
-    return <Badge variant={variant}>{label}</Badge>;
+    const meta = getReservationStatusMeta(status);
+    return <StatusPill label={meta.label} className={meta.className} />;
   };
 
   const handleQuickAssign = (reservation: Reservation) => {
@@ -73,15 +68,10 @@ export function ReservationListView({
 
   if (reservations.length === 0) {
     return (
-      <Card>
-        <CardContent className="py-8 text-center">
-          <p className="text-muted-foreground">
-            {search || status || checkin || checkout
-              ? '검색 결과가 없습니다.'
-              : '등록된 예약이 없습니다.'}
-          </p>
-        </CardContent>
-      </Card>
+      <EmptyState
+        title={search || status || checkin || checkout ? '검색 결과가 없습니다.' : '등록된 예약이 없습니다.'}
+        description={search || status || checkin || checkout ? '조건을 변경해 다시 시도해보세요.' : undefined}
+      />
     );
   }
 

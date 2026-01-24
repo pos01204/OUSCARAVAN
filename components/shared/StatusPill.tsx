@@ -1,13 +1,14 @@
-import { Badge } from '@/components/ui/badge';
+import { Badge, type BadgeProps } from '@/components/ui/badge';
 
 interface StatusPillProps {
   label: string;
   className?: string;
+  variant?: BadgeProps['variant'];
 }
 
-export function StatusPill({ label, className }: StatusPillProps) {
+export function StatusPill({ label, className, variant = 'outline' }: StatusPillProps) {
   return (
-    <Badge variant="outline" className={className}>
+    <Badge variant={variant} className={className}>
       {label}
     </Badge>
   );

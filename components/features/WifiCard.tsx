@@ -66,7 +66,7 @@ export function WifiCard() {
           numberOfPieces={200}
         />
       )}
-      <Card className="overflow-hidden">
+      <Card variant="info" className="overflow-hidden">
         <CardHeader className="pb-3">
           <CardTitle className="flex items-center gap-2 text-brand-dark">
             <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-600">

@@ -12,9 +12,11 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
+import { StatusPill } from '@/components/shared/StatusPill';
 import { useToast } from '@/components/ui/use-toast';
 import { ArrowLeft, Save, Loader2, ExternalLink } from 'lucide-react';
 import { formatOptionName, calculateTotalAmount } from '@/lib/utils/reservation';
+import { getReservationStatusMeta } from '@/lib/utils/status-meta';
 import { parseAmount, formatAmount } from '@/lib/utils/amount';
 
 export default function ReservationDetailPage() {
@@ -194,16 +196,8 @@ export default function ReservationDetailPage() {
   }
   
   const getStatusBadge = (status: Reservation['status']) => {
-    const variants: Record<Reservation['status'], { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
-      pending: { label: '대기', variant: 'outline' },
-      assigned: { label: '배정 완료', variant: 'secondary' },
-      checked_in: { label: '체크인', variant: 'default' },
-      checked_out: { label: '체크아웃', variant: 'secondary' },
-      cancelled: { label: '취소', variant: 'destructive' },
-    };
-    
-    const { label, variant } = variants[status];
-    return <Badge variant={variant}>{label}</Badge>;
+    const meta = getReservationStatusMeta(status);
+    return <StatusPill label={meta.label} className={meta.className} />;
   };
   
   return (

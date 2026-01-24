@@ -7,7 +7,9 @@ import { type Reservation } from '@/lib/api';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { StatusPill } from '@/components/shared/StatusPill';
 import { calculateTotalAmount } from '@/lib/utils/reservation';
+import { getReservationStatusMeta } from '@/lib/utils/status-meta';
 
 interface ReservationModalCardProps {
   reservation: Reservation;
@@ -53,15 +55,8 @@ export function ReservationModalCard({
 
   // 상태 배지
   const getStatusBadge = (status: Reservation['status']) => {
-    const variants: Record<Reservation['status'], { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
-      pending: { label: '대기', variant: 'outline' },
-      assigned: { label: '배정 완료', variant: 'secondary' },
-      checked_in: { label: '체크인', variant: 'default' },
-      checked_out: { label: '체크아웃', variant: 'secondary' },
-      cancelled: { label: '취소', variant: 'destructive' },
-    };
-    const { label, variant } = variants[status];
-    return <Badge variant={variant} className="text-xs">{label}</Badge>;
+    const meta = getReservationStatusMeta(status);
+    return <StatusPill label={meta.label} className={meta.className} />;
   };
 
   return (

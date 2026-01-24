@@ -10,9 +10,11 @@ import { Drawer, DrawerContent, DrawerHeader, DrawerTitle } from '@/components/u
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { StatusPill } from '@/components/shared/StatusPill';
 import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { calculateTotalAmount } from '@/lib/utils/reservation';
+import { getReservationStatusMeta } from '@/lib/utils/status-meta';
 import { useSwipe } from '@/lib/hooks/useSwipe';
 import { ReservationModalCard } from '@/components/admin/ReservationModalCard';
 import { RoomAssignmentDrawer } from '@/components/admin/RoomAssignmentDrawer';
@@ -561,15 +563,8 @@ export function ReservationCalendarView({
 
   // 상태별 배지
   const getStatusBadge = useCallback((status: Reservation['status']) => {
-    const variants: Record<Reservation['status'], { label: string; variant: 'default' | 'secondary' | 'destructive' | 'outline' }> = {
-      pending: { label: '대기', variant: 'outline' },
-      assigned: { label: '배정 완료', variant: 'secondary' },
-      checked_in: { label: '체크인', variant: 'default' },
-      checked_out: { label: '체크아웃', variant: 'secondary' },
-      cancelled: { label: '취소', variant: 'destructive' },
-    };
-    const { label, variant } = variants[status];
-    return <Badge variant={variant}>{label}</Badge>;
+    const meta = getReservationStatusMeta(status);
+    return <StatusPill label={meta.label} className={meta.className} />;
   }, []);
 
   // 타임라인 뷰용 날짜별 예약 그룹화

@@ -6,7 +6,7 @@ import { CHECK_IN_OUT } from '@/lib/constants';
 
 export function TimeCard() {
   return (
-    <Card>
+    <Card variant="info">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-brand-dark">
           <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-purple-50 text-purple-600">

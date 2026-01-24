@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { EmptyState } from '@/components/shared/EmptyState';
 import { InfoInspector } from '@/components/guest/InfoInspector';
 import { formatDateTimeToKorean } from '@/lib/utils/date';
 import { getGuestAnnouncementReadIds, markGuestAnnouncementRead } from '@/lib/api';
@@ -85,7 +86,7 @@ export function GuestAnnouncements({ token, announcements, loading, error }: Gue
 
   if (loading) {
     return (
-      <Card>
+      <Card variant="muted">
         <CardContent className="py-4 text-sm text-muted-foreground">공지 불러오는 중...</CardContent>
       </Card>
     );
@@ -93,7 +94,7 @@ export function GuestAnnouncements({ token, announcements, loading, error }: Gue
 
   if (error) {
     return (
-      <Card>
+      <Card variant="alert">
         <CardContent className="py-4 text-sm text-destructive">{error}</CardContent>
       </Card>
     );
@@ -115,7 +116,7 @@ export function GuestAnnouncements({ token, announcements, loading, error }: Gue
   return (
     <section aria-label="공지 안내" className="space-y-3">
       {showCritical && (
-        <Card className="border border-red-200 bg-red-50">
+        <Card variant="alert">
           <CardContent className="flex items-start gap-3 p-4">
             <AlertTriangle className="mt-0.5 h-5 w-5 text-red-600" />
             <div className="space-y-1">
@@ -149,7 +150,7 @@ export function GuestAnnouncements({ token, announcements, loading, error }: Gue
         </Card>
       )}
 
-      <Card>
+      <Card variant="info">
         <CardHeader className="flex flex-col gap-3 space-y-0 pb-3 md:flex-row md:items-center md:justify-between">
           <div className="space-y-1">
             <CardTitle className="text-base font-semibold flex items-center gap-2">
@@ -170,9 +171,11 @@ export function GuestAnnouncements({ token, announcements, loading, error }: Gue
         </CardHeader>
         <CardContent className="space-y-3">
           {visibleNormal.length === 0 ? (
-            <div className="rounded-md border border-dashed border-border/60 p-4 text-sm text-muted-foreground">
-              표시할 공지가 없습니다.
-            </div>
+            <EmptyState
+              variant="compact"
+              title="표시할 공지가 없습니다."
+              description={showUnreadOnly ? '읽지 않은 공지가 없습니다.' : undefined}
+            />
           ) : (
             visibleNormal.map((announcement) => {
             const level = getLevelBadge(announcement.level);
