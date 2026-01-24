@@ -765,7 +765,8 @@ button:active {
 }
 
 .card-icon-wrapper-info {
-  @apply bg-status-info/8 border-status-info/15;
+  background-color: rgba(37, 99, 235, 0.08);
+  border-color: rgba(37, 99, 235, 0.15);
 }
 
 .card-icon-wrapper-info > svg {
