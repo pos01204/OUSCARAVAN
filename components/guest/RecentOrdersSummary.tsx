@@ -9,6 +9,8 @@ import { BookOpen } from 'lucide-react';
 import { useGuestOrders } from '@/lib/hooks/useGuestOrders';
 import { LoadingState } from '@/components/shared/LoadingState';
 import { ErrorState } from '@/components/shared/ErrorState';
+import { OfflineState } from '@/components/shared/OfflineState';
+import { useOnlineStatus } from '@/lib/hooks/useOnlineStatus';
 
 interface RecentOrdersSummaryProps {
   token: string;
@@ -24,11 +26,21 @@ const ORDER_STATUS_LABELS: Record<Order['status'], string> = {
 
 export function RecentOrdersSummary({ token, maxItems = 2 }: RecentOrdersSummaryProps) {
   const { orders, loading, error } = useGuestOrders(token);
+  const isOnline = useOnlineStatus();
   // 키오스크 주문은 현장 수령이므로 불멍/바베큐 주문만 표시
   const bbqFireOrders = orders.filter((o) => o.type === 'bbq' || o.type === 'fire');
   const recent = [...bbqFireOrders].sort((a, b) => +new Date(b.createdAt) - +new Date(a.createdAt)).slice(0, maxItems);
   const hasBbqGuide = recent.length > 0;
   const guideHref = `/guest/${token}/guide#guide-bbq`;
+
+  if (!isOnline && orders.length === 0) {
+    return (
+      <OfflineState
+        title="인터넷 연결이 필요해요"
+        description="주문 내역을 불러오려면 네트워크를 확인해주세요."
+      />
+    );
+  }
 
   if (loading) {
     return <LoadingState title="최근 주문" rows={3} />;

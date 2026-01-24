@@ -8,6 +8,7 @@ import { GuestMotionCard } from '@/components/guest/GuestMotionCard';
 import { Button } from '@/components/ui/button';
 import { useGuestStore } from '@/lib/store';
 import { useToast } from '@/components/ui/use-toast';
+import { PermissionState } from '@/components/shared/PermissionState';
 import { checkIn as apiCheckIn, checkOut as apiCheckOut, guestApi, sendCheckInToN8N, sendCheckOutToN8N } from '@/lib/api';
 import {
   Dialog,
@@ -25,6 +26,15 @@ interface CheckInOutProps {
 export function CheckInOut({ token }: CheckInOutProps = {}) {
   const { isCheckedIn, isCheckedOut, checkIn, checkOut, guestInfo } =
     useGuestStore();
+  if (!token) {
+    return (
+      <PermissionState
+        title="접속 정보가 없어요"
+        description="홈 화면에서 다시 접속해 주세요."
+      />
+    );
+  }
+
   const [showCheckoutDialog, setShowCheckoutDialog] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);

@@ -7,6 +7,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { Order } from '@/lib/api';
 import { ErrorState } from '@/components/shared/ErrorState';
 import { getOrderStatusMeta } from '@/lib/utils/status-meta';
+import { OfflineState } from '@/components/shared/OfflineState';
+import { useOnlineStatus } from '@/lib/hooks/useOnlineStatus';
 
 interface OrderStatusSummaryBarProps {
   orders: Order[];
@@ -36,12 +38,22 @@ export function OrderStatusSummaryBar({
   onFilterChange,
   onRetry,
 }: OrderStatusSummaryBarProps) {
+  const isOnline = useOnlineStatus();
   const statusCounts = {
     all: orders.length,
     pending: orders.filter((o) => o.status === 'pending').length,
     preparing: orders.filter((o) => o.status === 'preparing' || o.status === 'delivering').length,
     completed: orders.filter((o) => o.status === 'completed').length,
   };
+
+  if (!isOnline && orders.length === 0) {
+    return (
+      <OfflineState
+        title="인터넷 연결이 필요해요"
+        description="주문 상태를 불러오려면 네트워크를 확인해주세요."
+      />
+    );
+  }
 
   if (loading) {
     return (

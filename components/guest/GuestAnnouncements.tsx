@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { LoadingState } from '@/components/shared/LoadingState';
 import { ErrorState } from '@/components/shared/ErrorState';
+import { OfflineState } from '@/components/shared/OfflineState';
 import { InfoInspector } from '@/components/guest/InfoInspector';
 import { formatDateTimeToKorean } from '@/lib/utils/date';
 import { getGuestAnnouncementReadIds, markGuestAnnouncementRead } from '@/lib/api';
@@ -15,6 +16,7 @@ import { AlertTriangle, Bell } from 'lucide-react';
 import { CardIconBadge } from '@/components/shared/CardIconBadge';
 import { motion } from 'framer-motion';
 import { LIST_STAGGER } from '@/lib/motion';
+import { useOnlineStatus } from '@/lib/hooks/useOnlineStatus';
 
 interface GuestAnnouncementsProps {
   token: string;
@@ -41,6 +43,7 @@ export function GuestAnnouncements({ token, announcements, loading, error }: Gue
   const [readIds, setReadIds] = useState<string[]>([]);
   const [showUnreadOnly, setShowUnreadOnly] = useState(false);
   const [expanded, setExpanded] = useState(false);
+  const isOnline = useOnlineStatus();
 
   useEffect(() => {
     if (typeof window === 'undefined') return;
@@ -88,6 +91,15 @@ export function GuestAnnouncements({ token, announcements, loading, error }: Gue
     // 서버에도 저장(비동기, 실패해도 UX는 유지)
     markGuestAnnouncementRead(token, id).catch(() => {});
   };
+
+  if (!isOnline && (!announcements || announcements.length === 0)) {
+    return (
+      <OfflineState
+        title="인터넷 연결이 필요해요"
+        description="공지 정보를 불러오려면 네트워크를 확인해주세요."
+      />
+    );
+  }
 
   if (loading) {
     return <LoadingState title="공지 안내" rows={2} />;
