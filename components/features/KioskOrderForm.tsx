@@ -313,7 +313,7 @@ export function KioskOrderForm({ onClose, token, initial }: KioskOrderFormProps)
 
                 {/* 장바구니 */}
                 {cart.length > 0 && (
-                  <div className="rounded-xl border-2 border-primary/30 bg-gradient-to-br from-primary/10 to-primary/5 p-5 shadow-sm animate-in fade-in-50 slide-in-from-bottom-2 duration-200">
+                  <div className="rounded-xl border border-border bg-background-muted p-5 shadow-sm animate-in fade-in-50 slide-in-from-bottom-2 duration-200">
                     <div className="flex items-center gap-2.5 mb-4">
                       <div className="p-1.5 rounded-lg bg-primary/20">
                         <ShoppingCart className="h-4 w-4 text-primary" />
@@ -449,7 +449,7 @@ export function KioskOrderForm({ onClose, token, initial }: KioskOrderFormProps)
                   ) : null}
                 </div>
 
-                <div className="rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-primary/30 p-5 shadow-sm">
+                <div className="rounded-xl bg-background-muted border border-border p-5 shadow-sm">
                   <div className="flex items-center justify-between">
                     <p className="font-bold text-base">총 결제 금액</p>
                     <p className="text-3xl font-black text-primary">

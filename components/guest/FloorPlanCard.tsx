@@ -5,6 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FloorPlanViewer } from '@/components/features/FloorPlanViewer';
 import { getSpaceByRoom } from '@/lib/constants/floorPlan';
 import { MapPin, Navigation } from 'lucide-react';
+import { CardIconBadge } from '@/components/shared/CardIconBadge';
+import { GuestMotionCard } from '@/components/guest/GuestMotionCard';
 
 interface FloorPlanCardProps {
   assignedRoom?: string;
@@ -30,12 +32,11 @@ function FloorPlanCardComponent({ assignedRoom }: FloorPlanCardProps) {
   })();
 
   return (
-    <Card variant="info" role="region" aria-label="배정된 공간 약도">
+    <GuestMotionCard>
+      <Card variant="info" role="region" aria-label="배정된 공간 약도">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-brand-dark">
-          <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600">
-            <MapPin className="h-4 w-4" strokeWidth={2.5} />
-          </div>
+          <CardIconBadge icon={MapPin} tone="warning" />
           배정된 위치
         </CardTitle>
       </CardHeader>
@@ -62,7 +63,8 @@ function FloorPlanCardComponent({ assignedRoom }: FloorPlanCardProps) {
           </div>
         </div>
       </CardContent>
-    </Card>
+      </Card>
+    </GuestMotionCard>
   );
 }
 

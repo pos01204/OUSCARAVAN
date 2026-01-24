@@ -54,7 +54,7 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-background-accent to-background p-8 text-center border border-brand-cream-dark/30 shadow-card"
+        className="relative overflow-hidden rounded-2xl bg-background-elevated p-8 text-center border border-border shadow-card"
         aria-label="환영 메시지"
       >
         {/* 향후 실사진/영상 브랜딩 레이어(에셋 없으면 렌더되지 않음) */}
@@ -63,7 +63,7 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
           videoSrc={GUEST_BRAND_MEDIA.heroVideoSrc}
           alt="OUS 브랜드 히어로"
           fit="cover"
-          overlayClassName="bg-gradient-to-b from-white/0 via-white/10 to-white/30"
+          overlayClassName="bg-white/10"
           priority
         />
         <h1 className="font-heading text-2xl font-bold text-brand-dark relative z-10">

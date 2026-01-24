@@ -375,7 +375,7 @@ export function OrderHistory({
             </div>
 
             {/* 총액 */}
-            <div className="rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border-2 border-primary/30 p-5 shadow-sm">
+            <div className="rounded-xl bg-background-muted border border-border p-5 shadow-sm">
               <div className="flex items-center justify-between">
                 <p className="font-bold text-base">총 결제 금액</p>
                 <p className="text-3xl font-black text-primary">

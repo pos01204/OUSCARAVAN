@@ -324,7 +324,7 @@ export function OrderForm({ onClose, token, onSubmitted, initial }: OrderFormPro
                   ) : null}
                 </div>
 
-                <div className="rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 p-5 border-2 border-primary/20 shadow-sm">
+                <div className="rounded-xl bg-background-muted p-5 border border-border">
                   <div className="flex items-center justify-between">
                     <span className="font-semibold text-foreground">총 결제 금액</span>
                     <span className="text-3xl font-black text-primary">

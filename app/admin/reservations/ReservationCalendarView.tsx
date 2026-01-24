@@ -695,7 +695,11 @@ export function ReservationCalendarView({
             <div className="space-y-4 max-h-[calc(100vh-400px)] overflow-y-auto">
               {timelineReservations.length > 0 ? (
                 timelineReservations.map(({ date, reservations, isExpanded }) => (
-                  <Card key={format(date, 'yyyy-MM-dd')} className={`border-l-4 transition-all ${isExpanded ? 'border-l-primary shadow-md' : 'border-l-muted'}`}>
+                  <Card
+                    key={format(date, 'yyyy-MM-dd')}
+                    variant="info"
+                    className={`border-l-4 transition-all ${isExpanded ? 'border-l-border-emphasis shadow-card' : 'border-l-border/50'}`}
+                  >
                     <CardContent className="p-3">
                       <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-3">

@@ -5,6 +5,7 @@ import { OrderForm } from '@/components/features/OrderForm';
 import { OrderHistory } from '@/components/features/OrderHistory';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { CardIconBadge } from '@/components/shared/CardIconBadge';
 import { CheckCircle2, Flame, RotateCcw, X } from 'lucide-react';
 import { GuestPageHeader } from '@/components/guest/GuestPageHeader';
 import { OrderStatusSummaryBar } from '@/components/guest/OrderStatusSummaryBar';
@@ -108,9 +109,7 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
         <Card variant="cta" className="overflow-hidden">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-3 text-lg">
-              <div className="p-2.5 rounded-xl bg-orange-50">
-                <Flame className="h-5 w-5 text-orange-500" />
-              </div>
+              <CardIconBadge icon={Flame} tone="warning" />
               <div>
                 <span className="block">불멍/바베큐 세트</span>
                 <CardDescription className="mt-1 font-normal">

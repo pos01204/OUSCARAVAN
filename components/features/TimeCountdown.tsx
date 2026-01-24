@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Clock } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { CardIconBadge } from '@/components/shared/CardIconBadge';
 import { CHECK_IN_OUT } from '@/lib/constants';
 import { useGuestStore } from '@/lib/store';
 
@@ -69,9 +70,9 @@ export function TimeCountdown() {
   const isUrgent = timeLeft.hours === 0 && timeLeft.minutes < 60;
 
   return (
-    <Card className={isUrgent ? 'border-destructive/50 bg-destructive/5' : ''}>
+    <Card variant={isUrgent ? 'alert' : 'info'}>
       <CardContent className="flex items-center gap-3 p-4">
-        <Clock className={`h-5 w-5 ${isUrgent ? 'text-destructive' : 'text-primary'}`} />
+        <CardIconBadge icon={Clock} tone={isUrgent ? 'error' : 'info'} size="sm" />
         <div className="flex-1">
           <p className="text-sm font-medium">{label}</p>
           <p className={`text-lg font-semibold ${isUrgent ? 'text-destructive' : ''}`}>

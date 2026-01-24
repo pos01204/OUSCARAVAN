@@ -5,7 +5,7 @@ export function GuestHomeSkeleton() {
     return (
         <div className="space-y-6">
             {/* Hero Section Skeleton — 브랜드 라이트 테마 */}
-            <div className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-background-accent to-background p-8 text-center h-[120px] flex items-center justify-center border border-brand-cream-dark/30">
+            <div className="relative overflow-hidden rounded-2xl bg-background-elevated p-8 text-center h-[120px] flex items-center justify-center border border-border">
                 <Skeleton className="h-8 w-3/4" />
             </div>
 

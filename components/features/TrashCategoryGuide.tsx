@@ -16,7 +16,7 @@ export function TrashCategoryGuide({ categories }: TrashCategoryGuideProps) {
   return (
     <div className="space-y-4" role="region" aria-label="쓰레기 종류별 분류 가이드">
       {categories.map((category) => (
-        <Card key={category.id} className="border-primary/20">
+        <Card key={category.id} variant="info">
           <CardHeader className="pb-3">
             <div className="flex items-start justify-between gap-2">
               <div className="flex-1">

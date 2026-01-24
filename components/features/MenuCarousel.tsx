@@ -40,8 +40,8 @@ export function MenuCarousel({ categoryId }: MenuCarouselProps) {
           >
             {category.items.map((item) => (
               <SwiperSlide key={item.id}>
-                <Card className="overflow-hidden h-full transition-all hover:shadow-lg">
-                  <div className="relative h-48 w-full bg-gradient-to-br from-muted to-muted/50">
+                <Card className="overflow-hidden h-full">
+                  <div className="relative h-48 w-full bg-muted">
                     <Image
                       src={item.image}
                       alt={item.name}
@@ -54,7 +54,7 @@ export function MenuCarousel({ categoryId }: MenuCarouselProps) {
                         target.style.display = 'none';
                         if (target.parentElement) {
                           target.parentElement.innerHTML = `
-                            <div class="flex h-full items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
+                            <div class="flex h-full items-center justify-center bg-muted">
                               <span class="text-muted-foreground text-sm font-medium">${item.name}</span>
                             </div>
                           `;

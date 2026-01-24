@@ -66,7 +66,7 @@ export function QuickAccess({ token, items }: QuickAccessProps) {
   };
 
   return (
-    <Card className="border-primary/20 bg-gradient-to-br from-primary/5 to-primary/10">
+    <Card variant="info">
       <CardContent className="p-4">
         <h3 className="text-sm font-semibold text-foreground mb-3">빠른 접근</h3>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
@@ -76,7 +76,7 @@ export function QuickAccess({ token, items }: QuickAccessProps) {
               <Button
                 key={item.id}
                 variant="outline"
-                className="flex flex-col items-center justify-center gap-2 h-20 p-2 hover:bg-primary/10 hover:border-primary/50 transition-all"
+                className="flex flex-col items-center justify-center gap-2 h-20 p-2 hover:bg-muted/40 hover:border-border-emphasis transition-all"
                 onClick={() => handleClick(item)}
                 aria-label={item.label}
               >

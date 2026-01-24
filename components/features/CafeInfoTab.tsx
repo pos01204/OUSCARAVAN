@@ -2,6 +2,7 @@
 
 import { MenuCarousel } from './MenuCarousel';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CardIconBadge } from '@/components/shared/CardIconBadge';
 import { MapPin, Clock, Phone, Info } from 'lucide-react';
 import { CAFE_INFO } from '@/lib/constants';
 
@@ -9,12 +10,10 @@ export function CafeInfoTab() {
   return (
     <div className="space-y-6" role="tabpanel" aria-label="카페 이용 안내">
       {/* 안내 배너 */}
-      <Card className="border-primary/30 bg-gradient-to-br from-primary/10 to-primary/5 shadow-sm">
+      <Card variant="info">
         <CardContent className="p-5">
           <div className="flex items-start gap-3.5">
-            <div className="p-2 rounded-lg bg-primary/20 shrink-0">
-              <Info className="h-5 w-5 text-primary" />
-            </div>
+            <CardIconBadge icon={Info} tone="info" />
             <div className="flex-1">
               <p className="font-bold text-foreground mb-2 text-base">
                 카페 이용 안내
@@ -38,15 +37,13 @@ export function CafeInfoTab() {
 
       {/* 카페 정보 */}
       <section aria-label="카페 정보" className="pt-2">
-        <Card className="shadow-sm">
+        <Card>
           <CardHeader className="pb-3">
             <CardTitle className="text-lg">카페 정보</CardTitle>
           </CardHeader>
           <CardContent className="space-y-5">
             <div className="flex items-start gap-3.5 p-3 rounded-lg hover:bg-muted/30 transition-colors">
-              <div className="p-2 rounded-lg bg-muted/50 shrink-0">
-                <MapPin className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
-              </div>
+              <CardIconBadge icon={MapPin} tone="neutral" size="sm" />
               <div className="flex-1">
                 <p className="font-semibold mb-1.5 text-sm">매장 위치</p>
                 <p className="text-sm text-muted-foreground leading-relaxed">{CAFE_INFO.address}</p>
@@ -54,9 +51,7 @@ export function CafeInfoTab() {
               </div>
             </div>
             <div className="flex items-start gap-3.5 p-3 rounded-lg hover:bg-muted/30 transition-colors">
-              <div className="p-2 rounded-lg bg-primary/10 shrink-0">
-                <Clock className="h-5 w-5 text-primary" aria-hidden="true" />
-              </div>
+              <CardIconBadge icon={Clock} tone="info" size="sm" />
               <div className="flex-1">
                 <p className="font-semibold mb-1.5 text-sm">운영 시간</p>
                 <p className="text-sm text-muted-foreground leading-relaxed">
@@ -71,9 +66,7 @@ export function CafeInfoTab() {
               </div>
             </div>
             <div className="flex items-start gap-3.5 p-3 rounded-lg hover:bg-muted/30 transition-colors">
-              <div className="p-2 rounded-lg bg-muted/50 shrink-0">
-                <Phone className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
-              </div>
+              <CardIconBadge icon={Phone} tone="neutral" size="sm" />
               <div className="flex-1">
                 <p className="font-semibold mb-1.5 text-sm">대표 전화번호</p>
                 <a

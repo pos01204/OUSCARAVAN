@@ -55,7 +55,7 @@ export function BrandMediaLayer({
       <div
         className={clsx(
           'absolute inset-0',
-          overlayClassName ?? 'bg-gradient-to-b from-black/10 via-black/20 to-black/35'
+          overlayClassName ?? 'bg-black/20'
         )}
       />
     </div>

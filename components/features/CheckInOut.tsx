@@ -3,6 +3,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { CheckCircle2, XCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { CardIconBadge } from '@/components/shared/CardIconBadge';
+import { GuestMotionCard } from '@/components/guest/GuestMotionCard';
 import { Button } from '@/components/ui/button';
 import { useGuestStore } from '@/lib/store';
 import { useToast } from '@/components/ui/use-toast';
@@ -171,16 +173,15 @@ export function CheckInOut({ token }: CheckInOutProps = {}) {
 
   return (
     <>
-      <Card variant="cta">
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-brand-dark">
-            <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-green-50 text-green-600">
-              <CheckCircle2 className="h-4 w-4" strokeWidth={2.5} />
-            </div>
-            체크인/체크아웃
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
+      <GuestMotionCard>
+        <Card variant="cta">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-brand-dark">
+              <CardIconBadge icon={CheckCircle2} tone="success" />
+              체크인/체크아웃
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
           {!isCheckedIn ? (
             <Button 
               onClick={handleCheckIn} 
@@ -193,13 +194,11 @@ export function CheckInOut({ token }: CheckInOutProps = {}) {
             </Button>
           ) : (
             <div className="space-y-3">
-              <div className="flex items-center gap-3 rounded-xl bg-green-50 p-4">
-                <div className="inline-flex h-10 w-10 items-center justify-center rounded-xl bg-green-100 text-green-600">
-                  <CheckCircle2 className="h-5 w-5" strokeWidth={2} />
-                </div>
+              <div className="flex items-center gap-3 rounded-xl bg-background-muted p-4 border border-border">
+                <CardIconBadge icon={CheckCircle2} tone="success" size="sm" strokeWidth={2} />
                 <div>
-                  <p className="text-sm font-semibold text-green-800">체크인 완료</p>
-                  <p className="text-xs text-green-600">즐거운 시간 보내세요!</p>
+                  <p className="text-sm font-semibold text-foreground">체크인 완료</p>
+                  <p className="text-xs text-muted-foreground">즐거운 시간 보내세요!</p>
                 </div>
               </div>
               {!isCheckedOut && (
@@ -242,8 +241,9 @@ export function CheckInOut({ token }: CheckInOutProps = {}) {
               마지막 동기화: {lastSyncedAt.toLocaleTimeString('ko-KR', { hour: '2-digit', minute: '2-digit' })}
             </p>
           ) : null}
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </GuestMotionCard>
 
       <Dialog open={showCheckoutDialog} onOpenChange={setShowCheckoutDialog}>
         <DialogContent className="rounded-2xl">

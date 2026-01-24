@@ -72,11 +72,11 @@ export function GuideTroubleshooting({
     const progressText = `${idx + 1} / ${items.length}`;
 
     return (
-      <Card className="border-orange-200 dark:border-orange-800 bg-orange-50/50 dark:bg-orange-900/10">
+      <Card variant="alert">
         <CardHeader className="pb-3">
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <AlertCircle className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+              <AlertCircle className="h-5 w-5 text-status-warning" />
               <CardTitle className="text-base font-bold text-foreground">해결</CardTitle>
             </div>
             <span className="text-xs text-muted-foreground">{progressText}</span>
@@ -144,10 +144,10 @@ export function GuideTroubleshooting({
   }
 
   return (
-    <Card className="border-orange-200 dark:border-orange-800 bg-orange-50/50 dark:bg-orange-900/10">
+    <Card variant="alert">
       <CardHeader>
         <div className="flex items-center gap-2">
-          <AlertCircle className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+          <AlertCircle className="h-5 w-5 text-status-warning" />
           <CardTitle className="text-lg font-bold text-foreground">문제 해결 가이드</CardTitle>
         </div>
       </CardHeader>

@@ -4,11 +4,11 @@ import { cn } from "@/lib/utils"
 type CardVariant = "default" | "info" | "cta" | "alert" | "muted"
 
 const variantClasses: Record<CardVariant, string> = {
-  default: "border-brand-cream-dark/40 bg-white",
-  info: "border-brand-cream-dark/30 bg-white",
-  cta: "border-brand-cream-dark/60 bg-gradient-to-br from-brand-cream/25 to-white",
-  alert: "border-red-200 bg-red-50",
-  muted: "border-transparent bg-background-muted",
+  default: "border-border bg-background-elevated",
+  info: "border-border bg-background-elevated relative before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-brand-cream-dark/35",
+  cta: "border-border-emphasis bg-background-elevated relative before:absolute before:inset-x-0 before:top-0 before:h-0.5 before:bg-brand-cream-dark/45",
+  alert: "border-border bg-background-elevated relative before:absolute before:left-0 before:top-0 before:bottom-0 before:w-1 before:rounded-l-2xl before:bg-status-error/50",
+  muted: "border-border/40 bg-background-muted",
 }
 
 const Card = React.forwardRef<
@@ -18,9 +18,9 @@ const Card = React.forwardRef<
   <div
     ref={ref}
     className={cn(
-      "rounded-xl border text-card-foreground shadow-soft-md transition-all duration-200",
+      "rounded-2xl border text-card-foreground shadow-card transition-all duration-200",
       variantClasses[variant],
-      interactive && "cursor-pointer hover:shadow-soft-lg hover:border-brand-cream-dark/60 hover:-translate-y-0.5 active:scale-[0.99]",
+      interactive && "cursor-pointer hover:shadow-card-hover hover:border-border-emphasis active:scale-[0.99]",
       className
     )}
     {...props}
@@ -34,7 +34,7 @@ const CardHeader = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex flex-col space-y-1.5 p-5", className)}
+    className={cn("flex flex-col space-y-1.5 p-4 pb-3", className)}
     {...props}
   />
 ))
@@ -47,7 +47,7 @@ const CardTitle = React.forwardRef<
   <h3
     ref={ref}
     className={cn(
-      "text-lg font-semibold leading-none tracking-tight text-brand-dark",
+      "text-base font-semibold leading-tight tracking-tight text-brand-dark",
       className
     )}
     {...props}
@@ -61,7 +61,7 @@ const CardDescription = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <p
     ref={ref}
-    className={cn("text-sm text-brand-dark-muted", className)}
+    className={cn("text-sm text-muted-foreground", className)}
     {...props}
   />
 ))
@@ -71,7 +71,7 @@ const CardContent = React.forwardRef<
   HTMLDivElement,
   React.HTMLAttributes<HTMLDivElement>
 >(({ className, ...props }, ref) => (
-  <div ref={ref} className={cn("p-5 pt-0", className)} {...props} />
+  <div ref={ref} className={cn("p-4 pt-0", className)} {...props} />
 ))
 CardContent.displayName = "CardContent"
 
@@ -81,7 +81,7 @@ const CardFooter = React.forwardRef<
 >(({ className, ...props }, ref) => (
   <div
     ref={ref}
-    className={cn("flex items-center p-5 pt-0", className)}
+    className={cn("flex items-center p-4 pt-0", className)}
     {...props}
   />
 ))

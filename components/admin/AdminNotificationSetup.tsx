@@ -64,7 +64,7 @@ export function AdminNotificationSetup() {
   }
 
   return (
-    <Card className="border-primary/50 bg-primary/5 mb-4">
+    <Card variant="info" className="mb-4">
       <CardContent className="flex items-center justify-between p-4">
         <div className="flex items-center gap-3 flex-1">
           <Bell className="h-5 w-5 text-primary shrink-0" />

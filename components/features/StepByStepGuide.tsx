@@ -94,7 +94,7 @@ export function StepByStepGuide({ steps, compact = false }: StepByStepGuideProps
                     target.style.display = 'none';
                     if (target.parentElement) {
                       target.parentElement.innerHTML = `
-                        <div class="flex h-full items-center justify-center bg-gradient-to-br from-primary/10 to-primary/5">
+                        <div class="flex h-full items-center justify-center bg-muted">
                           <span class="text-muted-foreground text-sm font-medium">${step.title}</span>
                         </div>
                       `;

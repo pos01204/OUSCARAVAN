@@ -4,6 +4,7 @@ import { useRouter } from 'next/navigation';
 import { AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
+import { CardIconBadge } from '@/components/shared/CardIconBadge';
 
 interface CriticalStatusBannerProps {
   unassignedCount: number;
@@ -22,21 +23,21 @@ export function CriticalStatusBanner({ unassignedCount }: CriticalStatusBannerPr
   };
 
   return (
-    <Card className="border-orange-200 bg-orange-50 hover:bg-orange-100 transition-colors cursor-pointer" onClick={handleClick}>
+    <Card variant="alert" className="cursor-pointer hover:bg-muted/30 transition-colors" onClick={handleClick}>
       <div className="p-4 flex items-center gap-3">
-        <AlertTriangle className="h-5 w-5 text-orange-600 flex-shrink-0" />
+        <CardIconBadge icon={AlertTriangle} tone="warning" size="sm" />
         <div className="flex-1">
-          <p className="text-sm font-medium text-orange-900">
+          <p className="text-sm font-medium text-foreground">
             내일 체크인 예정인 미배정 예약이 {unassignedCount}건 있습니다.
           </p>
-          <p className="text-xs text-orange-700 mt-1">
+          <p className="text-xs text-muted-foreground mt-1">
             클릭하여 즉시 배정하러 가기
           </p>
         </div>
         <Button
           variant="outline"
           size="sm"
-          className="border-orange-300 text-orange-700 hover:bg-orange-200"
+          className="border-border-emphasis text-foreground hover:bg-muted/40"
           onClick={(e) => {
             e.stopPropagation();
             handleClick();

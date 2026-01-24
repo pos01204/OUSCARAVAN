@@ -136,7 +136,7 @@ export function CouponFlip({ roomNumber, backImageSrc }: CouponFlipProps) {
                   imageSrc={backImageSrc}
                   alt="쿠폰 뒷면 브랜딩 이미지"
                   fit="cover"
-                  overlayClassName="bg-gradient-to-r from-[#1A1714]/90 via-[#1A1714]/80 to-[#1A1714]/70"
+                  overlayClassName="bg-[#1A1714]/85"
                 />
 
                 {/* Content */}

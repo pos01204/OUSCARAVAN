@@ -413,7 +413,7 @@ export default function AnnouncementsPage() {
             <Button onClick={handleCreate}>공지 등록</Button>
           </div>
 
-          <Card className="border-dashed border-border/70">
+          <Card variant="muted" className="border-dashed">
             <CardHeader className="pb-2">
               <CardTitle className="text-sm font-semibold">고객 노출 미리보기</CardTitle>
               <CardDescription>입력한 내용이 고객 화면에 이렇게 보입니다.</CardDescription>
@@ -463,7 +463,7 @@ export default function AnnouncementsPage() {
                 const status = getStatusLabel(announcement);
                 const level = getLevelBadge(announcement.level);
                 return (
-                  <Card key={announcement.id} className="border-l-4 border-l-primary/30">
+                  <Card key={announcement.id} className="border-l-4 border-l-border-emphasis">
                     <CardContent className="p-4">
                       <div className="flex flex-col gap-4 md:flex-row md:items-start md:justify-between">
                         <div className="space-y-2">

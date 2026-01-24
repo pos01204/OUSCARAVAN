@@ -9,6 +9,8 @@ import { useToast } from '@/components/ui/use-toast';
 import Confetti from 'react-confetti';
 import { QRCodeSVG } from 'qrcode.react';
 import { InfoInspector } from '@/components/guest/InfoInspector';
+import { GuestMotionCard } from '@/components/guest/GuestMotionCard';
+import { CardIconBadge } from '@/components/shared/CardIconBadge';
 import { useReducedMotion } from 'framer-motion';
 
 export function WifiCard() {
@@ -66,52 +68,52 @@ export function WifiCard() {
           numberOfPieces={200}
         />
       )}
-      <Card variant="info" className="overflow-hidden">
-        <CardHeader className="pb-3">
-          <CardTitle className="flex items-center gap-2 text-brand-dark">
-            <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-blue-600">
-              <Wifi className="h-4 w-4" strokeWidth={2.5} />
-            </div>
-            WiFi 연결하기
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="rounded-xl bg-background-muted p-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-xs text-brand-dark-muted font-medium">네트워크</p>
-                <p className="text-base font-semibold text-brand-dark">{WIFI_INFO.ssid}</p>
+      <GuestMotionCard>
+        <Card variant="info" className="overflow-hidden">
+          <CardHeader className="pb-3">
+            <CardTitle className="flex items-center gap-2 text-brand-dark">
+              <CardIconBadge icon={Wifi} tone="info" />
+              WiFi 연결하기
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="rounded-xl bg-background-muted p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-xs text-muted-foreground font-medium">네트워크</p>
+                  <p className="text-base font-semibold text-brand-dark">{WIFI_INFO.ssid}</p>
+                </div>
+                <div className="text-right">
+                  <p className="text-xs text-muted-foreground font-medium">비밀번호</p>
+                  <p className="text-base font-mono font-semibold text-brand-dark">{WIFI_INFO.password}</p>
+                </div>
               </div>
-              <div className="text-right">
-                <p className="text-xs text-brand-dark-muted font-medium">비밀번호</p>
-                <p className="text-base font-mono font-semibold text-brand-dark">{WIFI_INFO.password}</p>
+            </div>
+            {showPasswordFallback && (
+              <div className="rounded-xl border border-border bg-background-muted p-3">
+                <p className="text-xs text-muted-foreground font-medium">비밀번호(직접 복사)</p>
+                <p className="mt-1 font-mono text-base select-all text-brand-dark">{WIFI_INFO.password}</p>
+                <p className="mt-1 text-xs text-muted-foreground">길게 눌러 복사할 수 있어요.</p>
               </div>
+            )}
+            <div className="flex gap-2">
+              <Button onClick={copyPassword} className="flex-1" aria-label="WiFi 비밀번호 복사">
+                <Copy className="mr-2 h-4 w-4" aria-hidden="true" />
+                비밀번호 복사하기
+              </Button>
+              <Button
+                variant="outline"
+                className="flex-1"
+                aria-label="WiFi QR 코드 보기"
+                onClick={() => setOpenQr(true)}
+              >
+                <QrCode className="mr-2 h-4 w-4" aria-hidden="true" />
+                QR 코드
+              </Button>
             </div>
-          </div>
-          {showPasswordFallback && (
-            <div className="rounded-xl border border-amber-200 bg-amber-50 p-3">
-              <p className="text-xs text-amber-700 font-medium">비밀번호(직접 복사)</p>
-              <p className="mt-1 font-mono text-base select-all text-amber-900">{WIFI_INFO.password}</p>
-              <p className="mt-1 text-xs text-amber-600">길게 눌러 복사할 수 있어요.</p>
-            </div>
-          )}
-          <div className="flex gap-2">
-            <Button onClick={copyPassword} className="flex-1" aria-label="WiFi 비밀번호 복사">
-              <Copy className="mr-2 h-4 w-4" aria-hidden="true" />
-              비밀번호 복사하기
-            </Button>
-            <Button
-              variant="outline"
-              className="flex-1"
-              aria-label="WiFi QR 코드 보기"
-              onClick={() => setOpenQr(true)}
-            >
-              <QrCode className="mr-2 h-4 w-4" aria-hidden="true" />
-              QR 코드
-            </Button>
-          </div>
-        </CardContent>
-      </Card>
+          </CardContent>
+        </Card>
+      </GuestMotionCard>
 
       <InfoInspector
         open={openQr}

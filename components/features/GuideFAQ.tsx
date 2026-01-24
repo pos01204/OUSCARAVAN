@@ -37,7 +37,7 @@ export function GuideFAQ({ faqs, searchable = false, mode = 'list' }: GuideFAQPr
     const progressText = `${idx + 1} / ${safeFaqs.length}`;
 
     return (
-      <Card className="border-primary/20">
+      <Card variant="info">
         <CardContent className="p-4">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
@@ -83,7 +83,7 @@ export function GuideFAQ({ faqs, searchable = false, mode = 'list' }: GuideFAQPr
   };
 
   return (
-    <Card className="border-primary/20">
+    <Card variant="info">
       <CardContent className="p-6">
         <div className="space-y-4">
           <div className="flex items-center justify-between">

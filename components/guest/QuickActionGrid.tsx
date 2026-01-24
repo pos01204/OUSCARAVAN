@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { Wifi, LogIn, Flame, HelpCircle } from 'lucide-react';
 import { Card } from '@/components/ui/card';
+import { GuestMotionCard } from '@/components/guest/GuestMotionCard';
+import { CardIconBadge } from '@/components/shared/CardIconBadge';
 
 interface QuickActionGridProps {
   token: string;
@@ -11,15 +13,21 @@ interface QuickActionGridProps {
 export function QuickActionGrid({ token }: QuickActionGridProps) {
   const base = `/guest/${token}`;
 
-  const items = [
+  const items: Array<{
+    key: string;
+    title: string;
+    desc: string;
+    icon: typeof LogIn;
+    href: string;
+    tone: 'success' | 'info' | 'warning' | 'brand';
+  }> = [
     {
       key: 'checkinout',
       title: '체크인/아웃하기',
       desc: '체크인/체크아웃',
       icon: LogIn,
       href: `${base}/checkinout`,
-      iconBg: 'bg-green-50',
-      iconColor: 'text-green-600',
+      tone: 'success',
     },
     {
       key: 'wifi',
@@ -27,8 +35,7 @@ export function QuickActionGrid({ token }: QuickActionGridProps) {
       desc: '비밀번호/QR',
       icon: Wifi,
       href: `${base}#wifi`,
-      iconBg: 'bg-blue-50',
-      iconColor: 'text-blue-600',
+      tone: 'info',
     },
     {
       key: 'order',
@@ -36,8 +43,7 @@ export function QuickActionGrid({ token }: QuickActionGridProps) {
       desc: '세트 주문하기',
       icon: Flame,
       href: `${base}/order`,
-      iconBg: 'bg-orange-50',
-      iconColor: 'text-orange-500',
+      tone: 'warning',
     },
     {
       key: 'help',
@@ -45,8 +51,7 @@ export function QuickActionGrid({ token }: QuickActionGridProps) {
       desc: '응급/FAQ',
       icon: HelpCircle,
       href: `${base}/help`,
-      iconBg: 'bg-purple-50',
-      iconColor: 'text-purple-600',
+      tone: 'brand',
     },
   ];
 
@@ -56,21 +61,23 @@ export function QuickActionGrid({ token }: QuickActionGridProps) {
         const Icon = item.icon;
         return (
           <Link key={item.key} href={item.href} className="block group">
-            <Card 
-              interactive
-              variant="cta"
-              className="h-full p-4 rounded-xl"
-            >
-              <div className="flex items-start gap-3">
-                <div className={`mt-0.5 inline-flex h-10 w-10 items-center justify-center rounded-xl ${item.iconBg} ${item.iconColor} transition-transform group-hover:scale-105`}>
-                  <Icon className="h-5 w-5" strokeWidth={2} aria-hidden="true" />
+            <GuestMotionCard className="h-full">
+              <Card
+                interactive
+                variant="cta"
+                className="h-full p-4 rounded-xl"
+              >
+                <div className="flex items-start gap-3">
+                <div className="mt-0.5 transition-transform group-hover:scale-105">
+                  <CardIconBadge icon={Icon} tone={item.tone} size="md" />
                 </div>
-                <div className="min-w-0">
-                  <p className="font-semibold text-sm md:text-base leading-tight text-brand-dark">{item.title}</p>
-                  <p className="text-xs text-brand-dark-muted mt-1">{item.desc}</p>
+                  <div className="min-w-0">
+                    <p className="font-semibold text-sm md:text-base leading-tight text-brand-dark">{item.title}</p>
+                    <p className="text-xs text-brand-dark-muted mt-1">{item.desc}</p>
+                  </div>
                 </div>
-              </div>
-            </Card>
+              </Card>
+            </GuestMotionCard>
           </Link>
         );
       })}

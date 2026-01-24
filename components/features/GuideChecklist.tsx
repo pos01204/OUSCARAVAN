@@ -78,7 +78,7 @@ export function GuideChecklist({
     mode === 'pager' ? items.slice(safePage * pageSize, safePage * pageSize + pageSize) : items;
 
   return (
-    <Card className="border-primary/20">
+    <Card variant="info">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <CardTitle className="text-lg font-bold">체크리스트</CardTitle>
