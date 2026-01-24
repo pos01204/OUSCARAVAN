@@ -53,8 +53,8 @@ export function RoomAssignmentDrawer({
         } catch (error) {
             console.error('Failed to fetch rooms:', error);
             toast({
-                title: '오류',
-                description: '방 목록을 불러오지 못했습니다.',
+                title: '방 목록 실패',
+                description: '잠시 후 다시 시도하세요.',
                 variant: 'destructive',
             });
         } finally {
@@ -75,7 +75,7 @@ export function RoomAssignmentDrawer({
         if (!assignedRoom) {
             toast({
                 title: '방 선택 필요',
-                description: '배정할 방을 선택해주세요.',
+                description: '배정할 방을 선택하세요.',
                 variant: 'destructive',
             });
             return;
@@ -84,7 +84,7 @@ export function RoomAssignmentDrawer({
         if (!phone || phone.trim() === '') {
             toast({
                 title: '전화번호 필요',
-                description: '연락처는 필수 입력 항목입니다.',
+                description: '연락처를 입력하세요.',
                 variant: 'destructive',
             });
             return;
@@ -93,7 +93,7 @@ export function RoomAssignmentDrawer({
         if (!validatePhone(phone)) {
             toast({
                 title: '전화번호 형식 오류',
-                description: '올바른 전화번호 형식이 아닙니다.',
+                description: '형식을 확인하세요.',
                 variant: 'destructive',
             });
             return;
@@ -134,7 +134,7 @@ export function RoomAssignmentDrawer({
 
             toast({
                 title: '배정 완료',
-                description: `${sanitizedRoom} 배정이 완료되었습니다.`,
+                description: `${sanitizedRoom} 배정`,
             });
 
             onAssignSuccess();

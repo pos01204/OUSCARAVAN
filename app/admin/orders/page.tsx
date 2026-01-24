@@ -98,8 +98,8 @@ function OrdersPageContent() {
         filters: { status, date, search },
       });
       toast({
-        title: '오류',
-        description: '주문 목록을 불러오는데 실패했습니다.',
+        title: '불러오기 실패',
+        description: '주문 목록 조회 실패',
         variant: 'destructive',
       });
       setLoadError('주문 목록을 불러오지 못했어요. 다시 시도해주세요.');
@@ -132,8 +132,7 @@ function OrdersPageContent() {
       await updateOrderStatus(orderId, newStatus);
 
       toast({
-        title: '상태 업데이트 완료',
-        description: '주문 상태가 변경되었습니다.',
+        title: '상태 변경됨',
       });
 
       fetchOrders('soft');
@@ -150,7 +149,7 @@ function OrdersPageContent() {
       const errorMessage = extractUserFriendlyMessage(error);
 
       toast({
-        title: '업데이트 실패',
+        title: '상태 변경 실패',
         description: errorMessage,
         variant: 'destructive',
       });

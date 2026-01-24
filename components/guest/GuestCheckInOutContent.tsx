@@ -68,7 +68,7 @@ export function GuestCheckInOutContent({ reservation, token }: GuestCheckInOutCo
       
       {/* 예약 정보 */}
       <section aria-label="예약 정보">
-        <Card>
+        <Card variant="info">
           <CardHeader className="pb-3">
             <CardTitle>예약 정보</CardTitle>
           </CardHeader>

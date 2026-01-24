@@ -110,7 +110,7 @@ export function CheckoutReminder() {
   // 알림 설정 실패 시 대체 안내(환경/권한 이슈)
   if (setupFailed && !alarmScheduled) {
     return (
-      <Card className="border-amber-200 bg-amber-50">
+      <Card variant="alert">
         <CardContent className="flex items-start justify-between gap-3 p-4">
           <div className="flex items-start gap-3">
             <AlertTriangle className="mt-0.5 h-5 w-5 text-amber-700" aria-hidden="true" />
@@ -139,7 +139,7 @@ export function CheckoutReminder() {
   if (!alarmScheduled) return null;
 
   return (
-    <Card className="border-primary/50 bg-primary/5">
+    <Card variant="info">
       <CardContent className="flex items-center justify-between p-4">
         <div className="flex items-center gap-3">
           {serviceWorkerReady ? (

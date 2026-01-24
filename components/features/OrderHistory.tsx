@@ -154,7 +154,7 @@ export function OrderHistory({
             return (
               <Card
                 key={order.id}
-                className="transition-all duration-200 hover:shadow-lg hover:border-primary/30 cursor-pointer group active:scale-[0.98] focus-within:ring-2 focus-within:ring-primary focus-within:ring-offset-2"
+                className="click-hint cursor-pointer group"
                 onClick={() => setSelectedOrder(order)}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' || e.key === ' ') {

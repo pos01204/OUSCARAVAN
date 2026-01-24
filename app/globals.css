@@ -538,6 +538,11 @@ button, .clickable {
   min-width: 44px;
 }
 
+/* 카드/리스트 공통 클릭 힌트 */
+.click-hint {
+  @apply transition-all duration-200 hover:shadow-soft-md hover:border-brand-cream-dark/50 active:scale-[0.99] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cream-dark/50 focus-visible:ring-offset-2;
+}
+
 /* 터치 피드백 */
 button:active {
   transform: scale(0.95);

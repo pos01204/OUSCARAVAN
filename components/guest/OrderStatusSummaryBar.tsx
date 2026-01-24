@@ -45,7 +45,7 @@ export function OrderStatusSummaryBar({
 
   if (loading) {
     return (
-      <Card>
+      <Card variant="muted">
         <CardContent className="p-4">
           <div className="flex gap-2 overflow-x-auto whitespace-nowrap">
             {[1, 2, 3, 4, 5].map((i) => (
@@ -62,7 +62,7 @@ export function OrderStatusSummaryBar({
   }
 
   return (
-    <Card className="border-primary/20 bg-primary/5">
+    <Card variant="info">
       <CardContent className="p-4">
         <p className="text-sm font-semibold mb-3">주문 상태</p>
         <div className="flex gap-2 overflow-x-auto whitespace-nowrap pb-1 [-webkit-overflow-scrolling:touch]">

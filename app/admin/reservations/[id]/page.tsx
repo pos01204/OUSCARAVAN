@@ -54,8 +54,8 @@ export default function ReservationDetailPage() {
           reservationId,
         });
         toast({
-          title: '오류',
-          description: '데이터를 불러오는데 실패했습니다.',
+          title: '불러오기 실패',
+          description: '예약 정보 조회 실패',
           variant: 'destructive',
         });
         router.push('/admin/reservations');
@@ -73,7 +73,7 @@ export default function ReservationDetailPage() {
     if (!assignedRoom) {
       toast({
         title: '방 배정 필요',
-        description: '방을 선택해주세요.',
+        description: '방을 선택하세요.',
         variant: 'destructive',
       });
       return;
@@ -83,7 +83,7 @@ export default function ReservationDetailPage() {
     if (!phone || phone.trim() === '') {
       toast({
         title: '전화번호 필요',
-        description: '연락처는 필수 입력 항목입니다.',
+        description: '연락처를 입력하세요.',
         variant: 'destructive',
       });
       return;
@@ -93,7 +93,7 @@ export default function ReservationDetailPage() {
     if (!validatePhone(phone)) {
       toast({
         title: '전화번호 형식 오류',
-        description: '올바른 전화번호 형식이 아닙니다. (예: 010-1234-5678)',
+        description: '형식을 확인하세요.',
         variant: 'destructive',
       });
       return;
@@ -147,12 +147,12 @@ export default function ReservationDetailPage() {
       toast({
         title: '저장 완료',
         description: sendNotification
-          ? (isUpdate 
-              ? '방 배정이 수정되었고 알림톡이 발송되었습니다.'
-              : '예약 정보가 저장되었고 알림톡이 발송되었습니다.')
-          : (isUpdate
-              ? '방 배정이 수정되었습니다.'
-              : '예약 정보가 저장되었습니다.'),
+          ? isUpdate
+            ? '방 배정 수정 · 알림톡 발송'
+            : '저장됨 · 알림톡 발송'
+          : isUpdate
+            ? '방 배정 수정'
+            : '저장됨',
       });
       
       // 예약 목록으로 이동

@@ -58,6 +58,7 @@ export function QuickActionGrid({ token }: QuickActionGridProps) {
           <Link key={item.key} href={item.href} className="block group">
             <Card 
               interactive
+              variant="cta"
               className="h-full p-4 rounded-xl"
             >
               <div className="flex items-start gap-3">

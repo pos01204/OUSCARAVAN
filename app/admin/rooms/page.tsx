@@ -114,7 +114,7 @@ export default function RoomsPage() {
 
         toast({
           title: '주문 완료',
-          description: '주문이 완료 처리되었습니다.',
+          description: '완료 처리됨',
         });
       } catch (error) {
         logError('Failed to complete order', error, {
@@ -122,7 +122,7 @@ export default function RoomsPage() {
           orderId,
         });
         toast({
-          title: '오류',
+          title: '완료 실패',
           description: extractUserFriendlyMessage(error),
           variant: 'destructive',
         });
@@ -171,7 +171,7 @@ export default function RoomsPage() {
 
       setLoadError('현장관리 데이터를 불러오지 못했어요. 다시 시도해주세요.');
       toast({
-        title: '오류',
+        title: '불러오기 실패',
         description: extractUserFriendlyMessage(error),
         variant: 'destructive',
       });

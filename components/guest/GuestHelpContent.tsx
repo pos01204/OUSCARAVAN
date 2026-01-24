@@ -64,7 +64,7 @@ export function GuestHelpContent({ token }: GuestHelpContentProps) {
 
       {/* 빠른 도움(상위 3개) */}
       <section aria-label="빠른 도움">
-        <Card className="border-primary/20 bg-primary/5">
+        <Card variant="info">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-2">
               <HelpCircle className="h-5 w-5 text-primary" />
@@ -74,7 +74,7 @@ export function GuestHelpContent({ token }: GuestHelpContentProps) {
           <CardContent className="grid grid-cols-1 gap-2">
             <a
               href={`tel:${EMERGENCY_CONTACTS.manager.number}`}
-              className="flex items-center justify-between rounded-lg border bg-background px-4 py-3 hover:bg-muted/50 transition-colors"
+              className="click-hint flex items-center justify-between rounded-lg border bg-background px-4 py-3 hover:bg-muted/50 transition-colors"
               aria-label="관리자에게 전화하기"
             >
               <div>
@@ -88,7 +88,7 @@ export function GuestHelpContent({ token }: GuestHelpContentProps) {
               href={EMERGENCY_CONTACTS.hospital.mapLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="flex items-center justify-between rounded-lg border bg-background px-4 py-3 hover:bg-muted/50 transition-colors"
+              className="click-hint flex items-center justify-between rounded-lg border bg-background px-4 py-3 hover:bg-muted/50 transition-colors"
               aria-label="응급실 지도 보기"
             >
               <div>
@@ -100,7 +100,7 @@ export function GuestHelpContent({ token }: GuestHelpContentProps) {
 
             <Link
               href={homeWifiHref}
-              className="flex items-center justify-between rounded-lg border bg-background px-4 py-3 hover:bg-muted/50 transition-colors"
+              className="click-hint flex items-center justify-between rounded-lg border bg-background px-4 py-3 hover:bg-muted/50 transition-colors"
               aria-label="WiFi 비밀번호 확인하기"
             >
               <div>
@@ -115,7 +115,7 @@ export function GuestHelpContent({ token }: GuestHelpContentProps) {
 
       {/* 응급 연락처 */}
       <section aria-label="응급 연락처">
-        <Card>
+        <Card variant="cta">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <AlertTriangle className="h-5 w-5 text-destructive" />

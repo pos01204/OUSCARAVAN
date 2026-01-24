@@ -65,7 +65,7 @@ export function InfoInspector({
           <div
             className={cn(
               // flex child 스크롤을 위해 min-h-0 필수
-              'mt-4 min-h-0 flex-1 overflow-y-auto overscroll-contain pr-1',
+              'mt-4 min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pt-2 pb-6 md:px-6',
               bodyClassName
             )}
           >
@@ -93,7 +93,7 @@ export function InfoInspector({
         <div
           className={cn(
             // flex child 스크롤을 위해 min-h-0 필수
-            'min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pb-6',
+            'min-h-0 flex-1 overflow-y-auto overscroll-contain px-4 pt-2 pb-6',
             bodyClassName
           )}
         >

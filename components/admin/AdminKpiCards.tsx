@@ -26,18 +26,20 @@ function KpiCard({
   value,
   hint,
   onClick,
+  variant = 'info',
 }: {
   title: string;
   value: number;
   hint: string;
   onClick?: () => void;
+  variant?: 'default' | 'info' | 'cta' | 'alert' | 'muted';
 }) {
   const clickable = Boolean(onClick);
   return (
     <Card
+      variant={variant}
       className={cn(
-        'border-border/60',
-        clickable && 'cursor-pointer transition-colors hover:bg-muted/30 active:bg-muted/40'
+        clickable && 'click-hint cursor-pointer'
       )}
       onClick={onClick}
       role={clickable ? 'button' : undefined}
@@ -87,7 +89,7 @@ export function AdminKpiCards(props: AdminKpiCardsProps) {
         <Skeleton className="h-4 w-48" />
         <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
           {[0, 1, 2, 3].map((i) => (
-            <Card key={i} className="border-border/60">
+            <Card key={i} variant="muted">
               <CardHeader className="pb-2">
                 <Skeleton className="h-4 w-24" />
               </CardHeader>
@@ -110,10 +112,34 @@ export function AdminKpiCards(props: AdminKpiCardsProps) {
     <div className="space-y-2">
       <LastUpdatedAt value={lastUpdatedAt} />
       <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
-        <KpiCard title="오늘 체크인" value={todayCheckins} hint="오늘 입실 예정" onClick={onGoToTodayCheckins} />
-        <KpiCard title="오늘 체크아웃" value={todayCheckouts} hint="오늘 퇴실 예정" onClick={onGoToTodayCheckouts} />
-        <KpiCard title="미배정" value={d1Unassigned} hint="내일 체크인 미배정" onClick={onGoToD1Unassigned} />
-        <KpiCard title="대기 주문" value={pendingOrders} hint="오늘 처리 대기" onClick={onGoToPendingOrders} />
+        <KpiCard
+          title="오늘 체크인"
+          value={todayCheckins}
+          hint="오늘 입실 예정"
+          onClick={onGoToTodayCheckins}
+          variant="info"
+        />
+        <KpiCard
+          title="오늘 체크아웃"
+          value={todayCheckouts}
+          hint="오늘 퇴실 예정"
+          onClick={onGoToTodayCheckouts}
+          variant="info"
+        />
+        <KpiCard
+          title="미배정"
+          value={d1Unassigned}
+          hint="내일 체크인 미배정"
+          onClick={onGoToD1Unassigned}
+          variant={d1Unassigned > 0 ? 'alert' : 'info'}
+        />
+        <KpiCard
+          title="대기 주문"
+          value={pendingOrders}
+          hint="오늘 처리 대기"
+          onClick={onGoToPendingOrders}
+          variant={pendingOrders > 0 ? 'alert' : 'info'}
+        />
       </div>
     </div>
   );

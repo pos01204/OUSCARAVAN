@@ -31,7 +31,7 @@ export function RecentOrdersSummary({ token, maxItems = 2 }: RecentOrdersSummary
 
   if (loading) {
     return (
-      <Card>
+      <Card variant="muted">
         <CardHeader>
           <CardTitle>최근 주문</CardTitle>
         </CardHeader>
@@ -47,7 +47,7 @@ export function RecentOrdersSummary({ token, maxItems = 2 }: RecentOrdersSummary
 
   if (error) {
     return (
-      <Card>
+      <Card variant="alert">
         <CardHeader>
           <CardTitle>최근 주문</CardTitle>
         </CardHeader>
@@ -65,7 +65,7 @@ export function RecentOrdersSummary({ token, maxItems = 2 }: RecentOrdersSummary
 
   if (bbqFireOrders.length === 0) {
     return (
-      <Card>
+      <Card variant="cta">
         <CardHeader>
           <CardTitle>최근 주문</CardTitle>
         </CardHeader>
@@ -80,7 +80,7 @@ export function RecentOrdersSummary({ token, maxItems = 2 }: RecentOrdersSummary
   }
 
   return (
-    <Card>
+    <Card variant="info">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center justify-between gap-3">
           <span>최근 주문</span>

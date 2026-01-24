@@ -77,7 +77,7 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
       />
 
       {submittedToast ? (
-        <Card className="border-emerald-200 bg-emerald-50">
+        <Card variant="info">
           <CardContent className="flex items-start justify-between gap-3 p-4">
             <div className="flex items-start gap-3">
               <CheckCircle2 className="mt-0.5 h-5 w-5 text-emerald-600" aria-hidden="true" />
@@ -105,7 +105,7 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
 
       {/* 불멍/바베큐 주문 카드 */}
       <section aria-label="불멍/바베큐 주문">
-        <Card className="border-border/60 overflow-hidden">
+        <Card variant="cta" className="overflow-hidden">
           <CardHeader className="pb-3">
             <CardTitle className="flex items-center gap-3 text-lg">
               <div className="p-2.5 rounded-xl bg-orange-50">
@@ -204,7 +204,7 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
 
       {/* 주문 내역이 없을 때 */}
       {!loading && bbqFireOrders.length === 0 && (
-        <Card className="border-dashed border-border/60">
+        <Card variant="cta" className="border-dashed">
           <CardContent className="py-8 text-center">
             <Flame className="mx-auto h-10 w-10 text-muted-foreground/40 mb-3" />
             <p className="text-sm text-muted-foreground">

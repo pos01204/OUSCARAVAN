@@ -30,7 +30,7 @@ function FloorPlanCardComponent({ assignedRoom }: FloorPlanCardProps) {
   })();
 
   return (
-    <Card role="region" aria-label="배정된 공간 약도">
+    <Card variant="info" role="region" aria-label="배정된 공간 약도">
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center gap-2 text-brand-dark">
           <div className="inline-flex h-8 w-8 items-center justify-center rounded-lg bg-amber-50 text-amber-600">

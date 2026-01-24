@@ -73,8 +73,8 @@ export function CheckInOut({ token }: CheckInOutProps = {}) {
   const handleCheckIn = async () => {
     if (!token) {
       toast({
-        title: '오류',
-        description: '토큰이 필요합니다.',
+        title: '접속 정보가 없어요',
+        description: '홈 화면에서 다시 접속해 주세요.',
         variant: 'destructive',
       });
       return;
@@ -102,15 +102,15 @@ export function CheckInOut({ token }: CheckInOutProps = {}) {
       });
       
       toast({
-        title: '체크인 완료',
-        description: '체크인이 완료되었습니다. 즐거운 시간 보내세요!',
+        title: '체크인이 완료됐어요',
+        description: '즐거운 시간 보내세요!',
       });
     } catch (error) {
       console.error('Failed to check in:', error);
       setActionError('체크인 처리에 실패했습니다. 네트워크 상태를 확인하고 다시 시도해주세요.');
       toast({
-        title: '체크인 실패',
-        description: '체크인 처리에 실패했습니다. 다시 시도해주세요.',
+        title: '체크인이 잘 안 됐어요',
+        description: '네트워크 상태를 확인한 뒤 다시 시도해 주세요.',
         variant: 'destructive',
       });
     } finally {
@@ -121,8 +121,8 @@ export function CheckInOut({ token }: CheckInOutProps = {}) {
   const handleCheckout = async () => {
     if (!token) {
       toast({
-        title: '오류',
-        description: '토큰이 필요합니다.',
+        title: '접속 정보가 없어요',
+        description: '홈 화면에서 다시 접속해 주세요.',
         variant: 'destructive',
       });
       return;
@@ -153,15 +153,15 @@ export function CheckInOut({ token }: CheckInOutProps = {}) {
       
       setShowCheckoutDialog(false);
       toast({
-        title: '체크아웃 완료',
-        description: '체크아웃이 완료되었습니다. 다음에 또 만나요!',
+        title: '체크아웃을 완료했어요',
+        description: '다음에 또 만나요!',
       });
     } catch (error) {
       console.error('Failed to check out:', error);
       setActionError('체크아웃 처리에 실패했습니다. 네트워크 상태를 확인하고 다시 시도해주세요.');
       toast({
-        title: '체크아웃 실패',
-        description: '체크아웃 처리에 실패했습니다. 다시 시도해주세요.',
+        title: '체크아웃이 잘 안 됐어요',
+        description: '잠시 후 다시 시도해 주세요.',
         variant: 'destructive',
       });
     } finally {

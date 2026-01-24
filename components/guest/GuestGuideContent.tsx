@@ -129,7 +129,7 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
       {/* BBQ 가이드 캐러셀 토글 */}
       {bbqGuide && (
         <div id="guide-bbq" className="scroll-mt-24">
-          <Card className="border-primary/30 bg-primary/5">
+          <Card variant="info">
             <CardContent className="p-4">
               {/* BBQ 미니 요약 (진입 전 기대치/준비물 안내) */}
               <div className="mb-3 rounded-lg border border-primary/20 bg-background/60 p-3">
@@ -171,7 +171,7 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
       ) : (
         <section aria-label="가이드 목록">
           {filteredGuideData.length === 0 ? (
-            <Card>
+            <Card variant="muted">
               <CardContent className="p-8 text-center">
                 <p className="text-muted-foreground">검색 결과가 없습니다.</p>
               </CardContent>
@@ -186,7 +186,8 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
                   <div key={item.id} id={`guide-${item.id}`}>
                     {/* 가이드 카드 */}
                     <Card
-                      className="transition-all cursor-pointer hover:shadow-lg hover:border-primary/30 active:scale-[0.99]"
+                      variant="info"
+                      className="click-hint cursor-pointer"
                       onClick={() => handleGuideClick(item.id)}
                       role="button"
                       tabIndex={0}
@@ -249,7 +250,7 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
           <div className="space-y-3">
             {/* 상단: 핵심만 한 화면에 들어오도록 요약/주의/팁을 압축 */}
             {(selectedGuide.warning || (selectedGuide.tips && selectedGuide.tips.length > 0)) && (
-              <Card className="border-border/60">
+              <Card variant="info">
                 <CardContent className="p-4 space-y-3">
                   {selectedGuide.warning && selectedGuide.warningText ? (
                     <div className="flex items-start gap-2 rounded-lg border border-yellow-200 bg-yellow-50 p-3">

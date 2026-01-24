@@ -110,7 +110,7 @@ export default function AdminDashboard() {
 
       {/* 상단 배너 (Critical Status) */}
       {isLoading ? (
-        <Card className="border-orange-200 bg-orange-50">
+        <Card variant="alert">
           <div className="p-4">
             <Skeleton className="h-5 w-64" />
           </div>

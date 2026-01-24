@@ -143,8 +143,8 @@ export default function AnnouncementsPage() {
         component: 'AnnouncementsPage',
       });
       toast({
-        title: '오류',
-        description: '공지 목록을 불러오는데 실패했습니다.',
+        title: '공지 조회 실패',
+        description: '목록 조회 실패',
         variant: 'destructive',
       });
     } finally {
@@ -160,8 +160,8 @@ export default function AnnouncementsPage() {
   const handleCreate = async () => {
     if (!form.title.trim() || !form.content.trim()) {
       toast({
-        title: '입력 확인',
-        description: '제목과 내용을 입력해주세요.',
+        title: '입력 필요',
+        description: '제목/내용 입력',
         variant: 'destructive',
       });
       return;
@@ -177,16 +177,15 @@ export default function AnnouncementsPage() {
         isActive: form.isActive,
       });
       toast({
-        title: '공지 등록 완료',
-        description: '고객 화면에 즉시 노출됩니다.',
+        title: '공지 등록됨',
       });
       setForm({ ...defaultFormState });
       fetchAnnouncements();
     } catch (error) {
       logError('Failed to create announcement', error, { component: 'AnnouncementsPage' });
       toast({
-        title: '오류',
-        description: '공지 등록에 실패했습니다.',
+        title: '등록 실패',
+        description: '공지 등록 실패',
         variant: 'destructive',
       });
     }
@@ -208,8 +207,8 @@ export default function AnnouncementsPage() {
     if (!editing) return;
     if (!editForm.title.trim() || !editForm.content.trim()) {
       toast({
-        title: '입력 확인',
-        description: '제목과 내용을 입력해주세요.',
+        title: '입력 필요',
+        description: '제목/내용 입력',
         variant: 'destructive',
       });
       return;
@@ -225,16 +224,15 @@ export default function AnnouncementsPage() {
         isActive: editForm.isActive,
       });
       toast({
-        title: '공지 수정 완료',
-        description: '변경 사항이 저장되었습니다.',
+        title: '공지 수정됨',
       });
       setEditing(null);
       fetchAnnouncements();
     } catch (error) {
       logError('Failed to update announcement', error, { component: 'AnnouncementsPage', id: editing.id });
       toast({
-        title: '오류',
-        description: '공지 수정에 실패했습니다.',
+        title: '수정 실패',
+        description: '공지 수정 실패',
         variant: 'destructive',
       });
     }
@@ -247,8 +245,8 @@ export default function AnnouncementsPage() {
     } catch (error) {
       logError('Failed to toggle announcement', error, { component: 'AnnouncementsPage', id: announcement.id });
       toast({
-        title: '오류',
-        description: '공지 상태를 변경하지 못했습니다.',
+        title: '상태 변경 실패',
+        description: '공지 상태 변경 실패',
         variant: 'destructive',
       });
     }
@@ -261,15 +259,14 @@ export default function AnnouncementsPage() {
     try {
       await deleteAnnouncement(announcement.id);
       toast({
-        title: '공지 삭제',
-        description: '공지 항목이 삭제되었습니다.',
+        title: '공지 삭제됨',
       });
       fetchAnnouncements();
     } catch (error) {
       logError('Failed to delete announcement', error, { component: 'AnnouncementsPage', id: announcement.id });
       toast({
-        title: '오류',
-        description: '공지 삭제에 실패했습니다.',
+        title: '삭제 실패',
+        description: '공지 삭제 실패',
         variant: 'destructive',
       });
     }
@@ -303,8 +300,7 @@ export default function AnnouncementsPage() {
       isActive: true,
     }));
     toast({
-      title: '작성 폼에 복사됨',
-      description: '내용을 수정 후 바로 등록할 수 있습니다.',
+      title: '폼에 복사됨',
     });
   };
 

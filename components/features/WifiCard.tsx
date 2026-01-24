@@ -43,14 +43,14 @@ export function WifiCard() {
         setTimeout(() => setShowConfetti(false), 1500);
       }
       toast({
-        title: '비밀번호 복사됨',
-        description: 'WiFi 비밀번호가 클립보드에 복사되었습니다.',
+        title: '비밀번호를 복사했어요',
+        description: '이제 WiFi에 바로 연결할 수 있어요.',
       });
     } catch (err) {
       setShowPasswordFallback(true);
       toast({
-        title: '복사 실패',
-        description: '비밀번호를 직접 확인 후 복사해주세요.',
+        title: '복사가 잘 안 됐어요',
+        description: '아래 비밀번호를 눌러 복사해 주세요.',
         variant: 'destructive',
       });
     }

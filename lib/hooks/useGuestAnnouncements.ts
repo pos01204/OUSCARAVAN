@@ -14,6 +14,7 @@ export function useGuestAnnouncements(token: string) {
   const inFlightRef = useRef(false);
   const pollTimeoutRef = useRef<number | null>(null);
   const eventSourceRef = useRef<EventSource | null>(null);
+  const lastUpdatedAtRef = useRef<Date | null>(null);
 
   const clearPollTimeout = () => {
     if (pollTimeoutRef.current) {
@@ -24,7 +25,7 @@ export function useGuestAnnouncements(token: string) {
 
   const fetchAnnouncements = useCallback(
     async (opts?: { mode?: 'initial' | 'soft'; reason?: string }) => {
-      const mode = opts?.mode ?? (lastUpdatedAt ? 'soft' : 'initial');
+      const mode = opts?.mode ?? (lastUpdatedAtRef.current ? 'soft' : 'initial');
       try {
         if (!isMountedRef.current) return;
         if (inFlightRef.current) return;
@@ -36,7 +37,9 @@ export function useGuestAnnouncements(token: string) {
         if (!isMountedRef.current) return;
         setAnnouncements(data || []);
         setError(null);
-        setLastUpdatedAt(new Date());
+        const now = new Date();
+        lastUpdatedAtRef.current = now;
+        setLastUpdatedAt(now);
       } catch (err) {
         console.error('Failed to fetch announcements:', err);
         if (!isMountedRef.current) return;
@@ -48,7 +51,7 @@ export function useGuestAnnouncements(token: string) {
         setIsRefreshing(false);
       }
     },
-    [token, lastUpdatedAt]
+    [token]
   );
 
   useEffect(() => {

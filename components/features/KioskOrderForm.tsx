@@ -85,8 +85,8 @@ export function KioskOrderForm({ onClose, token, initial }: KioskOrderFormProps)
   const handleSubmit = async () => {
     if (cart.length === 0) {
       toast({
-        title: '선택 필요',
-        description: '주문할 물품을 선택해주세요.',
+        title: '상품을 선택해 주세요',
+        description: '원하는 물품을 장바구니에 담아주세요.',
         variant: 'destructive',
       });
       return;
@@ -133,16 +133,16 @@ export function KioskOrderForm({ onClose, token, initial }: KioskOrderFormProps)
       });
 
       toast({
-        title: '주문 완료',
-        description: '주문이 접수되었습니다. 곧 준비해드리겠습니다!',
+        title: '주문이 접수됐어요',
+        description: '준비가 되는 대로 안내해 드릴게요.',
       });
 
       onClose();
     } catch (error) {
       console.error('Failed to create order:', error);
       toast({
-        title: '주문 실패',
-        description: '주문 접수에 실패했습니다. 다시 시도해주세요.',
+        title: '주문이 잘 안 됐어요',
+        description: '네트워크 상태를 확인한 뒤 다시 시도해 주세요.',
         variant: 'destructive',
       });
     } finally {
@@ -154,8 +154,8 @@ export function KioskOrderForm({ onClose, token, initial }: KioskOrderFormProps)
     if (step === 'select') {
       if (cart.length === 0) {
         toast({
-          title: '선택 필요',
-          description: '주문할 물품을 선택해주세요.',
+          title: '상품을 선택해 주세요',
+          description: '원하는 물품을 장바구니에 담아주세요.',
           variant: 'destructive',
         });
         return;
@@ -167,8 +167,8 @@ export function KioskOrderForm({ onClose, token, initial }: KioskOrderFormProps)
     if (step === 'time') {
       if (!deliveryTime) {
         toast({
-          title: '배송 시간 필요',
-          description: '배송 시간을 선택해주세요.',
+          title: '수령 시간을 선택해 주세요',
+          description: '원하는 시간을 골라주세요.',
           variant: 'destructive',
         });
         return;
