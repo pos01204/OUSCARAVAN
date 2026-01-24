@@ -24,17 +24,9 @@ interface CheckInOutProps {
 }
 
 export function CheckInOut({ token }: CheckInOutProps = {}) {
+  const hasToken = Boolean(token);
   const { isCheckedIn, isCheckedOut, checkIn, checkOut, guestInfo } =
     useGuestStore();
-  if (!token) {
-    return (
-      <PermissionState
-        title="접속 정보가 없어요"
-        description="홈 화면에서 다시 접속해 주세요."
-      />
-    );
-  }
-
   const [showCheckoutDialog, setShowCheckoutDialog] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
@@ -180,6 +172,15 @@ export function CheckInOut({ token }: CheckInOutProps = {}) {
       setIsProcessing(false);
     }
   };
+
+  if (!hasToken) {
+    return (
+      <PermissionState
+        title="접속 정보가 없어요"
+        description="홈 화면에서 다시 접속해 주세요."
+      />
+    );
+  }
 
   return (
     <>
