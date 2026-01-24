@@ -125,7 +125,7 @@ export function useGuestAnnouncements(token: string) {
         eventSourceRef.current = null;
       }
     };
-  }, [fetchAnnouncements]);
+  }, [fetchAnnouncements, token]);
 
   const refresh = useCallback(() => {
     void fetchAnnouncements({ mode: 'soft', reason: 'manual' });

@@ -5,12 +5,12 @@ type BadgeTone = 'neutral' | 'brand' | 'info' | 'success' | 'warning' | 'error';
 type BadgeSize = 'sm' | 'md' | 'lg';
 
 interface CardIconBadgeProps {
-  icon: React.ComponentType<{ className?: string; strokeWidth?: number }>;
+  icon: React.ComponentType<{ className?: string; strokeWidth?: string | number }>;
   tone?: BadgeTone;
   size?: BadgeSize;
   className?: string;
   iconClassName?: string;
-  strokeWidth?: number;
+  strokeWidth?: string | number;
 }
 
 const toneClasses: Record<BadgeTone, string> = {
