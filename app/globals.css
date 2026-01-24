@@ -560,7 +560,7 @@ button:active {
 
 /* Ocean Icon Glow - 아이콘 타일 오션 효과 */
 .ocean-icon-glow {
-  @apply bg-status-info/8;
+  background-color: rgba(37, 99, 235, 0.08);
   box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.08), 0 1px 3px rgba(37, 99, 235, 0.06);
 }
 
