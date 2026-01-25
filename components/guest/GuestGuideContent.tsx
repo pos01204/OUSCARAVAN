@@ -1,11 +1,25 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import { Search, AlertCircle, Lightbulb, ExternalLink } from 'lucide-react';
-import { Input } from '@/components/ui/input';
+import { 
+  AlertCircle, 
+  Lightbulb, 
+  ChevronRight,
+  Flame,
+  MapPin,
+  Droplets,
+  Trash2,
+  Snowflake,
+  Clock,
+  HelpCircle,
+  ClipboardList,
+  MessageCircleQuestion,
+  Wrench,
+  Search,
+  type LucideIcon
+} from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { GUIDE_DATA, BBQ_GUIDE_SLIDES } from '@/lib/constants';
 import { BBQCarousel } from '@/components/features/BBQCarousel';
@@ -14,47 +28,42 @@ import { GuideChecklist } from '@/components/features/GuideChecklist';
 import { GuideFAQ } from '@/components/features/GuideFAQ';
 import { GuideTroubleshooting } from '@/components/features/GuideTroubleshooting';
 import { TrashCategoryGuide } from '@/components/features/TrashCategoryGuide';
-import Image from 'next/image';
-import type { GuideItem } from '@/types';
 import { GuestPageHeader } from '@/components/guest/GuestPageHeader';
 import { InfoInspector } from '@/components/guest/InfoInspector';
-import { highlightText } from '@/lib/utils/highlight';
+import { CardIconBadge } from '@/components/shared/CardIconBadge';
+import { GuestMotionCard } from '@/components/guest/GuestMotionCard';
+import { SectionDivider } from '@/components/shared/SectionDivider';
+import { cn } from '@/lib/utils';
+
+// 카테고리별 아이콘 매핑
+const CATEGORY_ICONS: Record<string, LucideIcon> = {
+  '실내': MapPin,
+  '편의시설': Droplets,
+  '규칙': Clock,
+  '요리': Flame,
+  '쓰레기': Trash2,
+  '에어컨': Snowflake,
+  '기타': HelpCircle,
+};
 
 interface GuestGuideContentProps {
   token?: string;
 }
 
 export function GuestGuideContent({ token }: GuestGuideContentProps) {
-  const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('전체');
   const [showBBQCarousel, setShowBBQCarousel] = useState(false);
   const [selectedGuideId, setSelectedGuideId] = useState<string | null>(null);
   const [openInspector, setOpenInspector] = useState(false);
-  const highlightQuery = searchQuery.trim();
 
   const categories = ['전체', ...new Set(GUIDE_DATA.items.map((item) => item.category))];
 
-  // 검색 및 필터링
+  // 카테고리 필터링
   const filteredGuideData = useMemo(() => {
     return GUIDE_DATA.items.filter((item) => {
-      const matchesCategory =
-        selectedCategory === '전체' || item.category === selectedCategory;
-      
-      const searchLower = searchQuery.toLowerCase();
-      const matchesSearch =
-        item.title.toLowerCase().includes(searchLower) ||
-        item.content.toLowerCase().includes(searchLower) ||
-        item.overview?.toLowerCase().includes(searchLower) ||
-        item.tags?.some((tag) => tag.toLowerCase().includes(searchLower)) ||
-        item.faq?.some(
-          (faq) =>
-            faq.question.toLowerCase().includes(searchLower) ||
-            faq.answer.toLowerCase().includes(searchLower)
-        );
-
-      return matchesCategory && matchesSearch;
+      return selectedCategory === '전체' || item.category === selectedCategory;
     });
-  }, [selectedCategory, searchQuery]);
+  }, [selectedCategory]);
 
   // 선택된 가이드 항목
   const selectedGuide = selectedGuideId
@@ -79,90 +88,77 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
   }, [selectedGuide]);
 
   return (
-    <main className="space-y-6" role="main" aria-label="안내 페이지">
+    <main className="space-y-5" role="main" aria-label="안내 페이지">
       <GuestPageHeader
         title="이용 안내서"
         description="숙박 이용에 필요한 모든 정보를 확인하세요"
       />
 
-      {/* 검색 및 필터 */}
-      <section className="space-y-4" aria-label="검색 및 필터">
-        {/* 카테고리 필터 */}
-        <div
-          className="flex gap-2 overflow-x-auto whitespace-nowrap pb-1 [-webkit-overflow-scrolling:touch]"
-          role="tablist"
-          aria-label="카테고리 필터"
-        >
-          {categories.map((category) => (
-            <Button
-              key={category}
-              variant={selectedCategory === category ? 'default' : 'outline'}
-              onClick={() => setSelectedCategory(category)}
-              size="sm"
-              role="tab"
-              aria-selected={selectedCategory === category}
-              aria-controls={`category-${category}`}
-              className="shrink-0"
-            >
-              {category}
-            </Button>
-          ))}
-        </div>
-
-        {/* 검색 입력 필드 */}
+      {/* 카테고리 칩 필터 */}
+      <section aria-label="카테고리 필터">
         <div className="relative">
-          <Search
-            className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground"
-            aria-hidden="true"
-          />
-          <Input
-            type="text"
-            placeholder="안내 내용을 검색하세요..."
-            className="pl-10"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            aria-label="가이드 검색"
-          />
+          <div
+            className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide [-webkit-overflow-scrolling:touch]"
+            role="tablist"
+            aria-label="카테고리 필터"
+          >
+            {categories.map((category) => (
+              <button
+                key={category}
+                onClick={() => setSelectedCategory(category)}
+                role="tab"
+                aria-selected={selectedCategory === category}
+                className={cn(
+                  "shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all",
+                  selectedCategory === category
+                    ? "bg-brand-dark text-white shadow-sm"
+                    : "bg-background-muted text-muted-foreground hover:bg-background-accent border border-border/50"
+                )}
+              >
+                {category}
+              </button>
+            ))}
+          </div>
+          {/* 스크롤 힌트 */}
+          <div className="absolute right-0 top-0 bottom-2 w-8 bg-gradient-to-l from-background to-transparent pointer-events-none" />
         </div>
       </section>
 
-      {/* BBQ 가이드 캐러셀 토글 */}
+      {/* BBQ 빠른 시작 섹션 (간소화) */}
       {bbqGuide && (
-        <div id="guide-bbq" className="scroll-mt-24">
-          <Card variant="info">
-            <CardContent className="p-4">
-              {/* BBQ 미니 요약 (진입 전 기대치/준비물 안내) */}
-              <div className="mb-3 rounded-lg border border-border bg-background p-3">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="text-sm font-bold">불멍/바베큐 시작 전</p>
-                    <p className="mt-1 text-xs text-muted-foreground">
-                      준비 시간과 준비물을 먼저 확인하면 더 빠르게 진행할 수 있어요.
-                    </p>
-                  </div>
-                  <Badge variant="outline" className="shrink-0">
-                    약 5분
-                  </Badge>
+        <GuestMotionCard motionMode="spring">
+          <Card 
+            variant="cta" 
+            id="guide-bbq" 
+            className="scroll-mt-24 overflow-hidden card-hover-glow"
+          >
+            <CardContent className="p-5">
+              <div className="flex items-start gap-4">
+                <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center shrink-0">
+                  <Flame className="h-6 w-6 text-orange-500" />
                 </div>
-                <div className="mt-3 flex flex-wrap gap-2">
-                  <Badge variant="secondary" className="text-xs">집게/가위</Badge>
-                  <Badge variant="secondary" className="text-xs">장갑</Badge>
-                  <Badge variant="secondary" className="text-xs">고기/식재료</Badge>
-                  <Badge variant="secondary" className="text-xs">물티슈(추천)</Badge>
+                <div className="flex-1 min-w-0">
+                  <h3 className="font-bold text-brand-dark">불멍/바베큐 가이드</h3>
+                  <p className="text-xs text-muted-foreground mt-1">
+                    약 5분 · 집게 · 장갑 · 식재료
+                  </p>
                 </div>
               </div>
               <Button
                 onClick={() => setShowBBQCarousel(!showBBQCarousel)}
-                variant="default"
-                className="w-full h-12 text-base font-semibold"
+                className="w-full mt-4 group"
+                size="lg"
                 aria-label="BBQ 가이드 캐러셀 열기/닫기"
               >
-                {showBBQCarousel ? '일반 안내 보기' : '🔥 불멍/바베큐 가이드 보기'}
+                {showBBQCarousel ? '목록으로 돌아가기' : '가이드 시작하기'}
+                <ChevronRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
               </Button>
             </CardContent>
           </Card>
-        </div>
+        </GuestMotionCard>
       )}
+
+      <SectionDivider variant="minimal" />
 
       {showBBQCarousel ? (
         <section aria-label="BBQ 가이드 캐러셀">
@@ -171,23 +167,45 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
       ) : (
         <section aria-label="가이드 목록">
           {filteredGuideData.length === 0 ? (
+            /* 빈 상태 디자인 개선 */
             <Card variant="muted">
-              <CardContent className="p-8 text-center">
-                <p className="text-muted-foreground">검색 결과가 없습니다.</p>
+              <CardContent className="py-12 text-center">
+                <div className="mx-auto w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4">
+                  <Search className="h-5 w-5 text-muted-foreground" />
+                </div>
+                <p className="text-base font-semibold text-brand-dark">해당 카테고리에 안내가 없어요</p>
+                <p className="text-sm text-muted-foreground mt-1">
+                  다른 카테고리를 선택해보세요
+                </p>
+                <Button
+                  variant="outline"
+                  className="mt-4"
+                  onClick={() => setSelectedCategory('전체')}
+                >
+                  전체 보기
+                </Button>
               </CardContent>
             </Card>
           ) : (
-            <div className="space-y-4">
+            <div className="space-y-3">
               {filteredGuideData.map((item) => {
-                // 불멍/바베큐 가이드는 상단 고정 섹션(캐러셀 진입)으로 제공하므로
-                // 목록에서는 중복 노출을 방지하기 위해 숨깁니다.
+                // 불멍/바베큐 가이드는 상단 고정 섹션으로 제공
                 if (item.id === 'bbq') return null;
+                
+                const CategoryIcon = CATEGORY_ICONS[item.category] || HelpCircle;
+                const contentTypes = [
+                  item.steps && item.steps.length > 0 && '단계별',
+                  item.checklist && item.checklist.length > 0 && '체크리스트',
+                  item.faq && item.faq.length > 0 && 'FAQ',
+                ].filter(Boolean).join(' · ');
+
                 return (
-                  <div key={item.id} id={`guide-${item.id}`}>
-                    {/* 가이드 카드 */}
+                  <GuestMotionCard key={item.id} motionMode="spring">
                     <Card
+                      interactive
                       variant="info"
-                      className="click-hint cursor-pointer"
+                      id={`guide-${item.id}`}
+                      className="cursor-pointer card-hover-glow group"
                       onClick={() => handleGuideClick(item.id)}
                       role="button"
                       tabIndex={0}
@@ -199,33 +217,53 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
                         }
                       }}
                     >
-                      <CardHeader className="pb-3">
-                        <div className="flex items-start justify-between gap-2">
-                          <div className="flex-1">
-                            <div className="flex items-center gap-2 mb-1">
-                              <CardTitle className="text-lg font-bold">
-                                {highlightText(item.title, highlightQuery)}
-                              </CardTitle>
+                      <CardContent className="p-4">
+                        <div className="flex items-start gap-3">
+                          {/* 카테고리 아이콘 배지 */}
+                          <CardIconBadge 
+                            icon={CategoryIcon} 
+                            tone={item.warning ? "warning" : "info"} 
+                          />
+                          
+                          <div className="flex-1 min-w-0">
+                            {/* 타이틀 + 주의 배지 */}
+                            <div className="flex items-center gap-2">
+                              <h3 className="font-bold text-brand-dark truncate">
+                                {item.title}
+                              </h3>
                               {item.warning && (
-                                <Badge variant="destructive" className="text-xs">
-                                  <AlertCircle className="h-3 w-3 mr-1" />
+                                <span className="shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-status-warning/10 text-status-warning">
                                   주의
-                                </Badge>
+                                </span>
                               )}
                             </div>
+                            
+                            {/* 설명 */}
                             {item.overview && (
-                              <p className="text-sm text-muted-foreground">
-                                {highlightText(item.overview, highlightQuery)}
+                              <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                                {item.overview}
                               </p>
                             )}
+                            
+                            {/* 메타 정보 */}
+                            <div className="flex items-center gap-1.5 mt-2 text-xs text-muted-foreground">
+                              <span className="px-2 py-0.5 rounded-full bg-background-muted">
+                                {item.category}
+                              </span>
+                              {contentTypes && (
+                                <span className="text-muted-foreground/60">
+                                  · {contentTypes}
+                                </span>
+                              )}
+                            </div>
                           </div>
-                          <Badge variant="outline" className="shrink-0">
-                            {item.category}
-                          </Badge>
+                          
+                          {/* 화살표 힌트 */}
+                          <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform shrink-0 mt-1" />
                         </div>
-                      </CardHeader>
+                      </CardContent>
                     </Card>
-                  </div>
+                  </GuestMotionCard>
                 );
               })}
             </div>
@@ -290,22 +328,26 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
               <Tabs defaultValue={inspectorDefaultTab} className="w-full">
                 <TabsList className="grid w-full grid-flow-col auto-cols-fr h-auto p-1.5 bg-muted/40 border border-border/50 rounded-xl">
                   {selectedGuide.steps && selectedGuide.steps.length > 0 && (
-                    <TabsTrigger value="steps" className="text-xs py-2.5 font-bold">
+                    <TabsTrigger value="steps" className="text-xs py-2.5 font-bold gap-1.5">
+                      <ClipboardList className="h-3.5 w-3.5" />
                       단계별
                     </TabsTrigger>
                   )}
                   {selectedGuide.checklist && selectedGuide.checklist.length > 0 && (
-                    <TabsTrigger value="checklist" className="text-xs py-2.5 font-bold">
+                    <TabsTrigger value="checklist" className="text-xs py-2.5 font-bold gap-1.5">
+                      <ClipboardList className="h-3.5 w-3.5" />
                       체크
                     </TabsTrigger>
                   )}
                   {selectedGuide.faq && selectedGuide.faq.length > 0 && (
-                    <TabsTrigger value="faq" className="text-xs py-2.5 font-bold">
+                    <TabsTrigger value="faq" className="text-xs py-2.5 font-bold gap-1.5">
+                      <MessageCircleQuestion className="h-3.5 w-3.5" />
                       FAQ
                     </TabsTrigger>
                   )}
                   {selectedGuide.troubleshooting && selectedGuide.troubleshooting.length > 0 && (
-                    <TabsTrigger value="troubleshooting" className="text-xs py-2.5 font-bold">
+                    <TabsTrigger value="troubleshooting" className="text-xs py-2.5 font-bold gap-1.5">
+                      <Wrench className="h-3.5 w-3.5" />
                       해결
                     </TabsTrigger>
                   )}
