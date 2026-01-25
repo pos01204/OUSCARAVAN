@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Truck, HelpCircle } from 'lucide-react';
 import { BBQHero } from './BBQHero';
 import { BBQSetCard } from './BBQSetCard';
 import { BBQOrderSheet } from './BBQOrderSheet';
@@ -73,19 +73,40 @@ export function BBQOrderTab({ token, onGuideClick }: BBQOrderTabProps) {
       </section>
 
       {/* 이용 안내 */}
-      <section className="py-2">
-        <div className="flex flex-col gap-3 text-sm text-neutral-500">
-          <p>
-            원하시는 시간에 카라반으로 배송해 드립니다.
-          </p>
-          <button
-            onClick={onGuideClick}
-            className="inline-flex items-center gap-1.5 text-neutral-700 font-medium hover:text-neutral-900 transition-colors self-start group"
-          >
-            처음이신가요? 사용 가이드 보기
-            <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
-          </button>
+      <section className="space-y-3">
+        {/* 배송 안내 */}
+        <div className="rounded-xl bg-neutral-50 border border-neutral-200/80 p-4">
+          <div className="flex items-start gap-3">
+            <div className="w-9 h-9 rounded-lg bg-neutral-100 flex items-center justify-center shrink-0">
+              <Truck className="h-4 w-4 text-neutral-500" />
+            </div>
+            <div>
+              <p className="font-semibold text-neutral-800 text-sm mb-0.5">배송 안내</p>
+              <p className="text-sm text-neutral-600 leading-relaxed">
+                원하시는 시간에 카라반으로 배송해 드립니다.
+              </p>
+            </div>
+          </div>
         </div>
+
+        {/* 사용 가이드 */}
+        <button
+          onClick={onGuideClick}
+          className="w-full rounded-xl bg-neutral-900 hover:bg-neutral-800 transition-colors p-4"
+        >
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-white/10 flex items-center justify-center shrink-0">
+                <HelpCircle className="h-4 w-4 text-white/80" />
+              </div>
+              <div className="text-left">
+                <p className="font-semibold text-white text-sm">처음이신가요?</p>
+                <p className="text-xs text-white/60">사용 가이드 보기</p>
+              </div>
+            </div>
+            <ArrowRight className="h-4 w-4 text-white/60" />
+          </div>
+        </button>
       </section>
 
       {/* 주문 시트 */}
