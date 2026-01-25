@@ -2,12 +2,13 @@
 
 import { EMERGENCY_CONTACTS } from '@/lib/constants';
 import {
-  EmergencyContacts,
+  EmergencyActions,
   FAQSection,
   HelpScrollSpy,
   HelpSection,
   ManagerCallSheet,
   ManagerContact,
+  NearbyFacilities,
 } from '@/components/guest/help';
 import { logHelpEvent } from '@/lib/help-telemetry';
 import { Phone } from '@phosphor-icons/react';
@@ -56,11 +57,10 @@ export function GuestHelpContent({ token }: GuestHelpContentProps) {
       </div>
 
       {/* 헤더 */}
-      <header className="mb-6 mt-4">
-        <p className="text-[11px] font-medium text-neutral-400 uppercase tracking-[0.18em] mb-2">Help</p>
+      <header className="mb-8 mt-4">
         <h1 className="text-2xl font-semibold text-neutral-900 tracking-tight">도움말</h1>
         <p className="mt-2 text-sm text-neutral-500 leading-relaxed">
-          필요한 정보를 빠르게 찾을 수 있도록 정리했어요. 긴급 상황은 아래에서 바로 연결할 수 있습니다.
+          자주 묻는 질문과 긴급 연락처를 한 곳에 모아두었어요.
         </p>
       </header>
 
@@ -68,16 +68,14 @@ export function GuestHelpContent({ token }: GuestHelpContentProps) {
       <div className="space-y-10">
         <HelpSection
           id={ids.emergency}
-          eyebrow="Emergency"
           title="긴급 연락처"
           description="즉시 전화 연결됩니다."
         >
-          <EmergencyContacts />
+          <EmergencyActions />
         </HelpSection>
 
         <HelpSection
           id={ids.faq}
-          eyebrow="FAQ"
           title="자주 묻는 질문"
           description="자주 묻는 질문부터 우선 노출합니다."
         >
@@ -86,20 +84,14 @@ export function GuestHelpContent({ token }: GuestHelpContentProps) {
 
         <HelpSection
           id={ids.nearby}
-          eyebrow="Nearby"
           title="주변 시설"
           description="지도 앱으로 이동합니다."
         >
-          {/* EmergencyContacts 내부에서 주변시설까지 함께 렌더링하므로,
-              섹션 구분을 위해 여기서는 현재 단계에서 별도 분리는 다음 리팩토링에서 수행 */}
-          <div className="text-sm text-neutral-500">
-            위 ‘긴급 연락처’ 섹션 하단의 주변 시설 카드를 이용해 주세요.
-          </div>
+          <NearbyFacilities />
         </HelpSection>
 
         <HelpSection
           id={ids.contact}
-          eyebrow="Contact"
           title="관리자 연락"
           description="문의 사항이 있을 때만 연결해 주세요."
         >

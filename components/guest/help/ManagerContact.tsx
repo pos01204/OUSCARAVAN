@@ -12,21 +12,22 @@ export function ManagerContact() {
           type="button"
           className="
             w-full text-left
-            group flex items-center justify-between
-            p-4 rounded-xl
-            bg-neutral-50 hover:bg-neutral-100
-            border border-neutral-200/80
-            transition-all duration-200
+            group flex items-center justify-between gap-4
+            rounded-xl border border-neutral-200/70 bg-white
+            px-4 py-3.5
+            hover:bg-neutral-50 transition-colors duration-200
             active:scale-[0.99] motion-reduce:transform-none
           "
           aria-label={`관리자에게 전화하기 ${EMERGENCY_CONTACTS.manager.number}`}
         >
           <div>
-            <p className="text-xs text-neutral-400 mb-1">추가 문의가 필요하신가요?</p>
-            <p className="font-medium text-neutral-800 tracking-tight">{EMERGENCY_CONTACTS.manager.number}</p>
+            <p className="text-xs text-neutral-500 mb-1">추가 문의가 필요하신가요?</p>
+            <p className="text-base font-semibold text-neutral-900 tracking-tight">
+              {EMERGENCY_CONTACTS.manager.number}
+            </p>
           </div>
 
-          <span className="text-xs font-medium text-neutral-500 group-hover:text-neutral-700 transition-colors">
+          <span className="inline-flex items-center justify-center rounded-full bg-neutral-900 text-white text-xs font-medium px-3 py-1.5 group-hover:bg-neutral-800 transition-colors">
             전화
           </span>
         </button>

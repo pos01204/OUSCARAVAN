@@ -95,15 +95,7 @@ export function HelpScrollSpy({
 
   return (
     <div className="sticky top-14 md:top-0 z-30 -mx-4 px-4 py-2 bg-white/70 backdrop-blur-md border-b border-neutral-200/60">
-      <div className="flex items-center justify-between gap-2">
-        <div className="text-xs text-neutral-500">
-          <span className="text-neutral-400">현재 섹션</span>{" "}
-          <span className="font-medium text-neutral-700">
-            {sections.find((s) => s.key === active)?.label}
-          </span>
-        </div>
-
-        <div className="flex items-center gap-1">
+      <div className="flex items-center justify-end gap-1">
           {sections.map((s) => {
             const Icon = s.icon;
             const isActive = s.key === active;
@@ -137,7 +129,6 @@ export function HelpScrollSpy({
           >
             <ArrowUp size={14} weight="bold" aria-hidden="true" />
           </button>
-        </div>
       </div>
     </div>
   );

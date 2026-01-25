@@ -56,8 +56,8 @@ export function FAQSection() {
   const visible = expanded ? topFAQs : topFAQs.slice(0, 3);
 
   return (
-    <div>
-      <div className="bg-neutral-50 rounded-xl border border-neutral-200/80 overflow-hidden">
+    <div className="space-y-3">
+      <div className="rounded-xl border border-neutral-200/70 overflow-hidden bg-white">
         <Accordion
           type="single"
           collapsible
@@ -80,9 +80,9 @@ export function FAQSection() {
                   px-4 py-3.5
                   text-left text-sm
                   font-normal text-neutral-700
-                  hover:text-neutral-900 hover:bg-neutral-100/50
+                  hover:text-neutral-900 hover:bg-neutral-50
                   hover:no-underline
-                  data-[state=open]:bg-neutral-100/50
+                  data-[state=open]:bg-neutral-50
                   data-[state=open]:text-neutral-900
                   [&[data-state=open]>div>svg]:rotate-45
                   transition-colors
@@ -103,14 +103,14 @@ export function FAQSection() {
         </Accordion>
       </div>
 
-      <div className="mt-3 flex justify-end">
+      <div className="flex justify-end">
         <button
           type="button"
           onClick={() => {
             setExpanded((v) => !v);
             logHelpEvent('help_faq_toggle', { expanded: !expanded });
           }}
-          className="text-xs font-medium text-neutral-600 hover:text-neutral-900 transition-colors"
+          className="text-xs font-medium text-neutral-600 hover:text-neutral-900 transition-colors px-1"
         >
           {expanded ? '접기' : '더 보기'}
         </button>
