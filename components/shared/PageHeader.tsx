@@ -3,7 +3,6 @@
 interface PageHeaderProps {
   title: string;
   subtitle?: string;  // 영문 서브타이틀 (HELP, GUIDE, BBQ & FIRE, CAFÉ)
-  description?: string;
 }
 
 /**
@@ -13,7 +12,7 @@ interface PageHeaderProps {
  * - 골드 악센트 바로 프리미엄 브랜드 아이덴티티 표현
  * - 하단 골드 그라데이션 라인으로 헤더 영역 구분
  */
-export function PageHeader({ title, subtitle, description }: PageHeaderProps) {
+export function PageHeader({ title, subtitle }: PageHeaderProps) {
   return (
     <header className="relative -mx-4 bg-[#f7f5f2] border-b border-[#e8e4df] mb-8">
       {/* 모바일 기준 정렬감 + 간결한 여백 */}
@@ -33,12 +32,6 @@ export function PageHeader({ title, subtitle, description }: PageHeaderProps) {
         {/* 미니멀 구분선 */}
         <div className="mt-3 w-8 h-[2px] bg-[#c9b892]" />
         
-        {/* 설명 텍스트 */}
-        {description && (
-          <p className="mt-3 text-[13px] text-[#7b6651] leading-relaxed">
-            {description}
-          </p>
-        )}
       </div>
     </header>
   );
