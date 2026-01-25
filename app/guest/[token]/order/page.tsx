@@ -1,7 +1,7 @@
 import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
 import { guestApi } from '@/lib/api';
-import { GuestOrderContent } from '@/components/guest/GuestOrderContent';
+import { BBQPageContent } from '@/components/guest/bbq';
 
 export default async function GuestOrderPage({
   params,
@@ -27,7 +27,7 @@ export default async function GuestOrderPage({
         </div>
       }
     >
-      <GuestOrderContent token={params.token} />
+      <BBQPageContent token={params.token} />
     </Suspense>
   );
 }
