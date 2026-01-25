@@ -13,12 +13,12 @@ export function BBQHero() {
       aria-label="캠프파이어 히어로"
     >
       {/* 실제 캠프파이어 이미지 */}
-      <div className="relative aspect-[4/3] w-full">
+      <div className="relative aspect-[16/10] w-full">
         <Image
           src="/images/campfire-hero.jpg"
           alt="캠프파이어"
           fill
-          className="object-cover"
+          className="object-cover object-[center_70%]"
           priority
         />
         
