@@ -7,40 +7,42 @@ interface PageHeaderProps {
 }
 
 /**
- * 공통 페이지 헤더 컴포넌트 (브랜딩 강화 버전)
+ * 공통 페이지 헤더 컴포넌트 (모바일 최적화 브랜딩 버전)
+ * - 모바일 safe area 고려한 충분한 상단 패딩
  * - 영문 서브타이틀로 세련된 국제적 감각
  * - 골드 악센트 바로 프리미엄 브랜드 아이덴티티 표현
  * - 하단 골드 그라데이션 라인으로 헤더 영역 구분
  */
 export function PageHeader({ title, subtitle, description }: PageHeaderProps) {
   return (
-    <header className="relative -mx-4 -mt-4 bg-gradient-to-b from-[#faf8f5] to-[#f5f3f0] overflow-hidden mb-10">
-      <div className="px-4 pt-5 pb-6">
+    <header className="relative -mx-4 -mt-4 bg-gradient-to-b from-[#faf8f5] to-[#f5f3f0] overflow-hidden mb-8">
+      {/* 모바일 최적화: 충분한 패딩으로 콘텐츠 잘림 방지 */}
+      <div className="px-5 pt-6 pb-5">
         {/* 영문 서브타이틀 */}
         {subtitle && (
-          <span className="text-[10px] font-semibold tracking-[0.25em] text-[#C9A962] uppercase">
+          <span className="block text-[11px] font-semibold tracking-[0.2em] text-[#C9A962] uppercase">
             {subtitle}
           </span>
         )}
         
-        {/* 메인 타이틀 */}
-        <h1 className={`text-[26px] font-bold text-[#2C2416] tracking-tight leading-none ${subtitle ? 'mt-1' : ''}`}>
+        {/* 메인 타이틀 - 모바일 최적화 크기 */}
+        <h1 className={`text-[22px] font-bold text-[#2C2416] tracking-tight leading-tight ${subtitle ? 'mt-1.5' : ''}`}>
           {title}
         </h1>
         
         {/* 골드 악센트 바 */}
-        <div className="mt-3 w-10 h-[3px] bg-gradient-to-r from-[#C9A962] to-[#D4B87A] rounded-full" />
+        <div className="mt-3 w-8 h-[2px] bg-gradient-to-r from-[#C9A962] to-[#D4B87A] rounded-full" />
         
         {/* 설명 텍스트 */}
         {description && (
-          <p className="mt-3 text-[13px] text-[#8B7355] leading-relaxed">
+          <p className="mt-2.5 text-[13px] text-[#8B7355] leading-relaxed">
             {description}
           </p>
         )}
       </div>
       
       {/* 하단 구분선 - 골드 그라데이션 */}
-      <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#C9A962]/60 to-transparent" />
+      <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#C9A962]/50 to-transparent" />
     </header>
   );
 }
