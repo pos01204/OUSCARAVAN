@@ -35,7 +35,7 @@ export function BBQPageContent({ token }: BBQPageContentProps) {
       <BBQTabNav activeTab={activeTab} onTabChange={setActiveTab} />
 
       {/* 탭 컨텐츠 */}
-      <div className="mt-6">
+      <div>
         <AnimatePresence mode="wait">
           {activeTab === 'order' && (
             <motion.div
