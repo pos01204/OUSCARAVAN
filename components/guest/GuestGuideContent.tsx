@@ -32,19 +32,28 @@ import { GuestPageHeader } from '@/components/guest/GuestPageHeader';
 import { InfoInspector } from '@/components/guest/InfoInspector';
 import { CardIconBadge } from '@/components/shared/CardIconBadge';
 import { GuestMotionCard } from '@/components/guest/GuestMotionCard';
-import { SectionDivider } from '@/components/shared/SectionDivider';
 import { cn } from '@/lib/utils';
 
-// 카테고리별 아이콘 매핑
-const CATEGORY_ICONS: Record<string, LucideIcon> = {
-  '실내': MapPin,
-  '편의시설': Droplets,
-  '규칙': Clock,
-  '요리': Flame,
-  '쓰레기': Trash2,
-  '에어컨': Snowflake,
-  '기타': HelpCircle,
+// 카테고리별 아이콘 + 색상 + 이모지 매핑
+type CategoryStyle = {
+  icon: LucideIcon;
+  tone: 'info' | 'teal' | 'purple' | 'orange' | 'success' | 'slate' | 'warning';
+  emoji: string;
+  activeColor: string; // 선택 시 배경색
 };
+
+const CATEGORY_STYLES: Record<string, CategoryStyle> = {
+  '전체': { icon: HelpCircle, tone: 'slate', emoji: '📋', activeColor: 'bg-brand-dark' },
+  '실내': { icon: MapPin, tone: 'info', emoji: '🏠', activeColor: 'bg-blue-600' },
+  '편의시설': { icon: Droplets, tone: 'teal', emoji: '🚿', activeColor: 'bg-teal-600' },
+  '규칙': { icon: Clock, tone: 'purple', emoji: '📌', activeColor: 'bg-purple-600' },
+  '요리': { icon: Flame, tone: 'orange', emoji: '🍳', activeColor: 'bg-orange-500' },
+  '쓰레기': { icon: Trash2, tone: 'success', emoji: '♻️', activeColor: 'bg-green-600' },
+  '에어컨': { icon: Snowflake, tone: 'info', emoji: '❄️', activeColor: 'bg-sky-500' },
+  '기타': { icon: HelpCircle, tone: 'slate', emoji: '💡', activeColor: 'bg-slate-600' },
+};
+
+const DEFAULT_STYLE: CategoryStyle = { icon: HelpCircle, tone: 'slate', emoji: '📄', activeColor: 'bg-slate-600' };
 
 interface GuestGuideContentProps {
   token?: string;
@@ -98,67 +107,88 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
       <section aria-label="카테고리 필터">
         <div className="relative">
           <div
-            className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide [-webkit-overflow-scrolling:touch]"
+            className="flex gap-2 overflow-x-auto pb-3 pt-1 scrollbar-hide [-webkit-overflow-scrolling:touch]"
             role="tablist"
             aria-label="카테고리 필터"
           >
-            {categories.map((category) => (
-              <button
-                key={category}
-                onClick={() => setSelectedCategory(category)}
-                role="tab"
-                aria-selected={selectedCategory === category}
-                className={cn(
-                  "shrink-0 px-4 py-2 rounded-full text-sm font-medium transition-all",
-                  selectedCategory === category
-                    ? "bg-brand-dark text-white shadow-sm"
-                    : "bg-background-muted text-muted-foreground hover:bg-background-accent border border-border/50"
-                )}
-              >
-                {category}
-              </button>
-            ))}
+            {categories.map((category) => {
+              const style = CATEGORY_STYLES[category] || DEFAULT_STYLE;
+              const isSelected = selectedCategory === category;
+              
+              return (
+                <button
+                  key={category}
+                  onClick={() => setSelectedCategory(category)}
+                  role="tab"
+                  aria-selected={isSelected}
+                  className={cn(
+                    "shrink-0 inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-semibold transition-all duration-200",
+                    isSelected
+                      ? `${style.activeColor} text-white shadow-md ring-2 ring-offset-1 ring-offset-background`
+                      : "bg-white text-muted-foreground hover:bg-gray-50 border border-gray-200 hover:border-gray-300 hover:shadow-sm",
+                    isSelected && style.activeColor === 'bg-brand-dark' && 'ring-brand-dark/30',
+                    isSelected && style.activeColor === 'bg-blue-600' && 'ring-blue-300',
+                    isSelected && style.activeColor === 'bg-teal-600' && 'ring-teal-300',
+                    isSelected && style.activeColor === 'bg-purple-600' && 'ring-purple-300',
+                    isSelected && style.activeColor === 'bg-orange-500' && 'ring-orange-300',
+                    isSelected && style.activeColor === 'bg-green-600' && 'ring-green-300',
+                    isSelected && style.activeColor === 'bg-sky-500' && 'ring-sky-300',
+                    isSelected && style.activeColor === 'bg-slate-600' && 'ring-slate-300',
+                  )}
+                >
+                  <span className="text-base leading-none" aria-hidden="true">
+                    {style.emoji}
+                  </span>
+                  <span>{category}</span>
+                </button>
+              );
+            })}
           </div>
-          {/* 스크롤 힌트 */}
-          <div className="absolute right-0 top-0 bottom-2 w-8 bg-gradient-to-l from-background to-transparent pointer-events-none" />
+          {/* 스크롤 힌트 - 더 부드러운 그라데이션 */}
+          <div className="absolute right-0 top-1 bottom-3 w-12 bg-gradient-to-l from-background via-background/80 to-transparent pointer-events-none" />
         </div>
       </section>
 
-      {/* BBQ 빠른 시작 섹션 (간소화) */}
+      {/* BBQ 빠른 시작 섹션 */}
       {bbqGuide && (
         <GuestMotionCard motionMode="spring">
           <Card 
             variant="cta" 
             id="guide-bbq" 
-            className="scroll-mt-24 overflow-hidden card-hover-glow"
+            className="scroll-mt-24 overflow-hidden border-orange-200/50"
           >
-            <CardContent className="p-5">
-              <div className="flex items-start gap-4">
-                <div className="w-12 h-12 rounded-xl bg-orange-100 flex items-center justify-center shrink-0">
-                  <Flame className="h-6 w-6 text-orange-500" />
+            <CardContent className="p-4">
+              <div className="flex items-center gap-3">
+                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-orange-100 to-amber-50 flex items-center justify-center shrink-0 shadow-sm">
+                  <Flame className="h-5 w-5 text-orange-500" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-brand-dark">불멍/바베큐 가이드</h3>
-                  <p className="text-xs text-muted-foreground mt-1">
+                  <h3 className="font-bold text-brand-dark leading-tight">불멍/바베큐 가이드</h3>
+                  <p className="text-xs text-muted-foreground mt-0.5">
                     약 5분 · 집게 · 장갑 · 식재료
                   </p>
                 </div>
+                <Button
+                  onClick={() => setShowBBQCarousel(!showBBQCarousel)}
+                  size="sm"
+                  className="shrink-0 bg-orange-500 hover:bg-orange-600 text-white shadow-sm"
+                  aria-label="BBQ 가이드 캐러셀 열기/닫기"
+                >
+                  {showBBQCarousel ? '닫기' : '시작'}
+                  <ChevronRight className="ml-1 h-3.5 w-3.5" />
+                </Button>
               </div>
-              <Button
-                onClick={() => setShowBBQCarousel(!showBBQCarousel)}
-                className="w-full mt-4 group"
-                size="lg"
-                aria-label="BBQ 가이드 캐러셀 열기/닫기"
-              >
-                {showBBQCarousel ? '목록으로 돌아가기' : '가이드 시작하기'}
-                <ChevronRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
-              </Button>
             </CardContent>
           </Card>
         </GuestMotionCard>
       )}
 
-      <SectionDivider variant="minimal" />
+      {/* 구분선 */}
+      <div className="flex items-center gap-3 py-1">
+        <div className="flex-1 h-px bg-border/50" />
+        <span className="text-xs text-muted-foreground/60 font-medium">안내 목록</span>
+        <div className="flex-1 h-px bg-border/50" />
+      </div>
 
       {showBBQCarousel ? (
         <section aria-label="BBQ 가이드 캐러셀">
@@ -192,7 +222,11 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
                 // 불멍/바베큐 가이드는 상단 고정 섹션으로 제공
                 if (item.id === 'bbq') return null;
                 
-                const CategoryIcon = CATEGORY_ICONS[item.category] || HelpCircle;
+                const categoryStyle = CATEGORY_STYLES[item.category] || DEFAULT_STYLE;
+                const CategoryIcon = categoryStyle.icon;
+                // 주의 항목은 warning 톤 우선 적용
+                const iconTone = item.warning ? 'warning' : categoryStyle.tone;
+                
                 const contentTypes = [
                   item.steps && item.steps.length > 0 && '단계별',
                   item.checklist && item.checklist.length > 0 && '체크리스트',
@@ -218,21 +252,22 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
                       }}
                     >
                       <CardContent className="p-4">
-                        <div className="flex items-start gap-3">
-                          {/* 카테고리 아이콘 배지 */}
+                        <div className="flex items-center gap-3">
+                          {/* 카테고리 아이콘 배지 - 카테고리별 색상 적용 */}
                           <CardIconBadge 
                             icon={CategoryIcon} 
-                            tone={item.warning ? "warning" : "info"} 
+                            tone={iconTone}
+                            size="md"
                           />
                           
                           <div className="flex-1 min-w-0">
                             {/* 타이틀 + 주의 배지 */}
                             <div className="flex items-center gap-2">
-                              <h3 className="font-bold text-brand-dark truncate">
+                              <h3 className="font-bold text-brand-dark leading-tight">
                                 {item.title}
                               </h3>
                               {item.warning && (
-                                <span className="shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-status-warning/10 text-status-warning">
+                                <span className="shrink-0 inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-amber-100 text-amber-700 border border-amber-200">
                                   주의
                                 </span>
                               )}
@@ -240,26 +275,21 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
                             
                             {/* 설명 */}
                             {item.overview && (
-                              <p className="text-sm text-muted-foreground mt-1 line-clamp-2">
+                              <p className="text-sm text-muted-foreground mt-0.5 line-clamp-1">
                                 {item.overview}
                               </p>
                             )}
                             
                             {/* 메타 정보 */}
-                            <div className="flex items-center gap-1.5 mt-2 text-xs text-muted-foreground">
-                              <span className="px-2 py-0.5 rounded-full bg-background-muted">
-                                {item.category}
-                              </span>
-                              {contentTypes && (
-                                <span className="text-muted-foreground/60">
-                                  · {contentTypes}
-                                </span>
-                              )}
-                            </div>
+                            {contentTypes && (
+                              <p className="text-xs text-muted-foreground/70 mt-1.5">
+                                {contentTypes}
+                              </p>
+                            )}
                           </div>
                           
                           {/* 화살표 힌트 */}
-                          <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:translate-x-1 transition-transform shrink-0 mt-1" />
+                          <ChevronRight className="h-5 w-5 text-muted-foreground/50 group-hover:text-muted-foreground group-hover:translate-x-0.5 transition-all shrink-0" />
                         </div>
                       </CardContent>
                     </Card>
