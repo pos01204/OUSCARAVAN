@@ -26,21 +26,9 @@ export function BBQHero() {
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/30 to-black/10" />
       </div>
 
-      {/* 브랜드 + 텍스트 영역 */}
-      <div className="absolute inset-0 flex flex-col justify-between p-5">
-        {/* 상단: 브랜드 마크 */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2, duration: 0.5 }}
-          className="self-end"
-        >
-          <span className="text-[10px] font-medium tracking-[0.2em] text-white/60 uppercase">
-            Ouscaravan
-          </span>
-        </motion.div>
-
-        {/* 하단: 메인 카피 */}
+      {/* 텍스트 영역 */}
+      <div className="absolute inset-0 flex flex-col justify-end p-5">
+        {/* 메인 카피 */}
         <div>
           <motion.p
             initial={{ opacity: 0, y: 10 }}
