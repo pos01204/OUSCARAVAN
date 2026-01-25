@@ -61,7 +61,7 @@ export function BBQOrderTab({ token, onGuideClick }: BBQOrderTabProps) {
       <BBQHero />
 
       {/* 세트 목록 */}
-      <section className="space-y-4" aria-label="세트 메뉴">
+      <section className="-mx-4 px-4 py-6 bg-neutral-50 border-y border-neutral-200/60 space-y-4" aria-label="세트 메뉴">
         {BBQ_SETS.map((set, index) => (
           <BBQSetCard
             key={set.id}
@@ -72,8 +72,8 @@ export function BBQOrderTab({ token, onGuideClick }: BBQOrderTabProps) {
         ))}
       </section>
 
-      {/* 이용 안내 - 미니멀하고 세련된 스타일 */}
-      <section className="pt-2">
+      {/* 이용 안내 */}
+      <section className="py-2">
         <div className="flex flex-col gap-3 text-sm text-neutral-500">
           <p>
             원하시는 시간에 카라반으로 배송해 드립니다.
