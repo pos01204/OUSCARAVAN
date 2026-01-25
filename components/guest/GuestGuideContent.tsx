@@ -72,10 +72,10 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
         description="숙소 이용에 필요한 정보를 확인하세요."
       />
 
-      {/* 카테고리 필터 - pill 스타일 */}
-      <nav aria-label="카테고리 필터" className="mb-3">
+      {/* 카테고리 필터 - 모바일 최적화 pill 스타일 */}
+      <nav aria-label="카테고리 필터" className="mb-5">
         <div
-          className="flex gap-1.5 overflow-x-auto scrollbar-hide [-webkit-overflow-scrolling:touch]"
+          className="flex gap-2 overflow-x-auto scrollbar-hide [-webkit-overflow-scrolling:touch] pb-1"
           role="tablist"
         >
           {categories.map((category) => {
@@ -88,11 +88,11 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
                 role="tab"
                 aria-selected={isSelected}
                 className={cn(
-                  // 컴팩트 터치 타겟
-                  "shrink-0 px-3 py-1.5 min-h-[36px] text-xs rounded-full transition-all duration-200",
+                  // 모바일 터치 타겟: 최소 44px
+                  "shrink-0 px-4 py-2.5 min-h-[44px] text-sm rounded-full transition-all duration-200 font-medium",
                   isSelected
-                    ? "bg-brand-cream text-brand-dark font-medium"
-                    : "bg-brand-cream/30 text-brand-dark-muted active:bg-brand-cream/50"
+                    ? "bg-neutral-900 text-white"
+                    : "bg-neutral-100 text-neutral-600 active:bg-neutral-200"
                 )}
               >
                 {category}
