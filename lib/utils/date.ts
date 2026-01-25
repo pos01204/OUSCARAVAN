@@ -125,3 +125,23 @@ export function isValidDate(date: Date | string | null | undefined): boolean {
   const dateObj = typeof date === 'string' ? parseDate(date) : date;
   return dateObj !== null && !isNaN(dateObj.getTime());
 }
+
+/**
+ * 날짜를 YYYY.MM.DD 형식으로 포맷팅
+ * @param isoLike - ISO 형식 날짜 문자열
+ * @returns YYYY.MM.DD 형식 문자열 또는 빈 문자열
+ */
+export function formatYmd(isoLike?: string): string {
+  if (!isoLike) return '';
+  const d = new Date(isoLike);
+  if (Number.isNaN(d.getTime())) return '';
+  const parts = new Intl.DateTimeFormat('ko-KR', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+  }).formatToParts(d);
+  const y = parts.find((p) => p.type === 'year')?.value ?? '';
+  const m = parts.find((p) => p.type === 'month')?.value ?? '';
+  const day = parts.find((p) => p.type === 'day')?.value ?? '';
+  return `${y}.${m}.${day}`;
+}

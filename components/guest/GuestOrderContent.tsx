@@ -142,8 +142,8 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
             <SectionHeader
               title="주문 상태"
               rightSlot={
-                <div className="flex items-center justify-end gap-2">
-                  <LastUpdatedAt value={lastUpdatedAt} className="text-right" />
+                <div className="flex items-center justify-end gap-1.5">
+                  <LastUpdatedAt value={lastUpdatedAt} compact className="text-right hidden sm:block" />
                   <Button
                     type="button"
                     variant="ghost"
@@ -172,8 +172,8 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
             <SectionHeader
               title="주문 내역"
               rightSlot={
-                <div className="flex items-center justify-end gap-2">
-                  <LastUpdatedAt value={lastUpdatedAt} className="text-right" />
+                <div className="flex items-center justify-end gap-1.5">
+                  <LastUpdatedAt value={lastUpdatedAt} compact className="text-right hidden sm:block" />
                   <Button
                     type="button"
                     variant="ghost"

@@ -42,7 +42,7 @@ export function SectionHeader({
           <p className="mt-2 text-sm text-muted-foreground line-clamp-2">{description}</p>
         ) : null}
       </div>
-      {rightSlot ? <div className="shrink-0">{rightSlot}</div> : null}
+      {rightSlot ? <div className="shrink-0 min-w-0 max-w-[50%] sm:max-w-none">{rightSlot}</div> : null}
     </header>
   );
 }
