@@ -797,6 +797,136 @@ button:active {
   letter-spacing: 0.01em;
 }
 
+/* ═══════════════════════════════════════════════════
+   프리미엄 섹션 구분선 (Ocean Wave Divider)
+   ═══════════════════════════════════════════════════ */
+
+/* 기본 웨이브 구분선 */
+.section-divider {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 24px;
+  margin: 8px 0;
+}
+
+.section-divider::before,
+.section-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(196, 184, 150, 0.3) 50%,
+    transparent 100%
+  );
+}
+
+/* 웨이브 심볼 */
+.section-divider-wave {
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  padding: 0 16px;
+}
+
+.section-divider-wave::before,
+.section-divider-wave::after {
+  content: '';
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: rgba(37, 99, 235, 0.25);
+}
+
+.section-divider-wave-center {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: linear-gradient(
+    135deg,
+    rgba(37, 99, 235, 0.35) 0%,
+    rgba(37, 99, 235, 0.2) 100%
+  );
+}
+
+/* 미니멀 버전 (점 없이 라인만) */
+.section-divider-minimal {
+  position: relative;
+  height: 1px;
+  margin: 16px 0;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(196, 184, 150, 0.2) 20%,
+    rgba(37, 99, 235, 0.15) 50%,
+    rgba(196, 184, 150, 0.2) 80%,
+    transparent 100%
+  );
+}
+
+/* 브랜드 버전 (가운데 파도 패턴) */
+.section-divider-brand {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  margin: 12px 0;
+}
+
+.section-divider-brand::before,
+.section-divider-brand::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(196, 184, 150, 0.25) 100%
+  );
+}
+
+.section-divider-brand::after {
+  background: linear-gradient(
+    90deg,
+    rgba(196, 184, 150, 0.25) 0%,
+    transparent 100%
+  );
+}
+
+/* 가운데 웨이브 SVG 패턴 */
+.section-divider-brand-symbol {
+  padding: 0 12px;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.section-divider-brand-symbol span {
+  display: block;
+  width: 8px;
+  height: 2px;
+  border-radius: 1px;
+  background: rgba(37, 99, 235, 0.3);
+  transform-origin: center;
+}
+
+.section-divider-brand-symbol span:nth-child(1) {
+  transform: rotate(-15deg);
+}
+
+.section-divider-brand-symbol span:nth-child(2) {
+  width: 10px;
+  background: rgba(37, 99, 235, 0.4);
+}
+
+.section-divider-brand-symbol span:nth-child(3) {
+  transform: rotate(15deg);
+}
+
 .card-icon-wrapper-info > svg {
   @apply text-status-info;
 }

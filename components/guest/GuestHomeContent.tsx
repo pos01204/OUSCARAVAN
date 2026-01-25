@@ -18,6 +18,7 @@ import { GuestAnnouncements } from '@/components/guest/GuestAnnouncements';
 import { useGuestAnnouncements } from '@/lib/hooks/useGuestAnnouncements';
 import { getGuestHeroPreset } from '@/lib/guest-hero-preset';
 import { PAGE_ENTER } from '@/lib/motion';
+import { SectionDivider } from '@/components/shared/SectionDivider';
 
 interface GuestHomeContentProps {
   reservation: Reservation;
@@ -128,6 +129,8 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
       {/* Quick Actions (1차 행동) */}
       <QuickActionGrid token={token} />
 
+      <SectionDivider variant="brand" />
+
       {/* 약도 카드 (체크인 완료 후 배정된 공간 표시) */}
       {reservation.assignedRoom && (
         <FloorPlanCard assignedRoom={reservation.assignedRoom} />
@@ -143,6 +146,8 @@ export function GuestHomeContent({ reservation, token }: GuestHomeContentProps) 
           <CheckInOut token={token} />
         </div>
       </section>
+
+      <SectionDivider variant="minimal" />
 
       {/* Checkout Reminder */}
       <CheckoutReminder />
