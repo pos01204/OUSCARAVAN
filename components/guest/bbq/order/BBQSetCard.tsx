@@ -1,9 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Flame, Moon, Info } from 'lucide-react';
+import { Flame, Moon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
 
 interface SetItem {
   name: string;
@@ -31,10 +30,7 @@ export function BBQSetCard({
   index = 0,
 }: BBQSetCardProps) {
   const Icon = type === 'bbq' ? Flame : Moon;
-  const iconBgClass = type === 'bbq' 
-    ? 'bg-orange-100/70' 
-    : 'bg-indigo-100/70';
-  const iconColorClass = type === 'bbq' ? 'text-orange-600' : 'text-indigo-600';
+  const accentColor = type === 'bbq' ? 'bg-amber-500' : 'bg-indigo-400';
 
   return (
     <motion.div
@@ -42,51 +38,46 @@ export function BBQSetCard({
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1, duration: 0.4 }}
     >
-      <Card 
-        className="overflow-hidden border-border/50 hover:border-brand-dark/20 hover:shadow-md transition-all duration-300 group"
-      >
-        <CardContent className="p-5">
-          {/* 헤더 영역 */}
-          <div className="flex items-start gap-3">
-            {/* 아이콘 */}
-            <div className={`w-10 h-10 rounded-lg ${iconBgClass} flex items-center justify-center shrink-0`}>
-              <Icon className={`h-5 w-5 ${iconColorClass}`} />
+      <div className="relative bg-white rounded-2xl border border-neutral-200/80 p-5 shadow-sm hover:shadow-md transition-shadow">
+        {/* 상단 악센트 라인 */}
+        <div className={`absolute top-0 left-6 right-6 h-[2px] ${accentColor} rounded-full`} />
+        
+        {/* 메인 콘텐츠 */}
+        <div className="flex items-start justify-between gap-4">
+          {/* 좌측: 정보 */}
+          <div className="flex-1 min-w-0">
+            {/* 세트명 */}
+            <div className="flex items-center gap-2 mb-2">
+              <Icon className={`h-4 w-4 ${type === 'bbq' ? 'text-amber-500' : 'text-indigo-400'}`} />
+              <h3 className="font-bold text-lg text-neutral-900">{name}</h3>
             </div>
-
-            {/* 타이틀 + 구성품 */}
-            <div className="flex-1 min-w-0">
-              <h3 className="font-semibold text-lg text-brand-dark tracking-tight">{name}</h3>
-              <p className="text-sm text-muted-foreground mt-1">
-                {items.map((item) => item.name).join(' · ')}
-              </p>
-            </div>
+            
+            {/* 구성품 */}
+            <p className="text-sm text-neutral-500 mb-3">
+              {items.map((item) => item.name).join(' · ')}
+            </p>
+            
+            {/* 안내 */}
+            <p className="text-xs text-neutral-400 italic">
+              {notice}
+            </p>
           </div>
 
-          {/* 안내 메시지 */}
-          <div className="flex items-center gap-2 mt-3 text-xs text-muted-foreground">
-            <Info className="h-3.5 w-3.5 shrink-0" />
-            <span>{notice}</span>
-          </div>
-
-          {/* 구분선 */}
-          <div className="h-px bg-border/50 my-4" />
-
-          {/* 하단: 가격 + CTA */}
-          <div className="flex items-center justify-between">
-            <div>
-              <span className="text-xl font-semibold text-brand-dark">
-                ₩{price.toLocaleString()}
-              </span>
-            </div>
+          {/* 우측: 가격 + CTA */}
+          <div className="text-right shrink-0">
+            <p className="text-2xl font-bold text-neutral-900 mb-3">
+              {price.toLocaleString()}
+              <span className="text-sm font-normal text-neutral-400 ml-0.5">원</span>
+            </p>
             <Button
               onClick={onOrder}
-              className="rounded-lg bg-brand-dark text-white hover:bg-brand-dark/90 shadow-sm px-5"
+              className="rounded-full bg-neutral-900 text-white hover:bg-neutral-800 px-6 text-sm font-medium"
             >
               주문하기
             </Button>
           </div>
-        </CardContent>
-      </Card>
+        </div>
+      </div>
     </motion.div>
   );
 }

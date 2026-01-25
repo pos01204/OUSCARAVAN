@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { BookOpen, Info } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import { BBQHero } from './BBQHero';
 import { BBQSetCard } from './BBQSetCard';
 import { BBQOrderSheet } from './BBQOrderSheet';
@@ -72,32 +72,20 @@ export function BBQOrderTab({ token, onGuideClick }: BBQOrderTabProps) {
         ))}
       </section>
 
-      {/* 이용 안내 */}
-      <section className="rounded-xl bg-muted/20 p-4 space-y-3">
-        <h3 className="text-sm font-semibold text-brand-dark flex items-center gap-2">
-          <Info className="h-4 w-4 text-muted-foreground" />
-          이용 안내
-        </h3>
-        <ul className="text-sm text-muted-foreground space-y-2">
-          <li className="flex items-start gap-2">
-            <span className="shrink-0">•</span>
-            <span>배송 시간을 선택하면 해당 시간에 카라반으로 배송해드려요</span>
-          </li>
-          <li className="flex items-start gap-2">
-            <span className="shrink-0">•</span>
-            <span>
-              사용법은{' '}
-              <button
-                onClick={onGuideClick}
-                className="text-brand-dark font-medium underline underline-offset-2 hover:no-underline inline-flex items-center gap-1"
-              >
-                <BookOpen className="h-3.5 w-3.5" />
-                사용 가이드
-              </button>
-              {' '}탭에서 확인할 수 있어요
-            </span>
-          </li>
-        </ul>
+      {/* 이용 안내 - 미니멀하고 세련된 스타일 */}
+      <section className="pt-2">
+        <div className="flex flex-col gap-3 text-sm text-neutral-500">
+          <p>
+            원하시는 시간에 카라반으로 배송해 드립니다.
+          </p>
+          <button
+            onClick={onGuideClick}
+            className="inline-flex items-center gap-1.5 text-neutral-700 font-medium hover:text-neutral-900 transition-colors self-start group"
+          >
+            처음이신가요? 사용 가이드 보기
+            <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition-transform" />
+          </button>
+        </div>
       </section>
 
       {/* 주문 시트 */}
