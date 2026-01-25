@@ -1,28 +1,49 @@
 'use client';
 
-import { ChevronRight, Phone } from 'lucide-react';
+import { ChatCircle, CaretRight } from '@phosphor-icons/react';
 import { EMERGENCY_CONTACTS } from '@/lib/constants';
 
 export function ManagerContact() {
   return (
-    <section className="py-2">
-      <h2 className="text-lg font-bold text-neutral-900 mb-4">관리자 연락</h2>
+    <section aria-labelledby="manager-contact-title">
+      <h2 id="manager-contact-title" className="sr-only">관리자 연락</h2>
       
       <a
         href={`tel:${EMERGENCY_CONTACTS.manager.number}`}
-        className="block bg-white rounded-xl border border-neutral-200 p-4 hover:bg-neutral-50 transition-colors"
+        className="
+          block
+          p-5 rounded-2xl
+          bg-neutral-100
+          border border-neutral-200/50
+          hover:bg-neutral-150
+          active:scale-[0.99]
+          transition-all duration-150
+        "
+        aria-label={`관리자에게 전화하기 ${EMERGENCY_CONTACTS.manager.number}`}
       >
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-lg bg-neutral-100 flex items-center justify-center">
-              <Phone className="h-5 w-5 text-neutral-500" />
-            </div>
-            <div>
-              <p className="text-sm text-neutral-600 mb-0.5">문의사항이 있으시면 연락주세요</p>
-              <p className="font-semibold text-neutral-900">{EMERGENCY_CONTACTS.manager.number}</p>
-            </div>
+        <div className="flex items-start gap-3">
+          <div className="
+            w-10 h-10 rounded-full
+            bg-neutral-200
+            flex items-center justify-center
+            shrink-0
+          ">
+            <ChatCircle size={20} weight="regular" className="text-neutral-500" />
           </div>
-          <ChevronRight className="h-5 w-5 text-neutral-400" />
+          
+          <div className="flex-1 min-w-0">
+            <p className="text-sm text-neutral-500 mb-1">
+              추가 문의가 필요하신가요?
+            </p>
+            <p className="font-semibold text-neutral-800">
+              관리자에게 연락하기
+            </p>
+            <p className="text-sm text-neutral-600 mt-1">
+              {EMERGENCY_CONTACTS.manager.number}
+            </p>
+          </div>
+          
+          <CaretRight size={20} weight="bold" className="text-neutral-400 mt-2 shrink-0" />
         </div>
       </a>
     </section>

@@ -1,5 +1,6 @@
 'use client';
 
+import { Plus, Question } from '@phosphor-icons/react';
 import {
   Accordion,
   AccordionContent,
@@ -18,29 +19,53 @@ export function FAQSection() {
   }, []);
 
   return (
-    <section className="py-2">
-      <h2 className="text-lg font-bold text-neutral-900 mb-4">자주 묻는 질문</h2>
+    <section aria-labelledby="faq-title">
+      <div className="flex items-center gap-2 mb-4">
+        <Question size={20} weight="regular" className="text-neutral-600" aria-hidden="true" />
+        <h2 id="faq-title" className="text-lg font-bold text-neutral-900">자주 묻는 질문</h2>
+      </div>
       
-      <div className="bg-white rounded-xl border border-neutral-200 overflow-hidden">
-        <Accordion type="single" collapsible className="w-full">
-          {topFAQs.map((faq, index) => (
-            <AccordionItem 
-              key={faq.id} 
-              value={faq.id}
-              className={index !== topFAQs.length - 1 ? 'border-b border-neutral-100' : 'border-none'}
+      <Accordion type="single" collapsible className="space-y-3">
+        {topFAQs.map((faq) => (
+          <AccordionItem 
+            key={faq.id} 
+            value={faq.id}
+            className="
+              border-none
+              bg-white rounded-xl
+              shadow-sm
+              overflow-hidden
+              data-[state=open]:shadow-md
+              transition-shadow duration-200
+            "
+          >
+            <AccordionTrigger 
+              hideIcon
+              className="
+                px-5 py-4
+                text-left
+                font-medium text-neutral-800
+                hover:bg-neutral-50 hover:no-underline
+                data-[state=open]:bg-neutral-50
+                [&[data-state=open]>svg]:rotate-45
+                [&>svg]:shrink-0
+                [&>svg]:transition-transform
+                [&>svg]:duration-200
+              "
             >
-              <AccordionTrigger className="px-4 py-4 text-left hover:no-underline hover:bg-neutral-50 text-sm font-medium text-neutral-900">
-                {faq.question}
-              </AccordionTrigger>
-              <AccordionContent className="px-4 pb-4 pt-0">
+              <span className="pr-4">{faq.question}</span>
+              <Plus size={16} weight="bold" className="text-neutral-400" />
+            </AccordionTrigger>
+            <AccordionContent className="px-5 pb-5 pt-0">
+              <div className="border-t border-neutral-100 pt-4">
                 <p className="text-sm text-neutral-600 leading-relaxed whitespace-pre-wrap">
                   {faq.answer}
                 </p>
-              </AccordionContent>
-            </AccordionItem>
-          ))}
-        </Accordion>
-      </div>
+              </div>
+            </AccordionContent>
+          </AccordionItem>
+        ))}
+      </Accordion>
     </section>
   );
 }
