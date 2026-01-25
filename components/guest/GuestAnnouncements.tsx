@@ -1,3 +1,12 @@
+/**
+ * @deprecated 이 컴포넌트는 더 이상 사용되지 않습니다.
+ * 대신 다음 컴포넌트들을 사용하세요:
+ * - CriticalAnnouncement (긴급 공지용)
+ * - CollapsedAnnouncements (일반 공지용)
+ * 
+ * @see components/guest/home/CriticalAnnouncement.tsx
+ * @see components/guest/home/CollapsedAnnouncements.tsx
+ */
 'use client';
 
 import { useEffect, useState } from 'react';

@@ -38,7 +38,8 @@ export const ADMIN_CREDENTIALS = {
  */
 export const WIFI_INFO = {
   ssid: 'OUS_Guest',
-  password: 'OUS2024Guest!',
+  // 비밀번호 없음 - 카라반 내에서 자동 연결
+  password: '',
 };
 
 // 체크인/체크아웃 시간

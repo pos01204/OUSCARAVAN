@@ -1,3 +1,9 @@
+/**
+ * @deprecated 이 컴포넌트는 더 이상 사용되지 않습니다.
+ * 대신 QuickActionsCompact를 사용하세요.
+ * 
+ * @see components/guest/home/QuickActionsCompact.tsx
+ */
 'use client';
 
 import Link from 'next/link';

@@ -13,6 +13,10 @@ const nextConfig = {
     }
     return config;
   },
+  // Turbopack 설정 (Next.js 16 기본)
+  turbopack: {
+    root: __dirname,
+  },
   // TypeScript 빌드에서 railway-backend 제외
   typescript: {
     ignoreBuildErrors: false,
