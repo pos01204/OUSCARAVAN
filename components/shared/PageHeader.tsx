@@ -15,9 +15,9 @@ interface PageHeaderProps {
  */
 export function PageHeader({ title, subtitle, description }: PageHeaderProps) {
   return (
-    <header className="relative -mx-4 bg-gradient-to-b from-[#faf8f5] to-[#f5f3f0] overflow-hidden mb-10">
-      {/* 모바일 최적화: 상단 최소화, 하단 여유있게 */}
-      <div className="px-5 pt-2 pb-8">
+    <header className="relative -mx-4 bg-gradient-to-b from-[#faf8f5] to-[#f5f3f0] overflow-hidden mb-8">
+      {/* 모바일 최적화: 상단 최소화, 충분한 헤더 높이 확보 */}
+      <div className="px-5 pt-3 pb-6">
         {/* 영문 서브타이틀 */}
         {subtitle && (
           <span className="block text-[11px] font-semibold tracking-[0.2em] text-[#C9A962] uppercase">
@@ -26,16 +26,16 @@ export function PageHeader({ title, subtitle, description }: PageHeaderProps) {
         )}
         
         {/* 메인 타이틀 */}
-        <h1 className={`text-[24px] font-bold text-[#2C2416] tracking-tight leading-tight ${subtitle ? 'mt-2' : ''}`}>
+        <h1 className={`text-[24px] font-bold text-[#2C2416] tracking-tight leading-tight ${subtitle ? 'mt-1' : ''}`}>
           {title}
         </h1>
         
         {/* 골드 악센트 바 */}
-        <div className="mt-4 w-10 h-[2px] bg-gradient-to-r from-[#C9A962] to-[#D4B87A] rounded-full" />
+        <div className="mt-3 w-10 h-[2px] bg-gradient-to-r from-[#C9A962] to-[#D4B87A] rounded-full" />
         
         {/* 설명 텍스트 */}
         {description && (
-          <p className="mt-4 text-[13px] text-[#8B7355] leading-relaxed">
+          <p className="mt-3 text-[13px] text-[#8B7355] leading-relaxed">
             {description}
           </p>
         )}
