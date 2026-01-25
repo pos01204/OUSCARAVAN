@@ -15,9 +15,9 @@ interface PageHeaderProps {
  */
 export function PageHeader({ title, subtitle, description }: PageHeaderProps) {
   return (
-    <header className="relative -mx-4 -mt-4 bg-gradient-to-b from-[#faf8f5] to-[#f5f3f0] overflow-hidden mb-8">
-      {/* 모바일 최적화: 충분한 패딩으로 콘텐츠 잘림 방지 */}
-      <div className="px-5 pt-6 pb-5">
+    <header className="relative -mx-4 bg-gradient-to-b from-[#faf8f5] to-[#f5f3f0] overflow-hidden mb-6">
+      {/* 모바일 최적화: safe area 고려, 충분한 패딩 */}
+      <div className="px-5 pt-4 pb-5">
         {/* 영문 서브타이틀 */}
         {subtitle && (
           <span className="block text-[11px] font-semibold tracking-[0.2em] text-[#C9A962] uppercase">
