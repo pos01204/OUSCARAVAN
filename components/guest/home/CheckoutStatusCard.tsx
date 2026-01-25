@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CardIconBadge } from '@/components/shared/CardIconBadge';
@@ -23,6 +24,7 @@ interface CheckoutStatusCardProps {
 }
 
 export function CheckoutStatusCard({ token }: CheckoutStatusCardProps) {
+  const router = useRouter();
   const { checkOut, guestInfo } = useGuestStore();
   const [showCheckoutDialog, setShowCheckoutDialog] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
@@ -60,6 +62,9 @@ export function CheckoutStatusCard({ token }: CheckoutStatusCardProps) {
         title: '체크아웃을 완료했어요',
         description: '다음에 또 만나요!',
       });
+      
+      // 서버 데이터 새로고침하여 체크아웃 상태 반영
+      router.refresh();
     } catch {
       toast({
         title: '체크아웃이 잘 안 됐어요',

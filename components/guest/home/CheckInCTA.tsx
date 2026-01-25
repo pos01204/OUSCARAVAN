@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { CardIconBadge } from '@/components/shared/CardIconBadge';
@@ -16,6 +17,7 @@ interface CheckInCTAProps {
 }
 
 export function CheckInCTA({ token }: CheckInCTAProps) {
+  const router = useRouter();
   const { checkIn, guestInfo } = useGuestStore();
   const [isProcessing, setIsProcessing] = useState(false);
   const { toast } = useToast();
@@ -38,6 +40,9 @@ export function CheckInCTA({ token }: CheckInCTAProps) {
         title: '체크인이 완료됐어요',
         description: '즐거운 시간 보내세요!',
       });
+      
+      // 서버 데이터 새로고침하여 체크인 상태 반영
+      router.refresh();
     } catch {
       toast({
         title: '체크인이 잘 안 됐어요',
