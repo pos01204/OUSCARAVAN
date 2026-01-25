@@ -28,7 +28,6 @@ import { GuideChecklist } from '@/components/features/GuideChecklist';
 import { GuideFAQ } from '@/components/features/GuideFAQ';
 import { GuideTroubleshooting } from '@/components/features/GuideTroubleshooting';
 import { TrashCategoryGuide } from '@/components/features/TrashCategoryGuide';
-import { GuestPageHeader } from '@/components/guest/GuestPageHeader';
 import { InfoInspector } from '@/components/guest/InfoInspector';
 import { CardIconBadge } from '@/components/shared/CardIconBadge';
 import { GuestMotionCard } from '@/components/guest/GuestMotionCard';
@@ -94,19 +93,20 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
   }, [selectedGuide]);
 
   return (
-    <main className="space-y-5" role="main" aria-label="안내 페이지">
-      <GuestPageHeader
-        title="이용 안내서"
-        description="숙박 이용에 필요한 모든 정보를 확인하세요"
-      />
+    <main role="main" aria-label="안내 페이지">
+      {/* 헤더 영역 - 여유로운 여백 */}
+      <header className="pb-6">
+        <h1 className="text-2xl font-bold text-brand-dark tracking-tight">
+          이용 안내
+        </h1>
+      </header>
 
-      {/* 카테고리 칩 필터 - 미니멀 스타일 */}
-      <section aria-label="카테고리 필터">
+      {/* 카테고리 탭 - 언더라인 스타일 */}
+      <nav aria-label="카테고리 필터" className="mb-6">
         <div className="relative">
           <div
-            className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide [-webkit-overflow-scrolling:touch]"
+            className="flex gap-1 overflow-x-auto scrollbar-hide [-webkit-overflow-scrolling:touch]"
             role="tablist"
-            aria-label="카테고리 필터"
           >
             {categories.map((category) => {
               const isSelected = selectedCategory === category;
@@ -118,69 +118,58 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
                   role="tab"
                   aria-selected={isSelected}
                   className={cn(
-                    "shrink-0 px-4 py-2 rounded-lg text-sm transition-all duration-200",
+                    "relative shrink-0 px-3 py-3 text-sm transition-colors duration-200",
                     isSelected
-                      ? "bg-brand-dark text-white font-semibold"
-                      : "bg-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50 font-medium"
+                      ? "text-brand-dark font-semibold"
+                      : "text-muted-foreground hover:text-foreground font-medium"
                   )}
                 >
                   {category}
+                  {/* 선택 인디케이터 - 언더라인 */}
+                  {isSelected && (
+                    <span className="absolute bottom-0 left-3 right-3 h-0.5 bg-brand-dark rounded-full" />
+                  )}
                 </button>
               );
             })}
           </div>
-          {/* 하단 라인 */}
-          <div className="h-px bg-border/60 -mt-px" />
+          {/* 하단 경계선 */}
+          <div className="absolute bottom-0 left-0 right-0 h-px bg-border/40" />
         </div>
-      </section>
+      </nav>
 
-      {/* BBQ 빠른 시작 섹션 */}
-      {bbqGuide && (
-        <GuestMotionCard motionMode="spring">
-          <Card 
-            variant="cta" 
-            id="guide-bbq" 
-            className="scroll-mt-24 overflow-hidden border-orange-200/50"
+      {/* 컨텐츠 영역 */}
+      <div className="space-y-4">
+        {/* BBQ 하이라이트 배너 */}
+        {bbqGuide && !showBBQCarousel && (
+          <button
+            onClick={() => setShowBBQCarousel(true)}
+            id="guide-bbq"
+            className="w-full scroll-mt-24 flex items-center gap-3 p-4 rounded-2xl bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-100 hover:border-orange-200 transition-all group text-left"
+            aria-label="BBQ 가이드 시작하기"
           >
-            <CardContent className="p-4">
-              <div className="flex items-center gap-3">
-                <div className="w-11 h-11 rounded-xl bg-gradient-to-br from-orange-100 to-amber-50 flex items-center justify-center shrink-0 shadow-sm">
-                  <Flame className="h-5 w-5 text-orange-500" />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <h3 className="font-bold text-brand-dark leading-tight">불멍/바베큐 가이드</h3>
-                  <p className="text-xs text-muted-foreground mt-0.5">
-                    약 5분 · 집게 · 장갑 · 식재료
-                  </p>
-                </div>
-                <Button
-                  onClick={() => setShowBBQCarousel(!showBBQCarousel)}
-                  size="sm"
-                  className="shrink-0 bg-orange-500 hover:bg-orange-600 text-white shadow-sm"
-                  aria-label="BBQ 가이드 캐러셀 열기/닫기"
-                >
-                  {showBBQCarousel ? '닫기' : '시작'}
-                  <ChevronRight className="ml-1 h-3.5 w-3.5" />
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </GuestMotionCard>
-      )}
+            <div className="w-10 h-10 rounded-xl bg-white flex items-center justify-center shrink-0 shadow-sm border border-orange-100">
+              <Flame className="h-5 w-5 text-orange-500" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="font-semibold text-brand-dark text-sm">불멍/바베큐 가이드</p>
+              <p className="text-xs text-muted-foreground">
+                약 5분 소요
+              </p>
+            </div>
+            <div className="flex items-center gap-1 text-orange-600 text-sm font-medium">
+              <span>시작</span>
+              <ChevronRight className="h-4 w-4 group-hover:translate-x-0.5 transition-transform" />
+            </div>
+          </button>
+        )}
 
-      {/* 구분선 */}
-      <div className="flex items-center gap-3 py-1">
-        <div className="flex-1 h-px bg-border/50" />
-        <span className="text-xs text-muted-foreground/60 font-medium">안내 목록</span>
-        <div className="flex-1 h-px bg-border/50" />
-      </div>
-
-      {showBBQCarousel ? (
-        <section aria-label="BBQ 가이드 캐러셀">
-          <BBQCarousel slides={BBQ_GUIDE_SLIDES} onClose={() => setShowBBQCarousel(false)} />
-        </section>
-      ) : (
-        <section aria-label="가이드 목록">
+        {showBBQCarousel ? (
+          <section aria-label="BBQ 가이드 캐러셀">
+            <BBQCarousel slides={BBQ_GUIDE_SLIDES} onClose={() => setShowBBQCarousel(false)} />
+          </section>
+        ) : (
+          <section aria-label="가이드 목록">
           {filteredGuideData.length === 0 ? (
             /* 빈 상태 디자인 개선 */
             <Card variant="muted">
@@ -283,8 +272,9 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
               })}
             </div>
           )}
-        </section>
-      )}
+          </section>
+        )}
+      </div>
 
       {/* 상세 인스펙터 (모바일 Drawer / 데스크톱 Sheet) */}
       <InfoInspector
