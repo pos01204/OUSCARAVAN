@@ -43,15 +43,15 @@ export function GuestCafeContent({ token }: GuestCafeContentProps) {
       </div>
 
       {/* 메뉴 섹션 */}
-      <div className="pt-2">
+      <section className="-mx-4 px-4 py-6 bg-neutral-50 border-y border-neutral-200/60">
         <h2 className="text-xl font-bold text-neutral-900 mb-4">메뉴</h2>
         <MenuGrid />
-      </div>
+      </section>
 
       {/* 카페 정보 (접이식) */}
-      <div className="pt-4">
+      <section className="pt-2 pb-4">
         <CafeInfo />
-      </div>
+      </section>
     </main>
   );
 }
