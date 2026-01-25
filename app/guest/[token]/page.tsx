@@ -5,6 +5,8 @@ import { GuestHomeContent } from '@/components/guest/GuestHomeContent';
 
 import { GuestHomeSkeleton } from '@/components/guest/GuestHomeSkeleton';
 
+export const dynamic = 'force-dynamic';
+
 export default async function GuestHomePage({
   params,
 }: {
@@ -14,7 +16,9 @@ export default async function GuestHomePage({
   let reservation: Reservation | null = null;
 
   try {
-    reservation = await guestApi(params.token);
+    reservation = await guestApi(params.token, '', {
+      cache: 'no-store',
+    });
   } catch (error) {
     // 토큰이 유효하지 않으면 404 페이지
     notFound();
