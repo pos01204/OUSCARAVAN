@@ -114,7 +114,7 @@ export function BBQGuideTab() {
     <div className="space-y-6">
       {/* 헤더 */}
       <div>
-        <h2 className="text-lg font-bold text-brand-dark">불멍/바베큐 시작하기</h2>
+        <h2 className="text-lg font-semibold text-brand-dark tracking-tight">불멍/바베큐 시작하기</h2>
         <p className="text-sm text-muted-foreground mt-1">
           안전하고 즐거운 캠프파이어를 위해
         </p>
@@ -130,7 +130,7 @@ export function BBQGuideTab() {
                 <div
                   key={index}
                   className={`flex-1 h-1 rounded-full transition-colors ${
-                    index <= currentStep ? 'bg-orange-500' : 'bg-muted'
+                    index <= currentStep ? 'bg-brand-dark' : 'bg-muted'
                   }`}
                 />
               ))}
@@ -153,10 +153,10 @@ export function BBQGuideTab() {
               >
                 {/* 스텝 번호 + 타이틀 */}
                 <div className="mb-4">
-                  <span className="inline-block px-3 py-1 rounded-full bg-orange-100 text-orange-600 text-xs font-semibold mb-2">
+                  <span className="inline-block px-3 py-1 rounded-full bg-muted/60 text-muted-foreground text-xs font-semibold mb-2">
                     Step {step.id}
                   </span>
-                  <h3 className="text-xl font-bold text-brand-dark">
+                  <h3 className="text-xl font-semibold text-brand-dark">
                     {step.title}
                   </h3>
                 </div>
@@ -168,9 +168,9 @@ export function BBQGuideTab() {
 
                 {/* 경고 메시지 */}
                 {step.warning && (
-                  <div className="mt-4 p-3 rounded-lg bg-amber-50 border border-amber-200 flex items-start gap-2 text-left">
-                    <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
-                    <p className="text-sm text-amber-800">{step.warning}</p>
+                  <div className="mt-4 p-3 rounded-lg bg-muted/40 border border-border flex items-start gap-2 text-left">
+                    <AlertTriangle className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
+                    <p className="text-sm text-muted-foreground">{step.warning}</p>
                   </div>
                 )}
               </motion.div>
@@ -191,7 +191,7 @@ export function BBQGuideTab() {
             <Button
               onClick={() => goToStep('next')}
               disabled={currentStep === BBQ_GUIDE_STEPS.length - 1}
-              className="gap-1 bg-orange-500 hover:bg-orange-600"
+              className="gap-1 bg-brand-dark hover:bg-brand-dark/90"
             >
               다음
               <ChevronRight className="h-4 w-4" />
@@ -203,7 +203,7 @@ export function BBQGuideTab() {
       {/* 안전 수칙 */}
       <section>
         <h3 className="text-sm font-semibold text-brand-dark mb-3 flex items-center gap-2">
-          <Shield className="h-4 w-4 text-green-600" />
+          <Shield className="h-4 w-4 text-muted-foreground" />
           안전 수칙
         </h3>
         <Accordion type="single" collapsible className="space-y-2">
@@ -220,7 +220,7 @@ export function BBQGuideTab() {
                 <ul className="space-y-2">
                   {rule.items.map((item, index) => (
                     <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
-                      <span className="text-green-500 mt-0.5">✓</span>
+                      <span className="text-muted-foreground mt-0.5">•</span>
                       {item}
                     </li>
                   ))}
@@ -234,7 +234,7 @@ export function BBQGuideTab() {
       {/* 문제 해결 */}
       <section>
         <h3 className="text-sm font-semibold text-brand-dark mb-3 flex items-center gap-2">
-          <Wrench className="h-4 w-4 text-blue-600" />
+          <Wrench className="h-4 w-4 text-muted-foreground" />
           문제 해결
         </h3>
         <Accordion type="single" collapsible className="space-y-2">
@@ -257,14 +257,14 @@ export function BBQGuideTab() {
         </Accordion>
 
         {/* 문의 안내 */}
-        <div className="mt-4 p-4 rounded-xl bg-blue-50 border border-blue-100">
+        <div className="mt-4 p-4 rounded-xl bg-muted/30 border border-border">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-              <Phone className="h-5 w-5 text-blue-600" />
+            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
+              <Phone className="h-5 w-5 text-muted-foreground" />
             </div>
             <div>
-              <p className="text-sm font-semibold text-blue-900">계속 문제가 있으신가요?</p>
-              <p className="text-xs text-blue-700">프론트로 연락해주세요</p>
+              <p className="text-sm font-semibold text-brand-dark">계속 문제가 있으신가요?</p>
+              <p className="text-xs text-muted-foreground">프론트로 연락해주세요</p>
             </div>
           </div>
         </div>

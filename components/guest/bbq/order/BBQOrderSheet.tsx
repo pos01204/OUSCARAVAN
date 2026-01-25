@@ -11,7 +11,6 @@ import { cn } from '@/lib/utils';
 
 interface SetItem {
   name: string;
-  icon: string;
 }
 
 interface BBQSet {
@@ -117,7 +116,7 @@ export function BBQOrderSheet({
       }).catch(console.error);
 
       toast({
-        title: '주문이 접수됐어요! 🔥',
+        title: '주문이 접수됐어요',
         description: `${selectedSet.name}이(가) ${deliveryTime}에 배송될 예정이에요.`,
       });
 
@@ -146,7 +145,7 @@ export function BBQOrderSheet({
       <DrawerContent className="max-h-[85vh]">
         <div className="mx-auto w-full max-w-lg">
           <DrawerHeader className="relative">
-            <DrawerTitle className="text-lg font-bold text-center">
+            <DrawerTitle className="text-lg font-semibold text-center tracking-tight">
               {selectedSet.name}
             </DrawerTitle>
             <p className="text-sm text-muted-foreground text-center mt-1">
@@ -171,20 +170,20 @@ export function BBQOrderSheet({
                 <Button
                   variant="outline"
                   size="icon"
-                  className="h-12 w-12 rounded-full"
+                  className="h-12 w-12 rounded-lg"
                   onClick={() => setQuantity(Math.max(1, quantity - 1))}
                   disabled={quantity <= 1}
                   aria-label="수량 감소"
                 >
                   <Minus className="h-5 w-5" />
                 </Button>
-                <span className="text-3xl font-bold text-brand-dark w-12 text-center">
+                <span className="text-3xl font-semibold text-brand-dark w-12 text-center">
                   {quantity}
                 </span>
                 <Button
                   variant="outline"
                   size="icon"
-                  className="h-12 w-12 rounded-full"
+                  className="h-12 w-12 rounded-lg"
                   onClick={() => setQuantity(quantity + 1)}
                   aria-label="수량 증가"
                 >
@@ -204,10 +203,10 @@ export function BBQOrderSheet({
                     key={time}
                     onClick={() => setDeliveryTime(time)}
                     className={cn(
-                      "shrink-0 px-4 py-2.5 rounded-full text-sm font-medium transition-all",
+                      "shrink-0 px-4 py-2.5 rounded-lg text-sm font-medium transition-all",
                       deliveryTime === time
                         ? "bg-brand-dark text-white"
-                        : "bg-muted text-muted-foreground hover:bg-muted/80"
+                        : "bg-muted/40 text-muted-foreground hover:bg-muted/60"
                     )}
                   >
                     {time}
@@ -225,17 +224,17 @@ export function BBQOrderSheet({
                 value={notes}
                 onChange={(e) => setNotes(e.target.value)}
                 placeholder="예: 카라반 앞에 놓아주세요"
-                className="w-full px-4 py-3 rounded-xl border border-border bg-background text-sm resize-none focus:ring-2 focus:ring-brand-dark/20 focus:border-brand-dark transition-all"
+                className="w-full px-4 py-3 rounded-lg border border-border bg-background text-sm resize-none focus:ring-2 focus:ring-brand-dark/20 focus:border-brand-dark transition-all"
                 rows={2}
               />
             </div>
           </div>
 
-          <DrawerFooter className="border-t pt-4 pb-8">
+          <DrawerFooter className="border-t pt-5 pb-8">
             {/* 총 금액 */}
-            <div className="flex items-center justify-between mb-4">
+            <div className="flex items-center justify-between mb-5">
               <span className="text-sm font-semibold text-muted-foreground">총 금액</span>
-              <span className="text-2xl font-bold text-brand-dark">
+              <span className="text-2xl font-semibold text-brand-dark">
                 ₩{totalAmount.toLocaleString()}
               </span>
             </div>
@@ -244,12 +243,7 @@ export function BBQOrderSheet({
             <Button
               onClick={handleSubmit}
               disabled={isSubmitting || !deliveryTime}
-              className={cn(
-                "w-full h-14 text-base font-bold rounded-xl",
-                selectedSet.type === 'bbq'
-                  ? "bg-orange-500 hover:bg-orange-600"
-                  : "bg-indigo-500 hover:bg-indigo-600"
-              )}
+              className="w-full h-14 text-base font-semibold rounded-lg bg-brand-dark hover:bg-brand-dark/90"
             >
               {isSubmitting ? '주문 처리 중...' : (
                 <>

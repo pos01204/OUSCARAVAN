@@ -18,10 +18,10 @@ interface BBQHistoryTabProps {
 }
 
 const STATUS_CONFIG = {
-  pending: { label: '주문 접수', icon: Clock, color: 'text-amber-600', bg: 'bg-amber-100' },
-  preparing: { label: '준비 중', icon: Package, color: 'text-blue-600', bg: 'bg-blue-100' },
-  delivering: { label: '배송 중', icon: Package, color: 'text-purple-600', bg: 'bg-purple-100' },
-  completed: { label: '완료', icon: CheckCircle, color: 'text-green-600', bg: 'bg-green-100' },
+  pending: { label: '주문 접수', icon: Clock, color: 'text-neutral-700', bg: 'bg-neutral-100' },
+  preparing: { label: '준비 중', icon: Package, color: 'text-neutral-700', bg: 'bg-neutral-100' },
+  delivering: { label: '배송 중', icon: Package, color: 'text-neutral-700', bg: 'bg-neutral-100' },
+  completed: { label: '완료', icon: CheckCircle, color: 'text-neutral-700', bg: 'bg-neutral-100' },
 };
 
 function getStatusIndex(status: Order['status']): number {
@@ -66,8 +66,8 @@ export function BBQHistoryTab({ token, onOrderClick, onGuideClick }: BBQHistoryT
   if (bbqOrders.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
-        <div className="w-16 h-16 rounded-full bg-orange-100 flex items-center justify-center mb-4">
-          <Flame className="h-8 w-8 text-orange-400" />
+        <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center mb-4">
+          <Flame className="h-7 w-7 text-muted-foreground" />
         </div>
         <h3 className="text-lg font-semibold text-brand-dark mb-2">
           아직 주문 내역이 없어요
@@ -75,7 +75,7 @@ export function BBQHistoryTab({ token, onOrderClick, onGuideClick }: BBQHistoryT
         <p className="text-sm text-muted-foreground mb-6">
           오늘 밤 캠프파이어를 즐겨보세요!
         </p>
-        <Button onClick={onOrderClick} className="bg-orange-500 hover:bg-orange-600">
+        <Button onClick={onOrderClick} className="bg-brand-dark hover:bg-brand-dark/90">
           <ShoppingBag className="mr-2 h-4 w-4" />
           주문하러 가기
         </Button>
@@ -89,7 +89,7 @@ export function BBQHistoryTab({ token, onOrderClick, onGuideClick }: BBQHistoryT
       {activeOrders.length > 0 && (
         <section>
           <h3 className="text-sm font-semibold text-brand-dark mb-3 flex items-center gap-2">
-            <Flame className="h-4 w-4 text-orange-500" />
+            <Flame className="h-4 w-4 text-muted-foreground" />
             진행 중
           </h3>
           <div className="space-y-3">
@@ -145,7 +145,7 @@ function ActiveOrderCard({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
     >
-      <Card className="border-orange-200 bg-gradient-to-br from-orange-50/50 to-white">
+      <Card className="border-border/60 bg-white">
         <CardContent className="p-4">
           {/* 상품 정보 */}
           <div className="flex items-start justify-between mb-4">
@@ -153,7 +153,7 @@ function ActiveOrderCard({
               <h4 className="font-bold text-brand-dark">
                 {order.items.map((item) => `${item.name} × ${item.quantity}`).join(', ')}
               </h4>
-              <p className="text-lg font-bold text-orange-600 mt-1">
+              <p className="text-lg font-semibold text-brand-dark mt-1">
                 ₩{order.totalAmount.toLocaleString()}
               </p>
             </div>
@@ -168,13 +168,12 @@ function ActiveOrderCard({
             <div className="flex items-center gap-1">
               {steps.map((step, index) => {
                 const isComplete = index <= currentIndex;
-                const isCurrent = index === currentIndex;
                 return (
                   <div key={step.key} className="flex-1 flex items-center">
                     <div
                       className={`flex-1 h-1.5 rounded-full transition-colors ${
-                        isComplete ? 'bg-orange-500' : 'bg-gray-200'
-                      } ${isCurrent ? 'animate-pulse' : ''}`}
+                        isComplete ? 'bg-brand-dark' : 'bg-muted'
+                      }`}
                     />
                   </div>
                 );
@@ -185,7 +184,7 @@ function ActiveOrderCard({
                 <span
                   key={step.key}
                   className={`text-[10px] ${
-                    index <= currentIndex ? 'text-orange-600 font-medium' : 'text-muted-foreground'
+                    index <= currentIndex ? 'text-brand-dark font-medium' : 'text-muted-foreground'
                   }`}
                 >
                   {step.label}
@@ -221,11 +220,11 @@ function ActiveOrderCard({
 // 지난 주문 카드
 function PastOrderCard({ order }: { order: Order }) {
   return (
-    <Card className="bg-muted/30">
+      <Card className="bg-muted/20">
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <CheckCircle className="h-5 w-5 text-green-500" />
+              <CheckCircle className="h-5 w-5 text-muted-foreground" />
             <div>
               <p className="font-medium text-brand-dark text-sm">
                 {order.items.map((item) => `${item.name} × ${item.quantity}`).join(', ')}

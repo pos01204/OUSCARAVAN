@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { BookOpen } from 'lucide-react';
+import { BookOpen, Info } from 'lucide-react';
 import { BBQHero } from './BBQHero';
 import { BBQSetCard } from './BBQSetCard';
 import { BBQOrderSheet } from './BBQOrderSheet';
@@ -15,10 +15,10 @@ const BBQ_SETS = [
     name: '바베큐 세트',
     price: 25000,
     items: [
-      { name: '숯', icon: '🪵' },
-      { name: '그릴', icon: '🔥' },
-      { name: '토치', icon: '🔦' },
-      { name: '집게', icon: '🥢' },
+      { name: '숯' },
+      { name: '그릴' },
+      { name: '토치' },
+      { name: '집게' },
     ],
     notice: '식재료는 직접 준비해주세요',
   },
@@ -28,9 +28,9 @@ const BBQ_SETS = [
     name: '불멍 세트',
     price: 20000,
     items: [
-      { name: '장작', icon: '🪵' },
-      { name: '불쏘시개', icon: '🔥' },
-      { name: '화로대', icon: '🏕️' },
+      { name: '장작' },
+      { name: '불쏘시개' },
+      { name: '화로대' },
     ],
     notice: '마시멜로우 추천!',
   },
@@ -73,9 +73,10 @@ export function BBQOrderTab({ token, onGuideClick }: BBQOrderTabProps) {
       </section>
 
       {/* 이용 안내 */}
-      <section className="rounded-xl bg-muted/30 p-4 space-y-3">
+      <section className="rounded-xl bg-muted/20 p-4 space-y-3">
         <h3 className="text-sm font-semibold text-brand-dark flex items-center gap-2">
-          💡 이용 안내
+          <Info className="h-4 w-4 text-muted-foreground" />
+          이용 안내
         </h3>
         <ul className="text-sm text-muted-foreground space-y-2">
           <li className="flex items-start gap-2">
