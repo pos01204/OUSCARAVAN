@@ -1002,11 +1002,10 @@ export const EMERGENCY_CONTACTS = {
     mapLink: 'https://map.naver.com/v5/search/강화군+응급실',
     priority: 1,
   },
-  pharmacy: {
-    name: '24시간 약국',
-    number: '010-8888-7777', // 실제 약국 번호로 변경 필요
-    description: '인근 약국',
-    mapLink: 'https://map.naver.com/v5/search/강화군+24시간약국',
+  convenienceStore: {
+    name: '편의점',
+    description: '가장 가까운 편의점',
+    mapLink: 'https://map.naver.com/v5/search/강화군+화도면+편의점',
     priority: 2,
   },
   manager: {
