@@ -68,6 +68,7 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
     <main role="main" aria-label="안내 페이지" className="pb-24">
       {/* 공통 헤더 */}
       <PageHeader 
+        subtitle="GUIDE"
         title="이용 안내" 
         description="숙소 이용에 필요한 정보를 확인하세요."
       />

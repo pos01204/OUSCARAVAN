@@ -18,6 +18,7 @@ export function GuestCafeContent({ token }: GuestCafeContentProps) {
     <main className="space-y-6" role="main" aria-label="카페 이용 페이지">
       {/* 공통 헤더 */}
       <PageHeader 
+        subtitle="CAFÉ"
         title="카페" 
         description="여유로운 한 잔의 시간을 즐겨보세요."
       />

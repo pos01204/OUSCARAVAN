@@ -27,6 +27,7 @@ export function BBQPageContent({ token }: BBQPageContentProps) {
     <main role="main" aria-label="불멍/바베큐 페이지">
       {/* 공통 헤더 */}
       <PageHeader 
+        subtitle="BBQ & FIRE"
         title="불멍 / 바베큐" 
         description="바베큐와 불멍을 주문하고 즐겨보세요."
       />

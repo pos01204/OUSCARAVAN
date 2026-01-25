@@ -2,24 +2,45 @@
 
 interface PageHeaderProps {
   title: string;
+  subtitle?: string;  // 영문 서브타이틀 (HELP, GUIDE, BBQ & FIRE, CAFÉ)
   description?: string;
 }
 
 /**
- * 공통 페이지 헤더 컴포넌트 (모바일 최적화)
- * 배경색 + 하단 구분선으로 헤더 영역을 확실히 구분
+ * 공통 페이지 헤더 컴포넌트 (브랜딩 강화 버전)
+ * - 영문 서브타이틀로 세련된 국제적 감각
+ * - 골드 악센트 바로 프리미엄 브랜드 아이덴티티 표현
+ * - 하단 골드 그라데이션 라인으로 헤더 영역 구분
  */
-export function PageHeader({ title, description }: PageHeaderProps) {
+export function PageHeader({ title, subtitle, description }: PageHeaderProps) {
   return (
-    <header className="-mx-4 -mt-4 px-4 pt-6 pb-8 bg-[#f5f3f0] border-b-2 border-[#e8e4df] shadow-[0_4px_12px_rgba(0,0,0,0.04)] mb-10">
-      <h1 className="text-[22px] font-bold text-neutral-900 tracking-tight leading-tight">
-        {title}
-      </h1>
-      {description && (
-        <p className="mt-3 text-[13px] text-neutral-500 leading-relaxed">
-          {description}
-        </p>
-      )}
+    <header className="relative -mx-4 -mt-4 bg-gradient-to-b from-[#faf8f5] to-[#f5f3f0] overflow-hidden mb-10">
+      <div className="px-4 pt-5 pb-6">
+        {/* 영문 서브타이틀 */}
+        {subtitle && (
+          <span className="text-[10px] font-semibold tracking-[0.25em] text-[#C9A962] uppercase">
+            {subtitle}
+          </span>
+        )}
+        
+        {/* 메인 타이틀 */}
+        <h1 className={`text-[26px] font-bold text-[#2C2416] tracking-tight leading-none ${subtitle ? 'mt-1' : ''}`}>
+          {title}
+        </h1>
+        
+        {/* 골드 악센트 바 */}
+        <div className="mt-3 w-10 h-[3px] bg-gradient-to-r from-[#C9A962] to-[#D4B87A] rounded-full" />
+        
+        {/* 설명 텍스트 */}
+        {description && (
+          <p className="mt-3 text-[13px] text-[#8B7355] leading-relaxed">
+            {description}
+          </p>
+        )}
+      </div>
+      
+      {/* 하단 구분선 - 골드 그라데이션 */}
+      <div className="absolute bottom-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-[#C9A962]/60 to-transparent" />
     </header>
   );
 }
