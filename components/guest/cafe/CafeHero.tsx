@@ -36,7 +36,7 @@ export function CafeHero() {
             transition={{ delay: 0.3, duration: 0.4 }}
             className="text-xs text-amber-200/80 mb-1 tracking-wide"
           >
-            OWS MARKET
+            투숙객 전용 혜택
           </motion.p>
           <motion.h2
             initial={{ opacity: 0, y: 10 }}
@@ -44,7 +44,7 @@ export function CafeHero() {
             transition={{ delay: 0.4, duration: 0.4 }}
             className="text-2xl font-bold text-white tracking-tight leading-tight"
           >
-            여유로운<br />한 잔의 시간
+            10% 할인 쿠폰<br />지금 바로 사용하세요
           </motion.h2>
         </div>
       </div>

@@ -20,6 +20,7 @@ import { GuideFAQ } from '@/components/features/GuideFAQ';
 import { GuideTroubleshooting } from '@/components/features/GuideTroubleshooting';
 import { TrashCategoryGuide } from '@/components/features/TrashCategoryGuide';
 import { InfoInspector } from '@/components/guest/InfoInspector';
+import { PageHeader } from '@/components/shared/PageHeader';
 import { cn } from '@/lib/utils';
 
 interface GuestGuideContentProps {
@@ -65,24 +66,13 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
 
   return (
     <main role="main" aria-label="안내 페이지" className="pb-24">
-      {/* 헤더 - 컴팩트 스타일 */}
-      <header className="mb-3 mt-1">
-        <div className="flex items-center justify-between">
-          <h1 className="text-xl font-semibold text-brand-dark tracking-tight">
-            이용 안내
-          </h1>
-          {/* 브랜드 악센트 라인 - 인라인 */}
-          <div className="flex items-center gap-1.5">
-            <div className="h-0.5 w-6 rounded-full bg-brand-cream-dark" />
-            <div className="h-0.5 w-1.5 rounded-full bg-brand-cream" />
-          </div>
-        </div>
-        <p className="mt-1 text-xs text-brand-dark-muted">
-          숙소 이용에 필요한 정보를 확인하세요.
-        </p>
-      </header>
+      {/* 공통 헤더 */}
+      <PageHeader 
+        title="이용 안내" 
+        description="숙소 이용에 필요한 정보를 확인하세요."
+      />
 
-      {/* 카테고리 필터 - 컴팩트 pill 스타일 */}
+      {/* 카테고리 필터 - pill 스타일 */}
       <nav aria-label="카테고리 필터" className="mb-3">
         <div
           className="flex gap-1.5 overflow-x-auto scrollbar-hide [-webkit-overflow-scrolling:touch]"

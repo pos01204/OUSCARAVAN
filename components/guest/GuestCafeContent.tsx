@@ -4,6 +4,7 @@ import { CouponFlip } from '@/components/features/CouponFlip';
 import { useGuestStore } from '@/lib/store';
 import { GUEST_BRAND_MEDIA } from '@/lib/brand';
 import { CafeHero, MenuGrid, CafeInfo } from '@/components/guest/cafe';
+import { PageHeader } from '@/components/shared/PageHeader';
 import { Info } from 'lucide-react';
 
 interface GuestCafeContentProps {
@@ -15,6 +16,12 @@ export function GuestCafeContent({ token }: GuestCafeContentProps) {
 
   return (
     <main className="space-y-6" role="main" aria-label="카페 이용 페이지">
+      {/* 공통 헤더 */}
+      <PageHeader 
+        title="카페" 
+        description="여유로운 한 잔의 시간을 즐겨보세요."
+      />
+
       {/* 히어로 섹션 */}
       <CafeHero />
 

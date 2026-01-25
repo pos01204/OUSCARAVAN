@@ -6,6 +6,7 @@ import { BBQTabNav } from './BBQTabNav';
 import { BBQOrderTab } from './order/BBQOrderTab';
 import { BBQGuideTab } from './guide/BBQGuideTab';
 import { BBQHistoryTab } from './history/BBQHistoryTab';
+import { PageHeader } from '@/components/shared/PageHeader';
 
 type TabId = 'order' | 'guide' | 'history';
 
@@ -24,12 +25,11 @@ export function BBQPageContent({ token }: BBQPageContentProps) {
 
   return (
     <main role="main" aria-label="불멍/바베큐 페이지">
-      {/* 심플 헤더 */}
-      <header className="pb-4">
-        <h1 className="text-2xl font-bold text-brand-dark tracking-tight">
-          불멍 / 바베큐
-        </h1>
-      </header>
+      {/* 공통 헤더 */}
+      <PageHeader 
+        title="불멍 / 바베큐" 
+        description="바베큐와 불멍을 주문하고 즐겨보세요."
+      />
 
       {/* 탭 네비게이션 */}
       <BBQTabNav activeTab={activeTab} onTabChange={setActiveTab} />

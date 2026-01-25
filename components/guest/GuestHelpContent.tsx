@@ -11,6 +11,7 @@ import {
 } from '@/components/guest/help';
 import { logHelpEvent } from '@/lib/help-telemetry';
 import { Phone } from '@phosphor-icons/react';
+import { PageHeader } from '@/components/shared/PageHeader';
 import { useEffect } from 'react';
 
 interface GuestHelpContentProps {
@@ -54,18 +55,11 @@ export function GuestHelpContent({ token }: GuestHelpContentProps) {
         />
       </div>
 
-      {/* 헤더 */}
-      <header className="mb-8 mt-2">
-        <h1 className="text-2xl font-semibold text-brand-dark tracking-tight">도움말</h1>
-        <p className="mt-2 text-sm text-brand-dark-muted leading-relaxed">
-          자주 묻는 질문과 긴급 연락처를 한 곳에 모아두었어요.
-        </p>
-        {/* 브랜드 악센트 라인 */}
-        <div className="mt-4 flex items-center gap-2">
-          <div className="h-0.5 w-8 rounded-full bg-brand-cream-dark" />
-          <div className="h-0.5 w-2 rounded-full bg-brand-cream" />
-        </div>
-      </header>
+      {/* 공통 헤더 */}
+      <PageHeader 
+        title="도움말" 
+        description="자주 묻는 질문과 긴급 연락처를 한 곳에 모아두었어요."
+      />
 
       {/* 컨텐츠 영역 */}
       <div className="space-y-10">
