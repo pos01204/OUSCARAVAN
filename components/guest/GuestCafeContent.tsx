@@ -4,7 +4,6 @@ import { CouponFlip } from '@/components/features/CouponFlip';
 import { useGuestStore } from '@/lib/store';
 import { GUEST_BRAND_MEDIA } from '@/lib/brand';
 import { CafeHero, MenuGrid, CafeInfo } from '@/components/guest/cafe';
-import { Card, CardContent } from '@/components/ui/card';
 import { Info } from 'lucide-react';
 
 interface GuestCafeContentProps {
@@ -28,21 +27,20 @@ export function GuestCafeContent({ token }: GuestCafeContentProps) {
       </section>
 
       {/* 카페 이용 안내 */}
-      <Card className="border-neutral-200/80 bg-neutral-50">
-        <CardContent className="p-4">
-          <div className="flex items-start gap-3">
-            <div className="w-8 h-8 rounded-lg bg-neutral-200/60 flex items-center justify-center shrink-0">
-              <Info className="h-4 w-4 text-neutral-500" />
-            </div>
-            <div>
-              <p className="font-semibold text-neutral-900 text-sm mb-1">카페 이용 안내</p>
-              <p className="text-sm text-neutral-500">
-                카페는 직접 방문하여 주문해주세요. 앱을 통한 주문은 불가합니다.
-              </p>
-            </div>
+      <div className="rounded-xl bg-amber-50 border border-amber-200/60 p-4">
+        <div className="flex items-start gap-3">
+          <div className="w-9 h-9 rounded-lg bg-amber-100 flex items-center justify-center shrink-0">
+            <Info className="h-4 w-4 text-amber-600" />
           </div>
-        </CardContent>
-      </Card>
+          <div>
+            <p className="font-bold text-amber-900 text-sm mb-1">카페 이용 안내</p>
+            <p className="text-sm text-amber-700/80 leading-relaxed">
+              카페는 직접 방문하여 주문해주세요.<br />
+              앱을 통한 주문은 불가합니다.
+            </p>
+          </div>
+        </div>
+      </div>
 
       {/* 메뉴 섹션 */}
       <div className="pt-2">
