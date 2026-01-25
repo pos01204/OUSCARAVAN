@@ -16,7 +16,7 @@ export function PageHeader({ title, subtitle }: PageHeaderProps) {
   return (
     <header className="relative -mx-4 bg-[#f7f5f2] border-b border-[#e8e4df] mb-8">
       {/* 모바일 기준 정렬감 + 상단 여백 최소화 */}
-      <div className="px-4 pt-[2px] pb-5">
+      <div className="px-4 pt-[1px] pb-5">
         {/* 영문 서브타이틀 */}
         {subtitle && (
           <span className="block text-[10px] font-semibold tracking-[0.18em] text-[#9a7a3b] uppercase">
