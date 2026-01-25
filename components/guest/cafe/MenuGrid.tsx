@@ -4,8 +4,8 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MENU_CATEGORIES } from '@/lib/constants';
 
+// '전체' 탭 제거, 시그니처를 기본값으로
 const CATEGORY_TABS = [
-  { id: 'all', label: '전체' },
   { id: 'signature', label: '시그니처' },
   { id: 'coffee', label: '커피' },
   { id: 'nonCoffee', label: '음료' },
@@ -13,13 +13,10 @@ const CATEGORY_TABS = [
 ];
 
 export function MenuGrid() {
-  const [activeCategory, setActiveCategory] = useState('all');
+  const [activeCategory, setActiveCategory] = useState('signature');
 
   const categories = Object.entries(MENU_CATEGORIES);
-  
-  const filteredCategories = activeCategory === 'all' 
-    ? categories 
-    : categories.filter(([key]) => key === activeCategory);
+  const filteredCategories = categories.filter(([key]) => key === activeCategory);
 
   return (
     <section className="space-y-5" aria-label="카페 메뉴">
@@ -52,13 +49,6 @@ export function MenuGrid() {
         >
           {filteredCategories.map(([key, category]) => (
             <div key={key} className="space-y-3">
-              {/* 카테고리 헤더 */}
-              {activeCategory === 'all' && (
-                <h3 className="text-sm font-semibold text-neutral-500 uppercase tracking-wider">
-                  {category.koreanName}
-                </h3>
-              )}
-              
               {/* 메뉴 아이템 그리드 */}
               <div className="grid grid-cols-2 gap-3">
                 {category.items.map((item, index) => (
@@ -72,7 +62,7 @@ export function MenuGrid() {
                     <h4 className="font-semibold text-neutral-900 text-sm mb-1">
                       {item.name}
                     </h4>
-                    <p className="text-xs text-neutral-500 line-clamp-2 mb-2 min-h-[2.5rem]">
+                    <p className="text-xs text-neutral-500 mb-3 leading-relaxed">
                       {item.description}
                     </p>
                     <p className="text-base font-bold text-neutral-900">
