@@ -152,7 +152,7 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
         ) : (
           <section aria-label="가이드 목록">
             {filteredGuideData.length === 0 ? (
-              /* 빈 상태 - 미니멀 */}
+              /* 빈 상태 - 미니멀 */
               <div className="py-12 text-center">
                 <p className="text-sm text-brand-dark-muted">
                   해당 카테고리에 안내가 없습니다.
