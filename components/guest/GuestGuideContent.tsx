@@ -34,26 +34,23 @@ import { CardIconBadge } from '@/components/shared/CardIconBadge';
 import { GuestMotionCard } from '@/components/guest/GuestMotionCard';
 import { cn } from '@/lib/utils';
 
-// 카테고리별 아이콘 + 색상 + 이모지 매핑
+// 카테고리별 아이콘 + 색상 매핑 (카드용)
 type CategoryStyle = {
   icon: LucideIcon;
   tone: 'info' | 'teal' | 'purple' | 'orange' | 'success' | 'slate' | 'warning';
-  emoji: string;
-  activeColor: string; // 선택 시 배경색
 };
 
 const CATEGORY_STYLES: Record<string, CategoryStyle> = {
-  '전체': { icon: HelpCircle, tone: 'slate', emoji: '📋', activeColor: 'bg-brand-dark' },
-  '실내': { icon: MapPin, tone: 'info', emoji: '🏠', activeColor: 'bg-blue-600' },
-  '편의시설': { icon: Droplets, tone: 'teal', emoji: '🚿', activeColor: 'bg-teal-600' },
-  '규칙': { icon: Clock, tone: 'purple', emoji: '📌', activeColor: 'bg-purple-600' },
-  '요리': { icon: Flame, tone: 'orange', emoji: '🍳', activeColor: 'bg-orange-500' },
-  '쓰레기': { icon: Trash2, tone: 'success', emoji: '♻️', activeColor: 'bg-green-600' },
-  '에어컨': { icon: Snowflake, tone: 'info', emoji: '❄️', activeColor: 'bg-sky-500' },
-  '기타': { icon: HelpCircle, tone: 'slate', emoji: '💡', activeColor: 'bg-slate-600' },
+  '실내': { icon: MapPin, tone: 'info' },
+  '편의시설': { icon: Droplets, tone: 'teal' },
+  '규칙': { icon: Clock, tone: 'purple' },
+  '요리': { icon: Flame, tone: 'orange' },
+  '쓰레기': { icon: Trash2, tone: 'success' },
+  '에어컨': { icon: Snowflake, tone: 'info' },
+  '기타': { icon: HelpCircle, tone: 'slate' },
 };
 
-const DEFAULT_STYLE: CategoryStyle = { icon: HelpCircle, tone: 'slate', emoji: '📄', activeColor: 'bg-slate-600' };
+const DEFAULT_STYLE: CategoryStyle = { icon: HelpCircle, tone: 'slate' };
 
 interface GuestGuideContentProps {
   token?: string;
@@ -103,16 +100,15 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
         description="숙박 이용에 필요한 모든 정보를 확인하세요"
       />
 
-      {/* 카테고리 칩 필터 */}
+      {/* 카테고리 칩 필터 - 미니멀 스타일 */}
       <section aria-label="카테고리 필터">
         <div className="relative">
           <div
-            className="flex gap-2 overflow-x-auto pb-3 pt-1 scrollbar-hide [-webkit-overflow-scrolling:touch]"
+            className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide [-webkit-overflow-scrolling:touch]"
             role="tablist"
             aria-label="카테고리 필터"
           >
             {categories.map((category) => {
-              const style = CATEGORY_STYLES[category] || DEFAULT_STYLE;
               const isSelected = selectedCategory === category;
               
               return (
@@ -122,30 +118,19 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
                   role="tab"
                   aria-selected={isSelected}
                   className={cn(
-                    "shrink-0 inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full text-sm font-semibold transition-all duration-200",
+                    "shrink-0 px-4 py-2 rounded-lg text-sm transition-all duration-200",
                     isSelected
-                      ? `${style.activeColor} text-white shadow-md ring-2 ring-offset-1 ring-offset-background`
-                      : "bg-white text-muted-foreground hover:bg-gray-50 border border-gray-200 hover:border-gray-300 hover:shadow-sm",
-                    isSelected && style.activeColor === 'bg-brand-dark' && 'ring-brand-dark/30',
-                    isSelected && style.activeColor === 'bg-blue-600' && 'ring-blue-300',
-                    isSelected && style.activeColor === 'bg-teal-600' && 'ring-teal-300',
-                    isSelected && style.activeColor === 'bg-purple-600' && 'ring-purple-300',
-                    isSelected && style.activeColor === 'bg-orange-500' && 'ring-orange-300',
-                    isSelected && style.activeColor === 'bg-green-600' && 'ring-green-300',
-                    isSelected && style.activeColor === 'bg-sky-500' && 'ring-sky-300',
-                    isSelected && style.activeColor === 'bg-slate-600' && 'ring-slate-300',
+                      ? "bg-brand-dark text-white font-semibold"
+                      : "bg-transparent text-muted-foreground hover:text-foreground hover:bg-muted/50 font-medium"
                   )}
                 >
-                  <span className="text-base leading-none" aria-hidden="true">
-                    {style.emoji}
-                  </span>
-                  <span>{category}</span>
+                  {category}
                 </button>
               );
             })}
           </div>
-          {/* 스크롤 힌트 - 더 부드러운 그라데이션 */}
-          <div className="absolute right-0 top-1 bottom-3 w-12 bg-gradient-to-l from-background via-background/80 to-transparent pointer-events-none" />
+          {/* 하단 라인 */}
+          <div className="h-px bg-border/60 -mt-px" />
         </div>
       </section>
 
