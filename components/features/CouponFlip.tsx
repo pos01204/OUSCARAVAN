@@ -56,9 +56,10 @@ export function CouponFlip({ roomNumber }: CouponFlipProps) {
       >
         <motion.div
           animate={{ rotateY: isFlipped ? 180 : 0 }}
-          transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
-          style={{ transformStyle: 'preserve-3d' }}
-          className="relative w-full h-full cursor-pointer"
+          transition={{ type: 'spring', stiffness: 140, damping: 18, mass: 0.8 }}
+          style={{ transformStyle: 'preserve-3d', transformPerspective: 1000 }}
+          className="relative w-full h-full cursor-pointer will-change-transform"
+          whileTap={{ scale: 0.99 }}
           onClick={handleFlip}
           role="button"
           tabIndex={0}
