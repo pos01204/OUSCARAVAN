@@ -4,7 +4,6 @@ import { EMERGENCY_CONTACTS } from '@/lib/constants';
 import {
   EmergencyActions,
   FAQSection,
-  HelpScrollSpy,
   HelpSection,
   ManagerCallSheet,
   ManagerContact,
@@ -32,8 +31,6 @@ export function GuestHelpContent({ token }: GuestHelpContentProps) {
 
   return (
     <main className="pb-24" role="main" aria-label="도움말 페이지">
-      <HelpScrollSpy ids={ids} />
-
       {/* 관리자 전화 FAB (Mobile only) - Confirm Sheet */}
       <div className="md:hidden">
         <ManagerCallSheet
@@ -57,7 +54,7 @@ export function GuestHelpContent({ token }: GuestHelpContentProps) {
       </div>
 
       {/* 헤더 */}
-      <header className="mb-8 mt-4">
+      <header className="mb-8 mt-2">
         <h1 className="text-2xl font-semibold text-neutral-900 tracking-tight">도움말</h1>
         <p className="mt-2 text-sm text-neutral-500 leading-relaxed">
           자주 묻는 질문과 긴급 연락처를 한 곳에 모아두었어요.
