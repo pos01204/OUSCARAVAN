@@ -65,25 +65,27 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
 
   return (
     <main role="main" aria-label="안내 페이지" className="pb-24">
-      {/* 헤더 - 도움말 페이지와 동일한 스타일 */}
-      <header className="mb-6 mt-2">
-        <h1 className="text-2xl font-semibold text-brand-dark tracking-tight">
-          이용 안내
-        </h1>
-        <p className="mt-2 text-sm text-brand-dark-muted leading-relaxed">
+      {/* 헤더 - 컴팩트 스타일 */}
+      <header className="mb-3 mt-1">
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl font-semibold text-brand-dark tracking-tight">
+            이용 안내
+          </h1>
+          {/* 브랜드 악센트 라인 - 인라인 */}
+          <div className="flex items-center gap-1.5">
+            <div className="h-0.5 w-6 rounded-full bg-brand-cream-dark" />
+            <div className="h-0.5 w-1.5 rounded-full bg-brand-cream" />
+          </div>
+        </div>
+        <p className="mt-1 text-xs text-brand-dark-muted">
           숙소 이용에 필요한 정보를 확인하세요.
         </p>
-        {/* 브랜드 악센트 라인 */}
-        <div className="mt-4 flex items-center gap-2">
-          <div className="h-0.5 w-8 rounded-full bg-brand-cream-dark" />
-          <div className="h-0.5 w-2 rounded-full bg-brand-cream" />
-        </div>
       </header>
 
-      {/* 카테고리 필터 - 모바일 최적화 pill 스타일 */}
-      <nav aria-label="카테고리 필터" className="mb-5">
+      {/* 카테고리 필터 - 컴팩트 pill 스타일 */}
+      <nav aria-label="카테고리 필터" className="mb-3">
         <div
-          className="flex gap-2 overflow-x-auto scrollbar-hide [-webkit-overflow-scrolling:touch] pb-1"
+          className="flex gap-1.5 overflow-x-auto scrollbar-hide [-webkit-overflow-scrolling:touch]"
           role="tablist"
         >
           {categories.map((category) => {
@@ -96,8 +98,8 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
                 role="tab"
                 aria-selected={isSelected}
                 className={cn(
-                  // 모바일 터치 타겟: 최소 44px 높이
-                  "shrink-0 px-4 py-2 min-h-[44px] text-sm rounded-full transition-all duration-200",
+                  // 컴팩트 터치 타겟
+                  "shrink-0 px-3 py-1.5 min-h-[36px] text-xs rounded-full transition-all duration-200",
                   isSelected
                     ? "bg-brand-cream text-brand-dark font-medium"
                     : "bg-brand-cream/30 text-brand-dark-muted active:bg-brand-cream/50"
@@ -111,7 +113,7 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
       </nav>
 
       {/* 컨텐츠 영역 */}
-      <div className="space-y-3">
+      <div className="space-y-1.5">
         {/* BBQ 하이라이트 - 브랜드 톤으로 통일 */}
         {bbqGuide && !showBBQCarousel && (
           <button
@@ -120,7 +122,7 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
             className="
               w-full text-left
               flex items-center gap-3
-              min-h-[56px] px-4 py-3
+              min-h-[52px] px-3 py-2.5
               rounded-xl border border-brand-cream-dark/30 bg-brand-cream/25
               active:bg-brand-cream/40
               transition-colors duration-150
@@ -128,13 +130,13 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
             aria-label="BBQ 가이드 시작하기"
           >
             {/* 아이콘 - 브랜드 톤 */}
-            <div className="w-10 h-10 rounded-lg bg-white border border-brand-cream-dark/20 flex items-center justify-center shrink-0 shadow-soft-sm">
-              <Fire size={18} weight="duotone" className="text-brand-dark-soft" />
+            <div className="w-9 h-9 rounded-lg bg-white border border-brand-cream-dark/20 flex items-center justify-center shrink-0 shadow-soft-sm">
+              <Fire size={16} weight="duotone" className="text-brand-dark-soft" />
             </div>
             
             <div className="flex-1 min-w-0">
               <p className="text-sm font-semibold text-brand-dark">불멍/바베큐 가이드</p>
-              <p className="text-xs text-brand-dark-muted mt-0.5">
+              <p className="text-[11px] text-brand-dark-muted mt-0.5">
                 단계별 안내 · 약 5분
               </p>
             </div>
@@ -165,7 +167,7 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
                 </button>
               </div>
             ) : (
-              <div className="space-y-2">
+              <div className="space-y-1">
                 {filteredGuideData.map((item) => {
                   // 불멍/바베큐 가이드는 상단 고정 섹션으로 제공
                   if (item.id === 'bbq') return null;
@@ -177,8 +179,8 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
                       id={`guide-${item.id}`}
                       className="
                         w-full text-left
-                        flex items-center gap-3
-                        min-h-[56px] px-4 py-3
+                        flex items-center gap-2.5
+                        min-h-[52px] px-3 py-2.5
                         rounded-xl border border-brand-cream-dark/25 bg-white
                         active:bg-brand-cream/20
                         transition-colors duration-150
@@ -187,30 +189,30 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
                       aria-label={`${item.title} 상세 보기`}
                     >
                       {/* 미니멀 인디케이터 */}
-                      <div className="w-2 h-2 rounded-full bg-brand-cream-dark/50 shrink-0" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-brand-cream-dark/50 shrink-0" />
                       
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5">
-                          <span className="text-sm font-semibold text-brand-dark">
+                          <span className="text-sm font-medium text-brand-dark">
                             {item.title}
                           </span>
                           {item.warning && (
                             <WarningCircle 
-                              size={14} 
+                              size={13} 
                               weight="fill" 
                               className="text-brand-dark-muted shrink-0" 
                             />
                           )}
                         </div>
                         {item.overview && (
-                          <p className="text-xs text-brand-dark-muted mt-0.5 line-clamp-1">
+                          <p className="text-[11px] text-brand-dark-muted mt-0.5 line-clamp-1">
                             {item.overview}
                           </p>
                         )}
                       </div>
                       
                       <CaretRight
-                        size={16}
+                        size={14}
                         weight="regular"
                         className="text-brand-dark-faint shrink-0"
                       />
