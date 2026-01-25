@@ -41,9 +41,10 @@ export function GuestHelpContent({ token }: GuestHelpContentProps) {
               className="
                 fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom))] right-4 z-40
                 flex h-11 w-11 items-center justify-center
-                rounded-full bg-neutral-900 text-white
-                shadow-lg shadow-neutral-900/20
-                transition-all duration-200 hover:bg-neutral-800
+                rounded-full bg-brand-dark text-white
+                shadow-lg shadow-brand-dark/20
+                ring-2 ring-brand-cream/40 ring-offset-2 ring-offset-background
+                transition-all duration-200 hover:bg-brand-dark-soft hover:ring-brand-cream/60
               "
               aria-label="관리자에게 전화하기"
             >
@@ -55,10 +56,15 @@ export function GuestHelpContent({ token }: GuestHelpContentProps) {
 
       {/* 헤더 */}
       <header className="mb-8 mt-2">
-        <h1 className="text-2xl font-semibold text-neutral-900 tracking-tight">도움말</h1>
-        <p className="mt-2 text-sm text-neutral-500 leading-relaxed">
+        <h1 className="text-2xl font-semibold text-brand-dark tracking-tight">도움말</h1>
+        <p className="mt-2 text-sm text-brand-dark-muted leading-relaxed">
           자주 묻는 질문과 긴급 연락처를 한 곳에 모아두었어요.
         </p>
+        {/* 브랜드 악센트 라인 */}
+        <div className="mt-4 flex items-center gap-2">
+          <div className="h-0.5 w-8 rounded-full bg-brand-cream-dark" />
+          <div className="h-0.5 w-2 rounded-full bg-brand-cream" />
+        </div>
       </header>
 
       {/* 컨텐츠 영역 */}

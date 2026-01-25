@@ -16,7 +16,7 @@ function EmergencyRow({
   variant: 'fire' | 'police';
 }) {
   const Icon = variant === 'fire' ? FirstAidKit : ShieldCheck;
-  const tint = variant === 'fire' ? 'bg-red-50/50' : 'bg-blue-50/50';
+  const tint = variant === 'fire' ? 'bg-red-50/40' : 'bg-blue-50/40';
   const iconTint = variant === 'fire' ? 'text-red-600' : 'text-blue-600';
 
   return (
@@ -26,24 +26,24 @@ function EmergencyRow({
       className={`
         group flex items-center gap-4
         rounded-xl px-4 py-3
-        border border-neutral-200/70
+        border border-brand-cream-dark/25
         ${tint}
-        hover:bg-white
-        transition-colors duration-200
+        hover:bg-white hover:border-brand-cream-dark/40
+        transition-all duration-200
         active:scale-[0.99] motion-reduce:transform-none
       `}
       aria-label={`${description} ${number}번으로 전화하기`}
     >
-      <div className="w-10 h-10 rounded-lg bg-white border border-neutral-200/70 flex items-center justify-center shrink-0">
+      <div className="w-10 h-10 rounded-lg bg-white border border-brand-cream-dark/20 flex items-center justify-center shrink-0 shadow-soft-sm">
         <Icon size={18} weight="duotone" className={iconTint} />
       </div>
 
       <div className="flex-1 min-w-0">
-        <p className="text-base font-semibold text-neutral-900 tracking-tight">{number}</p>
-        <p className="text-xs text-neutral-500 mt-0.5">{description}</p>
+        <p className="text-base font-semibold text-brand-dark tracking-tight">{number}</p>
+        <p className="text-xs text-brand-dark-muted mt-0.5">{description}</p>
       </div>
 
-      <div className="h-9 w-9 rounded-full bg-neutral-900 text-white flex items-center justify-center shrink-0">
+      <div className="h-9 w-9 rounded-full bg-brand-dark text-white flex items-center justify-center shrink-0 group-hover:bg-brand-dark-soft transition-colors">
         <Phone size={16} weight="regular" aria-hidden="true" />
       </div>
     </a>

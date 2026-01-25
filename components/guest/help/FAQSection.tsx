@@ -57,7 +57,7 @@ export function FAQSection() {
 
   return (
     <div className="space-y-3">
-      <div className="rounded-xl border border-neutral-200/70 overflow-hidden bg-white">
+      <div className="rounded-xl border border-brand-cream-dark/20 overflow-hidden bg-white">
         <Accordion
           type="single"
           collapsible
@@ -66,7 +66,7 @@ export function FAQSection() {
             setValue(next || undefined);
             logHelpEvent('help_faq_toggle', { id: next || null });
           }}
-          className="divide-y divide-neutral-200/60"
+          className="divide-y divide-brand-cream-dark/15"
         >
           {visible.map((faq) => (
             <AccordionItem 
@@ -79,22 +79,22 @@ export function FAQSection() {
                 className="
                   px-4 py-3.5
                   text-left text-sm
-                  font-normal text-neutral-700
-                  hover:text-neutral-900 hover:bg-neutral-50
+                  font-normal text-brand-dark-soft
+                  hover:text-brand-dark hover:bg-brand-cream/20
                   hover:no-underline
-                  data-[state=open]:bg-neutral-50
-                  data-[state=open]:text-neutral-900
+                  data-[state=open]:bg-brand-cream/30
+                  data-[state=open]:text-brand-dark
                   [&[data-state=open]>div>svg]:rotate-45
                   transition-colors
                 "
               >
                 <span className="flex-1 pr-3 leading-relaxed">{faq.question}</span>
                 <div className="shrink-0">
-                  <Plus size={14} weight="regular" className="text-neutral-400 transition-transform duration-200" />
+                  <Plus size={14} weight="regular" className="text-brand-dark-muted transition-transform duration-200" />
                 </div>
               </AccordionTrigger>
-              <AccordionContent className="px-4 pb-4 pt-0">
-                <p className="text-sm text-neutral-500 leading-relaxed whitespace-pre-wrap">
+              <AccordionContent className="px-4 pb-4 pt-0 bg-brand-cream/10">
+                <p className="text-sm text-brand-dark-muted leading-relaxed whitespace-pre-wrap">
                   {faq.answer}
                 </p>
               </AccordionContent>
@@ -110,7 +110,7 @@ export function FAQSection() {
             setExpanded((v) => !v);
             logHelpEvent('help_faq_toggle', { expanded: !expanded });
           }}
-          className="text-xs font-medium text-neutral-600 hover:text-neutral-900 transition-colors px-1"
+          className="text-xs font-medium text-brand-dark-muted hover:text-brand-dark transition-colors px-1"
         >
           {expanded ? '접기' : '더 보기'}
         </button>

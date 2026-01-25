@@ -25,26 +25,26 @@ function NearbyTile({
       onClick={() => logHelpEvent('help_jump', { to: 'map', target: title })}
       className="
         group flex items-center gap-3
-        rounded-xl border border-neutral-200/70 bg-neutral-50/70
+        rounded-xl border border-brand-cream-dark/25 bg-brand-cream/15
         px-4 py-3
-        hover:bg-white transition-colors duration-200
+        hover:bg-white hover:border-brand-cream-dark/40 transition-all duration-200
         active:scale-[0.99] motion-reduce:transform-none
       "
       aria-label={`${title} 지도 열기`}
     >
-      <div className="w-10 h-10 rounded-lg bg-white border border-neutral-200/70 flex items-center justify-center shrink-0">
-        <Icon size={18} weight="duotone" className="text-neutral-600" />
+      <div className="w-10 h-10 rounded-lg bg-white border border-brand-cream-dark/20 flex items-center justify-center shrink-0 shadow-soft-sm">
+        <Icon size={18} weight="duotone" className="text-brand-dark-soft" />
       </div>
 
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-neutral-900 tracking-tight">{title}</p>
-        <p className="text-xs text-neutral-500 truncate mt-0.5">{description}</p>
+        <p className="text-sm font-semibold text-brand-dark tracking-tight">{title}</p>
+        <p className="text-xs text-brand-dark-muted truncate mt-0.5">{description}</p>
       </div>
 
       <ArrowSquareOut
         size={16}
         weight="regular"
-        className="text-neutral-300 group-hover:text-neutral-500 transition-colors shrink-0"
+        className="text-brand-dark-faint group-hover:text-brand-dark-muted transition-colors shrink-0"
         aria-hidden="true"
       />
     </a>

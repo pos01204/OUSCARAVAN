@@ -50,32 +50,32 @@ export function ManagerCallSheet({
 
       <SheetContent
         side="bottom"
-        className="rounded-t-2xl border-neutral-200/80 px-5"
+        className="rounded-t-2xl border-brand-cream-dark/40 px-5"
         aria-label="관리자 전화 확인"
       >
         <SheetHeader className="text-left">
-          <SheetTitle className="text-lg font-semibold tracking-tight">관리자에게 전화할까요?</SheetTitle>
-          <SheetDescription className="text-sm text-neutral-500">
+          <SheetTitle className="text-lg font-semibold tracking-tight text-brand-dark">관리자에게 전화할까요?</SheetTitle>
+          <SheetDescription className="text-sm text-brand-dark-muted">
             문의 사항이 있을 때만 연결해 주세요. 긴급 상황은 119/112를 이용해 주세요.
           </SheetDescription>
         </SheetHeader>
 
-        <div className="mt-5 rounded-xl border border-neutral-200/70 bg-neutral-50 px-4 py-3">
+        <div className="mt-5 rounded-xl border border-brand-cream-dark/30 bg-brand-cream/20 px-4 py-3">
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-full bg-neutral-900 text-white flex items-center justify-center">
+            <div className="h-10 w-10 rounded-full bg-brand-dark text-white flex items-center justify-center">
               <Phone size={18} weight="regular" aria-hidden="true" />
             </div>
             <div className="min-w-0">
-              <p className="text-sm font-medium text-neutral-900">관리자</p>
-              <p className="text-sm text-neutral-600">{number}</p>
+              <p className="text-sm font-medium text-brand-dark">관리자</p>
+              <p className="text-sm text-brand-dark-soft">{number}</p>
             </div>
           </div>
 
-          <div className="mt-3 flex items-start gap-2 text-xs text-neutral-500">
+          <div className="mt-3 flex items-start gap-2 text-xs text-brand-dark-muted">
             <WarningCircle size={14} weight="regular" className="mt-[1px] shrink-0" aria-hidden="true" />
             <p className="leading-relaxed">
-              긴급(생명/사고) 상황은 <span className="font-medium text-neutral-700">119</span>, 범죄/위협 상황은{" "}
-              <span className="font-medium text-neutral-700">112</span>를 먼저 이용해 주세요.
+              긴급(생명/사고) 상황은 <span className="font-medium text-brand-dark">119</span>, 범죄/위협 상황은{" "}
+              <span className="font-medium text-brand-dark">112</span>를 먼저 이용해 주세요.
             </p>
           </div>
         </div>
@@ -85,7 +85,7 @@ export function ManagerCallSheet({
             <button
               type="button"
               onClick={() => logHelpEvent("help_call_cancel", { target: "manager", source })}
-              className="w-full rounded-xl border border-neutral-200 bg-white px-4 py-3 text-sm font-medium text-neutral-700 hover:bg-neutral-50 transition-colors"
+              className="w-full rounded-xl border border-brand-cream-dark/40 bg-white px-4 py-3 text-sm font-medium text-brand-dark-soft hover:bg-brand-cream/20 transition-colors"
             >
               취소
             </button>
@@ -94,7 +94,7 @@ export function ManagerCallSheet({
             <button
               type="button"
               onClick={onConfirm}
-              className="w-full rounded-xl bg-neutral-900 px-4 py-3 text-sm font-medium text-white hover:bg-neutral-800 transition-colors"
+              className="w-full rounded-xl bg-brand-dark px-4 py-3 text-sm font-medium text-white hover:bg-brand-dark-soft transition-colors"
             >
               전화 걸기
             </button>
