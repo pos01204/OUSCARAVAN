@@ -70,7 +70,6 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
       <PageHeader 
         subtitle="GUIDE"
         title="이용 안내" 
-        description="숙소 이용에 필요한 정보를 확인하세요."
       />
 
       {/* 카테고리 필터 - 모바일 최적화 pill 스타일 */}

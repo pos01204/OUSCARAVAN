@@ -59,7 +59,6 @@ export function GuestHelpContent({ token }: GuestHelpContentProps) {
       <PageHeader 
         subtitle="HELP"
         title="도움말" 
-        description="자주 묻는 질문과 긴급 연락처를 한 곳에 모아두었어요."
       />
 
       {/* 컨텐츠 영역 */}

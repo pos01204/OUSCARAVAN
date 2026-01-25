@@ -20,7 +20,6 @@ export function GuestCafeContent({ token }: GuestCafeContentProps) {
       <PageHeader 
         subtitle="CAFÉ"
         title="카페" 
-        description="여유로운 한 잔의 시간을 즐겨보세요."
       />
 
       {/* 히어로 섹션 */}

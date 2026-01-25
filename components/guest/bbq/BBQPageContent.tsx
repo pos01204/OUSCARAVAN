@@ -29,7 +29,6 @@ export function BBQPageContent({ token }: BBQPageContentProps) {
       <PageHeader 
         subtitle="BBQ & FIRE"
         title="불멍 / 바베큐" 
-        description="바베큐와 불멍을 주문하고 즐겨보세요."
       />
 
       {/* 탭 네비게이션 */}
