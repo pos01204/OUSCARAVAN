@@ -1,16 +1,18 @@
+/* eslint-disable react/no-unescaped-entities */
 'use client';
 
-import { 
-  FirstAidKit, 
-  ShieldCheck, 
-  Hospital, 
+import {
+  FirstAidKit,
+  ShieldCheck,
+  Hospital,
   Storefront,
-  ArrowRight
+  Phone,
+  ArrowRight,
 } from '@phosphor-icons/react';
 import { EMERGENCY_CONTACTS } from '@/lib/constants';
 
-// 긴급 연락처 카드 - 럭셔리 미니멀 디자인
-function EmergencyCard({
+// 긴급 연락처 Row — “행동=전화”를 명확히
+function EmergencyRow({
   number,
   description,
   href,
@@ -22,46 +24,51 @@ function EmergencyCard({
   variant: 'fire' | 'police';
 }) {
   const Icon = variant === 'fire' ? FirstAidKit : ShieldCheck;
+  const tint = variant === 'fire' ? 'bg-red-50/40' : 'bg-blue-50/40';
+  const iconTint = variant === 'fire' ? 'text-red-600' : 'text-blue-600';
 
   return (
     <a
       href={href}
-      className="
+      className={`
         group flex items-center gap-4
-        bg-neutral-900 hover:bg-neutral-800
-        rounded-xl p-4
-        transition-all duration-200
-        active:scale-[0.99]
-      "
+        rounded-xl px-4 py-3
+        border border-neutral-200/70
+        ${tint}
+        hover:bg-neutral-50
+        transition-colors duration-200
+        active:scale-[0.99] motion-reduce:transform-none
+      `}
       aria-label={`${description} ${number}번으로 전화하기`}
     >
       {/* 아이콘 */}
-      <div className="
-        w-11 h-11 rounded-lg
-        bg-white/10
-        flex items-center justify-center
-        shrink-0
-      ">
-        <Icon size={22} weight="light" className="text-white/80" />
+      <div
+        className="
+          w-10 h-10 rounded-lg
+          bg-white
+          border border-neutral-200/70
+          flex items-center justify-center
+          shrink-0
+        "
+      >
+        <Icon size={18} weight="duotone" className={iconTint} />
       </div>
       
       {/* 텍스트 */}
       <div className="flex-1 min-w-0">
-        <p className="text-xl font-semibold text-white tracking-tight">{number}</p>
-        <p className="text-xs text-white/50 mt-0.5">{description}</p>
+        <p className="text-base font-semibold text-neutral-900 tracking-tight">{number}</p>
+        <p className="text-xs text-neutral-500 mt-0.5">{description}</p>
       </div>
 
-      {/* 화살표 */}
-      <ArrowRight 
-        size={18} 
-        weight="regular" 
-        className="text-white/40 group-hover:text-white/70 group-hover:translate-x-0.5 transition-all shrink-0" 
-      />
+      {/* 행동(전화) */}
+      <div className="h-9 w-9 rounded-full bg-neutral-900 text-white flex items-center justify-center shrink-0">
+        <Phone size={16} weight="regular" aria-hidden="true" />
+      </div>
     </a>
   );
 }
 
-// 주변 시설 카드 - 미니멀 디자인
+// 주변 시설 카드 — “행동=지도 열기”
 function NearbyFacilityCard({
   title,
   description,
@@ -116,50 +123,36 @@ function NearbyFacilityCard({
 
 export function EmergencyContacts() {
   return (
-    <div className="space-y-8">
-      {/* 긴급 연락처 섹션 */}
-      <section aria-labelledby="emergency-title">
-        <h2 id="emergency-title" className="text-xs font-medium text-neutral-400 uppercase tracking-wider mb-3">
-          Emergency
-        </h2>
-        
-        <div className="space-y-2.5">
-          <EmergencyCard
-            number="119"
-            description="소방서 · 응급 구조"
-            href={`tel:${EMERGENCY_CONTACTS.fire.number}`}
-            variant="fire"
-          />
-          <EmergencyCard
-            number="112"
-            description="경찰서"
-            href={`tel:${EMERGENCY_CONTACTS.police.number}`}
-            variant="police"
-          />
-        </div>
-      </section>
+    <div className="space-y-6">
+      <div className="space-y-2.5">
+        <EmergencyRow
+          number="119"
+          description="소방서 · 응급 구조"
+          href={`tel:${EMERGENCY_CONTACTS.fire.number}`}
+          variant="fire"
+        />
+        <EmergencyRow
+          number="112"
+          description="경찰서"
+          href={`tel:${EMERGENCY_CONTACTS.police.number}`}
+          variant="police"
+        />
+      </div>
 
-      {/* 주변 시설 섹션 */}
-      <section aria-labelledby="nearby-title">
-        <h2 id="nearby-title" className="text-xs font-medium text-neutral-400 uppercase tracking-wider mb-3">
-          Nearby
-        </h2>
-        
-        <div className="grid grid-cols-2 gap-2.5">
-          <NearbyFacilityCard
-            title="응급실"
-            description="인천강화의료원"
-            href={EMERGENCY_CONTACTS.hospital.mapLink}
-            variant="hospital"
-          />
-          <NearbyFacilityCard
-            title="편의점"
-            description="가장 가까운"
-            href={EMERGENCY_CONTACTS.convenienceStore.mapLink}
-            variant="store"
-          />
-        </div>
-      </section>
+      <div className="grid grid-cols-2 gap-2.5">
+        <NearbyFacilityCard
+          title="응급실"
+          description="인천강화의료원"
+          href={EMERGENCY_CONTACTS.hospital.mapLink}
+          variant="hospital"
+        />
+        <NearbyFacilityCard
+          title="편의점"
+          description="가장 가까운"
+          href={EMERGENCY_CONTACTS.convenienceStore.mapLink}
+          variant="store"
+        />
+      </div>
     </div>
   );
 }
