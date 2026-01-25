@@ -1,10 +1,11 @@
 'use client';
 
 import { CouponFlip } from '@/components/features/CouponFlip';
-import { CafeInfoTab } from '@/components/features/CafeInfoTab';
 import { useGuestStore } from '@/lib/store';
 import { GUEST_BRAND_MEDIA } from '@/lib/brand';
-import { GuestPageHeader } from '@/components/guest/GuestPageHeader';
+import { CafeHero, MenuGrid, CafeInfo } from '@/components/guest/cafe';
+import { Card, CardContent } from '@/components/ui/card';
+import { Info } from 'lucide-react';
 
 interface GuestCafeContentProps {
   token: string;
@@ -15,10 +16,8 @@ export function GuestCafeContent({ token }: GuestCafeContentProps) {
 
   return (
     <main className="space-y-6" role="main" aria-label="카페 이용 페이지">
-      <GuestPageHeader
-        title="카페 이용"
-        description="투숙객 전용 할인 쿠폰과 카페 정보를 확인하세요"
-      />
+      {/* 히어로 섹션 */}
+      <CafeHero />
 
       {/* 투숙객 전용 쿠폰 */}
       <section aria-label="투숙객 전용 쿠폰">
@@ -28,8 +27,33 @@ export function GuestCafeContent({ token }: GuestCafeContentProps) {
         />
       </section>
 
-      {/* 카페 정보 (기존 CafeInfoTab 재사용) */}
-      <CafeInfoTab />
+      {/* 카페 이용 안내 */}
+      <Card className="border-neutral-200/80 bg-neutral-50">
+        <CardContent className="p-4">
+          <div className="flex items-start gap-3">
+            <div className="w-8 h-8 rounded-lg bg-neutral-200/60 flex items-center justify-center shrink-0">
+              <Info className="h-4 w-4 text-neutral-500" />
+            </div>
+            <div>
+              <p className="font-semibold text-neutral-900 text-sm mb-1">카페 이용 안내</p>
+              <p className="text-sm text-neutral-500">
+                카페는 직접 방문하여 주문해주세요. 앱을 통한 주문은 불가합니다.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
+      {/* 메뉴 섹션 */}
+      <div className="pt-2">
+        <h2 className="text-xl font-bold text-neutral-900 mb-4">메뉴</h2>
+        <MenuGrid />
+      </div>
+
+      {/* 카페 정보 (접이식) */}
+      <div className="pt-4">
+        <CafeInfo />
+      </div>
     </main>
   );
 }
