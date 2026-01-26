@@ -18,7 +18,7 @@ export function BBQHero() {
           src="/images/campfire-hero.jpg"
           alt="캠프파이어"
           fill
-          className="object-cover object-center"
+          className="object-cover object-[center_75%]"
           priority
         />
         
