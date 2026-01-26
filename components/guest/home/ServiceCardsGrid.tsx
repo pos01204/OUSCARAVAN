@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardInset, CardLabelValue } f
 import { CardIconBadge } from '@/components/shared/CardIconBadge';
 import { GuestMotionCard } from '@/components/guest/GuestMotionCard';
 import { Wifi, MapPin, Car, Navigation } from 'lucide-react';
-import { WIFI_INFO, CAFE_INFO } from '@/lib/constants';
+import { CAFE_INFO } from '@/lib/constants';
 import { CARD_STAGGER } from '@/lib/motion';
 
 // 네비게이션 URL (네이버 지도)
@@ -32,13 +32,10 @@ export function ServiceCardsGrid() {
               <div className="mt-1.5 h-0.5 w-6 rounded-full bg-status-info/30" aria-hidden="true" />
             </CardHeader>
             <CardContent className="space-y-3">
-              <CardInset>
-                <CardLabelValue label="네트워크" value={WIFI_INFO.ssid} />
-              </CardInset>
               <div className="flex items-start gap-2 rounded-lg bg-status-info/5 p-3 border border-status-info/10">
                 <Wifi className="h-4 w-4 text-status-info mt-0.5 shrink-0" />
                 <p className="text-xs text-muted-foreground leading-relaxed">
-                  비밀번호 없이 자동 연결됩니다. 카라반 내에서 WiFi를 검색해 연결해주세요.
+                  비밀번호 없이 사용 가능합니다. 카라반 내에서 <span className="font-semibold text-brand-dark">가장 강하게 잡히는 WiFi</span>에 연결해주세요.
                 </p>
               </div>
             </CardContent>
@@ -67,7 +64,7 @@ export function ServiceCardsGrid() {
               <CardInset className="flex items-center gap-3">
                 <CardIconBadge icon={Car} tone="info" size="sm" strokeWidth={2} />
                 <p className="text-xs text-muted-foreground">
-                  예약 1건당 <span className="font-semibold text-brand-dark">1대</span> 주차 가능
+                  객실 근처에 <span className="font-semibold text-brand-dark">여러 대</span> 주차 가능
                 </p>
               </CardInset>
               <a 

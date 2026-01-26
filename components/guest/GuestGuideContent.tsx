@@ -1,16 +1,21 @@
 'use client';
 
 import { useState, useMemo } from 'react';
+import { motion } from 'framer-motion';
 import { 
   AlertCircle, 
   Lightbulb,
+  Thermometer,
+  Droplets,
+  Wifi,
+  Car,
+  Trash2,
+  Flame,
 } from 'lucide-react';
 import { 
   CaretRight, 
-  Fire, 
   WarningCircle,
 } from '@phosphor-icons/react';
-import { Card, CardContent } from '@/components/ui/card';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { GUIDE_DATA, BBQ_GUIDE_SLIDES } from '@/lib/constants';
 import { BBQCarousel } from '@/components/features/BBQCarousel';
@@ -21,7 +26,19 @@ import { GuideTroubleshooting } from '@/components/features/GuideTroubleshooting
 import { TrashCategoryGuide } from '@/components/features/TrashCategoryGuide';
 import { InfoInspector } from '@/components/guest/InfoInspector';
 import { PageHeader } from '@/components/shared/PageHeader';
+import { FadeInSection } from '@/components/shared/FadeInSection';
 import { cn } from '@/lib/utils';
+import { CARD_STAGGER } from '@/lib/motion';
+
+// 가이드별 아이콘 매핑
+const GUIDE_ICONS: Record<string, React.ElementType> = {
+  'heating': Thermometer,
+  'hot-water': Droplets,
+  'wifi': Wifi,
+  'parking': Car,
+  'trash': Trash2,
+  'bbq': Flame,
+};
 
 interface GuestGuideContentProps {
   token?: string;
@@ -53,8 +70,7 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
     setOpenInspector(true);
   };
 
-  // BBQ 가이드가 선택된 경우
-  const bbqGuide = GUIDE_DATA.items.find((item) => item.id === 'bbq');
+  // Inspector 기본 탭 결정
   const inspectorDefaultTab = useMemo(() => {
     if (!selectedGuide) return 'steps';
     if (selectedGuide.steps && selectedGuide.steps.length > 0) return 'steps';
@@ -103,46 +119,18 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
       </nav>
 
       {/* 컨텐츠 영역 */}
-      <div className="space-y-1.5">
-        {/* BBQ 하이라이트 - 브랜드 톤으로 통일 */}
-        {bbqGuide && !showBBQCarousel && (
-          <button
-            onClick={() => setShowBBQCarousel(true)}
-            id="guide-bbq"
-            className="
-              w-full text-left
-              flex items-center gap-3
-              min-h-[52px] px-3 py-2.5
-              rounded-xl border border-brand-cream-dark/30 bg-brand-cream/25
-              active:bg-brand-cream/40
-              transition-colors duration-150
-            "
-            aria-label="BBQ 가이드 시작하기"
-          >
-            {/* 아이콘 - 브랜드 톤 */}
-            <div className="w-9 h-9 rounded-lg bg-white border border-brand-cream-dark/20 flex items-center justify-center shrink-0 shadow-soft-sm">
-              <Fire size={16} weight="duotone" className="text-brand-dark-soft" />
-            </div>
-            
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-semibold text-brand-dark">불멍/바베큐 가이드</p>
-              <p className="text-[11px] text-brand-dark-muted mt-0.5">
-                단계별 안내 · 약 5분
-              </p>
-            </div>
-            
-            <span className="text-xs font-medium text-brand-dark-muted">
-              시작 →
-            </span>
-          </button>
-        )}
-
+      <FadeInSection className="space-y-1.5">
         {showBBQCarousel ? (
           <section aria-label="BBQ 가이드 캐러셀">
             <BBQCarousel slides={BBQ_GUIDE_SLIDES} onClose={() => setShowBBQCarousel(false)} />
           </section>
         ) : (
-          <section aria-label="가이드 목록">
+          <motion.section 
+            aria-label="가이드 목록"
+            variants={CARD_STAGGER.container}
+            initial="hidden"
+            animate="show"
+          >
             {filteredGuideData.length === 0 ? (
               /* 빈 상태 - 미니멀 */
               <div className="py-12 text-center">
@@ -157,63 +145,72 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
                 </button>
               </div>
             ) : (
-              <div className="space-y-1">
-                {filteredGuideData.map((item) => {
-                  // 불멍/바베큐 가이드는 상단 고정 섹션으로 제공
-                  if (item.id === 'bbq') return null;
-
+              <div className="space-y-2">
+                {filteredGuideData.map((item, index) => {
+                  // BBQ 가이드는 캐러셀로 열기
+                  const isBBQ = item.id === 'bbq';
+                  const Icon = GUIDE_ICONS[item.id];
+                  
                   return (
-                    <button
+                    <motion.button
                       key={item.id}
-                      onClick={() => handleGuideClick(item.id)}
+                      variants={CARD_STAGGER.item}
+                      onClick={() => isBBQ ? setShowBBQCarousel(true) : handleGuideClick(item.id)}
                       id={`guide-${item.id}`}
                       className="
                         w-full text-left
-                        flex items-center gap-2.5
-                        min-h-[52px] px-3 py-2.5
+                        flex items-center gap-3
+                        min-h-[60px] px-4 py-3
                         rounded-xl border border-brand-cream-dark/25 bg-white
+                        shadow-soft-sm hover:shadow-soft-md
                         active:bg-brand-cream/20
-                        transition-colors duration-150
+                        transition-all duration-200
                         group
                       "
                       aria-label={`${item.title} 상세 보기`}
                     >
-                      {/* 미니멀 인디케이터 */}
-                      <div className="w-1.5 h-1.5 rounded-full bg-brand-cream-dark/50 shrink-0" />
+                      {/* 아이콘 */}
+                      <div className="w-9 h-9 rounded-lg bg-brand-cream/30 border border-brand-cream-dark/15 flex items-center justify-center shrink-0">
+                        {Icon ? (
+                          <Icon className="h-4 w-4 text-brand-dark-soft" />
+                        ) : (
+                          <div className="w-1.5 h-1.5 rounded-full bg-brand-cream-dark/50" />
+                        )}
+                      </div>
                       
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-1.5">
-                          <span className="text-sm font-medium text-brand-dark">
+                          <span className="text-sm font-semibold text-brand-dark">
                             {item.title}
                           </span>
                           {item.warning && (
                             <WarningCircle 
                               size={13} 
                               weight="fill" 
-                              className="text-brand-dark-muted shrink-0" 
+                              className="text-status-warning shrink-0" 
                             />
                           )}
                         </div>
                         {item.overview && (
-                          <p className="text-[11px] text-brand-dark-muted mt-0.5 line-clamp-1">
+                          <p className="text-xs text-brand-dark-muted mt-0.5 line-clamp-1">
                             {item.overview}
                           </p>
                         )}
                       </div>
                       
                       <CaretRight
-                        size={14}
-                        weight="regular"
-                        className="text-brand-dark-faint shrink-0"
+                        size={16}
+                        weight="bold"
+                        className="text-brand-dark-faint group-hover:text-brand-dark-muted shrink-0 transition-colors"
                       />
-                    </button>
+                    </motion.button>
                   );
                 })}
               </div>
             )}
-          </section>
+          </motion.section>
         )}
-      </div>
+      </FadeInSection>
 
       {/* 상세 인스펙터 (모바일 Drawer / 데스크톱 Sheet) */}
       <InfoInspector
