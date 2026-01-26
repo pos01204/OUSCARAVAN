@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { Ticket, Percent } from 'lucide-react';
+import { Ticket, Percent, Hand } from 'lucide-react';
 
 interface CouponFlipProps {
   roomNumber: string;
@@ -17,7 +17,19 @@ export function CouponFlip({ roomNumber }: CouponFlipProps) {
   };
 
   return (
-    <>
+    <div className="space-y-2">
+      {/* 쿠폰 클릭 유도 안내 */}
+      {!isFlipped && (
+        <motion.div 
+          initial={{ opacity: 0, y: -5 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center justify-center gap-2 text-amber-600"
+        >
+          <Hand className="w-4 h-4 animate-bounce" />
+          <span className="text-sm font-medium">쿠폰을 터치하여 사용하세요</span>
+        </motion.div>
+      )}
+
       {/* 3D 플립 컨테이너 */}
       <div 
         style={{ perspective: '1000px' }}
@@ -65,10 +77,9 @@ export function CouponFlip({ roomNumber }: CouponFlipProps) {
                   <span className="text-[9px] md:text-[10px] font-semibold text-[#E8DCC8] uppercase tracking-wide">쿠폰</span>
                 </div>
                 <h3 className="text-sm md:text-base font-bold text-[#1A1714] leading-tight mb-0.5">
-                  숙박객 전용 할인
+                  숙박객 음료 할인
                 </h3>
-                <p className="text-[10px] md:text-[11px] text-[#6B6358]">카페 이용 시 적용</p>
-                <p className="text-[9px] text-[#9C9488] mt-1.5">탭하여 쿠폰 사용</p>
+                <p className="text-[10px] md:text-[11px] text-[#6B6358]">카페 음료 주문 시 적용</p>
               </div>
             </div>
           </div>
@@ -98,13 +109,13 @@ export function CouponFlip({ roomNumber }: CouponFlipProps) {
                 <h3 className="text-sm md:text-base font-bold text-[#F5F2ED] leading-tight mb-0.5">
                   직원에게 보여주세요
                 </h3>
-                <p className="text-[10px] md:text-[11px] text-[#E8DCC8]/70">10% 할인이 적용됩니다</p>
-                <p className="text-[9px] text-[#E8DCC8]/40 mt-1.5">탭하여 앞면 보기</p>
+                <p className="text-[10px] md:text-[11px] text-[#E8DCC8]/70">음료 10% 할인이 적용됩니다</p>
+                <p className="text-[9px] text-[#E8DCC8]/40 mt-1.5">다시 터치하면 앞면으로</p>
               </div>
             </div>
           </div>
         </motion.div>
       </div>
-    </>
+    </div>
   );
 }
