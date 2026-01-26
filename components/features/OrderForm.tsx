@@ -204,7 +204,7 @@ export function OrderForm({ onClose, token, onSubmitted, initial }: OrderFormPro
                         <div className="flex-1">
                           <h4 className="font-semibold text-base">{set.name}</h4>
                           <p className="mt-1.5 text-sm text-muted-foreground leading-relaxed">
-                            {set.items.join(', ')}
+                            {set.notice}
                           </p>
                         </div>
                         <p
@@ -226,7 +226,7 @@ export function OrderForm({ onClose, token, onSubmitted, initial }: OrderFormPro
               <div className="animate-in fade-in-50 slide-in-from-bottom-2 duration-200 space-y-4">
                 <div className="rounded-xl border bg-muted/30 p-4">
                   <p className="text-sm font-semibold">{selectedSetData.name}</p>
-                  <p className="text-xs text-muted-foreground mt-1">{selectedSetData.items.join(', ')}</p>
+                  <p className="text-xs text-muted-foreground mt-1">{selectedSetData.notice}</p>
                 </div>
                 <div>
                   <label className="mb-3 block text-sm font-semibold">2) 수량</label>
@@ -304,7 +304,7 @@ export function OrderForm({ onClose, token, onSubmitted, initial }: OrderFormPro
                   <div className="flex items-start justify-between gap-3">
                     <div className="min-w-0">
                       <p className="font-semibold">{selectedSetData.name}</p>
-                      <p className="text-xs text-muted-foreground mt-1">{selectedSetData.items.join(', ')}</p>
+                      <p className="text-xs text-muted-foreground mt-1">{selectedSetData.notice}</p>
                     </div>
                     <p className="font-bold">{selectedSetData.price.toLocaleString()}원</p>
                   </div>
