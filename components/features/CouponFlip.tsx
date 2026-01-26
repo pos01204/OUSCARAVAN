@@ -18,18 +18,6 @@ export function CouponFlip({ roomNumber }: CouponFlipProps) {
 
   return (
     <div className="space-y-2">
-      {/* 쿠폰 클릭 유도 안내 */}
-      {!isFlipped && (
-        <motion.div 
-          initial={{ opacity: 0, y: -5 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-center gap-2 text-amber-600"
-        >
-          <Hand className="w-4 h-4 animate-bounce" />
-          <span className="text-sm font-medium">쿠폰을 터치하여 사용하세요</span>
-        </motion.div>
-      )}
-
       {/* 3D 플립 컨테이너 */}
       <div 
         style={{ perspective: '1000px' }}
@@ -116,6 +104,19 @@ export function CouponFlip({ roomNumber }: CouponFlipProps) {
           </div>
         </motion.div>
       </div>
+
+      {/* 쿠폰 클릭 유도 안내 (하단) */}
+      {!isFlipped && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="flex items-center justify-center gap-2 text-brand-dark-muted"
+        >
+          <Hand className="w-4 h-4 animate-bounce" />
+          <span className="text-xs font-medium">쿠폰을 터치하여 사용하세요</span>
+        </motion.div>
+      )}
     </div>
   );
 }

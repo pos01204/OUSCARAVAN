@@ -46,7 +46,7 @@ export function GuestCafeContent({ token }: GuestCafeContentProps) {
             <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center shrink-0">
               <Check className="w-3 h-3 text-green-600" />
             </div>
-            <span className="text-sm text-brand-dark"><strong className="text-amber-600">음료 10% 할인</strong> 혜택</span>
+            <span className="text-sm text-brand-dark">투숙객 전용 <strong className="text-amber-600">음료 10% 할인</strong> 혜택</span>
           </li>
           <li className="px-4 py-3 flex items-center gap-3">
             <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center shrink-0">
