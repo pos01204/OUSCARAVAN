@@ -11,12 +11,17 @@ import {
   Car,
   Trash2,
   Flame,
+  MapPin,
+  Navigation,
+  Gauge,
+  ShowerHead,
 } from 'lucide-react';
 import { 
   CaretRight, 
   WarningCircle,
 } from '@phosphor-icons/react';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Card, CardContent } from '@/components/ui/card';
 import { GUIDE_DATA, BBQ_GUIDE_SLIDES } from '@/lib/constants';
 import { BBQCarousel } from '@/components/features/BBQCarousel';
 import { StepByStepGuide } from '@/components/features/StepByStepGuide';
@@ -24,11 +29,15 @@ import { GuideChecklist } from '@/components/features/GuideChecklist';
 import { GuideFAQ } from '@/components/features/GuideFAQ';
 import { GuideTroubleshooting } from '@/components/features/GuideTroubleshooting';
 import { TrashCategoryGuide } from '@/components/features/TrashCategoryGuide';
+import { WiFiMockup } from '@/components/features/WiFiMockup';
+import { FloorPlanViewer } from '@/components/features/FloorPlanViewer';
 import { InfoInspector } from '@/components/guest/InfoInspector';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { FadeInSection } from '@/components/shared/FadeInSection';
+import { CardIconBadge } from '@/components/shared/CardIconBadge';
 import { cn } from '@/lib/utils';
 import { CARD_STAGGER } from '@/lib/motion';
+import { getSpaceByRoom } from '@/lib/constants/floorPlan';
 
 // 가이드별 아이콘 매핑
 const GUIDE_ICONS: Record<string, React.ElementType> = {
@@ -42,9 +51,10 @@ const GUIDE_ICONS: Record<string, React.ElementType> = {
 
 interface GuestGuideContentProps {
   token?: string;
+  assignedRoom?: string;
 }
 
-export function GuestGuideContent({ token }: GuestGuideContentProps) {
+export function GuestGuideContent({ token, assignedRoom }: GuestGuideContentProps) {
   const [selectedCategory, setSelectedCategory] = useState('전체');
   const [showBBQCarousel, setShowBBQCarousel] = useState(false);
   const [selectedGuideId, setSelectedGuideId] = useState<string | null>(null);
@@ -226,7 +236,88 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
         contentClassName="max-h-[92dvh] overflow-hidden md:max-w-xl"
       >
         {selectedGuide ? (
-          <div className="space-y-3">
+          <div className="space-y-4">
+            {/* 가이드별 시각적 컴포넌트 */}
+            {selectedGuide.id === 'wifi' && (
+              <Card variant="info" className="overflow-hidden">
+                <CardContent className="p-4">
+                  <WiFiMockup />
+                </CardContent>
+              </Card>
+            )}
+
+            {selectedGuide.id === 'parking' && assignedRoom && (
+              <Card variant="info" className="overflow-hidden">
+                <CardContent className="p-4 space-y-3">
+                  <div className="flex items-center gap-2 mb-2">
+                    <CardIconBadge icon={MapPin} tone="info" size="sm" />
+                    <span className="text-sm font-semibold text-brand-dark">주차 위치 안내</span>
+                  </div>
+                  <div className="rounded-xl bg-background overflow-hidden border border-border/30">
+                    <FloorPlanViewer assignedRoom={assignedRoom} showLabels={true} />
+                  </div>
+                  {(() => {
+                    const space = getSpaceByRoom(assignedRoom);
+                    if (!space) return null;
+                    const centerX = space.coordinates.x + space.coordinates.width / 2;
+                    const centerY = space.coordinates.y + space.coordinates.height / 2;
+                    const isLeft = centerX < 203;
+                    const xLabel = isLeft ? '좌측' : '우측';
+                    const yLabel = centerY < 150 ? '상단' : centerY < 210 ? '중단' : '하단';
+                    return (
+                      <div className="flex items-center gap-3 rounded-xl bg-brand-dark p-3">
+                        <div className="h-10 w-10 rounded-lg bg-white/10 flex items-center justify-center">
+                          <Navigation className="h-5 w-5 text-white" />
+                        </div>
+                        <div>
+                          <p className="text-[10px] text-white/60 font-medium">고객님의 주차 위치</p>
+                          <p className="text-sm font-bold text-white">{xLabel} {yLabel} 주차공간</p>
+                        </div>
+                      </div>
+                    );
+                  })()}
+                </CardContent>
+              </Card>
+            )}
+
+            {selectedGuide.id === 'heating' && (
+              <Card variant="info" className="overflow-hidden">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-br from-orange-50 to-blue-50 border border-orange-100">
+                    <div className="h-14 w-14 rounded-xl bg-white shadow-sm flex items-center justify-center">
+                      <Gauge className="h-7 w-7 text-brand-dark" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold text-brand-dark mb-1">벽면 컨트롤러</p>
+                      <p className="text-xs text-muted-foreground leading-relaxed">
+                        객실 벽면에 설치된 컨트롤러로<br />
+                        난방과 냉방을 조절할 수 있어요
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
+            {selectedGuide.id === 'hot-water' && (
+              <Card variant="info" className="overflow-hidden">
+                <CardContent className="p-4">
+                  <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-br from-blue-50 to-cyan-50 border border-blue-100">
+                    <div className="h-14 w-14 rounded-xl bg-white shadow-sm flex items-center justify-center">
+                      <ShowerHead className="h-7 w-7 text-status-info" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-semibold text-brand-dark mb-1">온수 용량 안내</p>
+                      <div className="flex items-baseline gap-2">
+                        <span className="text-2xl font-bold text-status-info">100L</span>
+                        <span className="text-xs text-muted-foreground">(대형 카라반 60L)</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+
             {/* 상단: 핵심만 한 화면에 들어오도록 요약/주의/팁을 압축 - 브랜드 톤 */}
             {(selectedGuide.warning || (selectedGuide.tips && selectedGuide.tips.length > 0)) && (
               <div className="rounded-xl border border-brand-cream-dark/25 bg-brand-cream/15 p-4 space-y-3">

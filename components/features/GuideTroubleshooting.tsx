@@ -107,18 +107,20 @@ export function GuideTroubleshooting({
             )}
 
             {item.requiresContact && item.contactMethod && (
-              <div className="pt-2 flex items-center gap-2 flex-wrap">
-                <Badge variant="destructive" className="text-xs">관리자 연락 필요</Badge>
+              <div className="pt-3 space-y-2">
                 <Button
-                  size="sm"
-                  variant="outline"
+                  size="default"
+                  variant="default"
                   onClick={() => handleContact(item.contactMethod!)}
-                  className="h-8 text-xs"
+                  className="w-full h-11 bg-brand-dark hover:bg-brand-dark/90 text-white font-medium"
                   aria-label={`${getContactLabel(item.contactMethod)}로 관리자에게 연락`}
                 >
                   {getContactIcon(item.contactMethod)}
-                  <span className="ml-1">{getContactLabel(item.contactMethod)}</span>
+                  <span className="ml-2">관리자에게 전화하기</span>
                 </Button>
+                <p className="text-[11px] text-center text-muted-foreground">
+                  문제가 해결되지 않으면 연락해주세요
+                </p>
               </div>
             )}
           </div>
@@ -204,25 +206,18 @@ export function GuideTroubleshooting({
               )}
 
               {/* 관리자 연락 필요 */}
-              {item.requiresContact && (
-                <div className="pt-2">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <Badge variant="destructive" className="text-xs">
-                      관리자 연락 필요
-                    </Badge>
-                    {item.contactMethod && (
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={() => handleContact(item.contactMethod!)}
-                        className="h-7 text-xs"
-                        aria-label={`${getContactLabel(item.contactMethod)}로 관리자에게 연락`}
-                      >
-                        {getContactIcon(item.contactMethod)}
-                        <span className="ml-1">{getContactLabel(item.contactMethod)}</span>
-                      </Button>
-                    )}
-                  </div>
+              {item.requiresContact && item.contactMethod && (
+                <div className="pt-3">
+                  <Button
+                    size="default"
+                    variant="default"
+                    onClick={() => handleContact(item.contactMethod!)}
+                    className="w-full h-10 bg-brand-dark hover:bg-brand-dark/90 text-white font-medium"
+                    aria-label={`${getContactLabel(item.contactMethod)}로 관리자에게 연락`}
+                  >
+                    {getContactIcon(item.contactMethod)}
+                    <span className="ml-2">관리자에게 전화하기</span>
+                  </Button>
                 </div>
               )}
             </div>

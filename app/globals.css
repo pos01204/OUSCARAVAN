@@ -1000,3 +1000,42 @@ button:active {
 .skeleton-shimmer {
   animation-duration: 2.5s;
 }
+
+/* BBQ 캐러셀 스타일 */
+.bbq-carousel {
+  height: auto !important;
+}
+
+.bbq-carousel .swiper-button-prev,
+.bbq-carousel .swiper-button-next {
+  color: hsl(var(--primary));
+  width: 40px;
+  height: 40px;
+  background: hsl(var(--background));
+  border-radius: 9999px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.bbq-carousel .swiper-button-prev:after,
+.bbq-carousel .swiper-button-next:after {
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.bbq-carousel .swiper-button-disabled {
+  opacity: 0.3;
+}
+
+.bbq-carousel .swiper-pagination-bullet {
+  background: hsl(var(--muted-foreground));
+  opacity: 0.3;
+  width: 8px;
+  height: 8px;
+}
+
+.bbq-carousel .swiper-pagination-bullet-active {
+  background: hsl(var(--primary));
+  opacity: 1;
+  width: 24px;
+  border-radius: 4px;
+}

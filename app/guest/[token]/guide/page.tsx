@@ -1,6 +1,6 @@
 import { Suspense } from 'react';
 import { notFound } from 'next/navigation';
-import { guestApi } from '@/lib/api';
+import { guestApi, type Reservation } from '@/lib/api';
 import { GuestGuideContent } from '@/components/guest/GuestGuideContent';
 import { RetryablePageError } from '@/components/shared/RetryablePageError';
 import { ApiError } from '@/types';
@@ -10,9 +10,11 @@ export default async function GuestGuidePage({
 }: {
   params: { token: string };
 }) {
+  let reservation: Reservation | null = null;
+  
   // 토큰으로 예약 정보 조회 (토큰 검증)
   try {
-    await guestApi(params.token);
+    reservation = await guestApi(params.token);
   } catch (error) {
     // 토큰이 유효하지 않으면 404 페이지
     if (error instanceof ApiError && (error.status === 401 || error.status === 404)) {
@@ -33,7 +35,7 @@ export default async function GuestGuidePage({
         </div>
       }
     >
-      <GuestGuideContent token={params.token} />
+      <GuestGuideContent token={params.token} assignedRoom={reservation?.assignedRoom} />
     </Suspense>
   );
 }
