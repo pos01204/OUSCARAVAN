@@ -37,8 +37,8 @@ export function CatIntroSection() {
       <Swiper
         modules={[Pagination]}
         pagination={{ clickable: true }}
-        slidesPerView={2.8}
-        spaceBetween={12}
+        slidesPerView={3.2}
+        spaceBetween={10}
         className="cat-character-swiper !pb-8"
       >
         {CAT_CHARACTERS.map((cat, index) => (

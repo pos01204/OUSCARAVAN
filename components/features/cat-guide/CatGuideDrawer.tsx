@@ -40,7 +40,7 @@ export function CatGuideDrawer({ isOpen, onOpenChange }: CatGuideDrawerProps) {
         <div className="sticky top-0 z-20 flex items-center justify-between px-5 py-3.5 bg-[#FDF9F3]/95 backdrop-blur-sm border-b border-cat-brown/10">
           {/* 헤더 타이틀 - Paperlogy */}
           <span className="font-cat text-sm font-semibold text-brand-dark tracking-tight">
-            고양이 이야기
+            카라반 내 고양이를 찾아보세요!
           </span>
           <DrawerClose asChild>
             <Button

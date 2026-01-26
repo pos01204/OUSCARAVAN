@@ -28,6 +28,11 @@ export const CAT_CHARACTERS: CatCharacter[] = [
   { id: 'calico', name: '삼색이', trait: '느긋이' },
   { id: 'tiger', name: '호피', trait: '수줍이' },
   { id: 'snow', name: '눈송이', trait: '우아함' },
+  { id: 'mango', name: '망고', trait: '장난꾸러기' },
+  { id: 'gray', name: '회색이', trait: '조용이' },
+  { id: 'tuxedo', name: '턱시도', trait: '젠틀맨' },
+  { id: 'cream', name: '크림이', trait: '애교쟁이' },
+  { id: 'tabby', name: '줄무늬', trait: '탐험가' },
 ];
 
 export const CAT_GUIDE_DATA = {
