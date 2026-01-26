@@ -194,22 +194,20 @@ export function ReservationCalendarView({
     return grouped;
   }, [reservations]);
 
-  const getWorkPrefix = useCallback((reservation: Reservation) => {
-    if (!reservation.assignedRoom) return '미';
-    if (reservation.status === 'checked_in') return '입';
-    if (reservation.status === 'checked_out') return '퇴';
-    if (reservation.status === 'assigned') return '배';
-    if (reservation.status === 'pending') return '대';
-    if (reservation.status === 'cancelled') return '취';
-    return '예약';
+  // 룸타입에서 "N인실" 추출 (예: "4인실(카라반)" → "4인실")
+  const getRoomTypeShort = useCallback((roomType: string) => {
+    const match = roomType.match(/(\d+인실)/);
+    return match ? match[1] : roomType.split('(')[0];
   }, []);
 
+  // 월 셀 이벤트 타이틀: "이름 · N인실" (로스터 중심)
   const getEventShortTitle = useCallback(
     (reservation: Reservation) => {
-      const prefix = getWorkPrefix(reservation);
-      return `${prefix} ${reservation.guestName}`;
+      const roomShort = getRoomTypeShort(reservation.roomType);
+      const unassignedMark = !reservation.assignedRoom ? ' ·미' : '';
+      return `${reservation.guestName} · ${roomShort}${unassignedMark}`;
     },
-    [getWorkPrefix]
+    [getRoomTypeShort]
   );
 
   // 예약 데이터를 캘린더 이벤트로 변환 (하이브리드 방식 적용)
@@ -240,21 +238,22 @@ export function ReservationCalendarView({
       }
     });
 
-    // 개별 예약 이벤트를 생성 (바 형태의 월간 뷰)
+    // 개별 예약 이벤트를 생성 (체크인 단일일 로스터 방식 - 모바일 최적화)
     const events = validReservations.map((reservation) => {
       const start = new Date(reservation.checkin);
       start.setHours(0, 0, 0, 0);
-      const end = new Date(reservation.checkout);
-      end.setHours(23, 59, 59, 999); // 당일 끝까지
+      // 월 뷰에서는 체크인 날짜에만 표시 (기간 막대 대신 로스터 형태)
+      const end = new Date(reservation.checkin);
+      end.setHours(23, 59, 59, 999);
 
       return {
         id: reservation.id,
-        // 월간 셀 이벤트 제목: 업무형 축약 표기(미/입/퇴 + 이름)
+        // 월간 셀 이벤트 제목: "이름 · N인실" (로스터 중심)
         title: getEventShortTitle(reservation),
         start,
         end,
         resource: reservation,
-        allDay: true, // 하루 종일 이벤트로 표시
+        allDay: true,
       };
     });
 
@@ -293,44 +292,49 @@ export function ReservationCalendarView({
   }, [getEventShortTitle, reservations]);
 
 
-  // 이벤트 스타일 커스터마이징 (바 형태)
+  // 이벤트 스타일 커스터마이징 (로스터 방식 - 중립 톤, 모바일 가독성 우선)
   const eventStyleGetter = (event: ReservationEvent) => {
     const reservation = event.resource;
-    const colorConfig = STATUS_COLORS[reservation.status] || STATUS_COLORS.pending;
+    const isUnassigned = !reservation.assignedRoom;
+
+    // 중립 톤 기본 + 미배정만 약한 포인트
+    const bgColor = isUnassigned ? '#FEF3C7' : '#F3F4F6'; // 미배정: 연노랑, 배정됨: 연회색
+    const textColor = isUnassigned ? '#92400E' : '#374151'; // 미배정: 갈색, 배정됨: 짙은회색
+    const borderColor = isUnassigned ? '#FCD34D' : '#E5E7EB'; // 미배정: 노랑테두리, 배정됨: 회색테두리
 
     return {
       style: {
-        backgroundColor: colorConfig.bg,
-        borderRadius: isMobile ? '3px' : '4px',
-        opacity: 0.95, // 조금 더 선명하게
-        color: 'white',
-        border: '0.5px solid rgba(0,0,0,0.1)', // 미세한 테두리로 구분감 제공
+        backgroundColor: bgColor,
+        borderRadius: isMobile ? '4px' : '6px',
+        color: textColor,
+        border: `1px solid ${borderColor}`,
         display: 'block',
-        fontSize: isMobile ? '0.65rem' : '0.75rem', // 모바일에서 텍스트 잘림 방지
-        lineHeight: isMobile ? '1.2' : '1.4',
-        padding: isMobile ? '1px 2px' : '2px 6px',
-        marginBottom: '1px',
+        fontSize: isMobile ? '0.6rem' : '0.7rem',
+        lineHeight: isMobile ? '1.3' : '1.4',
+        padding: isMobile ? '2px 4px' : '3px 6px',
+        marginBottom: '2px',
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap',
-        boxShadow: '0 1px 2px rgba(0,0,0,0.05)',
+        fontWeight: isUnassigned ? '600' : '500',
       },
     };
   };
 
-  // 커스텀 이벤트 컴포넌트
+  // 커스텀 이벤트 컴포넌트 (로스터 중심: 이름·몇인실)
   const EventComponent = useCallback(({ event }: { event: ReservationEvent }) => {
     const r = event.resource;
-    const fullTitle = `${r.assignedRoom || '미배정'} · ${STATUS_COLORS[r.status]?.label ?? '예약'} · ${r.guestName}`;
+    const roomShort = getRoomTypeShort(r.roomType);
+    const fullTitle = `${r.guestName} · ${roomShort} · ${r.assignedRoom || '미배정'} · ${STATUS_COLORS[r.status]?.label ?? '예약'}`;
     return (
       <div
         title={fullTitle}
-        className={`${isMobile ? 'text-[9px]' : 'text-[11px]'} font-semibold truncate leading-tight py-0.5`}
+        className={`${isMobile ? 'text-[9px]' : 'text-[10px]'} truncate leading-tight`}
       >
         {event.title}
       </div>
     );
-  }, [isMobile]);
+  }, [isMobile, getRoomTypeShort]);
 
   // 커스텀 "더 보기" 컴포넌트
   const ShowMoreComponent = useCallback(({ count, slotMetrics, events: slotEvents }: { count: number; slotMetrics: any; events: ReservationEvent[] }) => {
@@ -383,56 +387,31 @@ export function ReservationCalendarView({
     });
   }, [reservations]);
 
-  // 월간 스캔을 위한 날짜 헤더(요약 칩) - 날짜 클릭 시 인스펙터 오픈
+  // 월간 스캔을 위한 날짜 헤더(최소 요약) - 모바일 최적화, 체크인 수만 표시
   const DateHeaderComponent = useCallback(({ date, label }: { date: Date; label: string }) => {
     const dayStart = startOfDay(date);
     const checkins = getReservationsForDate(dayStart, false);
     const unassigned = checkins.filter(r => !r.assignedRoom).length;
-    const checkouts = reservations.filter(r => {
-      try {
-        return isSameDay(startOfDay(new Date(r.checkout)), dayStart);
-      } catch {
-        return false;
-      }
-    }).length;
-
-    const showSummary = unassigned > 0 || checkins.length > 0 || checkouts > 0;
 
     return (
       <div
-        className="flex flex-col gap-1 cursor-pointer select-none"
+        className="flex items-center justify-between cursor-pointer select-none"
         onClick={(e) => {
           e.stopPropagation();
           setSelectedDate(dayStart);
           setIsInspectorOpen(true);
         }}
-        title={`${label} (미배정 ${unassigned} / 체크인 ${checkins.length} / 체크아웃 ${checkouts})`}
+        title={`${label} - 체크인 ${checkins.length}건${unassigned > 0 ? ` (미배정 ${unassigned})` : ''}`}
       >
-        <div className="flex items-center justify-between">
-          <span className="font-semibold">{label}</span>
-        </div>
-        {showSummary && (
-          <div className="flex items-center gap-1 flex-wrap">
-            {unassigned > 0 && (
-              <span className="rounded bg-red-50 text-red-700 border border-red-200 px-1 py-0.5 text-[10px] leading-none">
-                미 {unassigned}
-              </span>
-            )}
-            {checkins.length > 0 && (
-              <span className="rounded bg-blue-50 text-blue-700 border border-blue-200 px-1 py-0.5 text-[10px] leading-none">
-                입 {checkins.length}
-              </span>
-            )}
-            {checkouts > 0 && (
-              <span className="rounded bg-purple-50 text-purple-700 border border-purple-200 px-1 py-0.5 text-[10px] leading-none">
-                퇴 {checkouts}
-              </span>
-            )}
-          </div>
+        <span className="font-semibold text-foreground">{label}</span>
+        {checkins.length > 0 && (
+          <span className={`text-[9px] font-medium px-1 rounded ${unassigned > 0 ? 'bg-amber-100 text-amber-800' : 'text-muted-foreground'}`}>
+            {checkins.length}
+          </span>
         )}
       </div>
     );
-  }, [getReservationsForDate, reservations]);
+  }, [getReservationsForDate]);
 
   // 날짜 클릭 핸들러 (모달로 해당 날짜의 예약 표시)
   const handleSelectSlot = useCallback((slotInfo: SlotInfo) => {
