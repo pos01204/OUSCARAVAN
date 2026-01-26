@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { Home, BookOpen, Flame, Coffee, HelpCircle } from 'lucide-react';
 import { cn } from '@/lib/utils';
@@ -23,48 +22,18 @@ export function GuestHeader({ token }: GuestHeaderProps) {
 
   return (
     <>
-      {/* 모바일: 간소화된 헤더 — 오션뷰 배경 브랜딩 */}
-      <header className="fixed top-0 left-0 right-0 z-50 border-b border-brand-cream-dark/20 shadow-card md:hidden overflow-hidden">
-        {/* 배경 이미지 레이어 */}
-        <div className="absolute inset-0">
-          <Image
-            src="/images/헤더용/IMG_1922.jpeg"
-            alt=""
-            fill
-            className="object-cover"
-            style={{ objectPosition: 'center 20%' }}
-            priority
-          />
-          {/* 반투명 오버레이 - 은은하게 바다/하늘이 비치도록 */}
-          <div className="absolute inset-0 bg-white/80 backdrop-blur-[1px]" />
-        </div>
-        
-        {/* 콘텐츠 레이어 */}
-        <div className="relative flex h-14 items-center justify-center px-4">
+      {/* 모바일: 간소화된 헤더 — 브랜드 라이트 테마 */}
+      <header className="fixed top-0 left-0 right-0 z-50 border-b border-brand-cream-dark/30 bg-white shadow-card md:hidden">
+        <div className="flex h-14 items-center justify-center px-4">
           <Link href={`/guest/${token}`} className="text-lg font-heading font-bold text-brand-dark tracking-tight">
             OUSCARAVAN
           </Link>
         </div>
       </header>
       
-      {/* 데스크톱: 전체 헤더 — 오션뷰 배경 브랜딩 */}
-      <header className="hidden border-b border-brand-cream-dark/20 shadow-card md:block overflow-hidden relative">
-        {/* 배경 이미지 레이어 */}
-        <div className="absolute inset-0">
-          <Image
-            src="/images/헤더용/IMG_1922.jpeg"
-            alt=""
-            fill
-            className="object-cover"
-            style={{ objectPosition: 'center 20%' }}
-            priority
-          />
-          {/* 반투명 오버레이 */}
-          <div className="absolute inset-0 bg-white/80 backdrop-blur-[1px]" />
-        </div>
-        
-        {/* 콘텐츠 레이어 */}
-        <div className="relative container mx-auto flex h-16 items-center justify-between px-4">
+      {/* 데스크톱: 전체 헤더 */}
+      <header className="hidden border-b border-brand-cream-dark/30 bg-white shadow-card md:block">
+        <div className="container mx-auto flex h-16 items-center justify-between px-4">
           <Link href={`/guest/${token}`} className="text-xl font-heading font-bold text-brand-dark tracking-tight">
             OUSCARAVAN
           </Link>
@@ -80,8 +49,8 @@ export function GuestHeader({ token }: GuestHeaderProps) {
                   className={cn(
                     'flex items-center gap-2 px-4 py-2 rounded-lg transition-all duration-200',
                     isActive
-                      ? 'text-brand-dark bg-white/60 font-semibold'
-                      : 'text-brand-dark-muted hover:text-brand-dark hover:bg-white/40'
+                      ? 'text-brand-dark bg-background-muted font-semibold'
+                      : 'text-brand-dark-muted hover:text-brand-dark hover:bg-background-muted'
                   )}
                 >
                   <Icon className="h-4 w-4" strokeWidth={isActive ? 2.5 : 2} />
