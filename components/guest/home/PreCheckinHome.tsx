@@ -8,6 +8,7 @@ import { CollapsedAnnouncements } from './CollapsedAnnouncements';
 import { CheckInCTA } from './CheckInCTA';
 import { QuickActionsCompact } from './QuickActionsCompact';
 import { ServiceCardsGrid } from './ServiceCardsGrid';
+import { FloorPlanCard } from '@/components/guest/FloorPlanCard';
 import { SectionDivider } from '@/components/shared/SectionDivider';
 import { FadeInSection } from '@/components/shared/FadeInSection';
 import { useGuestAnnouncements } from '@/lib/hooks/useGuestAnnouncements';
@@ -53,20 +54,27 @@ export function PreCheckinHome({ reservation, token }: PreCheckinHomeProps) {
         <CriticalAnnouncement announcement={criticalAnnouncement} token={token} />
       )}
 
+      {/* 배정된 위치 (체크인 전에도 표시하여 고객이 위치 파악 가능) */}
+      {reservation.assignedRoom && (
+        <FadeInSection as="div" delay={0.08}>
+          <FloorPlanCard assignedRoom={reservation.assignedRoom} />
+        </FadeInSection>
+      )}
+
       {/* 체크인 CTA (메인 강조) */}
-      <FadeInSection as="div" delay={0.1}>
+      <FadeInSection as="div" delay={0.12}>
         <CheckInCTA token={token} />
       </FadeInSection>
 
       <SectionDivider variant="brand" />
 
       {/* Quick Actions */}
-      <FadeInSection as="div" delay={0.15}>
+      <FadeInSection as="div" delay={0.18}>
         <QuickActionsCompact token={token} variant="pre_checkin" />
       </FadeInSection>
 
       {/* WiFi + 이용시간 카드 (2x2) */}
-      <FadeInSection as="div" delay={0.2}>
+      <FadeInSection as="div" delay={0.24}>
         <ServiceCardsGrid />
       </FadeInSection>
 
@@ -74,7 +82,7 @@ export function PreCheckinHome({ reservation, token }: PreCheckinHomeProps) {
 
       {/* 일반 공지 (접힌 상태) */}
       {!announcementsLoading && normalAnnouncements.length > 0 && (
-        <FadeInSection as="div" delay={0.25}>
+        <FadeInSection as="div" delay={0.3}>
           <CollapsedAnnouncements
             announcements={normalAnnouncements}
             token={token}
