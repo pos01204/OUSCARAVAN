@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ChevronLeft, ChevronRight, AlertTriangle, Shield, Wrench, Phone } from 'lucide-react';
+import { ChevronLeft, ChevronRight, AlertTriangle, Shield, Wrench, Phone, Power, Fuel, Flame, Settings, Sparkles, PowerOff } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import {
@@ -11,6 +11,16 @@ import {
   AccordionItem,
   AccordionTrigger,
 } from '@/components/ui/accordion';
+
+// 스텝 아이콘 매핑
+const STEP_ICONS: Record<number, React.ElementType> = {
+  1: Power,
+  2: Fuel,
+  3: Flame,
+  4: Settings,
+  5: Sparkles,
+  6: PowerOff,
+};
 
 // 가이드 스텝 데이터
 const BBQ_GUIDE_STEPS = [
@@ -151,9 +161,19 @@ export function BBQGuideTab() {
                 transition={{ duration: 0.2 }}
                 className="text-center"
               >
+                {/* 아이콘 */}
+                {(() => {
+                  const StepIcon = STEP_ICONS[step.id] || Flame;
+                  return (
+                    <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-100 flex items-center justify-center mx-auto mb-4">
+                      <StepIcon className="h-8 w-8 text-amber-600" />
+                    </div>
+                  );
+                })()}
+
                 {/* 스텝 번호 + 타이틀 */}
-                <div className="mb-4">
-                  <span className="inline-block px-3 py-1 rounded-full bg-muted/60 text-muted-foreground text-xs font-semibold mb-2">
+                <div className="mb-3">
+                  <span className="inline-block px-3 py-1 rounded-full bg-brand-cream/50 text-brand-dark-muted text-xs font-semibold mb-2">
                     Step {step.id}
                   </span>
                   <h3 className="text-xl font-semibold text-brand-dark">
@@ -162,15 +182,15 @@ export function BBQGuideTab() {
                 </div>
 
                 {/* 설명 */}
-                <p className="text-muted-foreground leading-relaxed">
+                <p className="text-brand-dark-muted leading-relaxed">
                   {step.description}
                 </p>
 
                 {/* 경고 메시지 */}
                 {step.warning && (
-                  <div className="mt-4 p-3 rounded-lg bg-muted/40 border border-border flex items-start gap-2 text-left">
-                    <AlertTriangle className="h-5 w-5 text-muted-foreground shrink-0 mt-0.5" />
-                    <p className="text-sm text-muted-foreground">{step.warning}</p>
+                  <div className="mt-4 p-3 rounded-xl bg-amber-50 border border-amber-200 flex items-start gap-2 text-left">
+                    <AlertTriangle className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                    <p className="text-sm text-amber-800">{step.warning}</p>
                   </div>
                 )}
               </motion.div>
@@ -183,7 +203,7 @@ export function BBQGuideTab() {
               variant="outline"
               onClick={() => goToStep('prev')}
               disabled={currentStep === 0}
-              className="gap-1"
+              className="gap-1 border-brand-cream-dark/30"
             >
               <ChevronLeft className="h-4 w-4" />
               이전
@@ -203,7 +223,7 @@ export function BBQGuideTab() {
       {/* 안전 수칙 */}
       <section>
         <h3 className="text-sm font-semibold text-brand-dark mb-3 flex items-center gap-2">
-          <Shield className="h-4 w-4 text-muted-foreground" />
+          <Shield className="h-4 w-4 text-brand-dark-muted" />
           안전 수칙
         </h3>
         <Accordion type="single" collapsible className="space-y-2">
@@ -211,16 +231,16 @@ export function BBQGuideTab() {
             <AccordionItem
               key={rule.id}
               value={rule.id}
-              className="border rounded-xl px-4 bg-white"
+              className="border border-brand-cream-dark/25 rounded-xl px-4 bg-white"
             >
-              <AccordionTrigger className="text-sm font-medium py-3 hover:no-underline">
+              <AccordionTrigger className="text-sm font-medium py-3 hover:no-underline text-brand-dark">
                 {rule.title}
               </AccordionTrigger>
               <AccordionContent className="pb-3">
                 <ul className="space-y-2">
                   {rule.items.map((item, index) => (
-                    <li key={index} className="text-sm text-muted-foreground flex items-start gap-2">
-                      <span className="text-muted-foreground mt-0.5">•</span>
+                    <li key={index} className="text-sm text-brand-dark-muted flex items-start gap-2">
+                      <span className="text-brand-dark-faint mt-0.5">•</span>
                       {item}
                     </li>
                   ))}
@@ -234,7 +254,7 @@ export function BBQGuideTab() {
       {/* 문제 해결 */}
       <section>
         <h3 className="text-sm font-semibold text-brand-dark mb-3 flex items-center gap-2">
-          <Wrench className="h-4 w-4 text-muted-foreground" />
+          <Wrench className="h-4 w-4 text-brand-dark-muted" />
           문제 해결
         </h3>
         <Accordion type="single" collapsible className="space-y-2">
@@ -242,13 +262,13 @@ export function BBQGuideTab() {
             <AccordionItem
               key={item.id}
               value={item.id}
-              className="border rounded-xl px-4 bg-white"
+              className="border border-brand-cream-dark/25 rounded-xl px-4 bg-white"
             >
-              <AccordionTrigger className="text-sm font-medium py-3 hover:no-underline">
+              <AccordionTrigger className="text-sm font-medium py-3 hover:no-underline text-brand-dark">
                 {item.question}
               </AccordionTrigger>
               <AccordionContent className="pb-3">
-                <p className="text-sm text-muted-foreground whitespace-pre-line">
+                <p className="text-sm text-brand-dark-muted whitespace-pre-line">
                   {item.answer}
                 </p>
               </AccordionContent>
@@ -257,14 +277,14 @@ export function BBQGuideTab() {
         </Accordion>
 
         {/* 문의 안내 */}
-        <div className="mt-4 p-4 rounded-xl bg-muted/30 border border-border">
+        <div className="mt-4 p-4 rounded-xl bg-brand-cream/30 border border-brand-cream-dark/20">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-muted flex items-center justify-center">
-              <Phone className="h-5 w-5 text-muted-foreground" />
+            <div className="w-10 h-10 rounded-full bg-brand-cream/50 border border-brand-cream-dark/15 flex items-center justify-center">
+              <Phone className="h-5 w-5 text-brand-dark-soft" />
             </div>
             <div>
               <p className="text-sm font-semibold text-brand-dark">계속 문제가 있으신가요?</p>
-              <p className="text-xs text-muted-foreground">프론트로 연락해주세요</p>
+              <p className="text-xs text-brand-dark-muted">프론트로 연락해주세요</p>
             </div>
           </div>
         </div>

@@ -18,10 +18,10 @@ interface BBQHistoryTabProps {
 }
 
 const STATUS_CONFIG = {
-  pending: { label: '주문 접수', icon: Clock, color: 'text-neutral-700', bg: 'bg-neutral-100' },
-  preparing: { label: '준비 중', icon: Package, color: 'text-neutral-700', bg: 'bg-neutral-100' },
-  delivering: { label: '배송 중', icon: Package, color: 'text-neutral-700', bg: 'bg-neutral-100' },
-  completed: { label: '완료', icon: CheckCircle, color: 'text-neutral-700', bg: 'bg-neutral-100' },
+  pending: { label: '주문 접수', icon: Clock, color: 'text-brand-dark', bg: 'bg-brand-cream/50' },
+  preparing: { label: '준비 중', icon: Package, color: 'text-brand-dark', bg: 'bg-brand-cream/50' },
+  delivering: { label: '배송 중', icon: Package, color: 'text-amber-700', bg: 'bg-amber-50' },
+  completed: { label: '완료', icon: CheckCircle, color: 'text-green-700', bg: 'bg-green-50' },
 };
 
 function getStatusIndex(status: Order['status']): number {
@@ -66,16 +66,16 @@ export function BBQHistoryTab({ token, onOrderClick, onGuideClick }: BBQHistoryT
   if (bbqOrders.length === 0) {
     return (
       <div className="flex flex-col items-center justify-center py-16 text-center">
-        <div className="w-14 h-14 rounded-full bg-muted flex items-center justify-center mb-4">
-          <Flame className="h-7 w-7 text-muted-foreground" />
+        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-amber-50 to-orange-50 border border-amber-100 flex items-center justify-center mb-4">
+          <Flame className="h-8 w-8 text-amber-500" />
         </div>
         <h3 className="text-lg font-semibold text-brand-dark mb-2">
           아직 주문 내역이 없어요
         </h3>
-        <p className="text-sm text-muted-foreground mb-6">
+        <p className="text-sm text-brand-dark-muted mb-6">
           오늘 밤 캠프파이어를 즐겨보세요!
         </p>
-        <Button onClick={onOrderClick} className="bg-brand-dark hover:bg-brand-dark/90">
+        <Button onClick={onOrderClick} className="bg-brand-dark hover:bg-brand-dark/90 rounded-full px-6">
           <ShoppingBag className="mr-2 h-4 w-4" />
           주문하러 가기
         </Button>
@@ -89,7 +89,7 @@ export function BBQHistoryTab({ token, onOrderClick, onGuideClick }: BBQHistoryT
       {activeOrders.length > 0 && (
         <section>
           <h3 className="text-sm font-semibold text-brand-dark mb-3 flex items-center gap-2">
-            <Flame className="h-4 w-4 text-muted-foreground" />
+            <Flame className="h-4 w-4 text-amber-500" />
             진행 중
           </h3>
           <div className="space-y-3">
@@ -107,7 +107,7 @@ export function BBQHistoryTab({ token, onOrderClick, onGuideClick }: BBQHistoryT
       {/* 지난 주문 */}
       {pastOrders.length > 0 && (
         <section>
-          <h3 className="text-sm font-semibold text-muted-foreground mb-3">
+          <h3 className="text-sm font-semibold text-brand-dark-muted mb-3">
             지난 주문
           </h3>
           <div className="space-y-2">
@@ -145,7 +145,7 @@ function ActiveOrderCard({
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
     >
-      <Card className="border-border/60 bg-white">
+      <Card className="border-brand-cream-dark/25 bg-white shadow-soft-sm">
         <CardContent className="p-4">
           {/* 상품 정보 */}
           <div className="flex items-start justify-between mb-4">
@@ -172,7 +172,7 @@ function ActiveOrderCard({
                   <div key={step.key} className="flex-1 flex items-center">
                     <div
                       className={`flex-1 h-1.5 rounded-full transition-colors ${
-                        isComplete ? 'bg-brand-dark' : 'bg-muted'
+                        isComplete ? 'bg-brand-dark' : 'bg-brand-cream'
                       }`}
                     />
                   </div>
@@ -184,7 +184,7 @@ function ActiveOrderCard({
                 <span
                   key={step.key}
                   className={`text-[10px] ${
-                    index <= currentIndex ? 'text-brand-dark font-medium' : 'text-muted-foreground'
+                    index <= currentIndex ? 'text-brand-dark font-medium' : 'text-brand-dark-muted'
                   }`}
                 >
                   {step.label}
@@ -195,7 +195,7 @@ function ActiveOrderCard({
 
           {/* 배송 정보 */}
           <div className="flex items-center justify-between text-sm mb-4">
-            <span className="text-muted-foreground">배송 예정</span>
+            <span className="text-brand-dark-muted">배송 예정</span>
             <span className="font-semibold text-brand-dark">{order.deliveryTime}</span>
           </div>
 
@@ -204,7 +204,7 @@ function ActiveOrderCard({
             <Button
               variant="outline"
               size="sm"
-              className="flex-1"
+              className="flex-1 border-brand-cream-dark/30"
               onClick={onGuideClick}
             >
               <BookOpen className="mr-1.5 h-3.5 w-3.5" />
@@ -220,21 +220,23 @@ function ActiveOrderCard({
 // 지난 주문 카드
 function PastOrderCard({ order }: { order: Order }) {
   return (
-      <Card className="bg-muted/20">
+    <Card className="bg-brand-cream/20 border-brand-cream-dark/20">
       <CardContent className="p-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-              <CheckCircle className="h-5 w-5 text-muted-foreground" />
+            <div className="w-8 h-8 rounded-lg bg-green-50 flex items-center justify-center">
+              <CheckCircle className="h-4 w-4 text-green-600" />
+            </div>
             <div>
               <p className="font-medium text-brand-dark text-sm">
                 {order.items.map((item) => `${item.name} × ${item.quantity}`).join(', ')}
               </p>
-              <p className="text-xs text-muted-foreground mt-0.5">
+              <p className="text-xs text-brand-dark-muted mt-0.5">
                 ₩{order.totalAmount.toLocaleString()} · {format(new Date(order.createdAt), 'M/d HH:mm', { locale: ko })}
               </p>
             </div>
           </div>
-          <Button variant="ghost" size="sm" className="text-xs">
+          <Button variant="ghost" size="sm" className="text-xs text-brand-dark-muted hover:text-brand-dark">
             <RotateCcw className="mr-1 h-3 w-3" />
             재주문
           </Button>

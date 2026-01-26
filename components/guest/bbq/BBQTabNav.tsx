@@ -33,8 +33,8 @@ export function BBQTabNav({ activeTab, onTabChange }: BBQTabNavProps) {
                 // 모바일 터치 타겟: 최소 44px
                 "flex-1 min-h-[44px] py-2.5 text-sm font-medium rounded-full transition-all duration-200",
                 isActive
-                  ? "bg-neutral-900 text-white"
-                  : "bg-neutral-100 text-neutral-600 active:bg-neutral-200"
+                  ? "bg-brand-dark text-white"
+                  : "bg-brand-cream/40 text-brand-dark-muted active:bg-brand-cream/60"
               )}
             >
               {tab.label}

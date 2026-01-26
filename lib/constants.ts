@@ -550,42 +550,21 @@ export const KIOSK_ITEMS = {
   },
 };
 
-// 불멍/바베큐 세트
+// 불멍/바베큐 세트 (단일 메뉴, 구성품은 모두 구비됨)
 export const BBQ_SETS = [
   {
-    id: 'bbq-small',
-    name: '바베큐 세트 (소)',
-    price: 30000,
-    items: ['숯 1kg', '그릴', '고기 500g'],
-    image: '/images/sets/bbq-small.jpg',
+    id: 'bbq',
+    type: 'bbq' as const,
+    name: '바베큐 세트',
+    price: 25000,
+    notice: '식재료는 직접 준비해주세요',
   },
   {
-    id: 'bbq-medium',
-    name: '바베큐 세트 (중)',
-    price: 50000,
-    items: ['숯 2kg', '그릴', '고기 1kg', '야채 세트'],
-    image: '/images/sets/bbq-medium.jpg',
-  },
-  {
-    id: 'bbq-large',
-    name: '바베큐 세트 (대)',
-    price: 70000,
-    items: ['숯 3kg', '그릴', '고기 1.5kg', '야채 세트', '소스 세트'],
-    image: '/images/sets/bbq-large.jpg',
-  },
-  {
-    id: 'fire-small',
-    name: '불멍 세트 (소)',
+    id: 'fire',
+    type: 'fire' as const,
+    name: '불멍 세트',
     price: 20000,
-    items: ['장작 5kg', '불쏘시개'],
-    image: '/images/sets/fire-small.jpg',
-  },
-  {
-    id: 'fire-medium',
-    name: '불멍 세트 (중)',
-    price: 35000,
-    items: ['장작 10kg', '불쏘시개', '마시멜로우'],
-    image: '/images/sets/fire-medium.jpg',
+    notice: '마시멜로우, 오로라 가루는 키오스크에서 추가 구매 가능!',
   },
 ];
 
