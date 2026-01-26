@@ -589,8 +589,8 @@ export const FAQ_DATA = [
   {
     id: 'wifi',
     category: '시설 이용',
-    question: 'WiFi 비밀번호를 잊어버렸어요.',
-    answer: '홈 화면의 WiFi 카드에서 비밀번호를 확인하거나 QR 코드를 스캔하세요. 안내 페이지에서도 WiFi 연결 방법을 확인할 수 있습니다.',
+    question: 'WiFi는 어떻게 연결하나요?',
+    answer: '비밀번호 없이 가장 신호가 강한 WiFi에 연결하시면 됩니다. 안내 페이지에서 자세한 연결 방법을 확인할 수 있습니다.',
     priority: 3,
   },
   {
@@ -626,14 +626,16 @@ export const EMERGENCY_CONTACTS = {
   },
   hospital: {
     name: '응급실',
-    number: '119', // 실제 병원 번호로 변경 필요
-    description: '가장 가까운 병원',
+    fullName: '인천강화의료원',
+    number: '119',
+    distance: '차량 약 15분',
     mapLink: 'https://map.naver.com/v5/search/강화군+응급실',
     priority: 1,
   },
   convenienceStore: {
     name: '편의점',
-    description: '가장 가까운 편의점',
+    fullName: '가장 가까운 편의점',
+    distance: '차량 약 5분',
     mapLink: 'https://map.naver.com/v5/search/강화군+화도면+편의점',
     priority: 2,
   },
