@@ -37,13 +37,13 @@ export function CatCharacterCard({ cat, index }: CatCharacterCardProps) {
       </div>
 
       {/* 정보 영역 */}
-      <div className="p-2.5 text-center bg-white/90">
+      <div className="p-3 text-center bg-white/90">
         {/* 이름 - Paperlogy */}
-        <h4 className="font-cat font-semibold text-brand-dark text-[11px] tracking-tight">
+        <h4 className="font-cat font-semibold text-brand-dark text-xs tracking-tight">
           {cat.name}
         </h4>
-        {/* 특성 - 온글잎 박다현체 */}
-        <span className="font-cat-body text-[9px] text-brand-dark-muted">
+        {/* 특성 - 온글잎 박다현체 (크기 키움) */}
+        <span className="font-cat-body text-[11px] text-brand-dark-muted">
           {cat.trait}
         </span>
       </div>

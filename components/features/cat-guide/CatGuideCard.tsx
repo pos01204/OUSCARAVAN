@@ -41,11 +41,11 @@ export function CatGuideCard() {
           {/* 텍스트 */}
           <div className="flex-1 min-w-0">
             {/* 제목 - Paperlogy */}
-            <h3 className="font-cat text-sm font-semibold text-brand-dark mb-0.5 tracking-tight">
+            <h3 className="font-cat text-[15px] font-semibold text-brand-dark mb-0.5 tracking-tight">
               오우스의 작은 주민들
             </h3>
-            {/* 설명 - 온글잎 박다현체 */}
-            <p className="font-cat-body text-xs text-brand-dark-muted">
+            {/* 설명 - 온글잎 박다현체 (크기 키움) */}
+            <p className="font-cat-body text-[13px] text-brand-dark-muted">
               카라반의 귀여운 고양이들
             </p>
           </div>

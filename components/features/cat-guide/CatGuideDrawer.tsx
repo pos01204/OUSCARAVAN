@@ -36,11 +36,11 @@ export function CatGuideDrawer({ isOpen, onOpenChange }: CatGuideDrawerProps) {
 
   return (
     <Drawer open={isOpen} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-[95dvh] bg-[#FDFCFA]">
-        {/* 헤더 - 더 미니멀하게 */}
-        <div className="sticky top-0 z-20 flex items-center justify-between px-5 py-3.5 bg-[#FDFCFA]/95 backdrop-blur-sm border-b border-brand-cream-dark/15">
+      <DrawerContent className="max-h-[95dvh] cat-drawer-bg">
+        {/* 헤더 */}
+        <div className="sticky top-0 z-20 flex items-center justify-between px-5 py-3.5 bg-[#FDF9F3]/95 backdrop-blur-sm border-b border-cat-brown/10">
           <div className="flex items-center gap-2.5">
-            <CatSilhouette className="w-5 h-5 text-cat-brown/40" />
+            <CatSilhouette className="w-5 h-5 text-cat-brown/50" />
             {/* 헤더 타이틀 - Paperlogy */}
             <span className="font-cat text-sm font-semibold text-brand-dark tracking-tight">
               고양이 이야기
@@ -50,7 +50,7 @@ export function CatGuideDrawer({ isOpen, onOpenChange }: CatGuideDrawerProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 rounded-full hover:bg-cat-cream/20"
+              className="h-8 w-8 rounded-full hover:bg-cat-cream/30"
               aria-label="닫기"
             >
               <X className="h-4 w-4 text-brand-dark-muted" />
