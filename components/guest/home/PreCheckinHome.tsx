@@ -9,6 +9,7 @@ import { CheckInCTA } from './CheckInCTA';
 import { QuickActionsCompact } from './QuickActionsCompact';
 import { ServiceCardsGrid } from './ServiceCardsGrid';
 import { SectionDivider } from '@/components/shared/SectionDivider';
+import { FadeInSection } from '@/components/shared/FadeInSection';
 import { useGuestAnnouncements } from '@/lib/hooks/useGuestAnnouncements';
 import { getGuestHeroPreset } from '@/lib/guest-hero-preset';
 import type { Reservation } from '@/lib/api';
@@ -53,25 +54,33 @@ export function PreCheckinHome({ reservation, token }: PreCheckinHomeProps) {
       )}
 
       {/* 체크인 CTA (메인 강조) */}
-      <CheckInCTA token={token} />
+      <FadeInSection as="div" delay={0.1}>
+        <CheckInCTA token={token} />
+      </FadeInSection>
 
       <SectionDivider variant="brand" />
 
       {/* Quick Actions */}
-      <QuickActionsCompact token={token} variant="pre_checkin" />
+      <FadeInSection as="div" delay={0.15}>
+        <QuickActionsCompact token={token} variant="pre_checkin" />
+      </FadeInSection>
 
       {/* WiFi + 이용시간 카드 (2x2) */}
-      <ServiceCardsGrid />
+      <FadeInSection as="div" delay={0.2}>
+        <ServiceCardsGrid />
+      </FadeInSection>
 
       <SectionDivider variant="minimal" />
 
       {/* 일반 공지 (접힌 상태) */}
       {!announcementsLoading && normalAnnouncements.length > 0 && (
-        <CollapsedAnnouncements
-          announcements={normalAnnouncements}
-          token={token}
-          defaultExpanded={false}
-        />
+        <FadeInSection as="div" delay={0.25}>
+          <CollapsedAnnouncements
+            announcements={normalAnnouncements}
+            token={token}
+            defaultExpanded={false}
+          />
+        </FadeInSection>
       )}
     </main>
   );

@@ -1,10 +1,12 @@
 'use client';
 
 import Link from 'next/link';
+import { motion } from 'framer-motion';
 import { Wifi, Flame, BookOpen, HelpCircle, type LucideIcon } from 'lucide-react';
 import { Card } from '@/components/ui/card';
 import { GuestMotionCard } from '@/components/guest/GuestMotionCard';
 import { CardIconBadge } from '@/components/shared/CardIconBadge';
+import { CARD_STAGGER } from '@/lib/motion';
 
 interface QuickActionsCompactProps {
   token: string;
@@ -41,31 +43,39 @@ export function QuickActionsCompact({ token, variant }: QuickActionsCompactProps
   const actions = variant === 'checked_in' ? checkedInActions : preCheckinActions;
 
   return (
-    <section aria-label="빠른 실행" className="grid grid-cols-2 gap-3">
+    <motion.section 
+      aria-label="빠른 실행" 
+      className="grid grid-cols-2 gap-3"
+      variants={CARD_STAGGER.container}
+      initial="hidden"
+      animate="show"
+    >
       {actions.map((item) => {
         const Icon = item.icon;
         return (
-          <Link key={item.key} href={item.href} className="block group focus-visible:outline-none">
-            <GuestMotionCard className="h-full" motionMode="lift">
-              <Card
-                interactive
-                variant="cta"
-                className="h-full p-4 rounded-xl card-hover-glow"
-              >
-                <div className="flex items-start gap-3">
-                  <div className="mt-0.5 transition-transform duration-200 group-hover:scale-105">
-                    <CardIconBadge icon={Icon} tone="info" size="md" />
+          <motion.div key={item.key} variants={CARD_STAGGER.item}>
+            <Link href={item.href} className="block group focus-visible:outline-none">
+              <GuestMotionCard className="h-full" motionMode="lift">
+                <Card
+                  interactive
+                  variant="cta"
+                  className="h-full p-4 rounded-xl card-hover-glow"
+                >
+                  <div className="flex items-start gap-3">
+                    <div className="mt-0.5 transition-transform duration-200 group-hover:scale-105">
+                      <CardIconBadge icon={Icon} tone="info" size="md" />
+                    </div>
+                    <div className="min-w-0">
+                      <p className="font-semibold text-sm leading-tight text-brand-dark">{item.title}</p>
+                      <p className="text-xs text-brand-dark-muted mt-1">{item.desc}</p>
+                    </div>
                   </div>
-                  <div className="min-w-0">
-                    <p className="font-semibold text-sm leading-tight text-brand-dark">{item.title}</p>
-                    <p className="text-xs text-brand-dark-muted mt-1">{item.desc}</p>
-                  </div>
-                </div>
-              </Card>
-            </GuestMotionCard>
-          </Link>
+                </Card>
+              </GuestMotionCard>
+            </Link>
+          </motion.div>
         );
       })}
-    </section>
+    </motion.section>
   );
 }

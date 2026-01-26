@@ -204,7 +204,7 @@ export function GuestOrderContent({ token }: GuestOrderContentProps) {
       {!loading && bbqFireOrders.length === 0 && (
         <Card variant="cta" className="border-dashed">
           <CardContent className="py-8 text-center">
-            <Flame className="mx-auto h-10 w-10 text-muted-foreground/40 mb-3" />
+            <Flame className="mx-auto h-10 w-10 text-muted-foreground/40 mb-3 empty-icon" />
             <p className="text-sm text-muted-foreground">
               아직 주문 내역이 없습니다
             </p>

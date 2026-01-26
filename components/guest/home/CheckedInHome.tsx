@@ -12,6 +12,7 @@ import { FloorPlanCard } from '@/components/guest/FloorPlanCard';
 import { RecentOrdersSummary } from '@/components/guest/RecentOrdersSummary';
 import { CheckoutReminder } from '@/components/features/CheckoutReminder';
 import { SectionDivider } from '@/components/shared/SectionDivider';
+import { FadeInSection } from '@/components/shared/FadeInSection';
 import { useGuestAnnouncements } from '@/lib/hooks/useGuestAnnouncements';
 import { getGuestHeroPreset } from '@/lib/guest-hero-preset';
 import type { Reservation } from '@/lib/api';
@@ -64,33 +65,45 @@ export function CheckedInHome({ reservation, token }: CheckedInHomeProps) {
       )}
 
       {/* Quick Actions (주문이 첫 번째) */}
-      <QuickActionsCompact token={token} variant="checked_in" />
+      <FadeInSection as="div" delay={0.1}>
+        <QuickActionsCompact token={token} variant="checked_in" />
+      </FadeInSection>
 
       <SectionDivider variant="brand" />
 
       {/* 약도 카드 (배정된 경우) */}
       {reservation.assignedRoom && (
-        <FloorPlanCard assignedRoom={reservation.assignedRoom} />
+        <FadeInSection as="div" delay={0.15}>
+          <FloorPlanCard assignedRoom={reservation.assignedRoom} />
+        </FadeInSection>
       )}
 
       {/* WiFi + 이용시간 카드 (2x2) */}
-      <ServiceCardsGrid />
+      <FadeInSection as="div" delay={0.2}>
+        <ServiceCardsGrid />
+      </FadeInSection>
 
       {/* 최근 주문 */}
-      <RecentOrdersSummary token={token} />
+      <FadeInSection as="div" delay={0.25}>
+        <RecentOrdersSummary token={token} />
+      </FadeInSection>
 
       <SectionDivider variant="minimal" />
 
       {/* 체크아웃 상태 카드 (하단) */}
-      <CheckoutStatusCard token={token} />
+      <FadeInSection as="div" delay={0.3}>
+        <CheckoutStatusCard token={token} />
+      </FadeInSection>
 
       {/* 일반 공지 (접힌 상태) */}
       {!announcementsLoading && normalAnnouncements.length > 0 && (
-        <CollapsedAnnouncements
-          announcements={normalAnnouncements}
-          token={token}
-          defaultExpanded={false}
-        />
+        <FadeInSection as="div" delay={0.35}>
+          <CollapsedAnnouncements
+            announcements={normalAnnouncements}
+            token={token}
+            defaultExpanded={false}
+          />
+        </FadeInSection>
       )}
     </main>
   );

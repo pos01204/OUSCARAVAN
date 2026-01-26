@@ -781,6 +781,37 @@ button:active {
   box-shadow: 
     0 1px 3px rgba(26, 23, 20, 0.04),
     0 4px 16px rgba(26, 23, 20, 0.04);
+  overflow: hidden;
+}
+
+/* Hero 카드 미세 그라데이션 오버레이 (숨쉬는 느낌) */
+.hero-card::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    135deg,
+    rgba(232, 220, 200, 0.08) 0%,
+    transparent 40%,
+    transparent 60%,
+    rgba(232, 220, 200, 0.05) 100%
+  );
+  animation: hero-breathe 6s ease-in-out infinite;
+  z-index: 1;
+}
+
+@keyframes hero-breathe {
+  0%, 100% { opacity: 0.4; }
+  50% { opacity: 0.7; }
+}
+
+/* prefers-reduced-motion 존중 */
+@media (prefers-reduced-motion: reduce) {
+  .hero-card::after {
+    animation: none;
+    opacity: 0.5;
+  }
 }
 
 /* Hero 날짜 배지 - 미니멀 스타일 */
@@ -860,9 +891,9 @@ button:active {
   background: linear-gradient(
     90deg,
     transparent 0%,
-    rgba(196, 184, 150, 0.2) 20%,
-    rgba(37, 99, 235, 0.15) 50%,
-    rgba(196, 184, 150, 0.2) 80%,
+    rgba(196, 184, 150, 0.25) 15%,
+    rgba(232, 220, 200, 0.4) 50%,
+    rgba(196, 184, 150, 0.25) 85%,
     transparent 100%
   );
 }
@@ -897,36 +928,75 @@ button:active {
   );
 }
 
-/* 가운데 웨이브 SVG 패턴 */
+/* 가운데 웨이브 심볼 - 브랜드 크림 톤 */
 .section-divider-brand-symbol {
   padding: 0 12px;
   display: flex;
   align-items: center;
-  gap: 2px;
+  gap: 3px;
 }
 
 .section-divider-brand-symbol span {
   display: block;
-  width: 8px;
-  height: 2px;
-  border-radius: 1px;
-  background: rgba(37, 99, 235, 0.3);
-  transform-origin: center;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(196, 184, 150, 0.4);
+  transition: transform 0.3s ease;
 }
 
 .section-divider-brand-symbol span:nth-child(1) {
-  transform: rotate(-15deg);
+  width: 4px;
+  height: 4px;
+  background: rgba(196, 184, 150, 0.3);
 }
 
 .section-divider-brand-symbol span:nth-child(2) {
-  width: 10px;
-  background: rgba(37, 99, 235, 0.4);
+  width: 8px;
+  height: 8px;
+  background: linear-gradient(
+    135deg,
+    rgba(232, 220, 200, 0.6) 0%,
+    rgba(196, 184, 150, 0.5) 100%
+  );
 }
 
 .section-divider-brand-symbol span:nth-child(3) {
-  transform: rotate(15deg);
+  width: 4px;
+  height: 4px;
+  background: rgba(196, 184, 150, 0.3);
 }
 
 .card-icon-wrapper-info > svg {
   @apply text-status-info;
+}
+
+/* ═══════════════════════════════════════════════════
+   빈 상태(Empty State) 아이콘 애니메이션
+   ═══════════════════════════════════════════════════ */
+
+/* 부드럽게 떠다니는 효과 */
+.empty-icon {
+  animation: gentle-float 3s ease-in-out infinite;
+}
+
+@keyframes gentle-float {
+  0%, 100% { 
+    transform: translateY(0); 
+  }
+  50% { 
+    transform: translateY(-6px); 
+  }
+}
+
+/* prefers-reduced-motion 존중 */
+@media (prefers-reduced-motion: reduce) {
+  .empty-icon {
+    animation: none;
+  }
+}
+
+/* 스켈레톤 시머 속도 조정 (더 자연스럽게) */
+.skeleton-shimmer {
+  animation-duration: 2.5s;
 }

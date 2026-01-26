@@ -55,26 +55,32 @@ export function CheckInCTA({ token }: CheckInCTAProps) {
   };
 
   return (
-    <GuestMotionCard motionMode="spring">
-      <Card variant="cta" className="card-hover-glow">
-        <CardHeader className="pb-3">
+    <GuestMotionCard motionMode="lift">
+      <Card variant="cta" className="card-hover-glow overflow-hidden relative">
+        {/* 배경 그라데이션 (브랜드 터치) */}
+        <div 
+          className="absolute inset-0 bg-gradient-to-br from-brand-cream/30 via-transparent to-status-success/5 pointer-events-none" 
+          aria-hidden="true" 
+        />
+        
+        <CardHeader className="pb-3 relative">
           <CardTitle className="flex items-center gap-2 text-brand-dark">
             <CardIconBadge icon={CheckCircle2} tone="success" />
             체크인
           </CardTitle>
-          <div className="mt-1.5 h-0.5 w-6 rounded-full bg-status-success/30" aria-hidden="true" />
+          <div className="mt-1.5 h-0.5 w-8 rounded-full bg-gradient-to-r from-status-success/40 to-status-success/20" aria-hidden="true" />
         </CardHeader>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-4 relative">
           {/* 체크인/아웃 시간 안내 */}
           <div className="grid grid-cols-2 gap-3">
-            <div className="flex items-center gap-3 rounded-xl bg-background-muted p-3 border border-border/50">
+            <div className="flex items-center gap-3 rounded-xl bg-white/80 p-3 border border-border/50 backdrop-blur-sm">
               <CardIconBadge icon={LogIn} tone="info" size="sm" />
               <div>
                 <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">체크인</p>
                 <p className="text-base font-bold text-brand-dark">{CHECK_IN_OUT.checkIn}</p>
               </div>
             </div>
-            <div className="flex items-center gap-3 rounded-xl bg-background-muted p-3 border border-border/50">
+            <div className="flex items-center gap-3 rounded-xl bg-white/80 p-3 border border-border/50 backdrop-blur-sm">
               <CardIconBadge icon={LogOut} tone="info" size="sm" />
               <div>
                 <p className="text-[10px] text-muted-foreground font-medium uppercase tracking-wide">체크아웃</p>
@@ -84,18 +90,18 @@ export function CheckInCTA({ token }: CheckInCTAProps) {
           </div>
 
           {/* 안내 문구 */}
-          <div className="flex items-start gap-2 rounded-lg bg-status-info/5 p-3 border border-status-info/10">
+          <div className="flex items-start gap-2 rounded-lg bg-white/60 p-3 border border-status-info/15 backdrop-blur-sm">
             <Clock className="h-4 w-4 text-status-info mt-0.5 shrink-0" />
             <p className="text-xs text-muted-foreground leading-relaxed">
               체크인 시간(15:00) 이후 도착하시면 버튼을 눌러 체크인을 완료해주세요.
             </p>
           </div>
 
-          {/* 체크인 버튼 */}
+          {/* 체크인 버튼 - 더 강조 */}
           <Button 
             onClick={handleCheckIn} 
             disabled={isProcessing}
-            className="w-full"
+            className="w-full shadow-soft-md hover:shadow-hover transition-shadow"
             size="lg"
           >
             <CheckCircle2 className="mr-2 h-5 w-5" />
