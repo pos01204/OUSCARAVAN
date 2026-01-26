@@ -44,7 +44,7 @@ export function CatFooterSection({ onClose }: CatFooterSectionProps) {
 
       {/* 감성 메시지 */}
       <p className="font-cat text-base text-brand-dark leading-relaxed whitespace-pre-line mb-5">
-        "{footer.message}"
+        &ldquo;{footer.message}&rdquo;
       </p>
 
       {/* 고양이 얼굴 */}
