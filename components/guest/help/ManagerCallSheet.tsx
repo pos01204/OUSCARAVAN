@@ -56,7 +56,7 @@ export function ManagerCallSheet({
         <SheetHeader className="text-left">
           <SheetTitle className="text-lg font-semibold tracking-tight text-brand-dark">관리자에게 전화할까요?</SheetTitle>
           <SheetDescription className="text-sm text-brand-dark-muted">
-            문의 사항이 있을 때만 연결해 주세요. 긴급 상황은 119/112를 이용해 주세요.
+            문의 시에만 연락해 주세요. 긴급은 119, 위협/범죄는 112를 이용해 주세요.
           </SheetDescription>
         </SheetHeader>
 

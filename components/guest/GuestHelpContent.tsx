@@ -72,7 +72,6 @@ export function GuestHelpContent({ token }: GuestHelpContentProps) {
           <HelpSection
             id={ids.emergency}
             title="긴급 연락처"
-            description="즉시 전화 연결됩니다."
           >
             <EmergencyActions />
           </HelpSection>
@@ -82,7 +81,6 @@ export function GuestHelpContent({ token }: GuestHelpContentProps) {
           <HelpSection
             id={ids.faq}
             title="자주 묻는 질문"
-            description="자주 묻는 질문부터 우선 노출합니다."
           >
             <FAQSection />
           </HelpSection>
@@ -92,7 +90,6 @@ export function GuestHelpContent({ token }: GuestHelpContentProps) {
           <HelpSection
             id={ids.nearby}
             title="주변 시설"
-            description="지도 앱으로 이동합니다."
           >
             <NearbyFacilities />
           </HelpSection>
@@ -102,7 +99,6 @@ export function GuestHelpContent({ token }: GuestHelpContentProps) {
           <HelpSection
             id={ids.contact}
             title="관리자 연락"
-            description="문의 사항이 있을 때만 연결해 주세요."
           >
             <ManagerContact />
           </HelpSection>
