@@ -1,7 +1,6 @@
 'use client';
 
 import { useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import {
   Drawer,
@@ -16,6 +15,7 @@ import { CatTipsSection } from './sections/CatTipsSection';
 import { CatWarningsSection } from './sections/CatWarningsSection';
 import { CatSnackSection } from './sections/CatSnackSection';
 import { CatFooterSection } from './sections/CatFooterSection';
+import { CatSilhouette } from './CatIllustrations';
 
 interface CatGuideDrawerProps {
   isOpen: boolean;
@@ -25,7 +25,7 @@ interface CatGuideDrawerProps {
 /**
  * 고양이 가이드 풀스크린 드로어
  * - vaul Drawer 기반 모바일 친화적 UI
- * - 각 섹션별 FadeInSection 적용
+ * - 미니멀 디자인
  */
 export function CatGuideDrawer({ isOpen, onOpenChange }: CatGuideDrawerProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -36,12 +36,12 @@ export function CatGuideDrawer({ isOpen, onOpenChange }: CatGuideDrawerProps) {
 
   return (
     <Drawer open={isOpen} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-[95dvh] bg-gradient-to-b from-cat-pink/30 via-cat-peach/20 to-cat-cream/30">
+      <DrawerContent className="max-h-[95dvh] bg-gradient-to-b from-white via-cat-cream/10 to-cat-peach/10">
         {/* 헤더 */}
-        <div className="sticky top-0 z-20 flex items-center justify-between px-4 py-3 bg-white/80 backdrop-blur-sm border-b border-cat-peach/30">
+        <div className="sticky top-0 z-20 flex items-center justify-between px-4 py-3 bg-white/90 backdrop-blur-sm border-b border-brand-cream-dark/20">
           <div className="flex items-center gap-2">
-            <span className="text-lg">🐱</span>
-            <span className="font-cat text-base font-semibold text-brand-dark">
+            <CatSilhouette className="w-5 h-5 text-cat-brown/50" />
+            <span className="font-cat text-sm font-semibold text-brand-dark">
               고양이 이야기
             </span>
           </div>
@@ -49,7 +49,7 @@ export function CatGuideDrawer({ isOpen, onOpenChange }: CatGuideDrawerProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 rounded-full hover:bg-cat-peach/30"
+              className="h-8 w-8 rounded-full hover:bg-cat-cream/30"
               aria-label="닫기"
             >
               <X className="h-4 w-4 text-brand-dark-muted" />
@@ -62,7 +62,7 @@ export function CatGuideDrawer({ isOpen, onOpenChange }: CatGuideDrawerProps) {
           ref={scrollRef}
           className="flex-1 overflow-y-auto overscroll-contain"
         >
-          <div className="px-4 py-6 space-y-8">
+          <div className="px-4 py-5 space-y-6">
             {/* 히어로 섹션 */}
             <CatHeroSection />
 
@@ -72,22 +72,22 @@ export function CatGuideDrawer({ isOpen, onOpenChange }: CatGuideDrawerProps) {
             </FadeInSection>
 
             {/* 팁 섹션 */}
-            <FadeInSection delay={0.2} as="div">
+            <FadeInSection delay={0.15} as="div">
               <CatTipsSection />
             </FadeInSection>
 
             {/* 주의사항 섹션 */}
-            <FadeInSection delay={0.3} as="div">
+            <FadeInSection delay={0.2} as="div">
               <CatWarningsSection />
             </FadeInSection>
 
             {/* 츄르 안내 섹션 */}
-            <FadeInSection delay={0.4} as="div">
-              <CatSnackSection onClose={handleClose} />
+            <FadeInSection delay={0.25} as="div">
+              <CatSnackSection />
             </FadeInSection>
 
             {/* 마무리 섹션 */}
-            <FadeInSection delay={0.5} as="div">
+            <FadeInSection delay={0.3} as="div">
               <CatFooterSection onClose={handleClose} />
             </FadeInSection>
           </div>

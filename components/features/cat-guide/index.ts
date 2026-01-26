@@ -2,3 +2,4 @@
 export { CatGuideCard } from './CatGuideCard';
 export { CatGuideDrawer } from './CatGuideDrawer';
 export { CatCharacterCard } from './CatCharacterCard';
+export * from './CatIllustrations';

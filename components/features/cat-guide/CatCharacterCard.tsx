@@ -1,17 +1,9 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Icon } from '@iconify/react';
+import Image from 'next/image';
 import type { CatCharacter } from '@/lib/catGuide';
-
-// 캐릭터별 고품질 noto 이모지 매핑
-const CAT_ICONS: Record<string, string> = {
-  cheese: 'noto:grinning-cat',
-  black: 'noto:black-cat',
-  calico: 'noto:cat',
-  tiger: 'noto:cat-with-wry-smile',
-  snow: 'noto:smiling-cat',
-};
+import { CatPhotoPlaceholder } from './CatIllustrations';
 
 interface CatCharacterCardProps {
   cat: CatCharacter;
@@ -20,39 +12,39 @@ interface CatCharacterCardProps {
 
 /**
  * 고양이 캐릭터 카드
- * - 고품질 이모지 아이콘 + 이름 + 특성
- * - 터치 시 통통 튀는 효과
+ * - 사진 플레이스홀더 프레임 (나중에 실제 사진으로 대체 가능)
+ * - 이름 + 특성
  */
 export function CatCharacterCard({ cat, index }: CatCharacterCardProps) {
-  // 캐릭터별 배경색
-  const getBgColor = (color: string) => {
-    const colors: Record<string, string> = {
-      amber: 'bg-amber-50',
-      slate: 'bg-slate-100',
-      orange: 'bg-orange-50',
-      white: 'bg-gray-50',
-    };
-    return colors[color] || 'bg-cat-cream/30';
-  };
-
   return (
     <motion.div
-      className={`relative rounded-xl p-3 text-center shadow-soft-sm border border-cat-peach/30 ${getBgColor(cat.color)}`}
-      whileTap={{ scale: 0.92, rotate: index % 2 === 0 ? -3 : 3 }}
-      transition={{ type: 'spring', stiffness: 500, damping: 15 }}
+      className="relative rounded-xl overflow-hidden bg-white shadow-soft-sm border border-brand-cream-dark/20"
+      whileTap={{ scale: 0.95 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 20 }}
     >
-      {/* 고품질 고양이 아이콘 */}
-      <Icon icon={CAT_ICONS[cat.id] || 'noto:cat'} className="w-10 h-10 mx-auto mb-1.5" />
+      {/* 사진 프레임 영역 */}
+      <div className="aspect-square bg-gradient-to-b from-cat-cream/40 to-cat-peach/20 flex items-center justify-center">
+        {cat.photoUrl ? (
+          <Image
+            src={cat.photoUrl}
+            alt={cat.name}
+            fill
+            className="object-cover"
+          />
+        ) : (
+          <CatPhotoPlaceholder className="w-12 h-12 text-cat-brown/30" />
+        )}
+      </div>
 
-      {/* 이름 */}
-      <h4 className="font-bold text-brand-dark text-xs mb-0.5">
-        {cat.name}
-      </h4>
-
-      {/* 특성 배지 */}
-      <span className="inline-block px-1.5 py-0.5 rounded-full bg-white/60 text-[10px] text-brand-dark-muted font-medium">
-        {cat.trait}
-      </span>
+      {/* 정보 영역 */}
+      <div className="p-2 text-center bg-white">
+        <h4 className="font-semibold text-brand-dark text-xs">
+          {cat.name}
+        </h4>
+        <span className="text-[10px] text-brand-dark-muted">
+          {cat.trait}
+        </span>
+      </div>
     </motion.div>
   );
 }

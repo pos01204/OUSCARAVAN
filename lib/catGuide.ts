@@ -6,9 +6,7 @@ export interface CatCharacter {
   id: string;
   name: string;
   trait: string;
-  emoji: string;
-  color: string;
-  description: string;
+  photoUrl?: string; // 실제 사진 URL (없으면 플레이스홀더 표시)
 }
 
 export interface TipStep {
@@ -25,46 +23,11 @@ export interface WarningItem {
 }
 
 export const CAT_CHARACTERS: CatCharacter[] = [
-  {
-    id: 'cheese',
-    name: '치즈',
-    trait: '먹보',
-    emoji: '😺',
-    color: 'amber',
-    description: '항상 배가 고픈 친구',
-  },
-  {
-    id: 'black',
-    name: '까망이',
-    trait: '호기심왕',
-    emoji: '🐈‍⬛',
-    color: 'slate',
-    description: '새로운 것에 관심이 많아요',
-  },
-  {
-    id: 'calico',
-    name: '삼색이',
-    trait: '느긋이',
-    emoji: '🐈',
-    color: 'orange',
-    description: '여유로운 성격의 고양이',
-  },
-  {
-    id: 'tiger',
-    name: '호피',
-    trait: '수줍이',
-    emoji: '🐱',
-    color: 'amber',
-    description: '처음엔 낯가려요',
-  },
-  {
-    id: 'snow',
-    name: '눈송이',
-    trait: '우아함',
-    emoji: '😸',
-    color: 'white',
-    description: '품위있는 하얀 고양이',
-  },
+  { id: 'cheese', name: '치즈', trait: '먹보' },
+  { id: 'black', name: '까망이', trait: '호기심왕' },
+  { id: 'calico', name: '삼색이', trait: '느긋이' },
+  { id: 'tiger', name: '호피', trait: '수줍이' },
+  { id: 'snow', name: '눈송이', trait: '우아함' },
 ];
 
 export const CAT_GUIDE_DATA = {
@@ -132,10 +95,7 @@ export const CAT_GUIDE_DATA = {
   },
   snack: {
     title: '간식 주고 싶다면?',
-    content: '고양이 전용 츄르는\n카페 키오스크에서 구매 가능해요!',
-    subContent: '건강한 간식으로\n고양이들과 더 친해져 보세요 ♥',
-    ctaText: '카페에서 츄르 구매',
-    ctaLink: '/cafe',
+    content: '고양이 전용 츄르는 카페 1층 키오스크에서 구매 가능합니다.',
   },
   footer: {
     message: '고양이들도 여러분의 방문을\n기다리고 있어요',
