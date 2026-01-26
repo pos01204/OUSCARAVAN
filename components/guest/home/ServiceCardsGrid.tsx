@@ -62,7 +62,6 @@ export function ServiceCardsGrid() {
                 <CardLabelValue 
                   label="주소" 
                   value="강화군 삼산면 삼산북로 149" 
-                  valueSize="sm"
                 />
               </CardInset>
               <CardInset className="flex items-center gap-3">
