@@ -21,8 +21,8 @@ export function PageHeader({ title, subtitle }: PageHeaderProps) {
         </span>
       )}
       
-      {/* 메인 타이틀 */}
-      <h1 className={`text-xl font-bold text-brand-dark tracking-tight leading-tight ${subtitle ? 'mt-1' : ''}`}>
+      {/* 메인 타이틀 - Paperlogy 폰트 */}
+      <h1 className={`font-heading text-xl font-bold text-brand-dark tracking-tight leading-tight ${subtitle ? 'mt-1' : ''}`}>
         {title}
       </h1>
       
