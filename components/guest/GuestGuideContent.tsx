@@ -170,8 +170,8 @@ export function GuestGuideContent({ token, assignedRoom }: GuestGuideContentProp
                       id={`guide-${item.id}`}
                       className="
                         w-full text-left
-                        flex items-center gap-3
-                        min-h-[60px] px-4 py-3
+                        flex items-start gap-3
+                        px-4 py-3.5
                         rounded-xl border border-brand-cream-dark/25 bg-white
                         shadow-soft-sm hover:shadow-soft-md
                         active:bg-brand-cream/20
@@ -181,7 +181,7 @@ export function GuestGuideContent({ token, assignedRoom }: GuestGuideContentProp
                       aria-label={`${item.title} 상세 보기`}
                     >
                       {/* 아이콘 */}
-                      <div className="w-9 h-9 rounded-lg bg-brand-cream/30 border border-brand-cream-dark/15 flex items-center justify-center shrink-0">
+                      <div className="w-9 h-9 rounded-lg bg-brand-cream/30 border border-brand-cream-dark/15 flex items-center justify-center shrink-0 mt-0.5">
                         {Icon ? (
                           <Icon className="h-4 w-4 text-brand-dark-soft" />
                         ) : (
@@ -203,7 +203,7 @@ export function GuestGuideContent({ token, assignedRoom }: GuestGuideContentProp
                           )}
                         </div>
                         {item.overview && (
-                          <p className="text-xs text-brand-dark-muted mt-0.5 line-clamp-1">
+                          <p className="text-xs text-brand-dark-muted mt-1 leading-relaxed">
                             {item.overview}
                           </p>
                         )}
@@ -212,7 +212,7 @@ export function GuestGuideContent({ token, assignedRoom }: GuestGuideContentProp
                       <CaretRight
                         size={16}
                         weight="bold"
-                        className="text-brand-dark-faint group-hover:text-brand-dark-muted shrink-0 transition-colors"
+                        className="text-brand-dark-faint group-hover:text-brand-dark-muted shrink-0 transition-colors mt-1"
                       />
                     </motion.button>
                   );
