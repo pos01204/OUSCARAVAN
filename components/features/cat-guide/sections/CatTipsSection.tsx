@@ -20,7 +20,7 @@ export function CatTipsSection() {
 
       {/* 스텝 카드들 */}
       <motion.div
-        className="space-y-3"
+        className="space-y-2.5"
         variants={CAT_MOTION.stepContainer}
         initial="hidden"
         whileInView="visible"
@@ -30,10 +30,10 @@ export function CatTipsSection() {
           <motion.div 
             key={step.step} 
             variants={CAT_MOTION.stepItem}
-            className="flex items-start gap-4 bg-white/90 rounded-xl p-4 border border-cat-brown/10"
+            className="flex items-start gap-3.5 bg-white/90 rounded-xl p-4 border border-cat-brown/10"
           >
             {/* 스텝 번호 */}
-            <div className="flex-shrink-0 w-8 h-8 rounded-full bg-cat-brown/70 text-white text-xs font-semibold flex items-center justify-center font-cat">
+            <div className="flex-shrink-0 w-7 h-7 rounded-full bg-cat-brown/60 text-white text-[11px] font-semibold flex items-center justify-center font-cat">
               {step.step}
             </div>
 

@@ -15,7 +15,6 @@ import { CatTipsSection } from './sections/CatTipsSection';
 import { CatWarningsSection } from './sections/CatWarningsSection';
 import { CatSnackSection } from './sections/CatSnackSection';
 import { CatFooterSection } from './sections/CatFooterSection';
-import { CatSilhouette } from './CatIllustrations';
 
 interface CatGuideDrawerProps {
   isOpen: boolean;
@@ -25,7 +24,7 @@ interface CatGuideDrawerProps {
 /**
  * 고양이 가이드 풀스크린 드로어
  * - vaul Drawer 기반 모바일 친화적 UI
- * - 미니멀 디자인
+ * - 텍스트 중심 미니멀 디자인
  */
 export function CatGuideDrawer({ isOpen, onOpenChange }: CatGuideDrawerProps) {
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -39,13 +38,10 @@ export function CatGuideDrawer({ isOpen, onOpenChange }: CatGuideDrawerProps) {
       <DrawerContent className="max-h-[95dvh] cat-drawer-bg">
         {/* 헤더 */}
         <div className="sticky top-0 z-20 flex items-center justify-between px-5 py-3.5 bg-[#FDF9F3]/95 backdrop-blur-sm border-b border-cat-brown/10">
-          <div className="flex items-center gap-2.5">
-            <CatSilhouette className="w-5 h-5 text-cat-brown/50" />
-            {/* 헤더 타이틀 - Paperlogy */}
-            <span className="font-cat text-sm font-semibold text-brand-dark tracking-tight">
-              고양이 이야기
-            </span>
-          </div>
+          {/* 헤더 타이틀 - Paperlogy */}
+          <span className="font-cat text-sm font-semibold text-brand-dark tracking-tight">
+            고양이 이야기
+          </span>
           <DrawerClose asChild>
             <Button
               variant="ghost"
