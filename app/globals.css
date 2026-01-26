@@ -4,6 +4,15 @@
 /* Montserrat 폰트 임포트 */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
 
+/* 온글잎 박다현체 (고양이 가이드용) */
+@font-face {
+  font-family: 'Onglip Dahyun';
+  src: url('/fonts/온글잎 박다현체.ttf') format('truetype');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -1038,4 +1047,146 @@ button:active {
   opacity: 1;
   width: 24px;
   border-radius: 4px;
+}
+
+/* ═══════════════════════════════════════════════════
+   고양이 가이드 전용 스타일
+   ═══════════════════════════════════════════════════ */
+
+/* 온글잎 박다현체 폰트 클래스 */
+.font-cat {
+  font-family: 'Onglip Dahyun', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+}
+
+/* 텍스트 shimmer 효과 (고양이 타이틀용) */
+.text-shimmer-cat {
+  background: linear-gradient(
+    90deg,
+    #FB923C 0%,
+    #F472B6 25%,
+    #FB923C 50%,
+    #F472B6 75%,
+    #FB923C 100%
+  );
+  background-size: 200% auto;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: shimmer-cat 3s linear infinite;
+}
+
+@keyframes shimmer-cat {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* 고양이 카드 그라데이션 배경 */
+.cat-gradient-bg {
+  background: linear-gradient(
+    135deg,
+    #FFF1F2 0%,
+    #FFEDD5 50%,
+    #FEF3C7 100%
+  );
+}
+
+/* 고양이 카드 호버 글로우 */
+.cat-card-glow {
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.cat-card-glow:hover {
+  box-shadow: 
+    0 8px 30px rgba(251, 146, 60, 0.2),
+    0 4px 12px rgba(244, 114, 182, 0.15);
+}
+
+/* 발자국 floating 애니메이션 */
+@keyframes paw-float {
+  0%, 100% {
+    transform: translateY(0) rotate(-5deg);
+    opacity: 0.6;
+  }
+  50% {
+    transform: translateY(-8px) rotate(5deg);
+    opacity: 1;
+  }
+}
+
+.paw-float {
+  animation: paw-float 2.5s ease-in-out infinite;
+}
+
+.paw-float-delay-1 {
+  animation-delay: 0.3s;
+}
+
+.paw-float-delay-2 {
+  animation-delay: 0.6s;
+}
+
+.paw-float-delay-3 {
+  animation-delay: 0.9s;
+}
+
+.paw-float-delay-4 {
+  animation-delay: 1.2s;
+}
+
+/* 고양이 breathing 애니메이션 */
+@keyframes cat-breathing {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.03);
+  }
+}
+
+.cat-breathing {
+  animation: cat-breathing 3s ease-in-out infinite;
+}
+
+/* 버튼 pulse 애니메이션 */
+@keyframes cat-button-pulse {
+  0%, 100% {
+    box-shadow: 0 0 0 0 rgba(251, 146, 60, 0.4);
+  }
+  50% {
+    box-shadow: 0 0 0 8px rgba(251, 146, 60, 0);
+  }
+}
+
+.cat-button-pulse {
+  animation: cat-button-pulse 2s ease-in-out infinite;
+}
+
+/* 고양이 캐러셀 스타일 */
+.cat-character-swiper .swiper-pagination-bullet {
+  background: #C4B896;
+  opacity: 0.3;
+  width: 6px;
+  height: 6px;
+}
+
+.cat-character-swiper .swiper-pagination-bullet-active {
+  background: #FB923C;
+  opacity: 1;
+  width: 18px;
+  border-radius: 3px;
+}
+
+/* prefers-reduced-motion 존중 */
+@media (prefers-reduced-motion: reduce) {
+  .text-shimmer-cat,
+  .paw-float,
+  .cat-breathing,
+  .cat-button-pulse {
+    animation: none;
+  }
+  
+  .text-shimmer-cat {
+    background: #FB923C;
+    -webkit-text-fill-color: initial;
+  }
 }

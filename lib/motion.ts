@@ -93,3 +93,79 @@ export const SECTION_FADE_IN = {
   viewport: { once: true, margin: '-40px' },
   transition: { duration: 0.5, ease: MOTION_EASE },
 } as const;
+
+// ═══════════════════════════════════════════════════
+// 고양이 가이드 전용 모션
+// ═══════════════════════════════════════════════════
+
+export const CAT_MOTION = {
+  // 발자국 floating
+  pawFloat: {
+    animate: {
+      y: [0, -8, 0],
+      rotate: [-5, 5, -5],
+      transition: { duration: 2.5, repeat: Infinity, ease: 'easeInOut' },
+    },
+  },
+  // 고양이 breathing
+  catBreathing: {
+    animate: {
+      scale: [1, 1.03, 1],
+      transition: { duration: 3, repeat: Infinity, ease: 'easeInOut' },
+    },
+  },
+  // 발자국 trail (stagger)
+  pawTrail: {
+    container: {
+      animate: { transition: { staggerChildren: 0.3 } },
+    },
+    item: {
+      animate: {
+        opacity: [0.4, 1, 0.4],
+        scale: [0.9, 1, 0.9],
+        transition: { duration: 2, repeat: Infinity },
+      },
+    },
+  },
+  // 버튼 pulse
+  buttonPulse: {
+    animate: {
+      scale: [1, 1.02, 1],
+      transition: { duration: 2, repeat: Infinity },
+    },
+  },
+  // 캐릭터 카드 bounce
+  characterBounce: {
+    whileTap: { scale: 0.92, rotate: [-3, 3, 0] },
+    transition: { type: 'spring', stiffness: 500, damping: 15 },
+  },
+  // 스텝 카드 stagger
+  stepContainer: {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.25, delayChildren: 0.1 },
+    },
+  },
+  stepItem: {
+    hidden: { opacity: 0, x: -20, scale: 0.95 },
+    visible: {
+      opacity: 1,
+      x: 0,
+      scale: 1,
+      transition: { type: 'spring', stiffness: 100, damping: 15 },
+    },
+  },
+  // 진입 카드 호버
+  catCardHover: {
+    whileHover: {
+      y: -4,
+      boxShadow: '0 12px 30px rgba(251, 146, 60, 0.2), 0 4px 12px rgba(244, 114, 182, 0.15)',
+      transition: { duration: 0.3, ease: MOTION_EASE },
+    },
+    whileTap: {
+      scale: 0.98,
+      transition: { duration: 0.1 },
+    },
+  },
+} as const;

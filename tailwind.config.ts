@@ -91,10 +91,22 @@ const config: Config = {
         
         // Ring (포커스)
         ring: "#C4B896",
+        
+        // 고양이 가이드 전용 색상
+        cat: {
+          pink: "#FFE4E6",      // rose-100 (연분홍)
+          peach: "#FFEDD5",     // orange-100 (연주황)
+          cream: "#FEF3C7",     // amber-100 (크림)
+          lavender: "#EDE9FE",  // violet-100 (연보라)
+          mint: "#D1FAE5",      // emerald-100 (민트)
+          brown: "#B45309",     // amber-700 (발자국)
+          orange: "#FB923C",    // orange-400 (강조)
+        },
       },
       fontFamily: {
         sans: ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "sans-serif"],
         heading: ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "sans-serif"],
+        cat: ["Onglip Dahyun", "Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "sans-serif"],
       },
       boxShadow: {
         // 라이트 테마용 부드러운 그림자

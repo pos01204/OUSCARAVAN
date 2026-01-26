@@ -31,6 +31,7 @@ import { GuideTroubleshooting } from '@/components/features/GuideTroubleshooting
 import { TrashCategoryGuide } from '@/components/features/TrashCategoryGuide';
 import { WiFiMockup } from '@/components/features/WiFiMockup';
 import { FloorPlanViewer } from '@/components/features/FloorPlanViewer';
+import { CatGuideCard } from '@/components/features/cat-guide';
 import { InfoInspector } from '@/components/guest/InfoInspector';
 import { PageHeader } from '@/components/shared/PageHeader';
 import { FadeInSection } from '@/components/shared/FadeInSection';
@@ -220,6 +221,11 @@ export function GuestGuideContent({ token, assignedRoom }: GuestGuideContentProp
             )}
           </motion.section>
         )}
+      </FadeInSection>
+
+      {/* 고양이 가이드 특별 카드 */}
+      <FadeInSection delay={0.3} className="mt-6">
+        <CatGuideCard />
       </FadeInSection>
 
       {/* 상세 인스펙터 (모바일 Drawer / 데스크톱 Sheet) */}
