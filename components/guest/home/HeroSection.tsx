@@ -46,6 +46,12 @@ export function HeroSection({
         priority
       />
       
+      {/* 우하단 코너 장식 */}
+      <div 
+        className="absolute bottom-3 right-3 w-6 h-6 border-b border-r border-[rgba(196,168,124,0.3)] pointer-events-none z-[2]" 
+        aria-hidden="true" 
+      />
+      
       <p className="text-[11px] font-medium tracking-[0.25em] text-muted-foreground uppercase relative z-10 mb-3">
         {eyebrow}
       </p>

@@ -819,44 +819,49 @@ button:active {
    Hero 카드 프리미엄 스타일 (절제된 버전)
    ═══════════════════════════════════════════════════ */
 
-/* Hero 카드 기본 - 깔끔한 흰색 배경 + 서브틀한 그림자 */
+/* Hero 카드 기본 - 고급 호텔 환영 카드 느낌 */
 .hero-card {
   position: relative;
-  background: #FFFFFF;
-  border: 1px solid rgba(196, 184, 150, 0.25);
+  background: linear-gradient(165deg, #FDFCFB 0%, #F9F7F4 50%, #F5F2ED 100%);
+  border: 1px solid rgba(196, 184, 150, 0.2);
   box-shadow: 
-    0 1px 3px rgba(26, 23, 20, 0.04),
-    0 4px 16px rgba(26, 23, 20, 0.04);
+    0 1px 3px rgba(26, 23, 20, 0.03),
+    0 8px 24px rgba(26, 23, 20, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.8);
   overflow: hidden;
 }
 
-/* Hero 카드 미세 그라데이션 오버레이 (숨쉬는 느낌) */
+/* Hero 카드 상단 골드 악센트 라인 */
+.hero-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #C4A87C, transparent);
+  z-index: 2;
+}
+
+/* Hero 카드 코너 장식 - 좌상단 */
 .hero-card::after {
   content: '';
   position: absolute;
-  inset: 0;
+  top: 12px;
+  left: 12px;
+  width: 24px;
+  height: 24px;
+  border-top: 1px solid rgba(196, 168, 124, 0.3);
+  border-left: 1px solid rgba(196, 168, 124, 0.3);
   pointer-events: none;
-  background: linear-gradient(
-    135deg,
-    rgba(232, 220, 200, 0.08) 0%,
-    transparent 40%,
-    transparent 60%,
-    rgba(232, 220, 200, 0.05) 100%
-  );
-  animation: hero-breathe 6s ease-in-out infinite;
-  z-index: 1;
+  z-index: 2;
 }
 
-@keyframes hero-breathe {
-  0%, 100% { opacity: 0.4; }
-  50% { opacity: 0.7; }
-}
-
-/* prefers-reduced-motion 존중 */
+/* prefers-reduced-motion 존중 - 코너 장식 유지 */
 @media (prefers-reduced-motion: reduce) {
   .hero-card::after {
-    animation: none;
-    opacity: 0.5;
+    opacity: 1;
   }
 }
 
