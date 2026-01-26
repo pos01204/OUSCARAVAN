@@ -3,9 +3,9 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
+import { Icon } from '@iconify/react';
 import Confetti from 'react-confetti';
 import { CAT_GUIDE_DATA } from '@/lib/catGuide';
-import { Churu, CatFace } from '../CatIllustrations';
 import { Button } from '@/components/ui/button';
 
 interface CatSnackSectionProps {
@@ -38,7 +38,7 @@ export function CatSnackSection({ onClose }: CatSnackSectionProps) {
         <Confetti
           width={typeof window !== 'undefined' ? window.innerWidth : 400}
           height={typeof window !== 'undefined' ? window.innerHeight : 600}
-          numberOfPieces={80}
+          numberOfPieces={60}
           recycle={false}
           colors={['#FFE4E6', '#FFEDD5', '#FEF3C7', '#FB923C', '#F472B6']}
           gravity={0.3}
@@ -46,60 +46,50 @@ export function CatSnackSection({ onClose }: CatSnackSectionProps) {
       )}
 
       {/* 섹션 타이틀 */}
-      <h2 className="flex items-center gap-2 text-lg font-bold text-brand-dark mb-4">
-        <span>🍭</span>
+      <h2 className="flex items-center gap-2 text-base font-bold text-brand-dark mb-3">
+        <Icon icon="noto:candy" className="w-5 h-5" />
         <span>{snack.title}</span>
       </h2>
 
       {/* 츄르 카드 */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-cat-peach via-cat-cream to-amber-50 rounded-2xl p-5 border border-cat-orange/30 shadow-soft-md">
+      <div className="relative overflow-hidden bg-gradient-to-br from-cat-peach via-cat-cream to-amber-50 rounded-xl p-4 border border-cat-orange/30 shadow-soft-sm">
         {/* 일러스트 영역 */}
-        <div className="flex items-center justify-center gap-4 mb-4">
+        <div className="flex items-center justify-center gap-3 mb-3">
           <motion.div
-            animate={{ x: [0, -5, 0] }}
+            animate={{ scale: [1, 1.1, 1] }}
             transition={{ duration: 1.5, repeat: Infinity }}
           >
-            <CatFace expression="happy" size={50} />
+            <Icon icon="noto:cat-with-wry-smile" className="w-10 h-10" />
           </motion.div>
-          <motion.div
-            className="text-2xl"
-            animate={{ x: [-10, 0, -10] }}
-            transition={{ duration: 1.5, repeat: Infinity }}
-          >
-            ←
-          </motion.div>
+          <Icon icon="noto:left-arrow" className="w-5 h-5 text-cat-brown/60" />
           <motion.div
             animate={{ rotate: [-5, 5, -5] }}
             transition={{ duration: 2, repeat: Infinity }}
           >
-            <Churu />
+            <Icon icon="noto:chocolate-bar" className="w-8 h-8" />
           </motion.div>
         </div>
 
         {/* 텍스트 */}
-        <div className="text-center mb-5">
+        <div className="text-center mb-4">
           <p className="text-sm text-brand-dark font-medium leading-relaxed whitespace-pre-line">
             {snack.content}
           </p>
-          <p className="text-xs text-brand-dark-muted mt-2 whitespace-pre-line">
+          <p className="text-xs text-brand-dark-muted mt-1 whitespace-pre-line">
             {snack.subContent}
           </p>
         </div>
 
         {/* CTA 버튼 */}
-        <motion.div
-          className="flex justify-center"
-          animate={{ scale: [1, 1.02, 1] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
+        <div className="flex justify-center">
           <Button
             onClick={handleCafeClick}
-            className="bg-cat-orange hover:bg-cat-orange/90 text-white px-6 py-2.5 rounded-full font-semibold shadow-md"
+            className="bg-cat-orange hover:bg-cat-orange/90 text-white px-5 py-2 rounded-full text-sm font-semibold shadow-md"
           >
-            <span className="mr-2">🏪</span>
+            <Icon icon="noto:convenience-store" className="w-4 h-4 mr-1.5" />
             {snack.ctaText}
           </Button>
-        </motion.div>
+        </div>
       </div>
     </section>
   );

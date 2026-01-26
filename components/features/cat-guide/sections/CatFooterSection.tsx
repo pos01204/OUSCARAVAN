@@ -1,8 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { Icon } from '@iconify/react';
 import { CAT_GUIDE_DATA } from '@/lib/catGuide';
-import { CatFace, PawPrint } from '../CatIllustrations';
 import { Button } from '@/components/ui/button';
 
 interface CatFooterSectionProps {
@@ -17,43 +17,28 @@ export function CatFooterSection({ onClose }: CatFooterSectionProps) {
   const { footer } = CAT_GUIDE_DATA;
 
   return (
-    <section className="text-center py-6" aria-label="마무리">
+    <section className="text-center py-4" aria-label="마무리">
       {/* 발자국 장식 */}
-      <div className="flex items-center justify-center gap-3 mb-5" aria-hidden="true">
-        <motion.div
-          animate={{ y: [0, -4, 0], opacity: [0.4, 0.8, 0.4] }}
-          transition={{ duration: 2, repeat: Infinity }}
-        >
-          <PawPrint className="w-4 h-4 text-cat-brown/40" />
-        </motion.div>
+      <div className="flex items-center justify-center gap-2 mb-4 opacity-50" aria-hidden="true">
+        <Icon icon="noto:paw-prints" className="w-4 h-4" />
         <span className="text-cat-brown/30">·</span>
-        <motion.div
-          animate={{ y: [0, -4, 0], opacity: [0.4, 0.8, 0.4] }}
-          transition={{ duration: 2, repeat: Infinity, delay: 0.3 }}
-        >
-          <PawPrint className="w-5 h-5 text-cat-brown/50" />
-        </motion.div>
+        <Icon icon="noto:paw-prints" className="w-5 h-5" />
         <span className="text-cat-brown/30">·</span>
-        <motion.div
-          animate={{ y: [0, -4, 0], opacity: [0.4, 0.8, 0.4] }}
-          transition={{ duration: 2, repeat: Infinity, delay: 0.6 }}
-        >
-          <PawPrint className="w-4 h-4 text-cat-brown/40" />
-        </motion.div>
+        <Icon icon="noto:paw-prints" className="w-4 h-4" />
       </div>
 
       {/* 감성 메시지 */}
-      <p className="font-cat text-base text-brand-dark leading-relaxed whitespace-pre-line mb-5">
+      <p className="font-cat text-sm text-brand-dark leading-relaxed whitespace-pre-line mb-4">
         &ldquo;{footer.message}&rdquo;
       </p>
 
-      {/* 고양이 얼굴 */}
+      {/* 고양이 이모지 */}
       <motion.div
-        className="inline-block mb-6"
-        animate={{ scale: [1, 1.05, 1] }}
-        transition={{ duration: 2.5, repeat: Infinity, ease: 'easeInOut' }}
+        className="inline-block mb-5"
+        animate={{ scale: [1, 1.1, 1] }}
+        transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
       >
-        <CatFace expression="love" size={48} />
+        <Icon icon="noto:smiling-cat-with-heart-eyes" className="w-12 h-12" />
       </motion.div>
 
       {/* 닫기 버튼 */}
@@ -61,7 +46,7 @@ export function CatFooterSection({ onClose }: CatFooterSectionProps) {
         <Button
           variant="outline"
           onClick={onClose}
-          className="px-8 py-2 rounded-full border-cat-brown/30 text-brand-dark hover:bg-cat-cream/30"
+          className="px-6 py-2 rounded-full border-cat-brown/30 text-brand-dark hover:bg-cat-cream/30 text-sm"
         >
           닫기
         </Button>

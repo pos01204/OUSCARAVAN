@@ -1,6 +1,6 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { Icon } from '@iconify/react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Pagination } from 'swiper/modules';
 import 'swiper/css';
@@ -17,18 +17,20 @@ export function CatIntroSection() {
   const { intro } = CAT_GUIDE_DATA;
 
   return (
-    <section className="space-y-5" aria-label="우리 동네 고양이들">
+    <section className="space-y-4" aria-label="우리 동네 고양이들">
       {/* 섹션 타이틀 */}
-      <h2 className="flex items-center gap-2 text-lg font-bold text-brand-dark">
-        <span>🏠</span>
+      <h2 className="flex items-center gap-2 text-base font-bold text-brand-dark">
+        <Icon icon="noto:house" className="w-5 h-5" />
         <span>{intro.title}</span>
       </h2>
 
       {/* 말풍선 스타일 인트로 */}
       <div className="relative">
-        <div className="relative bg-white rounded-2xl p-5 shadow-soft-sm border border-cat-peach/30">
+        <div className="relative bg-white rounded-2xl p-4 shadow-soft-sm border border-cat-peach/30">
           {/* 고양이 이모지 */}
-          <div className="absolute -top-3 -left-1 text-2xl">🐱</div>
+          <div className="absolute -top-3 -left-1">
+            <Icon icon="noto:cat" className="w-7 h-7" />
+          </div>
           
           {/* 인트로 텍스트 */}
           <p className="text-sm text-brand-dark leading-relaxed whitespace-pre-line pl-4">
