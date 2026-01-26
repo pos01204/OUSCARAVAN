@@ -1,8 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { motion, useReducedMotion } from 'framer-motion';
-import Confetti from 'react-confetti';
+import { motion } from 'framer-motion';
 import { Ticket, Percent } from 'lucide-react';
 
 interface CouponFlipProps {
@@ -12,43 +11,13 @@ interface CouponFlipProps {
 
 export function CouponFlip({ roomNumber }: CouponFlipProps) {
   const [isFlipped, setIsFlipped] = useState(false);
-  const [showConfetti, setShowConfetti] = useState(false);
-  const reduceMotion = useReducedMotion();
-
-  const canPlayConfetti = () => {
-    if (reduceMotion) return false;
-    if (typeof window === 'undefined') return false;
-    try {
-      const key = 'guest:couponConfettiShown';
-      const already = window.sessionStorage.getItem(key);
-      if (already) return false;
-      window.sessionStorage.setItem(key, '1');
-      return true;
-    } catch {
-      return true;
-    }
-  };
 
   const handleFlip = () => {
-    if (!isFlipped && canPlayConfetti()) {
-      setShowConfetti(true);
-      setTimeout(() => setShowConfetti(false), 2000);
-    }
     setIsFlipped(!isFlipped);
   };
 
   return (
     <>
-      {showConfetti && (
-        <Confetti
-          width={typeof window !== 'undefined' ? window.innerWidth : 0}
-          height={typeof window !== 'undefined' ? window.innerHeight : 0}
-          recycle={false}
-          numberOfPieces={150}
-          colors={['#1A1714', '#E8DCC8', '#C4B896', '#F5F2ED']}
-        />
-      )}
-      
       {/* 3D 플립 컨테이너 */}
       <div 
         style={{ perspective: '1000px' }}

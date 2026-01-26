@@ -3,9 +3,9 @@
 import { CouponFlip } from '@/components/features/CouponFlip';
 import { useGuestStore } from '@/lib/store';
 import { GUEST_BRAND_MEDIA } from '@/lib/brand';
-import { CafeHero, MenuGrid, CafeInfo } from '@/components/guest/cafe';
+import { CafeHero, MenuGrid, CafeInfo, CafeQuickInfo } from '@/components/guest/cafe';
 import { PageHeader } from '@/components/shared/PageHeader';
-import { Info } from 'lucide-react';
+import { Check } from 'lucide-react';
 
 interface GuestCafeContentProps {
   token: string;
@@ -33,20 +33,34 @@ export function GuestCafeContent({ token }: GuestCafeContentProps) {
         />
       </section>
 
+      {/* 퀵 정보 (운영시간, 조식, 케이크) */}
+      <CafeQuickInfo />
+
       {/* 카페 이용 안내 */}
-      <div className="rounded-xl bg-brand-cream/20 border border-brand-cream-dark/25 p-4">
-        <div className="flex items-start gap-3">
-          <div className="w-9 h-9 rounded-lg bg-brand-cream/40 flex items-center justify-center shrink-0">
-            <Info className="h-4 w-4 text-brand-dark-muted" />
-          </div>
-          <div>
-            <p className="font-semibold text-brand-dark text-sm mb-1">카페 이용 안내</p>
-            <p className="text-sm text-brand-dark-muted leading-relaxed">
-              카페는 직접 방문하여 주문해주세요.<br />
-              앱을 통한 주문은 불가합니다.
-            </p>
-          </div>
+      <div className="rounded-xl bg-white border border-brand-cream-dark/25 overflow-hidden">
+        <div className="px-4 py-3 bg-brand-cream/20 border-b border-brand-cream-dark/20">
+          <p className="font-semibold text-brand-dark text-sm">이용 안내</p>
         </div>
+        <ul className="divide-y divide-brand-cream-dark/15">
+          <li className="px-4 py-3 flex items-center gap-3">
+            <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+              <Check className="w-3 h-3 text-green-600" />
+            </div>
+            <span className="text-sm text-brand-dark">투숙객 <strong className="text-amber-600">10% 할인</strong> 적용</span>
+          </li>
+          <li className="px-4 py-3 flex items-center gap-3">
+            <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+              <Check className="w-3 h-3 text-green-600" />
+            </div>
+            <span className="text-sm text-brand-dark">포장 / 테이크아웃 가능</span>
+          </li>
+          <li className="px-4 py-3 flex items-center gap-3">
+            <div className="w-5 h-5 rounded-full bg-green-100 flex items-center justify-center shrink-0">
+              <Check className="w-3 h-3 text-green-600" />
+            </div>
+            <span className="text-sm text-brand-dark">직접 방문 주문 (앱 주문 불가)</span>
+          </li>
+        </ul>
       </div>
 
       {/* 메뉴 섹션 */}
