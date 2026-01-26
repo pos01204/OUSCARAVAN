@@ -105,8 +105,9 @@ const config: Config = {
       },
       fontFamily: {
         sans: ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "sans-serif"],
-        heading: ["Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "sans-serif"],
-        cat: ["Onglip Dahyun", "Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "sans-serif"],
+        heading: ["Paperlogy", "Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "sans-serif"],
+        body: ["Onglip Dahyun", "Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "sans-serif"],
+        cat: ["Paperlogy", "Onglip Dahyun", "Pretendard", "-apple-system", "BlinkMacSystemFont", "system-ui", "sans-serif"],
       },
       boxShadow: {
         // 라이트 테마용 부드러운 그림자

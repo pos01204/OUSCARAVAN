@@ -36,12 +36,13 @@ export function CatGuideDrawer({ isOpen, onOpenChange }: CatGuideDrawerProps) {
 
   return (
     <Drawer open={isOpen} onOpenChange={onOpenChange}>
-      <DrawerContent className="max-h-[95dvh] bg-gradient-to-b from-white via-cat-cream/10 to-cat-peach/10">
-        {/* 헤더 */}
-        <div className="sticky top-0 z-20 flex items-center justify-between px-4 py-3 bg-white/90 backdrop-blur-sm border-b border-brand-cream-dark/20">
-          <div className="flex items-center gap-2">
-            <CatSilhouette className="w-5 h-5 text-cat-brown/50" />
-            <span className="font-cat text-sm font-semibold text-brand-dark">
+      <DrawerContent className="max-h-[95dvh] bg-[#FDFCFA]">
+        {/* 헤더 - 더 미니멀하게 */}
+        <div className="sticky top-0 z-20 flex items-center justify-between px-5 py-3.5 bg-[#FDFCFA]/95 backdrop-blur-sm border-b border-brand-cream-dark/15">
+          <div className="flex items-center gap-2.5">
+            <CatSilhouette className="w-5 h-5 text-cat-brown/40" />
+            {/* 헤더 타이틀 - Paperlogy */}
+            <span className="font-cat text-sm font-semibold text-brand-dark tracking-tight">
               고양이 이야기
             </span>
           </div>
@@ -49,7 +50,7 @@ export function CatGuideDrawer({ isOpen, onOpenChange }: CatGuideDrawerProps) {
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 rounded-full hover:bg-cat-cream/30"
+              className="h-8 w-8 rounded-full hover:bg-cat-cream/20"
               aria-label="닫기"
             >
               <X className="h-4 w-4 text-brand-dark-muted" />
@@ -62,7 +63,7 @@ export function CatGuideDrawer({ isOpen, onOpenChange }: CatGuideDrawerProps) {
           ref={scrollRef}
           className="flex-1 overflow-y-auto overscroll-contain"
         >
-          <div className="px-4 py-5 space-y-6">
+          <div className="px-5 py-6 space-y-8">
             {/* 히어로 섹션 */}
             <CatHeroSection />
 

@@ -15,21 +15,21 @@ export function CatIntroSection() {
   const { intro } = CAT_GUIDE_DATA;
 
   return (
-    <section className="space-y-4" aria-label="우리 동네 고양이들">
-      {/* 섹션 타이틀 */}
-      <h2 className="text-sm font-semibold text-brand-dark">
+    <section className="space-y-5" aria-label="우리 동네 고양이들">
+      {/* 섹션 타이틀 - Paperlogy */}
+      <h2 className="font-cat text-[13px] font-semibold text-brand-dark tracking-tight">
         {intro.title}
       </h2>
 
-      {/* 인트로 텍스트 */}
-      <div className="bg-white rounded-xl p-4 shadow-soft-sm border border-brand-cream-dark/20">
-        <p className="text-sm text-brand-dark leading-relaxed whitespace-pre-line">
+      {/* 인트로 텍스트 - 온글잎 박다현체 */}
+      <div className="rounded-2xl bg-white/80 p-5 shadow-soft-sm border border-brand-cream-dark/15">
+        <p className="font-cat-body text-[13px] text-brand-dark leading-[1.8] whitespace-pre-line">
           {intro.content}
         </p>
       </div>
 
-      {/* 캐릭터 캐러셀 안내 */}
-      <p className="text-[11px] text-brand-dark-faint text-center">
+      {/* 캐릭터 캐러셀 안내 - 온글잎 박다현체 */}
+      <p className="font-cat-body text-[10px] text-brand-dark-faint text-center tracking-wide">
         스와이프하여 고양이들을 만나보세요
       </p>
 
@@ -37,9 +37,9 @@ export function CatIntroSection() {
       <Swiper
         modules={[Pagination]}
         pagination={{ clickable: true }}
-        slidesPerView={2.5}
-        spaceBetween={10}
-        className="cat-character-swiper !pb-7"
+        slidesPerView={2.8}
+        spaceBetween={12}
+        className="cat-character-swiper !pb-6"
       >
         {CAT_CHARACTERS.map((cat, index) => (
           <SwiperSlide key={cat.id}>

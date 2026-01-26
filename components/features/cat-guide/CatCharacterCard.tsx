@@ -18,12 +18,12 @@ interface CatCharacterCardProps {
 export function CatCharacterCard({ cat, index }: CatCharacterCardProps) {
   return (
     <motion.div
-      className="relative rounded-xl overflow-hidden bg-white shadow-soft-sm border border-brand-cream-dark/20"
-      whileTap={{ scale: 0.95 }}
-      transition={{ type: 'spring', stiffness: 400, damping: 20 }}
+      className="relative rounded-2xl overflow-hidden bg-white shadow-soft-sm border border-brand-cream-dark/12"
+      whileTap={{ scale: 0.96 }}
+      transition={{ type: 'spring', stiffness: 400, damping: 25 }}
     >
       {/* 사진 프레임 영역 */}
-      <div className="aspect-square bg-gradient-to-b from-cat-cream/40 to-cat-peach/20 flex items-center justify-center">
+      <div className="aspect-square bg-gradient-to-b from-[#FAF8F5] to-cat-cream/20 flex items-center justify-center relative">
         {cat.photoUrl ? (
           <Image
             src={cat.photoUrl}
@@ -32,16 +32,18 @@ export function CatCharacterCard({ cat, index }: CatCharacterCardProps) {
             className="object-cover"
           />
         ) : (
-          <CatPhotoPlaceholder className="w-12 h-12 text-cat-brown/30" />
+          <CatPhotoPlaceholder className="w-10 h-10 text-cat-brown/20" />
         )}
       </div>
 
       {/* 정보 영역 */}
-      <div className="p-2 text-center bg-white">
-        <h4 className="font-semibold text-brand-dark text-xs">
+      <div className="p-2.5 text-center bg-white/90">
+        {/* 이름 - Paperlogy */}
+        <h4 className="font-cat font-semibold text-brand-dark text-[11px] tracking-tight">
           {cat.name}
         </h4>
-        <span className="text-[10px] text-brand-dark-muted">
+        {/* 특성 - 온글잎 박다현체 */}
+        <span className="font-cat-body text-[9px] text-brand-dark-muted">
           {cat.trait}
         </span>
       </div>

@@ -4,7 +4,44 @@
 /* Montserrat 폰트 임포트 */
 @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap');
 
-/* 온글잎 박다현체 (고양이 가이드용) */
+/* ═══════════════════════════════════════════════════
+   고양이 가이드 전용 폰트
+   ═══════════════════════════════════════════════════ */
+
+/* Paperlogy - 제목/카테고리용 (다양한 굵기) */
+@font-face {
+  font-family: 'Paperlogy';
+  src: url('/fonts/Paperlogy-1.000/Paperlogy-4Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Paperlogy';
+  src: url('/fonts/Paperlogy-1.000/Paperlogy-5Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Paperlogy';
+  src: url('/fonts/Paperlogy-1.000/Paperlogy-6SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Paperlogy';
+  src: url('/fonts/Paperlogy-1.000/Paperlogy-7Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* 온글잎 박다현체 - 본문/상세 내용용 */
 @font-face {
   font-family: 'Onglip Dahyun';
   src: url('/fonts/온글잎 박다현체.ttf') format('truetype');
@@ -1053,8 +1090,13 @@ button:active {
    고양이 가이드 전용 스타일
    ═══════════════════════════════════════════════════ */
 
-/* 온글잎 박다현체 폰트 클래스 */
+/* 고양이 가이드 제목용 폰트 */
 .font-cat {
+  font-family: 'Paperlogy', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+}
+
+/* 고양이 가이드 본문용 폰트 */
+.font-cat-body {
   font-family: 'Onglip Dahyun', 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
 }
 

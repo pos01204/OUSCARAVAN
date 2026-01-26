@@ -12,15 +12,15 @@ export function CatTipsSection() {
   const { tips } = CAT_GUIDE_DATA;
 
   return (
-    <section className="space-y-3" aria-label="고양이와 친해지는 법">
-      {/* 섹션 타이틀 */}
-      <h2 className="text-sm font-semibold text-brand-dark">
+    <section className="space-y-4" aria-label="고양이와 친해지는 법">
+      {/* 섹션 타이틀 - Paperlogy */}
+      <h2 className="font-cat text-[13px] font-semibold text-brand-dark tracking-tight">
         {tips.title}
       </h2>
 
       {/* 스텝 카드들 */}
       <motion.div
-        className="space-y-2"
+        className="space-y-2.5"
         variants={CAT_MOTION.stepContainer}
         initial="hidden"
         whileInView="visible"
@@ -30,19 +30,19 @@ export function CatTipsSection() {
           <motion.div 
             key={step.step} 
             variants={CAT_MOTION.stepItem}
-            className="flex items-start gap-3 bg-white rounded-lg p-3 border border-brand-cream-dark/20"
+            className="flex items-start gap-3.5 bg-white/80 rounded-xl p-4 border border-brand-cream-dark/15"
           >
             {/* 스텝 번호 */}
-            <div className="flex-shrink-0 w-6 h-6 rounded-full bg-brand-dark text-white text-xs font-semibold flex items-center justify-center">
+            <div className="flex-shrink-0 w-7 h-7 rounded-full bg-cat-brown/70 text-white text-[11px] font-semibold flex items-center justify-center font-cat">
               {step.step}
             </div>
 
             {/* 텍스트 */}
             <div className="flex-1 min-w-0 pt-0.5">
-              <h3 className="font-medium text-sm text-brand-dark">
+              <h3 className="font-cat font-medium text-[13px] text-brand-dark">
                 {step.title}
               </h3>
-              <p className="text-xs text-brand-dark-muted mt-0.5">
+              <p className="font-cat-body text-[12px] text-brand-dark-muted mt-1 leading-relaxed">
                 {step.description}
               </p>
             </div>
