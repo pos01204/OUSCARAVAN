@@ -31,11 +31,12 @@ export function GuestHeader({ token }: GuestHeaderProps) {
             src="/images/헤더용/IMG_1922.jpeg"
             alt=""
             fill
-            className="object-cover object-top"
+            className="object-cover"
+            style={{ objectPosition: 'center 20%' }}
             priority
           />
           {/* 반투명 오버레이 - 은은하게 바다/하늘이 비치도록 */}
-          <div className="absolute inset-0 bg-white/85 backdrop-blur-[2px]" />
+          <div className="absolute inset-0 bg-white/80 backdrop-blur-[1px]" />
         </div>
         
         {/* 콘텐츠 레이어 */}
@@ -54,11 +55,12 @@ export function GuestHeader({ token }: GuestHeaderProps) {
             src="/images/헤더용/IMG_1922.jpeg"
             alt=""
             fill
-            className="object-cover object-top"
+            className="object-cover"
+            style={{ objectPosition: 'center 20%' }}
             priority
           />
           {/* 반투명 오버레이 */}
-          <div className="absolute inset-0 bg-white/85 backdrop-blur-[2px]" />
+          <div className="absolute inset-0 bg-white/80 backdrop-blur-[1px]" />
         </div>
         
         {/* 콘텐츠 레이어 */}
