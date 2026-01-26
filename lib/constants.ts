@@ -73,7 +73,6 @@ export const GUIDE_DATA: { categories: string[]; items: GuideItem[] } = {
       content: '객실 벽면에 설치된 컨트롤러를 사용하여 난방과 냉방을 조절할 수 있습니다.',
       images: [],
       warning: false,
-      // steps, faq, tips 삭제 - 간소화
       troubleshooting: [
         {
           id: 'trouble-1',
@@ -95,7 +94,6 @@ export const GUIDE_DATA: { categories: string[]; items: GuideItem[] } = {
       images: [],
       warning: true,
       warningText: '계속 차가운 물이 나온다면 온수 용량을 모두 사용한 것으로, 데우는 시간이 필요합니다.',
-      // steps, tips 삭제 - 기기 조작 방지
       faq: [
         {
           id: 'faq-1',
@@ -106,13 +104,12 @@ export const GUIDE_DATA: { categories: string[]; items: GuideItem[] } = {
       tags: ['온수', '샤워', '편의시설', '용량'],
       priority: 4,
     },
-    // projector 항목 삭제 (사용 불가)
     {
       id: 'wifi',
       category: '편의시설',
       title: 'WiFi 연결',
-      overview: '비밀번호 없이 사용 가능합니다. 가장 강하게 잡히는 WiFi에 연결해주세요.', “REMOVED”,
-      content: '각 객실마다 WiFi 이름이 다릅니다. 비밀번호 없이 사용 가능하니, 카라반 내에서 가장 강하게 잡히는 WiFi에 연결해주세요. 비밀번호 없이 바로 연결됩니다.', 'WiFi 목록에서 “REMOVED”에 연결해주세요. 비밀번호 없이 바로 연결됩니다.',
+      overview: '비밀번호 없이 사용 가능합니다. 가장 강하게 잡히는 WiFi에 연결해주세요.',
+      content: '각 객실마다 WiFi 이름이 다릅니다. 비밀번호 없이 사용 가능하니, 카라반 내에서 가장 강하게 잡히는 WiFi에 연결해주세요.',
       images: [],
       warning: false,
       steps: [
@@ -124,7 +121,7 @@ export const GUIDE_DATA: { categories: string[]; items: GuideItem[] } = {
         {
           number: 2,
           title: '네트워크 선택',
-          description: 'WiFi 목록에서 “REMOVED”에서 가장 신호가 강한 WiFi를 선택해주세요.',
+          description: '가장 신호가 강한 WiFi를 선택해주세요.',
         },
         {
           number: 3,
@@ -175,7 +172,6 @@ export const GUIDE_DATA: { categories: string[]; items: GuideItem[] } = {
       warning: false,
       tags: ['쓰레기', '분리수거', '규칙', '환경'],
       priority: 2,
-      // 새로운 탭 구조: 일반쓰레기 / 음식물 / 분리수거
       trashCategories: [
         {
           id: 'general',
