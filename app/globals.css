@@ -822,12 +822,11 @@ button:active {
 /* Hero 카드 기본 - 고급 호텔 환영 카드 느낌 */
 .hero-card {
   position: relative;
-  background: linear-gradient(165deg, #FDFCFB 0%, #F9F7F4 50%, #F5F2ED 100%);
+  background: #FFFFFF;
   border: 1px solid rgba(196, 184, 150, 0.2);
   box-shadow: 
     0 1px 3px rgba(26, 23, 20, 0.03),
-    0 8px 24px rgba(26, 23, 20, 0.06),
-    inset 0 1px 0 rgba(255, 255, 255, 0.8);
+    0 8px 24px rgba(26, 23, 20, 0.06);
   overflow: hidden;
 }
 
