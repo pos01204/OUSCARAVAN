@@ -69,7 +69,7 @@ export function GuideTroubleshooting({
   if (mode === 'pager') {
     const idx = Math.min(Math.max(currentIndex, 0), items.length - 1);
     const item = items[idx];
-    const progressText = `${idx + 1} / ${items.length}`;
+    const isSingleItem = items.length === 1;
 
     return (
       <Card variant="alert">
@@ -77,9 +77,14 @@ export function GuideTroubleshooting({
           <div className="flex items-center justify-between gap-3">
             <div className="flex items-center gap-2">
               <AlertCircle className="h-5 w-5 text-status-warning" />
-              <CardTitle className="text-base font-bold text-foreground">해결</CardTitle>
+              <CardTitle className="text-base font-bold text-foreground">
+                {isSingleItem ? '문제가 있으신가요?' : '해결'}
+              </CardTitle>
             </div>
-            <span className="text-xs text-muted-foreground">{progressText}</span>
+            {/* 단일 항목일 때는 페이지 표시 숨김 */}
+            {!isSingleItem && (
+              <span className="text-xs text-muted-foreground">{idx + 1} / {items.length}</span>
+            )}
           </div>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -118,26 +123,29 @@ export function GuideTroubleshooting({
             )}
           </div>
 
-          <div className="flex items-center gap-2">
-            <Button
-              variant="outline"
-              className="flex-1"
-              onClick={() => setCurrentIndex((v) => Math.max(0, v - 1))}
-              disabled={idx === 0}
-              aria-label="이전 문제"
-            >
-              이전
-            </Button>
-            <Button
-              variant="default"
-              className="flex-1"
-              onClick={() => setCurrentIndex((v) => Math.min(items.length - 1, v + 1))}
-              disabled={idx === items.length - 1}
-              aria-label="다음 문제"
-            >
-              다음
-            </Button>
-          </div>
+          {/* 단일 항목일 때는 이전/다음 버튼 숨김 */}
+          {!isSingleItem && (
+            <div className="flex items-center gap-2">
+              <Button
+                variant="outline"
+                className="flex-1"
+                onClick={() => setCurrentIndex((v) => Math.max(0, v - 1))}
+                disabled={idx === 0}
+                aria-label="이전 문제"
+              >
+                이전
+              </Button>
+              <Button
+                variant="default"
+                className="flex-1"
+                onClick={() => setCurrentIndex((v) => Math.min(items.length - 1, v + 1))}
+                disabled={idx === items.length - 1}
+                aria-label="다음 문제"
+              >
+                다음
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
     );

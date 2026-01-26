@@ -263,74 +263,114 @@ export function GuestGuideContent({ token }: GuestGuideContentProps) {
                   <GuideFAQ faqs={selectedGuide.faq} searchable={true} />
                 )}
               </div>
-            ) : (
-              <Tabs defaultValue={inspectorDefaultTab} className="w-full">
-                {/* 탭 리스트 - 아이콘 제거, 텍스트만, 터치 타겟 확보 */}
-                <TabsList className="grid w-full grid-flow-col auto-cols-fr h-auto p-1 bg-brand-cream/20 border border-brand-cream-dark/20 rounded-xl">
-                  {selectedGuide.steps && selectedGuide.steps.length > 0 && (
-                    <TabsTrigger 
-                      value="steps" 
-                      className="text-xs py-3 font-medium text-brand-dark-muted data-[state=active]:text-brand-dark data-[state=active]:bg-white data-[state=active]:shadow-soft-sm rounded-lg"
-                    >
-                      단계별
-                    </TabsTrigger>
-                  )}
-                  {selectedGuide.checklist && selectedGuide.checklist.length > 0 && (
-                    <TabsTrigger 
-                      value="checklist" 
-                      className="text-xs py-3 font-medium text-brand-dark-muted data-[state=active]:text-brand-dark data-[state=active]:bg-white data-[state=active]:shadow-soft-sm rounded-lg"
-                    >
-                      체크
-                    </TabsTrigger>
-                  )}
-                  {selectedGuide.faq && selectedGuide.faq.length > 0 && (
-                    <TabsTrigger 
-                      value="faq" 
-                      className="text-xs py-3 font-medium text-brand-dark-muted data-[state=active]:text-brand-dark data-[state=active]:bg-white data-[state=active]:shadow-soft-sm rounded-lg"
-                    >
-                      FAQ
-                    </TabsTrigger>
-                  )}
-                  {selectedGuide.troubleshooting && selectedGuide.troubleshooting.length > 0 && (
-                    <TabsTrigger 
-                      value="troubleshooting" 
-                      className="text-xs py-3 font-medium text-brand-dark-muted data-[state=active]:text-brand-dark data-[state=active]:bg-white data-[state=active]:shadow-soft-sm rounded-lg"
-                    >
-                      해결
-                    </TabsTrigger>
-                  )}
-                </TabsList>
+            ) : (() => {
+              // 가용 탭 개수 계산
+              const availableTabs = [
+                selectedGuide.steps && selectedGuide.steps.length > 0,
+                selectedGuide.checklist && selectedGuide.checklist.length > 0,
+                selectedGuide.faq && selectedGuide.faq.length > 0,
+                selectedGuide.troubleshooting && selectedGuide.troubleshooting.length > 0,
+              ].filter(Boolean).length;
 
-                {selectedGuide.steps && selectedGuide.steps.length > 0 && (
-                  <TabsContent value="steps" className="mt-4">
-                    <StepByStepGuide steps={selectedGuide.steps} compact />
-                  </TabsContent>
-                )}
+              // 콘텐츠가 없는 경우 (주차 안내 등)
+              if (availableTabs === 0) {
+                return null;
+              }
 
-                {selectedGuide.checklist && selectedGuide.checklist.length > 0 && (
-                  <TabsContent value="checklist" className="mt-4">
+              // 단일 탭: 탭 UI 없이 콘텐츠만 직접 표시
+              if (availableTabs === 1) {
+                if (selectedGuide.steps && selectedGuide.steps.length > 0) {
+                  return <StepByStepGuide steps={selectedGuide.steps} compact />;
+                }
+                if (selectedGuide.checklist && selectedGuide.checklist.length > 0) {
+                  return (
                     <GuideChecklist
                       items={selectedGuide.checklist}
                       checklistId={selectedGuide.id}
                       mode="pager"
                       pageSize={4}
                     />
-                  </TabsContent>
-                )}
+                  );
+                }
+                if (selectedGuide.faq && selectedGuide.faq.length > 0) {
+                  return <GuideFAQ faqs={selectedGuide.faq} searchable={false} mode="pager" />;
+                }
+                if (selectedGuide.troubleshooting && selectedGuide.troubleshooting.length > 0) {
+                  return <GuideTroubleshooting items={selectedGuide.troubleshooting} mode="pager" />;
+                }
+                return null;
+              }
 
-                {selectedGuide.faq && selectedGuide.faq.length > 0 && (
-                  <TabsContent value="faq" className="mt-4">
-                    <GuideFAQ faqs={selectedGuide.faq} searchable={false} mode="pager" />
-                  </TabsContent>
-                )}
+              // 다중 탭: 기존 탭 UI 표시
+              return (
+                <Tabs defaultValue={inspectorDefaultTab} className="w-full">
+                  {/* 탭 리스트 - 아이콘 제거, 텍스트만, 터치 타겟 확보 */}
+                  <TabsList className="grid w-full grid-flow-col auto-cols-fr h-auto p-1 bg-brand-cream/20 border border-brand-cream-dark/20 rounded-xl">
+                    {selectedGuide.steps && selectedGuide.steps.length > 0 && (
+                      <TabsTrigger 
+                        value="steps" 
+                        className="text-xs py-3 font-medium text-brand-dark-muted data-[state=active]:text-brand-dark data-[state=active]:bg-white data-[state=active]:shadow-soft-sm rounded-lg"
+                      >
+                        단계별
+                      </TabsTrigger>
+                    )}
+                    {selectedGuide.checklist && selectedGuide.checklist.length > 0 && (
+                      <TabsTrigger 
+                        value="checklist" 
+                        className="text-xs py-3 font-medium text-brand-dark-muted data-[state=active]:text-brand-dark data-[state=active]:bg-white data-[state=active]:shadow-soft-sm rounded-lg"
+                      >
+                        체크
+                      </TabsTrigger>
+                    )}
+                    {selectedGuide.faq && selectedGuide.faq.length > 0 && (
+                      <TabsTrigger 
+                        value="faq" 
+                        className="text-xs py-3 font-medium text-brand-dark-muted data-[state=active]:text-brand-dark data-[state=active]:bg-white data-[state=active]:shadow-soft-sm rounded-lg"
+                      >
+                        FAQ
+                      </TabsTrigger>
+                    )}
+                    {selectedGuide.troubleshooting && selectedGuide.troubleshooting.length > 0 && (
+                      <TabsTrigger 
+                        value="troubleshooting" 
+                        className="text-xs py-3 font-medium text-brand-dark-muted data-[state=active]:text-brand-dark data-[state=active]:bg-white data-[state=active]:shadow-soft-sm rounded-lg"
+                      >
+                        해결
+                      </TabsTrigger>
+                    )}
+                  </TabsList>
 
-                {selectedGuide.troubleshooting && selectedGuide.troubleshooting.length > 0 && (
-                  <TabsContent value="troubleshooting" className="mt-4">
-                    <GuideTroubleshooting items={selectedGuide.troubleshooting} mode="pager" />
-                  </TabsContent>
-                )}
-              </Tabs>
-            )}
+                  {selectedGuide.steps && selectedGuide.steps.length > 0 && (
+                    <TabsContent value="steps" className="mt-4">
+                      <StepByStepGuide steps={selectedGuide.steps} compact />
+                    </TabsContent>
+                  )}
+
+                  {selectedGuide.checklist && selectedGuide.checklist.length > 0 && (
+                    <TabsContent value="checklist" className="mt-4">
+                      <GuideChecklist
+                        items={selectedGuide.checklist}
+                        checklistId={selectedGuide.id}
+                        mode="pager"
+                        pageSize={4}
+                      />
+                    </TabsContent>
+                  )}
+
+                  {selectedGuide.faq && selectedGuide.faq.length > 0 && (
+                    <TabsContent value="faq" className="mt-4">
+                      <GuideFAQ faqs={selectedGuide.faq} searchable={false} mode="pager" />
+                    </TabsContent>
+                  )}
+
+                  {selectedGuide.troubleshooting && selectedGuide.troubleshooting.length > 0 && (
+                    <TabsContent value="troubleshooting" className="mt-4">
+                      <GuideTroubleshooting items={selectedGuide.troubleshooting} mode="pager" />
+                    </TabsContent>
+                  )}
+                </Tabs>
+              );
+            })()}
 
           </div>
         ) : null}

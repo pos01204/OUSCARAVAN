@@ -34,16 +34,19 @@ export function GuideFAQ({ faqs, searchable = false, mode = 'list' }: GuideFAQPr
     const safeFaqs = filteredFaqs.length > 0 ? filteredFaqs : faqs;
     const idx = Math.min(Math.max(currentIndex, 0), safeFaqs.length - 1);
     const faq = safeFaqs[idx];
-    const progressText = `${idx + 1} / ${safeFaqs.length}`;
+    const isSingleItem = safeFaqs.length === 1;
 
     return (
       <Card variant="info">
         <CardContent className="p-4">
           <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <h3 className="text-base font-bold text-foreground">FAQ</h3>
-              <span className="text-xs text-muted-foreground">{progressText}</span>
-            </div>
+            {/* 단일 항목일 때는 헤더/페이지 표시 숨김 */}
+            {!isSingleItem && (
+              <div className="flex items-center justify-between">
+                <h3 className="text-base font-bold text-foreground">FAQ</h3>
+                <span className="text-xs text-muted-foreground">{idx + 1} / {safeFaqs.length}</span>
+              </div>
+            )}
 
             <div className="rounded-xl border bg-background p-3">
               <p className="text-sm font-semibold text-foreground leading-snug">{faq.question}</p>
@@ -52,26 +55,29 @@ export function GuideFAQ({ faqs, searchable = false, mode = 'list' }: GuideFAQPr
               </p>
             </div>
 
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                className="flex-1 rounded-xl border bg-background px-3 py-2 text-sm font-medium disabled:opacity-50"
-                onClick={() => setCurrentIndex((v) => Math.max(0, v - 1))}
-                disabled={idx === 0}
-                aria-label="이전 질문"
-              >
-                이전
-              </button>
-              <button
-                type="button"
-                className="flex-1 rounded-xl bg-primary px-3 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
-                onClick={() => setCurrentIndex((v) => Math.min(safeFaqs.length - 1, v + 1))}
-                disabled={idx === safeFaqs.length - 1}
-                aria-label="다음 질문"
-              >
-                다음
-              </button>
-            </div>
+            {/* 단일 항목일 때는 이전/다음 버튼 숨김 */}
+            {!isSingleItem && (
+              <div className="flex items-center gap-2">
+                <button
+                  type="button"
+                  className="flex-1 rounded-xl border bg-background px-3 py-2 text-sm font-medium disabled:opacity-50"
+                  onClick={() => setCurrentIndex((v) => Math.max(0, v - 1))}
+                  disabled={idx === 0}
+                  aria-label="이전 질문"
+                >
+                  이전
+                </button>
+                <button
+                  type="button"
+                  className="flex-1 rounded-xl bg-primary px-3 py-2 text-sm font-medium text-primary-foreground disabled:opacity-50"
+                  onClick={() => setCurrentIndex((v) => Math.min(safeFaqs.length - 1, v + 1))}
+                  disabled={idx === safeFaqs.length - 1}
+                  aria-label="다음 질문"
+                >
+                  다음
+                </button>
+              </div>
+            )}
           </div>
         </CardContent>
       </Card>

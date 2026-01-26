@@ -64,7 +64,7 @@ export function ServiceCardsGrid() {
               <CardInset className="flex items-center gap-3">
                 <CardIconBadge icon={Car} tone="info" size="sm" strokeWidth={2} />
                 <p className="text-xs text-muted-foreground">
-                  객실 근처에 <span className="font-semibold text-brand-dark">여러 대</span> 주차 가능
+                  객실 내 <span className="font-semibold text-brand-dark">가까운 주차 공간</span>에 주차해주세요
                 </p>
               </CardInset>
               <a 
